@@ -1,6 +1,7 @@
 # river-framework
 
-_First of all, I apologize if you see errors in this text. I'm learning English, but I promise that I will keep studying and improving on it :-)_
+_First of all, I apologize if you see errors in this text. I'm learning English, 
+but I promise that I will keep studying and improving on it :-)_
 
 
 ## What is the River Framework?
@@ -11,7 +12,9 @@ This is a Framework for Workflow Applications in an **VERY EARLY development sta
 
 - It is using IBM Notes as NoSQL server
 - It let you connect to an IBM Notes database and the possibility to access its views and create or modify documents.
-- It has a JUnit test set
+- It has a set of JUnit tests
+
+And as it is at an early stage, the design will have a lot changes in next versions. 
 
 
 ## What is in the ToDo list?
@@ -22,7 +25,7 @@ There's a lot of features that I want to add to this framework:
   - Control of the states of the document
   - Control of the responsables on each state
   - Control of the permissions to read on each state
-- Relation between documents (1..*, *..*)
+- Relation between documents (1..\*, \*..\*)
 - Documentation
 
 
@@ -32,7 +35,7 @@ Over the last years (many years!), I have been working as IBM Notes workflow app
 
 Well, one year ago, I seemed like a good idea to publish that work as an open source project and share it with another IBM Notes developers that maybe can found it useful too. I asked to my employer but, for contractual issues, I couldn't publish the source code written in working hours. It's understandable. So, I started to design and write a new one in Java *in my spare time, in my home* some months ago (just in case my boss is reading this :-). The design is different and incorporate all the features that I would like to have the original written in LotusScript, but I can't add because LotusScript language limitations.
 
-I expected that this work be useful for you. As it is at an early stage development, the design will have a lot changes in next versions. 
+I expected that this work be useful for you. 
 
 
 

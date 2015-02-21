@@ -1,7 +1,7 @@
 # river-framework
 
 _First of all, I apologize if you see errors in this text. I'm learning English, 
-but I promise that I will keep studying and improving on it :-)_
+but I promise that I will continue studying and improving :-)_
 
 
 ## What is the River Framework?

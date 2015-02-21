@@ -8,7 +8,7 @@ but I promise that I will keep studying and improving on it :-)_
 
 Hi, 
 
-This is a Workflow Applications Framework in an **VERY EARLY development stage**. This first version only has these features: 
+This is a Workflow Application Framework in an **VERY EARLY development stage**. This first version only has these features: 
 
 - It is using IBM Notes as NoSQL server
 - It let you connect to an IBM Notes database and the possibility to access its views and create or modify documents.
@@ -23,6 +23,7 @@ There's a lot of features that I want to add to this framework:
   - Control of the states of the document
   - Control of the responsables on each state
   - Control of the permissions to read on each state
+  - etc.
 - Relation between documents (1..\*, \*..\*)
 - Documentation
 

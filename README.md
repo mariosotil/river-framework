@@ -33,7 +33,10 @@ Over the last years (many years!), I have been working as IBM Notes workflow app
 
 Well, one year ago, I seemed like a good idea to publish that work as an open source project and share it with another IBM Notes developers that maybe can found it useful too. I asked to my employer but, for contractual issues, I couldn't publish the source code written in working hours. It's understandable. So, I started to design and write a new one in Java *in my spare time, in my home* some months ago (if my boss is reading this :-). The design is different to the original in LotusScript, and incorporate all the features that I would like to have, but I can't add because LotusScript language limitations. 
 
-I expected that this work be useful for you. I'll be looking forward for your ideas, comments or questions.
+I expected that this work be useful for you. I'll be looking forward for your ideas, comments or questions at mario.sotil@gmail.com
+
+
+
 
 
 

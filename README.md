@@ -14,7 +14,7 @@ This is a Workflow Application Framework in a **VERY EARLY development stage**. 
 
 ## What is in the ToDo list?
 
-There are a lot of features that I want to add to this framework:
+There are a lot of features that I will add to this framework:
 
 - Version 0.2
   - Generation of unique identifiers for the documents

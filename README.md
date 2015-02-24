@@ -4,25 +4,42 @@
 
 Hi, 
 
-This is a Workflow Application Framework in a **VERY EARLY development stage**. This first version only has the following features: 
+This is a Workflow Application Framework in a **VERY EARLY development stage**. This first version (0.1) only has the following features: 
 
-- It is using IBM Notes as NoSQL server
-- It lets you connect to an IBM Notes database and the possibility to access its views and create or modify documents.
-- It has a set of JUnit tests
+- Version 0.1
+  - It is using IBM Notes as NoSQL server
+  - It lets you connect to an IBM Notes database and the possibility to access its views and create or modify documents.
+  - It has a set of JUnit tests
 
 
 ## What is in the ToDo list?
 
 There are a lot of features that I want to add to this framework:
 
-- The main goal of the project: the support of workflow development with the features that are needed for the task:
-  - Control of the states of the document
-  - Control of the responsables on each state
-  - Control of the permissions to read on each state
-  - etc.
-- Relation between documents (1..\*, \*..\*)
-- Another etc.
-
+- Version 0.2
+  - Generation of unique identifiers for the documents
+  - Jar file 
+  - First examples in Java, Javascript, XPages and LotusScript
+- Version 0.3
+  - Relation between documents (1..\*, \*..\*)
+  - A new set of examples in Java, JavaScript and XPages
+- Next versions
+  - Logging of changes in the fields of a document
+  - Control of the data change propagation between related documents (1..\*, \*..\*)
+  - Document collections: array, list, iterator
+  - Administration tools (ie. change the state of a document)
+  - Connections to another NoSQL servers like CouchDB, MongoDB, etc.
+  - The main goal of the project: the support of workflow development with the features that are needed for the task:
+    - Control of the states of the document
+    - Control of the responsables on each state
+    - Control of the permissions to read on each state
+    - Control of the document security (reader, editor, etc.) on each state
+    - Document protection if there is an error during a change of state
+    - Notification deadlines for each state
+    - Logging of state changes
+    - Configuration of the notification mails sent on each state change
+    - Implementation of a Script to configure a workflow
+  
 
 ## Why I created this Framework?
 
@@ -33,7 +50,9 @@ Well, one year ago, it seemed like a good idea to publish that work as an open s
 I expected that this work be useful for you. I'll be looking forward for your ideas, comments or questions at mario.sotil@gmail.com
 
 
+### Tags
 
+Java, JavaScript, IBM Notes, Lotus Notes, XPages, LotusScript, Workflow
 
 
 

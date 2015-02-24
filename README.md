@@ -4,7 +4,7 @@
 
 Hi, 
 
-This is a Workflow Application Framework in a **VERY EARLY development stage**. This first version (0.1) only has the following features: 
+This is a Workflow Application Framework in a **VERY EARLY development stage**. This first version only has the following features: 
 
 - Version 0.1
   - It is using IBM Notes as NoSQL server

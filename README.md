@@ -41,7 +41,7 @@ There are a lot of features that I will add to this framework:
     - Implementation of a Script to configure a workflow
   
 
-## Why I created this Framework?
+## Why am I creating this Framework?
 
 Over the last years (many years!), I have been working as IBM Notes workflow application developer at my current job. And as so often happens, after some time I started to feel really bored developing similar applications once and again. So, as own-initiative, I started to develop a Workflow Framework in LotusScript, the native IBM Notes programming language. The goal of the framework was simplify the development grouping the similar tasks together, letting me focus on the differences between applications. It was really useful and fun to work on! 
 

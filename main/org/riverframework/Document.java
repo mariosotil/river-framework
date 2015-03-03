@@ -13,7 +13,12 @@ import java.util.Vector;
 
 public interface Document<T> {
 	public static final String FIELD_CLASS = Session.PREFIX + "Class";
+	public static final String FIELD_ID = Session.PREFIX + "Id";
 	public static final boolean FORCE_SAVE = true;
+
+	public org.riverframework.Document<T> generateId();
+
+	public String getId();
 
 	public String getUniversalId();
 

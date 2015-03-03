@@ -18,13 +18,7 @@ import org.riverframework.RiverException;
  * This must be in its own package "org.riverframework.lotusnotes"
  */
 public abstract class AbstractDocument<T> implements org.riverframework.Document<T> {
-	protected org.riverframework.Database<?> rDatabase = null;
-	// protected org.riverframework.View rIndex = null;
-	// protected void loadIndex() {
-	// rIndex = rDatabase.getView(Context.PREFIX + "_" + this.getClass().getSimpleName() +
-	// "_Index");
-	// }
-
+	protected static org.riverframework.Database<?> rDatabase = null;
 	protected T document = null;
 	private boolean isModified = false;
 
@@ -33,30 +27,11 @@ public abstract class AbstractDocument<T> implements org.riverframework.Document
 		isModified = false;
 	}
 
-	public AbstractDocument(org.riverframework.Database<?> d, T doc) {
+	protected AbstractDocument(org.riverframework.Database<?> d, T doc) {
 		rDatabase = d;
 		document = doc;
 		isModified = false;
 	}
-
-	/*
-	 * protected static boolean numericEquals(Vector<? extends Number> c1, Vector<? extends Number> c2) {
-	 * if (c1.size() != c2.size())
-	 * return false;
-	 * if (c1.isEmpty())
-	 * return true;
-	 * 
-	 * Iterator<? extends Number> it1 = c1.iterator();
-	 * Iterator<? extends Number> it2 = c2.iterator();
-	 * 
-	 * while (it1.hasNext()) {
-	 * if (it1.next().doubleValue() != it2.next().doubleValue())
-	 * return false;
-	 * }
-	 * 
-	 * return true;
-	 * }
-	 */
 
 	protected static boolean numericEquals(Vector<Object> c1, Vector<Object> c2) {
 		if (c1.size() != c2.size())
@@ -73,6 +48,16 @@ public abstract class AbstractDocument<T> implements org.riverframework.Document
 		}
 
 		return true;
+	}
+
+	@Override
+	public org.riverframework.Document<T> generateId() {
+		return this;
+	}
+
+	@Override
+	public String getId() {
+		return "";
 	}
 
 	@Override

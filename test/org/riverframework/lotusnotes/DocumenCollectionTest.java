@@ -18,8 +18,8 @@ public class DocumenCollectionTest {
 	public void init() {
 		try {
 			NotesThread.sinitThread();
-			session.open(Credentials.getServer(), Credentials.getUser(), Credentials.getPassword());
-			rDatabase = session.getDatabase(DefaultDatabase.class, "server1/wtres", "trabajo\\FW\\Beach.nsf");
+			session.open(Context.getServer(), Context.getUser(), Context.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}

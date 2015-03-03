@@ -39,7 +39,7 @@ public class SessionTest extends NotesThread {
 		try {
 			DefaultSession session = (DefaultSession) DefaultSession
 					.getInstance()
-					.open(Credentials.getServer(), Credentials.getUser(), Credentials.getPassword());
+					.open(Context.getServer(), Context.getUser(), Context.getPassword());
 
 			assertTrue("Notes Session could not be retrieved", session.isOpen());
 			assertFalse("There's a problem with the Session. I can't retrieve the current user name.",

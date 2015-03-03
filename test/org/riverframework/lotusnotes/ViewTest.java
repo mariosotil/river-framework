@@ -2,7 +2,6 @@ package org.riverframework.lotusnotes;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import lotus.domino.NotesFactory;
 import lotus.domino.NotesThread;
 
 import org.junit.After;
@@ -14,20 +13,16 @@ public class ViewTest {
 	final String TEST_FORM = "TestForm";
 	final String TEST_VIEW = "TestView";
 
-	final org.riverframework.lotusnotes.DefaultSession context = DefaultSession.getInstance();
+	final org.riverframework.lotusnotes.DefaultSession session = DefaultSession.getInstance();
 	private org.riverframework.lotusnotes.DefaultDatabase rDatabase = null;
 
 	@Before
 	public void init() {
-		lotus.domino.Session session = null;
-
 		try {
 			NotesThread.sinitThread();
-			session = NotesFactory.createSession(Credentials.getServer(), Credentials.getUser(),
-					Credentials.getPassword());
-			context.setSession(session);
-			rDatabase = new org.riverframework.lotusnotes.DefaultDatabase(new String[] {
-					"server1/wtres", "trabajo\\FW\\Beach.nsf" });
+			session.open(Context.getServer(), Context.getUser(), Context.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
+
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
@@ -35,7 +30,7 @@ public class ViewTest {
 
 	@After
 	public void close() {
-		context.close();
+		session.close();
 		NotesThread.stermThread();
 	}
 

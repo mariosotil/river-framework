@@ -1,6 +1,8 @@
 package org.riverframework.lotusnotes;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
@@ -11,6 +13,11 @@ import org.riverframework.fw.AbstractSession;
 public class DefaultSession extends AbstractSession {
 	private final static DefaultSession INSTANCE = new DefaultSession();
 	private static lotus.domino.Session session = null;
+	private static Map<String, org.riverframework.View<?>> viewMap = null;
+
+	static {
+		viewMap = new HashMap<String, org.riverframework.View<?>>();
+	}
 
 	protected DefaultSession() {
 		// Exists only to defeat instantiation.
@@ -47,6 +54,11 @@ public class DefaultSession extends AbstractSession {
 	}
 
 	@Override
+	public Map<String, org.riverframework.View<?>> getViewMap() {
+		return viewMap;
+	}
+
+	@Override
 	public void close() {
 		try {
 			if (session != null) {
@@ -75,8 +87,9 @@ public class DefaultSession extends AbstractSession {
 
 		try {
 			if (type != null) {
-				Constructor<?> constructor = type.getConstructor();
-				rDatabase = type.cast(constructor.newInstance());
+				Constructor<?> constructor = type.getDeclaredConstructor(DefaultSession.class);
+				constructor.setAccessible(true);
+				rDatabase = type.cast(constructor.newInstance(this));
 				type.cast(rDatabase).open(parameters);
 			}
 

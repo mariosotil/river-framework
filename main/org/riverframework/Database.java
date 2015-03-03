@@ -14,4 +14,7 @@ public interface Database<T> {
 	public <U extends org.riverframework.Document<?>> U getDocument(Class<U> type, String... parameters);
 
 	public org.riverframework.DocumentCollection<?> getAllDocuments();
+
+	public org.riverframework.View<?> getIndex(Class<?> clazz);
+
 }

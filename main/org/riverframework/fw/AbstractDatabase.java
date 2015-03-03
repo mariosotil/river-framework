@@ -5,16 +5,19 @@ package org.riverframework.fw;
  */
 public abstract class AbstractDatabase<T> implements org.riverframework.Database<T> {
 	protected T database = null;
+	protected org.riverframework.Session session = null;
 
-	public AbstractDatabase() {
-
+	public AbstractDatabase(org.riverframework.Session s) {
+		session = s;
 	}
 
-	public AbstractDatabase(T obj) {
+	protected AbstractDatabase(org.riverframework.Session s, T obj) {
+		session = s;
 		open(obj);
 	}
 
-	public AbstractDatabase(String... location) {
+	public AbstractDatabase(org.riverframework.Session s, String... location) {
+		session = s;
 		open(location);
 	}
 
@@ -43,6 +46,9 @@ public abstract class AbstractDatabase<T> implements org.riverframework.Database
 
 	@Override
 	public abstract org.riverframework.DocumentCollection<?> getAllDocuments();
+
+	@Override
+	public abstract org.riverframework.View<?> getIndex(Class<?> clazz);
 
 	protected void close() {
 		if (isOpen()) {

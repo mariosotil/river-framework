@@ -35,7 +35,7 @@ public class Console extends NotesThread {
 
 			DefaultSession session = DefaultSession
 					.getInstance()
-					.open(Credentials.getServer(), Credentials.getUser(), Credentials.getPassword());
+					.open(Context.getServer(), Context.getUser(), Context.getPassword());
 
 			System.out.println("PATH="
 					+ join(new ArrayList<String>(Arrays.asList(System.getProperty("java.library.path")

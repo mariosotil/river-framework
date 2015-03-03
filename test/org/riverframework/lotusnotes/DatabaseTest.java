@@ -1,5 +1,6 @@
 package org.riverframework.lotusnotes;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import lotus.domino.Document;
 import lotus.domino.NotesThread;
@@ -24,10 +25,10 @@ public class DatabaseTest {
 			NotesThread.sinitThread();
 			// session = NotesFactory.createSession(Credentials.getServer(), Credentials.getUser(),
 			// Credentials.getPassword());
-			session.open(Credentials.getServer(), Credentials.getUser(), Credentials.getPassword());
+			session.open(Context.getServer(), Context.getUser(), Context.getPassword());
 
-			rDatabase = session.getDatabase(DefaultDatabase.class, "server1/wtres", "trabajo\\FW\\beach.nsf");
-			rVacationDatabase = session.getDatabase(VacationDatabase.class, "server1/wtres", "trabajo\\FW\\Beach.nsf");
+			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
+			rVacationDatabase = session.getDatabase(VacationDatabase.class, Context.getServer(), Context.getDatabase());
 
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -130,16 +131,16 @@ public class DatabaseTest {
 	 * Testing makeDocument
 	 */
 	static class VacationDatabase extends org.riverframework.lotusnotes.DefaultDatabase {
-		public VacationDatabase() {
-			super();
+		public VacationDatabase(org.riverframework.lotusnotes.DefaultSession s) {
+			super(s);
 		}
 
-		public VacationDatabase(lotus.domino.Database obj) {
-			super(obj);
+		protected VacationDatabase(org.riverframework.lotusnotes.DefaultSession s, lotus.domino.Database obj) {
+			super(s, obj);
 		}
 
-		public VacationDatabase(String... location) {
-			super(location);
+		public VacationDatabase(org.riverframework.lotusnotes.DefaultSession s, String... location) {
+			super(s, location);
 		}
 	}
 
@@ -175,45 +176,26 @@ public class DatabaseTest {
 				rDocument.isOpen());
 	}
 
-	// @Test
-	// public void testDocumentFactoryStrict() {
-	// assertTrue("The test database could not be opened as a VacationDatabase.",
-	// rVacationDatabase.isOpen());
-	// assertTrue(
-	// "Expected that the test database as a VacationDatabase have strictGetDocument = true.",
-	// rVacationDatabase.isDocumentFactoryStrict());
-	//
-	// VacationRequest rRequest = (VacationRequest) rVacationDatabase.createDocument("VacationRequest");
-	//
-	// assertTrue("There is a problem creating a valid VacationRequest object in the test database.",
-	// rRequest.isOpen());
-	//
-	// org.riverframework.Document rDocument = rVacationDatabase
-	// .createDocument("ClassNoDefinedAtMakeDocument");
-	//
-	// assertTrue(
-	// "In a database with strictGetDocument = true, it was getting an object from a invalid class in the test database.",
-	// rDocument == null);
-	//
-	// rDocument = null;
-	// rDocument = rDatabase.createDocument(TEST_FORM).setForm(TEST_FORM)
-	// .setField("SOME_FIELD", "SOME_DATA").save();
-	// String universalId = rDocument.getUniversalId();
-	// assertTrue("There is a problem creating a new document as common Document using rDatabase.",
-	// rDocument.isOpen());
-	//
-	// rDocument = null;
-	// rDocument = rDatabase.getDocument(universalId);
-	// assertTrue("There is a problem getting the document created as a common Document.",
-	// rDocument.isOpen());
-	//
-	// rDocument = null;
-	// rDocument = rVacationDatabase.getDocument(universalId);
-	//
-	// assertTrue(
-	// "A document with no class registered at rVacationDatabase was getting as a common Document.",
-	// rDocument == null);
-	//
-	// }
+	static class NoIndexedRequest extends DefaultDocument {
+		protected NoIndexedRequest(DefaultDatabase d, Document doc) {
+			super(d, doc);
+		}
+	}
+
+	static class IndexedRequest extends DefaultDocument {
+		protected IndexedRequest(DefaultDatabase d, Document doc) {
+			super(d, doc);
+		}
+	}
+
+	@Test
+	public void testGetIndex() {
+		assertTrue("The test database could not be opened.", rDatabase.isOpen());
+
+		assertFalse("The SimpleRequest should not be indexed.", rDatabase.getIndex(NoIndexedRequest.class).isOpen());
+
+		assertTrue("The IndexedRequest should be indexed.", rDatabase.getIndex(IndexedRequest.class).isOpen());
+
+	}
 
 }

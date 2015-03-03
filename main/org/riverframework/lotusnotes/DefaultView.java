@@ -11,7 +11,7 @@ import org.riverframework.RiverException;
 public class DefaultView extends org.riverframework.fw.AbstractView<lotus.domino.View> {
 	lotus.domino.Document iteratorDoc = null;
 
-	public DefaultView(DefaultDatabase d, View obj) {
+	protected DefaultView(DefaultDatabase d, View obj) {
 		super(d, obj);
 	}
 
@@ -35,9 +35,7 @@ public class DefaultView extends org.riverframework.fw.AbstractView<lotus.domino
 		org.riverframework.lotusnotes.DefaultDocumentCollection rDocumentIterator = null;
 
 		try {
-			lotus.domino.DocumentCollection col = view.getAllDocumentsByKey(key, true); // Always
-																						// exact
-																						// match
+			lotus.domino.DocumentCollection col = view.getAllDocumentsByKey(key, true); // Always exact match
 			rDocumentIterator = new org.riverframework.lotusnotes.DefaultDocumentCollection(
 					(DefaultDatabase) rDatabase, col);
 		} catch (Exception e) {

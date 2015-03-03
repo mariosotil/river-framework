@@ -10,7 +10,7 @@ public abstract class AbstractView<T> implements org.riverframework.View<T> {
 	protected org.riverframework.Database<?> rDatabase = null;
 	protected T view = null;
 
-	public AbstractView(org.riverframework.Database<?> d, T obj) {
+	protected AbstractView(org.riverframework.Database<?> d, T obj) {
 		rDatabase = d;
 		view = obj;
 

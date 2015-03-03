@@ -1,6 +1,7 @@
 package org.riverframework.lotusnotes;
 
 import java.lang.reflect.Constructor;
+import java.util.Map;
 
 import org.riverframework.RiverException;
 
@@ -9,16 +10,16 @@ import org.riverframework.RiverException;
  */
 public class DefaultDatabase extends org.riverframework.fw.AbstractDatabase<lotus.domino.Database> {
 
-	public DefaultDatabase() {
-		super();
+	public DefaultDatabase(org.riverframework.lotusnotes.DefaultSession s) {
+		super(s);
 	}
 
-	public DefaultDatabase(lotus.domino.Database obj) {
-		super(obj);
+	protected DefaultDatabase(org.riverframework.lotusnotes.DefaultSession s, lotus.domino.Database obj) {
+		super(s, obj);
 	}
 
-	public DefaultDatabase(String... location) {
-		super(location);
+	public DefaultDatabase(org.riverframework.lotusnotes.DefaultSession s, String... location) {
+		super(s, location);
 	}
 
 	@Override
@@ -46,18 +47,18 @@ public class DefaultDatabase extends org.riverframework.fw.AbstractDatabase<lotu
 	}
 
 	@Override
-	public <U extends org.riverframework.Document<?>> U createDocument(Class<U> type, String... parameters) {
+	public <U extends org.riverframework.Document<?>> U createDocument(Class<U> clazz, String... parameters) {
 		U rDoc = null;
 		lotus.domino.Document doc = null;
 
 		try {
-			if (type != null && DefaultDocument.class.isAssignableFrom(type)) {
+			if (clazz != null && DefaultDocument.class.isAssignableFrom(clazz)) {
 
 				doc = database.createDocument();
-				doc.replaceItemValue(org.riverframework.Document.FIELD_CLASS, type.getSimpleName());
+				doc.replaceItemValue(org.riverframework.Document.FIELD_CLASS, clazz.getSimpleName());
 
-				Constructor<?> constructor = type.getConstructor(DefaultDatabase.class, lotus.domino.Document.class);
-				rDoc = type.cast(constructor.newInstance(this, doc));
+				Constructor<?> constructor = clazz.getDeclaredConstructor(DefaultDatabase.class, lotus.domino.Document.class);
+				rDoc = clazz.cast(constructor.newInstance(this, doc));
 			}
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -70,8 +71,9 @@ public class DefaultDatabase extends org.riverframework.fw.AbstractDatabase<lotu
 		return rDoc;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <U extends org.riverframework.Document<?>> U getDocument(Class<U> type, String... parameters)
+	public <U extends org.riverframework.Document<?>> U getDocument(Class<U> clazz, String... parameters)
 	{
 		U rDoc = null;
 		lotus.domino.Document doc = null;
@@ -86,9 +88,16 @@ public class DefaultDatabase extends org.riverframework.fw.AbstractDatabase<lotu
 				doc = database.getDocumentByID(id);
 			}
 
-			if (type != null && DefaultDocument.class.isAssignableFrom(type)) {
-				Constructor<?> constructor = type.getConstructor(DefaultDatabase.class, lotus.domino.Document.class);
-				rDoc = type.cast(constructor.newInstance(this, doc));
+			if (clazz != null && DefaultDocument.class.isAssignableFrom(clazz)) {
+				if (doc == null) {
+					DefaultView index = getIndex(clazz);
+					rDoc = (U) index.getDocumentByKey(parameters[0]);
+				}
+
+				if (rDoc == null || !rDoc.isOpen()) {
+					Constructor<?> constructor = clazz.getDeclaredConstructor(DefaultDatabase.class, lotus.domino.Document.class);
+					rDoc = clazz.cast(constructor.newInstance(this, doc));
+				}
 			}
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -107,7 +116,7 @@ public class DefaultDatabase extends org.riverframework.fw.AbstractDatabase<lotu
 			view = database.getView(id);
 
 			if (type != null && DefaultView.class.isAssignableFrom(type)) {
-				Constructor<?> constructor = type.getConstructor(DefaultDatabase.class, lotus.domino.View.class);
+				Constructor<?> constructor = type.getDeclaredConstructor(DefaultDatabase.class, lotus.domino.View.class);
 				rView = type.cast(constructor.newInstance(this, view));
 			}
 		} catch (Exception e) {
@@ -115,6 +124,28 @@ public class DefaultDatabase extends org.riverframework.fw.AbstractDatabase<lotu
 		}
 
 		return rView;
+	}
+
+	@Override
+	public DefaultView getIndex(Class<?> clazz) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(org.riverframework.Session.PREFIX);
+		sb.append(clazz.getSimpleName());
+		sb.append("_Index");
+
+		String key = sb.toString();
+
+		Map<String, org.riverframework.View<?>> map = session.getViewMap();
+
+		DefaultView index = (DefaultView) map.get(key);
+
+		if (index == null) {
+			index = getView(DefaultView.class, key);
+			map.put(key, index);
+		}
+
+		return index;
 	}
 
 	@Override

@@ -28,10 +28,10 @@ public class DocumentTest extends NotesThread {
 		try {
 
 			NotesThread.sinitThread();
-			session.open(Credentials.getServer(), Credentials.getUser(), Credentials.getPassword());
+			session.open(Context.getServer(), Context.getUser(), Context.getPassword());
 
-			rDatabase = session.getDatabase(DefaultDatabase.class, "server1/wtres", "trabajo\\FW\\Beach.nsf");
-			rComplexDatabase = session.getDatabase(ComplexDatabase.class, "server1/wtres", "trabajo\\FW\\Beach.nsf");
+			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
+			rComplexDatabase = session.getDatabase(ComplexDatabase.class, Context.getServer(), Context.getDatabase());
 
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -476,8 +476,7 @@ public class DocumentTest extends NotesThread {
 
 	// Classes to testing the implementations
 	static class SimpleRequest extends DefaultDocument {
-
-		public SimpleRequest(DefaultDatabase d, Document doc) {
+		protected SimpleRequest(DefaultDatabase d, Document doc) {
 			super(d, doc);
 		}
 
@@ -490,46 +489,22 @@ public class DocumentTest extends NotesThread {
 
 			return this;
 		}
-		/*
-		 * @Override
-		 * public DefaultDocument calcReaders() {
-		 * setField(DefaultDocument.FIELD_READERS, "OK");
-		 * return this;
-		 * }
-		 */
 	}
 
 	static class ComplexDatabase extends org.riverframework.lotusnotes.DefaultDatabase {
 
-		public ComplexDatabase() {
-			super();
+		public ComplexDatabase(org.riverframework.lotusnotes.DefaultSession s) {
+			super(s);
 		}
 
-		public ComplexDatabase(lotus.domino.Database obj) {
-			super(obj);
+		protected ComplexDatabase(org.riverframework.lotusnotes.DefaultSession s, lotus.domino.Database obj) {
+			super(s, obj);
 		}
 
-		public ComplexDatabase(String... location) {
-			super(location);
+		public ComplexDatabase(org.riverframework.lotusnotes.DefaultSession s, String... location) {
+			super(s, location);
 		}
 	}
-
-	/*
-	 * @Test
-	 * public void testCalcAndGetReaders() {
-	 * assertTrue("The test database could not be opened.", rDatabase.isOpen());
-	 * 
-	 * SimpleRequest simple = (SimpleRequest) rComplexDatabase.createDocument("SimpleRequest");
-	 * simple.setField("DUMMY", "DUH").calcReaders().save();
-	 * 
-	 * assertTrue("The document could not be created", simple.isOpen());
-	 * 
-	 * Vector field = simple.getReaders();
-	 * 
-	 * assertTrue("It can not be retrieved the Readers field.", field.size() == 1
-	 * && field.get(0).equals("OK"));
-	 * }
-	 */
 
 	@Test
 	public void testInternalRecalc() {

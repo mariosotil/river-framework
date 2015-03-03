@@ -23,7 +23,7 @@ public class DefaultDocument extends org.riverframework.fw.AbstractDocument<lotu
 		super(d);
 	}
 
-	public DefaultDocument(DefaultDatabase d, lotus.domino.Document doc) {
+	protected DefaultDocument(DefaultDatabase d, lotus.domino.Document doc) {
 		super(d, doc);
 	}
 

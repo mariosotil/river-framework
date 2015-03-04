@@ -9,6 +9,7 @@ This is a Workflow Application Framework in a **VERY EARLY development stage**. 
 - Version 0.1
   - It is using IBM Notes as NoSQL server
   - It lets you connect to an IBM Notes database and the possibility to access its views and create or modify documents.
+  - Document collections: array, list, iterator
   - It has a set of JUnit tests
 
 ## What I'm working on now?
@@ -24,15 +25,15 @@ There are a lot of features that I will add to this framework:
 
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs
+  - Use org.openntf.domino.\* libraries instead lotus.domino.\*
   - A new set of examples in Java, JavaScript, XPages and LotusScript
 - Version 0.4
-  - Use org.openntf.domino.\* libraries instead lotus.domino.\*
+  - Connections to other NoSQL server (to de defined in the next weeks)
 - Next versions
   - Logging of changes in the fields of a document
   - Control of the data change propagation between related documents (1..\*, \*..\*)
-  - Document collections: array, list, iterator
   - Administration tools (ie. change the state of a document)
-  - Connections to another NoSQL servers like CouchDB, MongoDB, etc.
+  - Connections to other NoSQL servers like CouchDB, MongoDB, etc.
   - Thread support
   - The main goal of the project: the support of workflow development with the features that are needed for the task:
     - Control of the states of the document

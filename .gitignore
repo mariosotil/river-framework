@@ -1,6 +1,7 @@
 # Directories #
 /build/
 /bin/
+/doc/
 target/
  
 # OS Files #
@@ -15,7 +16,7 @@ target/
 *.db
  
 # My files #
-DevelopmentNotes 
+DevelopmentNotes
  
 ######################
 # Windows

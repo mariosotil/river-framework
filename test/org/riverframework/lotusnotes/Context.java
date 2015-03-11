@@ -5,17 +5,21 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public final class Context {
+	private static final String configuration = "d:\\river_credentials.txt";
 	private static String server;
 	private static String user;
 	private static String password;
+	private static String database;
+	private static boolean remote;
 
 	static {
 		try {
-			Scanner sc = new Scanner(new File("d:\\river_credentials.txt"));
+			Scanner sc = new Scanner(new File(configuration));
 
 			server = sc.nextLine();
 			user = sc.nextLine();
 			password = sc.nextLine();
+			database = sc.nextLine();
 
 			sc.close();
 
@@ -23,6 +27,15 @@ public final class Context {
 			e.printStackTrace();
 		}
 
+		// Check if the
+		Class<?> clazz = null;
+		try {
+			clazz = Class.forName("lotus.domino.local.Session");
+		} catch (ClassNotFoundException e) {
+			// Do nothing
+		} finally {
+			remote = (clazz == null);
+		}
 	}
 
 	public static String getServer() {
@@ -38,6 +51,10 @@ public final class Context {
 	}
 
 	public static String getDatabase() {
-		return "trabajo\\FW\\Beach.nsf";
+		return database;
+	}
+
+	public static boolean isRemote() {
+		return remote;
 	}
 }

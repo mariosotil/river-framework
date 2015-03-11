@@ -2,29 +2,24 @@ package org.riverframework.lotusnotes;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import lotus.domino.NotesThread;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
 
-public class SessionTest extends NotesThread {
+public class SessionTest {
 	@Before
 	public void open() {
-		try {
-			NotesThread.sinitThread();
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+
 	}
 
 	@Test
 	public void testAnonymousSession() {
 		try {
-			DefaultSession session = (DefaultSession) DefaultSession
+			DefaultSession session = DefaultSession
 					.getInstance()
-					.open();
+					.open(Context.getServer());
 
 			assertTrue("Notes Session could not be retrieved", session.isOpen());
 			assertFalse("There's a problem with the Session. I can't retrieve the current user name.",
@@ -37,7 +32,7 @@ public class SessionTest extends NotesThread {
 	@Test
 	public void testLoggedSession() {
 		try {
-			DefaultSession session = (DefaultSession) DefaultSession
+			DefaultSession session = DefaultSession
 					.getInstance()
 					.open(Context.getServer(), Context.getUser(), Context.getPassword());
 
@@ -52,6 +47,5 @@ public class SessionTest extends NotesThread {
 	@After
 	public void close() {
 		DefaultSession.getInstance().close();
-		NotesThread.stermThread();
 	}
 }

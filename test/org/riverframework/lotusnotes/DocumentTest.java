@@ -9,14 +9,13 @@ import java.util.Date;
 import java.util.Vector;
 
 import lotus.domino.Document;
-import lotus.domino.NotesThread;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
 
-public class DocumentTest extends NotesThread {
+public class DocumentTest {
 	final DefaultSession session = DefaultSession.getInstance();
 	private DefaultDatabase rDatabase = null;
 	private ComplexDatabase rComplexDatabase = null;
@@ -26,8 +25,6 @@ public class DocumentTest extends NotesThread {
 	@Before
 	public void init() {
 		try {
-
-			NotesThread.sinitThread();
 			session.open(Context.getServer(), Context.getUser(), Context.getPassword());
 
 			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
@@ -41,7 +38,6 @@ public class DocumentTest extends NotesThread {
 	@After
 	public void close() {
 		session.close();
-		NotesThread.stermThread();
 	}
 
 	@Test

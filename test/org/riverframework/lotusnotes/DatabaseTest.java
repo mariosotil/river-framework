@@ -3,7 +3,6 @@ package org.riverframework.lotusnotes;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import lotus.domino.Document;
-import lotus.domino.NotesThread;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,9 +21,6 @@ public class DatabaseTest {
 	@Before
 	public void init() {
 		try {
-			NotesThread.sinitThread();
-			// session = NotesFactory.createSession(Credentials.getServer(), Credentials.getUser(),
-			// Credentials.getPassword());
 			session.open(Context.getServer(), Context.getUser(), Context.getPassword());
 
 			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
@@ -38,7 +34,6 @@ public class DatabaseTest {
 	@After
 	public void close() {
 		session.close();
-		NotesThread.stermThread();
 	}
 
 	@Test

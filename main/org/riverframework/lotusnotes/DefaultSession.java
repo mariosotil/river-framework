@@ -36,18 +36,28 @@ public class DefaultSession extends AbstractSession {
 	@Override
 	public DefaultSession open(String... parameters) {
 		try {
-			if (parameters.length == 0) {
-				session = NotesFactory.createSession();
+			String server = "";
+			String user = "";
+			String password = "";
 
-			} else {
-				String server = parameters[0];
-				String user = parameters[1];
-				String password = parameters[2];
+			switch (parameters.length) {
+			case 1:
+				server = parameters[0];
+				session = NotesFactory.createSession(server);
+				break;
+			case 3:
+				server = parameters[0];
+				user = parameters[1];
+				password = parameters[2];
 
 				session = NotesFactory.createSession(server, user, password);
+				break;
+			default:
+				session = null;
+				break;
 			}
 		} catch (NotesException e) {
-			throw new RiverException("There is a problem with the closing of the Context", e);
+			throw new RiverException("There is a problem at Session opening", e);
 		}
 
 		return INSTANCE;
@@ -66,7 +76,7 @@ public class DefaultSession extends AbstractSession {
 				session = null;
 			}
 		} catch (NotesException e) {
-			throw new RiverException("There is a problem with the closing of the Context", e);
+			throw new RiverException("There is a problem with the getting a View map", e);
 		}
 	}
 

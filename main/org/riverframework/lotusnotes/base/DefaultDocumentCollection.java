@@ -1,21 +1,29 @@
-package org.riverframework.lotusnotes;
-
-import lotus.domino.DocumentCollection;
+package org.riverframework.lotusnotes.base;
 
 import org.riverframework.RiverException;
+import org.riverframework.lotusnotes.Database;
+import org.riverframework.lotusnotes.Document;
 
 /*
  * This must be in its own package "org.riverframework.lotusnotes"
  */
-public class DefaultDocumentCollection extends
-		org.riverframework.fw.AbstractDocumentCollection<lotus.domino.DocumentCollection> {
+public class DefaultDocumentCollection implements
+		org.riverframework.lotusnotes.DocumentCollection {
+	protected Database rDatabase;
+	protected lotus.domino.DocumentCollection col = null;
 	protected lotus.domino.Document doc = null;
 
-	public DefaultDocumentCollection(DefaultDatabase d, DocumentCollection c) {
-		super(d, c);
+	public DefaultDocumentCollection(Database d, lotus.domino.DocumentCollection c) {
+		try {
+			rDatabase = d;
+			col = c;
+			initIterator();
+
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
 	}
 
-	@Override
 	protected void initIterator() {
 		try {
 			doc = col.getFirstDocument();
@@ -30,15 +38,14 @@ public class DefaultDocumentCollection extends
 	}
 
 	@Override
-	public org.riverframework.lotusnotes.DefaultDocument next() {
+	public Document next() {
 		lotus.domino.Document current = doc;
 		try {
 			doc = col.getNextDocument(doc);
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
-		org.riverframework.lotusnotes.DefaultDocument rDoc = new DefaultDocument(
-				(DefaultDatabase) rDatabase, current);
+		Document rDoc = new DefaultDocument(rDatabase, current);
 		return rDoc;
 	}
 

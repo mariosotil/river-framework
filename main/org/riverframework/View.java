@@ -1,11 +1,12 @@
 package org.riverframework;
 
-public interface View<T> extends java.util.Iterator<org.riverframework.Document<?>> {
+@SuppressWarnings("rawtypes")
+public interface View extends java.util.Iterator {
 	public boolean isOpen();
 
-	public org.riverframework.Document<?> getDocumentByKey(Object key);
+	public <U extends Document> U getDocumentByKey(Class<U> clazz, Object key);
 
-	public org.riverframework.DocumentCollection<?> getAllDocumentsByKey(Object key);
+	public DocumentCollection getAllDocumentsByKey(Object key);
 
-	public org.riverframework.View<T> refresh();
+	public View refresh();
 }

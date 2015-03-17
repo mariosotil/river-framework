@@ -1,4 +1,4 @@
-package org.riverframework.lotusnotes;
+package org.riverframework.lotusnotes.base;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.riverframework.RiverException;
+import org.riverframework.lotusnotes.Database;
+import org.riverframework.lotusnotes.Document;
 
 /**
  * Loads an IBM Notes document
@@ -15,16 +17,89 @@ import org.riverframework.RiverException;
  * @author mario.sotil@gmail.com
  * @version 0.0.x
  */
-public class DefaultDocument extends org.riverframework.fw.AbstractDocument<lotus.domino.Document> {
+public class DefaultDocument implements org.riverframework.lotusnotes.Document {
 	public static final String FIELD_IS_CONFLICT = "$Conflict";
 	public static final String FIELD_FORM = "Form";
 
-	public DefaultDocument(DefaultDatabase d) {
-		super(d);
+	protected static Database rDatabase = null;
+	protected lotus.domino.Document document = null;
+	protected boolean isModified = false;
+
+	protected static boolean numericEquals(Vector<Object> c1, Vector<Object> c2) {
+		if (c1.size() != c2.size())
+			return false;
+		if (c1.isEmpty())
+			return true;
+
+		Iterator<Object> it1 = c1.iterator();
+		Iterator<Object> it2 = c2.iterator();
+
+		while (it1.hasNext()) {
+			if (((Number) it1.next()).doubleValue() != ((Number) it2.next()).doubleValue())
+				return false;
+		}
+
+		return true;
 	}
 
-	protected DefaultDocument(DefaultDatabase d, lotus.domino.Document doc) {
-		super(d, doc);
+	protected boolean setFieldIfNecessary(String field, Object value) {
+		try {
+			if (!compareFieldValue(field, value)) {
+				replaceFieldValue(field, value);
+				return true;
+			}
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean compareFieldValue(String field, Object value) {
+
+		boolean equal = false;
+
+		try {
+			Vector<Object> oldValues = getField(field);
+			Vector<Object> newValues = null;
+
+			if (value instanceof java.util.Vector) {
+				newValues = (Vector<Object>) value;
+			} else if (value instanceof Object[]) {
+				newValues = new Vector<Object>();
+				for (Object o : (Object[]) value) {
+					newValues.add(o);
+				}
+			} else {
+				newValues = new Vector<Object>();
+				newValues.add(value);
+			}
+
+			if (value instanceof Number[] || value instanceof Number) {
+				equal = numericEquals(newValues, oldValues);
+			} else {
+				equal = oldValues.equals(newValues);
+			}
+
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
+		return equal;
+	}
+
+	@Override
+	public Document setField(String field, Object value) {
+		isModified = setFieldIfNecessary(field, value) || isModified;
+		return this;
+	}
+
+	protected DefaultDocument(Database d, lotus.domino.Document doc) {
+		rDatabase = d;
+		document = doc;
+		isModified = false;
 	}
 
 	@Override
@@ -39,8 +114,7 @@ public class DefaultDocument extends org.riverframework.fw.AbstractDocument<lotu
 		return result;
 	}
 
-	@Override
-	protected org.riverframework.lotusnotes.DefaultDocument internalRecalc() {
+	protected Document internalRecalc() {
 		try {
 			document.computeWithForm(true, false);
 		} catch (Exception e) {
@@ -51,7 +125,6 @@ public class DefaultDocument extends org.riverframework.fw.AbstractDocument<lotu
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
 	protected boolean replaceFieldValue(String field, Object value) {
 		java.util.Vector temp = null;
 
@@ -194,6 +267,22 @@ public class DefaultDocument extends org.riverframework.fw.AbstractDocument<lotu
 	}
 
 	@Override
+	public boolean isModified() {
+		return isModified;
+	}
+
+	@Override
+	public Document setModified(boolean m) {
+		isModified = m;
+		return this;
+	}
+
+	@Override
+	public boolean isOpen() {
+		return document != null;
+	}
+
+	@Override
 	public boolean isNew() {
 		boolean result = false;
 
@@ -226,7 +315,7 @@ public class DefaultDocument extends org.riverframework.fw.AbstractDocument<lotu
 	//
 
 	@Override
-	public org.riverframework.lotusnotes.DefaultDocument remove() {
+	public org.riverframework.lotusnotes.base.DefaultDocument remove() {
 		try {
 			if (document != null) {
 				document.remove(true);
@@ -238,8 +327,7 @@ public class DefaultDocument extends org.riverframework.fw.AbstractDocument<lotu
 		return this;
 	}
 
-	@Override
-	protected org.riverframework.lotusnotes.DefaultDocument saveImplementation() {
+	protected Document saveImplementation() {
 		try {
 			document.save(true, false);
 		} catch (Exception e) {
@@ -250,18 +338,25 @@ public class DefaultDocument extends org.riverframework.fw.AbstractDocument<lotu
 	}
 
 	@Override
-	public DefaultDocument save(boolean force) {
-		super.save(force);
+	public Document save(boolean force) {
+		try {
+			if (force || isModified) {
+				saveImplementation();
+				isModified = false;
+			}
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
 		return this;
 	}
 
 	@Override
-	public DefaultDocument save() {
-		super.save();
+	public Document save() {
+		save(true);
 		return this;
 	}
 
-	@Override
 	protected void close() {
 		try {
 			if (document != null) {
@@ -273,11 +368,13 @@ public class DefaultDocument extends org.riverframework.fw.AbstractDocument<lotu
 		}
 	}
 
+	@Override
 	public String getForm() {
 		return getFieldAsString(FIELD_FORM);
 	}
 
-	public org.riverframework.lotusnotes.DefaultDocument setForm(String form) {
+	@Override
+	public Document setForm(String form) {
 		setField(FIELD_FORM, form);
 		return this;
 	}
@@ -285,7 +382,7 @@ public class DefaultDocument extends org.riverframework.fw.AbstractDocument<lotu
 	public boolean isConflict() {
 		boolean result;
 		try {
-			result = document.hasItem(org.riverframework.lotusnotes.DefaultDocument.FIELD_IS_CONFLICT);
+			result = document.hasItem(org.riverframework.lotusnotes.base.DefaultDocument.FIELD_IS_CONFLICT);
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
@@ -293,9 +390,32 @@ public class DefaultDocument extends org.riverframework.fw.AbstractDocument<lotu
 		return result;
 	}
 
-	@Override
-	protected org.riverframework.lotusnotes.DefaultDocument afterCreate() {
+	protected Document afterCreate() {
 		return this;
 	}
 
+	@Override
+	protected void finalize() throws Throwable {
+		close();
+	}
+
+	@Override
+	public Document recalc() {
+		return internalRecalc();
+	}
+
+	@Override
+	public Database getDatabase() {
+		return rDatabase;
+	}
+
+	@Override
+	public Document generateId() {
+		return this;
+	}
+
+	@Override
+	public String getId() {
+		return "";
+	}
 }

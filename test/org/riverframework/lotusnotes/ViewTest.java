@@ -7,13 +7,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
+import org.riverframework.lotusnotes.base.DefaultDatabase;
+import org.riverframework.lotusnotes.base.DefaultDocument;
+import org.riverframework.lotusnotes.base.DefaultSession;
+import org.riverframework.lotusnotes.base.DefaultView;
 
 public class ViewTest {
 	final String TEST_FORM = "TestForm";
 	final String TEST_VIEW = "TestView";
 
-	final org.riverframework.lotusnotes.DefaultSession session = DefaultSession.getInstance();
-	private org.riverframework.lotusnotes.DefaultDatabase rDatabase = null;
+	final Session session = DefaultSession.getInstance();
+	private Database rDatabase = null;
 
 	@Before
 	public void init() {
@@ -40,7 +44,7 @@ public class ViewTest {
 
 		assertTrue("The test view could not be created in the test database.", rView.isOpen());
 
-		DefaultDocument rDoc = rDatabase.createDocument(DefaultDocument.class)
+		Document rDoc = rDatabase.createDocument(DefaultDocument.class)
 				.setForm(TEST_FORM);
 
 		String key = rs.nextString();
@@ -50,11 +54,11 @@ public class ViewTest {
 		rView.refresh();
 
 		rDoc = null;
-		rDoc = rView.getDocumentByKey(key);
+		rDoc = rView.getDocumentByKey(DefaultDocument.class, key);
 		assertTrue("The test document could not be found in the view.", rDoc.isOpen());
 
 		rDoc = null;
-		rDoc = rView.getDocumentByKey("%%%%%");
+		rDoc = rView.getDocumentByKey(DefaultDocument.class, "%%%%%");
 		assertFalse("It was found an unexistent document in the view.", rDoc.isOpen());
 
 		/*
@@ -126,10 +130,8 @@ public class ViewTest {
 	@Test
 	public void testIteration() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
-		// assertFalse("The test database have isDocumentFactoryStrict = true.",
-		// rDatabase.isDocumentFactoryStrict());
 
-		DefaultDocument rDoc = rDatabase
+		DefaultDocument rDoc = (DefaultDocument) rDatabase
 				.createDocument(DefaultDocument.class)
 				.setForm(TEST_FORM)
 				.save();
@@ -139,10 +141,10 @@ public class ViewTest {
 		rDoc = null;
 
 		while (rView.hasNext()) {
-			rDoc = rView.next();
+			rDoc = (DefaultDocument) rView.next();
 		}
 
-		assertTrue("There is a problem getting documents from the database.", rDoc == null);
+		assertTrue("There is a problem getting documents from the database.", rDoc != null && rDoc.isOpen());
 	}
 
 	@Test(expected = UnsupportedOperationException.class)

@@ -7,6 +7,8 @@ import java.util.Iterator;
 
 import lotus.domino.NotesThread;
 
+import org.riverframework.lotusnotes.base.DefaultSession;
+
 public class Console extends NotesThread {
 	public static void main(String argv[]) {
 		Console t = new Console(argv);
@@ -33,7 +35,7 @@ public class Console extends NotesThread {
 	public void runNotes() {
 		try {
 
-			DefaultSession session = DefaultSession
+			Session session = DefaultSession
 					.getInstance()
 					.open(Context.getServer(), Context.getUser(), Context.getPassword());
 

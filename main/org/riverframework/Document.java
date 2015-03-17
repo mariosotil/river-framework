@@ -11,12 +11,12 @@ import java.util.Vector;
  *  @version 0.0.x
  */
 
-public interface Document<T> {
+public interface Document {
 	public static final String FIELD_CLASS = Session.PREFIX + "Class";
 	public static final String FIELD_ID = Session.PREFIX + "Id";
 	public static final boolean FORCE_SAVE = true;
 
-	public org.riverframework.Document<T> generateId();
+	public Document generateId();
 
 	public String getId();
 
@@ -24,7 +24,7 @@ public interface Document<T> {
 
 	public boolean compareFieldValue(String field, Object value);
 
-	public org.riverframework.Document<T> setField(String field, Object value);
+	public Document setField(String field, Object value);
 
 	public Vector<Object> getField(String field);
 
@@ -40,17 +40,20 @@ public interface Document<T> {
 
 	public boolean isModified();
 
+	public Document setModified(boolean m);
+
 	public boolean isOpen();
 
 	public boolean isNew();
 
-	public org.riverframework.Document<T> remove();
+	public Document remove();
 
-	public org.riverframework.Document<T> save(boolean force);
+	public Document save(boolean force);
 
-	public org.riverframework.Document<T> save();
+	public Document save();
 
-	public org.riverframework.Document<T> recalc();
+	public Document recalc();
 
-	public org.riverframework.Database<?> getDatabase();
+	public Database getDatabase();
+
 }

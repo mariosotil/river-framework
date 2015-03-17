@@ -1,4 +1,5 @@
 package org.riverframework;
 
-public interface DocumentCollection<T> extends java.util.Iterator<org.riverframework.Document<?>> {
+@SuppressWarnings("rawtypes")
+public interface DocumentCollection extends java.util.Iterator {
 }

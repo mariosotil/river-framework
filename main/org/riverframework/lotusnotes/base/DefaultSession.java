@@ -1,29 +1,27 @@
-package org.riverframework.lotusnotes;
+package org.riverframework.lotusnotes.base;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
 
 import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
 
 import org.riverframework.RiverException;
-import org.riverframework.fw.AbstractSession;
+import org.riverframework.lotusnotes.Session;
 
-public class DefaultSession extends AbstractSession {
-	private final static DefaultSession INSTANCE = new DefaultSession();
+public class DefaultSession implements org.riverframework.lotusnotes.Session {
+	// public static final boolean USE_POOL = true;
+	// public static final boolean DO_NOT_USE_POOL = false;
+
+	public static final String PREFIX = "RIVER_";
+
+	private final static Session INSTANCE = new DefaultSession();
 	private static lotus.domino.Session session = null;
-	private static Map<String, org.riverframework.View<?>> viewMap = null;
-
-	static {
-		viewMap = new HashMap<String, org.riverframework.View<?>>();
-	}
 
 	protected DefaultSession() {
 		// Exists only to defeat instantiation.
 	}
 
-	public static DefaultSession getInstance() {
+	public static Session getInstance() {
 		return INSTANCE;
 	}
 
@@ -34,7 +32,7 @@ public class DefaultSession extends AbstractSession {
 	}
 
 	@Override
-	public DefaultSession open(String... parameters) {
+	public Session open(String... parameters) {
 		try {
 			String server = "";
 			String user = "";
@@ -57,15 +55,10 @@ public class DefaultSession extends AbstractSession {
 				break;
 			}
 		} catch (NotesException e) {
-			throw new RiverException("There is a problem at Session opening", e);
+			throw new RiverException("There is a problem about the Session opening", e);
 		}
 
 		return INSTANCE;
-	}
-
-	@Override
-	public Map<String, org.riverframework.View<?>> getViewMap() {
-		return viewMap;
 	}
 
 	@Override
@@ -85,6 +78,7 @@ public class DefaultSession extends AbstractSession {
 		return (session != null);
 	}
 
+	@Override
 	public lotus.domino.Session getNotesSession() {
 		if (session == null)
 			throw new RiverException("You can't get a null Lotus Notes session");
@@ -92,15 +86,17 @@ public class DefaultSession extends AbstractSession {
 	}
 
 	@Override
-	public <U extends org.riverframework.Database<?>> U getDatabase(Class<U> type, String... parameters) {
+	public <U extends org.riverframework.Database> U getDatabase(Class<U> clazz, String... parameters) {
 		U rDatabase = null;
 
+		if (clazz == null)
+			throw new RiverException("The clazz parameter can not be null.");
+
 		try {
-			if (type != null) {
-				Constructor<?> constructor = type.getDeclaredConstructor(DefaultSession.class);
+			if (DefaultDatabase.class.isAssignableFrom(clazz)) {
+				Constructor<?> constructor = clazz.getDeclaredConstructor(Session.class, String[].class);
 				constructor.setAccessible(true);
-				rDatabase = type.cast(constructor.newInstance(this));
-				type.cast(rDatabase).open(parameters);
+				rDatabase = clazz.cast(constructor.newInstance(this, parameters));
 			}
 
 		} catch (Exception e) {

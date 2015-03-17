@@ -1,6 +1,5 @@
 package org.riverframework.lotusnotes;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import lotus.domino.Document;
 
@@ -8,9 +7,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
+import org.riverframework.lotusnotes.base.DefaultDatabase;
+import org.riverframework.lotusnotes.base.DefaultDocument;
+import org.riverframework.lotusnotes.base.DefaultSession;
+import org.riverframework.lotusnotes.base.DefaultView;
 
 public class DatabaseTest {
-	final DefaultSession session = DefaultSession.getInstance();
+	final Session session = DefaultSession.getInstance();
 	final String TEST_FORM = "TestForm";
 	final String TEST_VIEW = "TestView";
 	final String TEST_GRAPH = "TestGraph";
@@ -125,41 +128,40 @@ public class DatabaseTest {
 	/*
 	 * Testing makeDocument
 	 */
-	static class VacationDatabase extends org.riverframework.lotusnotes.DefaultDatabase {
-		public VacationDatabase(org.riverframework.lotusnotes.DefaultSession s) {
-			super(s);
-		}
-
-		protected VacationDatabase(org.riverframework.lotusnotes.DefaultSession s, lotus.domino.Database obj) {
+	static class VacationDatabase extends org.riverframework.lotusnotes.base.DefaultDatabase {
+		protected VacationDatabase(Session s, lotus.domino.Database obj) {
 			super(s, obj);
 		}
 
-		public VacationDatabase(org.riverframework.lotusnotes.DefaultSession s, String... location) {
+		public VacationDatabase(Session s, String... location) {
 			super(s, location);
 		}
 	}
 
-	static class VacationRequest extends org.riverframework.lotusnotes.DefaultDocument {
+	static class VacationRequest extends org.riverframework.lotusnotes.base.DefaultDocument {
 
-		public VacationRequest(DefaultDatabase d, Document doc) {
+		public VacationRequest(Database d, Document doc) {
 			super(d, doc);
 		}
 
+		@Override
+		protected VacationRequest afterCreate() {
+			setForm("fo_vacation_request");
+			return this;
+		}
 	}
 
 	@Test
 	public void testCreateAndGetVacationRequest() {
-		assertTrue("The test database could not be opened as a VacationDatabase.",
-				rVacationDatabase.isOpen());
+		assertTrue("The test database could not be opened as a VacationDatabase.", rVacationDatabase.isOpen());
 
 		VacationRequest rDocument = rVacationDatabase.createDocument(VacationRequest.class);
 
-		assertTrue("There is a problem creating a new VacationRequest in the test database.",
-				rDocument.isOpen());
+		assertTrue("There is a problem creating a new VacationRequest in the test database.", rDocument.isOpen());
 
 		String universalId = rDocument
 				.setField("TEST_FIELD", "YES")
-				.setField("Form", "TestForm")
+				.setForm("TestForm")
 				.save(false)
 				.getUniversalId();
 
@@ -167,8 +169,7 @@ public class DatabaseTest {
 
 		rDocument = rVacationDatabase.getDocument(VacationRequest.class, universalId);
 
-		assertTrue("There is a problem getting a VacationRequest created in the test database.",
-				rDocument.isOpen());
+		assertTrue("There is a problem getting a VacationRequest created in the test database.", rDocument.isOpen());
 	}
 
 	static class NoIndexedRequest extends DefaultDocument {
@@ -184,13 +185,7 @@ public class DatabaseTest {
 	}
 
 	@Test
-	public void testGetIndex() {
-		assertTrue("The test database could not be opened.", rDatabase.isOpen());
-
-		assertFalse("The SimpleRequest should not be indexed.", rDatabase.getIndex(NoIndexedRequest.class).isOpen());
-
-		assertTrue("The IndexedRequest should be indexed.", rDatabase.getIndex(IndexedRequest.class).isOpen());
-
+	public void testGetMainReplica() {
+		// TODO: test this
 	}
-
 }

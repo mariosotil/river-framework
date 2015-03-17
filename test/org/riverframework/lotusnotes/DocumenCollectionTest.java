@@ -6,10 +6,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
+import org.riverframework.lotusnotes.base.DefaultDatabase;
+import org.riverframework.lotusnotes.base.DefaultDocument;
+import org.riverframework.lotusnotes.base.DefaultDocumentCollection;
+import org.riverframework.lotusnotes.base.DefaultSession;
 
 public class DocumenCollectionTest {
-	final DefaultSession session = DefaultSession.getInstance();
-	private DefaultDatabase rDatabase = null;
+	final Session session = DefaultSession.getInstance();
+	private Database rDatabase = null;
 
 	final String TEST_FORM = "TestForm";
 
@@ -31,14 +35,13 @@ public class DocumenCollectionTest {
 	@Test
 	public void testIteration() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
-		// assertFalse("The database Beach.nsf have isDocumentFactoryStrict = true.",
-		// rDatabase.isDocumentFactoryStrict());
 
-		DefaultDocument rDoc = rDatabase
+		Document rDoc = rDatabase
 				.createDocument(DefaultDocument.class)
 				.setForm(TEST_FORM)
 				.save();
-		org.riverframework.lotusnotes.DefaultDocumentCollection rIterator = rDatabase.getAllDocuments();
+
+		DocumentCollection rIterator = rDatabase.getAllDocuments();
 
 		rDoc = null;
 
@@ -46,14 +49,14 @@ public class DocumenCollectionTest {
 			rDoc = rIterator.next();
 		}
 
-		assertTrue("There is a problem getting documents from the database.", rDoc == null);
+		assertTrue("There is a problem getting documents from the database.", rDoc != null && rDoc.isOpen());
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void testRemove() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
-		org.riverframework.lotusnotes.DefaultDocumentCollection rIterator = rDatabase.getAllDocuments();
+		org.riverframework.lotusnotes.base.DefaultDocumentCollection rIterator = (DefaultDocumentCollection) rDatabase.getAllDocuments();
 		rIterator.remove();
 	}
 

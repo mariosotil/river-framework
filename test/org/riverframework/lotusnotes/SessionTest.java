@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
+import org.riverframework.lotusnotes.base.DefaultSession;
 
 public class SessionTest {
 	@Before
@@ -17,7 +18,7 @@ public class SessionTest {
 	@Test
 	public void testAnonymousSession() {
 		try {
-			DefaultSession session = DefaultSession
+			Session session = DefaultSession
 					.getInstance()
 					.open(Context.getServer());
 
@@ -32,7 +33,7 @@ public class SessionTest {
 	@Test
 	public void testLoggedSession() {
 		try {
-			DefaultSession session = DefaultSession
+			Session session = DefaultSession
 					.getInstance()
 					.open(Context.getServer(), Context.getUser(), Context.getPassword());
 

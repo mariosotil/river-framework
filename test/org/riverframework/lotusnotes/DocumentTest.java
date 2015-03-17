@@ -14,10 +14,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
+import org.riverframework.lotusnotes.base.DefaultDatabase;
+import org.riverframework.lotusnotes.base.DefaultDocument;
+import org.riverframework.lotusnotes.base.DefaultSession;
 
 public class DocumentTest {
-	final DefaultSession session = DefaultSession.getInstance();
-	private DefaultDatabase rDatabase = null;
+	final Session session = DefaultSession.getInstance();
+	private Database rDatabase = null;
 	private ComplexDatabase rComplexDatabase = null;
 
 	final String TEST_FORM = "TestForm";
@@ -246,7 +249,6 @@ public class DocumentTest {
 		String testField = DefaultSession.PREFIX + "TestSetField";
 		String testValue = rs.nextString();
 		rDoc.setField(testField, testValue);
-		// String newValue = rDoc.getFieldAsString(testField);
 
 		assertTrue("The document was modified but its flag is still false", rDoc.isModified());
 
@@ -311,6 +313,7 @@ public class DocumentTest {
 	 * assertFalse("It can not be retrieved the field Form.", form.equals(""));
 	 * }
 	 */
+
 	@Test
 	public void testIsConflict() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
@@ -330,7 +333,7 @@ public class DocumentTest {
 	public void testIsOpen() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
-		DefaultDocument rDoc = new DefaultDocument(rDatabase, null);
+		DefaultDocument rDoc = rDatabase.getDocument(DefaultDocument.class);
 
 		assertFalse("The document is not being detected as NOT open.", rDoc.isOpen());
 
@@ -472,7 +475,7 @@ public class DocumentTest {
 
 	// Classes to testing the implementations
 	static class SimpleRequest extends DefaultDocument {
-		protected SimpleRequest(DefaultDatabase d, Document doc) {
+		protected SimpleRequest(Database d, Document doc) {
 			super(d, doc);
 		}
 
@@ -487,17 +490,13 @@ public class DocumentTest {
 		}
 	}
 
-	static class ComplexDatabase extends org.riverframework.lotusnotes.DefaultDatabase {
+	static class ComplexDatabase extends org.riverframework.lotusnotes.base.DefaultDatabase {
 
-		public ComplexDatabase(org.riverframework.lotusnotes.DefaultSession s) {
-			super(s);
-		}
-
-		protected ComplexDatabase(org.riverframework.lotusnotes.DefaultSession s, lotus.domino.Database obj) {
+		protected ComplexDatabase(Session s, lotus.domino.Database obj) {
 			super(s, obj);
 		}
 
-		public ComplexDatabase(org.riverframework.lotusnotes.DefaultSession s, String... location) {
+		public ComplexDatabase(Session s, String... location) {
 			super(s, location);
 		}
 	}

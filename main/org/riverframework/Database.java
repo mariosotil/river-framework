@@ -1,20 +1,20 @@
 package org.riverframework;
 
-public interface Database<T> {
+public interface Database {
 	public boolean isOpen();
 
-	public org.riverframework.Database<T> open(T obj);
+	public Database open(String... location);
 
-	public org.riverframework.Database<T> open(String... location);
+	public Database getMainReplica();
 
-	public <U extends org.riverframework.View<?>> U getView(Class<U> type, String... parameters);
+	public <U extends View> U getView(Class<U> type, String... parameters);
 
-	public <U extends org.riverframework.Document<?>> U createDocument(Class<U> type, String... parameters);
+	public <U extends Document> U createDocument(Class<U> type, String... parameters);
 
-	public <U extends org.riverframework.Document<?>> U getDocument(Class<U> type, String... parameters);
+	public <U extends Document> U getDocument(Class<U> type, String... parameters);
 
-	public org.riverframework.DocumentCollection<?> getAllDocuments();
+	public DocumentCollection getAllDocuments();
 
-	public org.riverframework.View<?> getIndex(Class<?> clazz);
+	public Counter getCounter();
 
 }

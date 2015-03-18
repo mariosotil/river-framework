@@ -1,6 +1,6 @@
 package org.riverframework;
 
-public interface Counter {
-	public long generateId(String key);
+public interface Counter extends Document {
+	public long getCount();
 
 }

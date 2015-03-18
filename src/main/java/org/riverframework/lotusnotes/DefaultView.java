@@ -1,12 +1,8 @@
-package org.riverframework.lotusnotes.base;
+package org.riverframework.lotusnotes;
 
 import java.lang.reflect.Constructor;
 
 import org.riverframework.RiverException;
-import org.riverframework.lotusnotes.Database;
-import org.riverframework.lotusnotes.Document;
-import org.riverframework.lotusnotes.DocumentCollection;
-import org.riverframework.lotusnotes.View;
 
 /*
  * Should I change this class' name to "Index"?

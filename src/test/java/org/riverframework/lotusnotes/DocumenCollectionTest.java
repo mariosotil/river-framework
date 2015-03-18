@@ -6,10 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
-import org.riverframework.lotusnotes.base.DefaultDatabase;
-import org.riverframework.lotusnotes.base.DefaultDocument;
-import org.riverframework.lotusnotes.base.DefaultDocumentCollection;
-import org.riverframework.lotusnotes.base.DefaultSession;
 
 public class DocumenCollectionTest {
 	final Session session = DefaultSession.getInstance();
@@ -20,7 +16,7 @@ public class DocumenCollectionTest {
 	@Before
 	public void init() {
 		try {
-			session.open(Context.getServer(), Context.getUser(), Context.getPassword());
+			session.open(Context.getServerAndPort(), Context.getUser(), Context.getPassword());
 			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -56,7 +52,7 @@ public class DocumenCollectionTest {
 	public void testRemove() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
-		org.riverframework.lotusnotes.base.DefaultDocumentCollection rIterator = (DefaultDocumentCollection) rDatabase.getAllDocuments();
+		org.riverframework.lotusnotes.DefaultDocumentCollection rIterator = (DefaultDocumentCollection) rDatabase.getAllDocuments();
 		rIterator.remove();
 	}
 

@@ -1,4 +1,4 @@
-package org.riverframework.lotusnotes.base;
+package org.riverframework.lotusnotes;
 
 import java.lang.reflect.Constructor;
 
@@ -6,7 +6,6 @@ import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
 
 import org.riverframework.RiverException;
-import org.riverframework.lotusnotes.Session;
 
 public class DefaultSession implements org.riverframework.lotusnotes.Session {
 	// public static final boolean USE_POOL = true;

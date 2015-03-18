@@ -17,13 +17,12 @@ public interface Document extends org.riverframework.Document {
 
 	public String getForm();
 
+	public String getUniversalId();
+
 	public org.riverframework.lotusnotes.Document setForm(String form);
 
 	@Override
 	public org.riverframework.lotusnotes.Document setField(String field, Object value);
-
-	@Override
-	public org.riverframework.lotusnotes.Document generateId();
 
 	@Override
 	public org.riverframework.lotusnotes.Document setModified(boolean m);

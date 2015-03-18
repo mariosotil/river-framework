@@ -9,12 +9,14 @@ public interface Database {
 
 	public <U extends View> U getView(Class<U> type, String... parameters);
 
-	public <U extends Document> U createDocument(Class<U> type, String... parameters);
+	public <U extends Document> U createDocument(Class<U> clazz, String... parameters);
 
-	public <U extends Document> U getDocument(Class<U> type, String... parameters);
+	public <U extends Document> U getDocument(Class<U> clazz, String... parameters);
+
+	public <U extends Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters);
 
 	public DocumentCollection getAllDocuments();
 
-	public Counter getCounter();
+	public Counter getCounter(String key);
 
 }

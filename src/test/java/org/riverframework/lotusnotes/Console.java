@@ -7,8 +7,6 @@ import java.util.Iterator;
 
 import lotus.domino.NotesThread;
 
-import org.riverframework.lotusnotes.base.DefaultSession;
-
 public class Console extends NotesThread {
 	public static void main(String argv[]) {
 		Console t = new Console(argv);

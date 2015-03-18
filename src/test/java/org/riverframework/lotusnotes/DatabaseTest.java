@@ -7,10 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
-import org.riverframework.lotusnotes.base.DefaultDatabase;
-import org.riverframework.lotusnotes.base.DefaultDocument;
-import org.riverframework.lotusnotes.base.DefaultSession;
-import org.riverframework.lotusnotes.base.DefaultView;
 
 public class DatabaseTest {
 	final Session session = DefaultSession.getInstance();
@@ -24,7 +20,7 @@ public class DatabaseTest {
 	@Before
 	public void init() {
 		try {
-			session.open(Context.getServer(), Context.getUser(), Context.getPassword());
+			session.open(Context.getServerAndPort(), Context.getUser(), Context.getPassword());
 
 			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
 			rVacationDatabase = session.getDatabase(VacationDatabase.class, Context.getServer(), Context.getDatabase());
@@ -88,26 +84,6 @@ public class DatabaseTest {
 	}
 
 	// @Test
-	// public void testGetCounter() {
-	// assertTrue("The test database could not be opened.", rDatabase.isOpen());
-	//
-	// final int REPEATS = 10;
-	// RandomString rs = new RandomString(10);
-	// String key = rs.nextString();
-	// int oldCounter = rDatabase.getCounter(key);
-	// int newCounter = 0;
-	//
-	// assertTrue("There is a problem with the first calling to the counter.", oldCounter > 0);
-	//
-	// for (int i = 0; i < REPEATS; i++) {
-	// newCounter = rDatabase.getCounter(key);
-	// }
-	//
-	// assertTrue("There is a problem with the re-calling to the counter.",
-	// oldCounter + REPEATS == newCounter);
-	// }
-
-	// @Test
 	// public void testGetDocumentIndexView() {
 	// assertTrue("The test database could not be opened.", rDatabase.isOpen());
 	//
@@ -128,7 +104,7 @@ public class DatabaseTest {
 	/*
 	 * Testing makeDocument
 	 */
-	static class VacationDatabase extends org.riverframework.lotusnotes.base.DefaultDatabase {
+	static class VacationDatabase extends org.riverframework.lotusnotes.DefaultDatabase {
 		protected VacationDatabase(Session s, lotus.domino.Database obj) {
 			super(s, obj);
 		}
@@ -138,7 +114,7 @@ public class DatabaseTest {
 		}
 	}
 
-	static class VacationRequest extends org.riverframework.lotusnotes.base.DefaultDocument {
+	static class VacationRequest extends org.riverframework.lotusnotes.DefaultDocument {
 
 		public VacationRequest(Database d, Document doc) {
 			super(d, doc);
@@ -170,18 +146,6 @@ public class DatabaseTest {
 		rDocument = rVacationDatabase.getDocument(VacationRequest.class, universalId);
 
 		assertTrue("There is a problem getting a VacationRequest created in the test database.", rDocument.isOpen());
-	}
-
-	static class NoIndexedRequest extends DefaultDocument {
-		protected NoIndexedRequest(DefaultDatabase d, Document doc) {
-			super(d, doc);
-		}
-	}
-
-	static class IndexedRequest extends DefaultDocument {
-		protected IndexedRequest(DefaultDatabase d, Document doc) {
-			super(d, doc);
-		}
 	}
 
 	@Test

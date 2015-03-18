@@ -7,10 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
-import org.riverframework.lotusnotes.base.DefaultDatabase;
-import org.riverframework.lotusnotes.base.DefaultDocument;
-import org.riverframework.lotusnotes.base.DefaultSession;
-import org.riverframework.lotusnotes.base.DefaultView;
 
 public class ViewTest {
 	final String TEST_FORM = "TestForm";
@@ -22,7 +18,7 @@ public class ViewTest {
 	@Before
 	public void init() {
 		try {
-			session.open(Context.getServer(), Context.getUser(), Context.getPassword());
+			session.open(Context.getServerAndPort(), Context.getUser(), Context.getPassword());
 			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
 
 		} catch (Exception e) {

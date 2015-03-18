@@ -5,8 +5,10 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public final class Context {
-	private static final String configuration = "d:\\river_credentials.txt";
+	private static final String configuration = System.getProperty("user.home") + 
+			File.separator + "river_test_context.txt";
 	private static String server;
+	private static String port;
 	private static String user;
 	private static String password;
 	private static String database;
@@ -17,6 +19,7 @@ public final class Context {
 			Scanner sc = new Scanner(new File(configuration));
 
 			server = sc.nextLine();
+			port = sc.nextLine();
 			user = sc.nextLine();
 			password = sc.nextLine();
 			database = sc.nextLine();
@@ -40,6 +43,20 @@ public final class Context {
 
 	public static String getServer() {
 		return server;
+	}
+
+	public static String getPort() {
+		return port;
+	}
+
+	public static String getServerAndPort() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(server);
+		if(!port.equals("")) {
+			sb.append(":");
+			sb.append(port);
+		}
+		return sb.toString();
 	}
 
 	public static String getUser() {

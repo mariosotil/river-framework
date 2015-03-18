@@ -1,20 +1,18 @@
-package org.riverframework.lotusnotes.base;
+package org.riverframework.lotusnotes;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
+import org.riverframework.Document;
 import org.riverframework.RiverException;
-import org.riverframework.lotusnotes.Counter;
-import org.riverframework.lotusnotes.Database;
-import org.riverframework.lotusnotes.Document;
-import org.riverframework.lotusnotes.DocumentCollection;
-import org.riverframework.lotusnotes.Session;
 
 /*
  * This must be in its own package "org.riverframework.lotusnotes"
  */
 public class DefaultDatabase implements org.riverframework.lotusnotes.Database {
+	public static final String METHOD_GETINDEXNAME = "getIndexName";
 	protected Session session = null;
-	private Counter counter = null;
+	//private Counter counter = null;
 	protected lotus.domino.Database database = null;
 
 	protected DefaultDatabase(org.riverframework.lotusnotes.Session s, lotus.domino.Database obj) {
@@ -122,7 +120,12 @@ public class DefaultDatabase implements org.riverframework.lotusnotes.Database {
 	}
 
 	@Override
-	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, String... parameters)
+	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, String... parameters) {
+		return getDocument(clazz, false, parameters);
+	}
+
+	@Override
+	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters)
 	{
 		U rDoc = null;
 		lotus.domino.Document doc = null;
@@ -142,20 +145,45 @@ public class DefaultDatabase implements org.riverframework.lotusnotes.Database {
 					doc = database.getDocumentByID(id);
 				}
 
-				if (DefaultDocument.class.isAssignableFrom(clazz)) {
-					if (rDoc == null || !rDoc.isOpen()) {
-						Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, lotus.domino.Document.class);
-						constructor.setAccessible(true);
-						rDoc = clazz.cast(constructor.newInstance(this, doc));
+				if (doc == null && Unique.class.isAssignableFrom(clazz)) {
+					Method method = clazz.getMethod(METHOD_GETINDEXNAME);
+					if (method == null) throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but it does not implement the method " + METHOD_GETINDEXNAME + ".");
+
+					String indexName = (String) method.invoke(null);
+					if (indexName.equals("")) throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but its method " + METHOD_GETINDEXNAME + " returns an empty string.");
+
+					lotus.domino.View view = database.getView(indexName);
+					if (view == null) throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but the index view " + indexName + " does not exist.");					
+
+					view.refresh();
+					doc = view.getDocumentByKey(id, true);
+				}
+
+				if (doc == null && createIfDoesNotExist) {
+					//Creating a new document
+					rDoc = createDocument(clazz, parameters);
+
+					//If implements "Unique", setting the Id
+					if (Unique.class.isAssignableFrom(clazz)) {
+						((Unique) rDoc).setId(id);						
+					}
+				} else {
+					if (DefaultDocument.class.isAssignableFrom(clazz)) {
+						if (rDoc == null || !rDoc.isOpen()) {
+							Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, lotus.domino.Document.class);
+							constructor.setAccessible(true);
+							rDoc = clazz.cast(constructor.newInstance(this, doc));
+						}
 					}
 				}
+			} else {
+				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, lotus.domino.Document.class);
+				constructor.setAccessible(true);
+				rDoc = clazz.cast(constructor.newInstance(this, null));
 			}
+
 		} catch (Exception e) {
 			throw new RiverException(e);
-		} finally {
-			if (rDoc == null) {
-				rDoc = clazz.cast(new DefaultDocument(this, null));
-			}
 		}
 
 		return rDoc;
@@ -209,10 +237,8 @@ public class DefaultDatabase implements org.riverframework.lotusnotes.Database {
 	}
 
 	@Override
-	public org.riverframework.lotusnotes.Counter getCounter() {
-		if (counter == null) {
-			counter = new DefaultCounter(this);
-		}
+	public org.riverframework.lotusnotes.Counter getCounter(String key) {
+		Counter counter = getDocument(DefaultCounter.class, true, key);
 
 		return counter;
 	}
@@ -232,4 +258,5 @@ public class DefaultDatabase implements org.riverframework.lotusnotes.Database {
 	protected void finalize() throws Throwable {
 		close();
 	}
+
 }

@@ -1,4 +1,4 @@
-package org.riverframework.lotusnotes.base;
+package org.riverframework.lotusnotes;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.riverframework.RiverException;
-import org.riverframework.lotusnotes.Database;
-import org.riverframework.lotusnotes.Document;
 
 /**
  * Loads an IBM Notes document
@@ -25,6 +23,10 @@ public class DefaultDocument implements org.riverframework.lotusnotes.Document {
 	protected lotus.domino.Document document = null;
 	protected boolean isModified = false;
 
+	public static String getIndexName() {
+		return "";
+	}
+	
 	protected static boolean numericEquals(Vector<Object> c1, Vector<Object> c2) {
 		if (c1.size() != c2.size())
 			return false;
@@ -315,7 +317,7 @@ public class DefaultDocument implements org.riverframework.lotusnotes.Document {
 	//
 
 	@Override
-	public org.riverframework.lotusnotes.base.DefaultDocument remove() {
+	public org.riverframework.lotusnotes.DefaultDocument remove() {
 		try {
 			if (document != null) {
 				document.remove(true);
@@ -382,7 +384,7 @@ public class DefaultDocument implements org.riverframework.lotusnotes.Document {
 	public boolean isConflict() {
 		boolean result;
 		try {
-			result = document.hasItem(org.riverframework.lotusnotes.base.DefaultDocument.FIELD_IS_CONFLICT);
+			result = document.hasItem(org.riverframework.lotusnotes.DefaultDocument.FIELD_IS_CONFLICT);
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
@@ -409,13 +411,4 @@ public class DefaultDocument implements org.riverframework.lotusnotes.Document {
 		return rDatabase;
 	}
 
-	@Override
-	public Document generateId() {
-		return this;
-	}
-
-	@Override
-	public String getId() {
-		return "";
-	}
 }

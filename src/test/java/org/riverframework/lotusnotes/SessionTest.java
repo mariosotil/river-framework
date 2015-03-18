@@ -7,7 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
-import org.riverframework.lotusnotes.base.DefaultSession;
 
 public class SessionTest {
 	@Before
@@ -20,7 +19,7 @@ public class SessionTest {
 		try {
 			Session session = DefaultSession
 					.getInstance()
-					.open(Context.getServer());
+					.open(Context.getServerAndPort());
 
 			assertTrue("Notes Session could not be retrieved", session.isOpen());
 			assertFalse("There's a problem with the Session. I can't retrieve the current user name.",
@@ -35,7 +34,7 @@ public class SessionTest {
 		try {
 			Session session = DefaultSession
 					.getInstance()
-					.open(Context.getServer(), Context.getUser(), Context.getPassword());
+					.open(Context.getServerAndPort(), Context.getUser(), Context.getPassword());
 
 			assertTrue("Notes Session could not be retrieved", session.isOpen());
 			assertFalse("There's a problem with the Session. I can't retrieve the current user name.",

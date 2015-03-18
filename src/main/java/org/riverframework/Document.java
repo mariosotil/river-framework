@@ -16,12 +16,6 @@ public interface Document {
 	public static final String FIELD_ID = Session.PREFIX + "Id";
 	public static final boolean FORCE_SAVE = true;
 
-	public Document generateId();
-
-	public String getId();
-
-	public String getUniversalId();
-
 	public boolean compareFieldValue(String field, Object value);
 
 	public Document setField(String field, Object value);

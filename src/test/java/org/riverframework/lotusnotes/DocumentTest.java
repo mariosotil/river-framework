@@ -14,9 +14,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
-import org.riverframework.lotusnotes.base.DefaultDatabase;
-import org.riverframework.lotusnotes.base.DefaultDocument;
-import org.riverframework.lotusnotes.base.DefaultSession;
 
 public class DocumentTest {
 	final Session session = DefaultSession.getInstance();
@@ -28,7 +25,7 @@ public class DocumentTest {
 	@Before
 	public void init() {
 		try {
-			session.open(Context.getServer(), Context.getUser(), Context.getPassword());
+			session.open(Context.getServerAndPort(), Context.getUser(), Context.getPassword());
 
 			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
 			rComplexDatabase = session.getDatabase(ComplexDatabase.class, Context.getServer(), Context.getDatabase());
@@ -490,7 +487,7 @@ public class DocumentTest {
 		}
 	}
 
-	static class ComplexDatabase extends org.riverframework.lotusnotes.base.DefaultDatabase {
+	static class ComplexDatabase extends org.riverframework.lotusnotes.DefaultDatabase {
 
 		protected ComplexDatabase(Session s, lotus.domino.Database obj) {
 			super(s, obj);

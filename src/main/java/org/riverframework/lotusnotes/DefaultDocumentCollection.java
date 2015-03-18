@@ -1,8 +1,6 @@
-package org.riverframework.lotusnotes.base;
+package org.riverframework.lotusnotes;
 
 import org.riverframework.RiverException;
-import org.riverframework.lotusnotes.Database;
-import org.riverframework.lotusnotes.Document;
 
 /*
  * This must be in its own package "org.riverframework.lotusnotes"

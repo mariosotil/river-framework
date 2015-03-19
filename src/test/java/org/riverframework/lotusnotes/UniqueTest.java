@@ -2,7 +2,6 @@ package org.riverframework.lotusnotes;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import lotus.domino.Document;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +35,7 @@ public class UniqueTest {
 		protected NoUniqueDocument(Database d, lotus.domino.Document doc) {
 			super(d, doc);
 		}
-		
+
 		@Override
 		protected NoUniqueDocument afterCreate() {
 			setForm(FORM_NAME);
@@ -51,7 +50,7 @@ public class UniqueTest {
 		protected UniqueDocument(Database d, lotus.domino.Document doc) {
 			super(d, doc);
 		}
-		
+
 		public static String getIndexName() {
 			return Session.PREFIX + "Unique_Index";
 		}
@@ -80,36 +79,36 @@ public class UniqueTest {
 			return this;
 		}
 	}
-	
+
 	@Test
 	public void testId() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
 		UniqueDocument unique = rDatabase.createDocument(UniqueDocument.class);
 		assertTrue("The document must be open.", unique.isOpen());
-		
+
 		RandomString rs = new RandomString(10);
 
 		String key = rs.nextString();
 		unique.setId(key).save();
-		
+
 		String oldKey = unique.getId();
 		assertTrue("The Id retrieved is different to the saved.", key.equals(oldKey));
-		
+
 		unique = null;
 		unique = rDatabase.getDocument(UniqueDocument.class, key);
-		assertTrue("A document that was created, could not be opened with the key '" + key + "'.", unique.isOpen());		
+		assertTrue("A document that was created, could not be opened with the key '" + key + "'.", unique.isOpen());
 
 		unique = null;
 		unique = rDatabase.getDocument(UniqueDocument.class, "%%%THIS DOCUMENT DOES NOT EXIST%%%");
 		assertFalse("A document that should not be found, is opened.", unique.isOpen());
-		
+
 		unique = null;
 		unique = rDatabase.getDocument(UniqueDocument.class, true, "NEW_KEY_" + key);
 		assertTrue("A document that should be created, is not opened.", unique.isOpen());
-		
+
 		oldKey = unique.getId();
 		assertTrue("A document created by 'createIfDoesNotExist', has a wrong Id.", oldKey.equals("NEW_KEY_" + key));
-		
+
 	}
 }

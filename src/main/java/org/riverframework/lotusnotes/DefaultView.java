@@ -4,10 +4,6 @@ import java.lang.reflect.Constructor;
 
 import org.riverframework.RiverException;
 
-/*
- * Should I change this class' name to "Index"?
- * This must be in its own package "org.riverframework.lotusnotes"
- */
 public class DefaultView implements org.riverframework.lotusnotes.View {
 	protected Database rDatabase = null;
 	protected lotus.domino.View view = null;

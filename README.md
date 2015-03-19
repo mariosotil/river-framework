@@ -16,7 +16,7 @@ This is a Workflow Application Framework in a **VERY EARLY development stage**. 
 
 - Version 0.2
   - Generation of unique identifiers for the documents
-  - Jar file 
+  - Opening documents by a unique id
   - First examples in Java, Javascript, and XPages
 
 ## What is in the ToDo list?

@@ -5,14 +5,13 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public final class Context {
-	private static final String configuration = System.getProperty("user.home") + 
+	private static final String configuration = System.getProperty("user.home") +
 			File.separator + "river_test_context.txt";
 	private static String server;
 	private static String port;
 	private static String user;
 	private static String password;
 	private static String database;
-	private static boolean remote;
 
 	static {
 		try {
@@ -29,16 +28,6 @@ public final class Context {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		// Check if the
-		Class<?> clazz = null;
-		try {
-			clazz = Class.forName("lotus.domino.local.Session");
-		} catch (ClassNotFoundException e) {
-			// Do nothing
-		} finally {
-			remote = (clazz == null);
-		}
 	}
 
 	public static String getServer() {
@@ -52,7 +41,7 @@ public final class Context {
 	public static String getServerAndPort() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(server);
-		if(!port.equals("")) {
+		if (!port.equals("")) {
 			sb.append(":");
 			sb.append(port);
 		}
@@ -69,9 +58,5 @@ public final class Context {
 
 	public static String getDatabase() {
 		return database;
-	}
-
-	public static boolean isRemote() {
-		return remote;
 	}
 }

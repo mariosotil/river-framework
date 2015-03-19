@@ -16,7 +16,5 @@ public class ContextTest {
 		assertTrue("The password can't be found.", password != "");
 		String database = Context.getDatabase();
 		assertTrue("The database can't be found.", database != "");
-//		boolean isRemote = Context.isRemote();
-//		assertTrue("This test has to be executed with the NCSO.jar (remote connection).", isRemote);
 	}
 }

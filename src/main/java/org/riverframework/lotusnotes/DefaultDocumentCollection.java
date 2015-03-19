@@ -2,9 +2,6 @@ package org.riverframework.lotusnotes;
 
 import org.riverframework.RiverException;
 
-/*
- * This must be in its own package "org.riverframework.lotusnotes"
- */
 public class DefaultDocumentCollection implements
 		org.riverframework.lotusnotes.DocumentCollection {
 	protected Database rDatabase;

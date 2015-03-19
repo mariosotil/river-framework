@@ -26,7 +26,7 @@
   	<dependency>
   		<groupId>lotus-notes</groupId>
   		<artifactId>lotus-notes</artifactId>
-  		<systemPath>${basedir}\..\dependencies\Notes.jar</systemPath>
+  		<systemPath>${basedir}\..\..\dependencies\Notes.jar</systemPath>
   		<version>1.0.0</version>
   		<scope>system</scope>
   	</dependency>

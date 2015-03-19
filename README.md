@@ -25,6 +25,7 @@ There are a lot of features that I will add to this framework:
 
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs
+  - Creation of a lotus notes objects pool
   - Use org.openntf.domino.\* libraries instead lotus.domino.\*
   - A new set of examples in Java, JavaScript, XPages and LotusScript
 - Version 0.4
@@ -37,7 +38,7 @@ There are a lot of features that I will add to this framework:
   - Thread support
   - The main goal of the project: the support of workflow development with the features that are needed for the task:
     - Control of the states of the document
-    - Control of the responsables on each state
+    - Control of the responsibles on each state
     - Control of the permissions to read on each state
     - Control of the document security (reader, editor, etc.) on each state
     - Document protection if there is an error during a change of state

@@ -31,12 +31,12 @@ There are a lot of features that I will add to this framework:
   - Creation of a IBM Notes objects pool
   - A new set of examples in Java, SSJS, XPages and LotusScript
 - Version 0.4
-  - Connections to other NoSQL server (to de defined in the next weeks)
+  - Connection to other NoSQL server: MongoDB
 - Next versions
   - Logging of changes in the fields of a document
   - Control of the data change propagation between related documents (1..\*, \*..\*)
   - Administration tools (ie. change the state of a document)
-  - Connections to other NoSQL servers like CouchDB, MongoDB, etc.
+  - Connections to other NoSQL servers like CouchDB, etc.
   - Thread support
   - The main goal of the project: the support of workflow development with the features that are needed for the task:
     - Control of the states of the document

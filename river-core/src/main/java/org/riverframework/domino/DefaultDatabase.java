@@ -47,7 +47,6 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 			}
 
 			if (database != null && !database.isOpen()) {
-				// database.recycle();
 				database = null;
 			}
 

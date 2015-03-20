@@ -46,7 +46,7 @@ public class DefaultSession implements org.riverframework.domino.Session {
 			case 1:
 				password = parameters[0];
 				s = NotesFactory.createSession((String) null, (String) null, password);
-				session = Factory.fromLotus(NotesFactory.createSession(), org.openntf.domino.impl.Session.class, null);
+				session = Factory.fromLotus(s, org.openntf.domino.impl.Session.class, null);
 				break;
 
 			default:

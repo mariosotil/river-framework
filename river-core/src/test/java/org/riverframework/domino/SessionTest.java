@@ -8,8 +8,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
-import org.riverframework.domino.DefaultSession;
-import org.riverframework.domino.Session;
 
 public class SessionTest {
 	@Before
@@ -22,7 +20,7 @@ public class SessionTest {
 		NotesThread.sinitThread();
 
 		try {
-			Session session = DefaultSession.getInstance().open("passw0rd");
+			Session session = DefaultSession.getInstance().open(LocalContext.getPassword());
 
 			assertTrue("Notes Session could not be retrieved", session.isOpen());
 			assertFalse("There's a problem with the Session. I can't retrieve the current user name.",

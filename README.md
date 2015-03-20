@@ -4,7 +4,7 @@
 
 Hi, 
 
-This is a Workflow Application Framework in a **VERY EARLY development stage**. This first version only has the following features: 
+This is a Workflow Application Framework in a **VERY EARLY development stage**. This version only has the following features: 
 
 - Version 0.1
   - It is using IBM Notes as NoSQL server
@@ -12,12 +12,15 @@ This is a Workflow Application Framework in a **VERY EARLY development stage**. 
   - Document collections: array, list, iterator
   - It has a set of JUnit tests
 
-## What I'm working on now?
-
 - Version 0.2
   - Generation of unique identifiers for the documents
   - Opening documents by a unique id
-  - First examples in Java, Javascript, and XPages
+  - Use org.openntf.domino.\* libraries instead lotus.domino.\*
+
+## What I'm working on now?
+
+- Version 0.2
+  - First examples in Java, SSJS, and XPages
 
 ## What is in the ToDo list?
 
@@ -25,9 +28,8 @@ There are a lot of features that I will add to this framework:
 
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs
-  - Creation of a lotus notes objects pool
-  - Use org.openntf.domino.\* libraries instead lotus.domino.\*
-  - A new set of examples in Java, JavaScript, XPages and LotusScript
+  - Creation of a IBM Notes objects pool
+  - A new set of examples in Java, SSJSJ, XPages and LotusScript
 - Version 0.4
   - Connections to other NoSQL server (to de defined in the next weeks)
 - Next versions

@@ -4,7 +4,7 @@
 
 Hi, 
 
-This is a Workflow Application Framework in a **VERY EARLY development stage**. This version only has the following features: 
+This is a Workflow Application Framework in an **EARLY development stage**. This version only has the following features: 
 
 - Version 0.1
   - It is using IBM Notes as NoSQL server
@@ -29,7 +29,7 @@ There are a lot of features that I will add to this framework:
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs
   - Creation of a IBM Notes objects pool
-  - A new set of examples in Java, SSJSJ, XPages and LotusScript
+  - A new set of examples in Java, SSJS, XPages and LotusScript
 - Version 0.4
   - Connections to other NoSQL server (to de defined in the next weeks)
 - Next versions
@@ -61,7 +61,7 @@ I expected that this work be useful for you. I'll be looking forward for your id
 
 ### Tags
 
-Java, JavaScript, IBM Notes, Lotus Notes, XPages, LotusScript, Workflow
+Java, Server-side JavaScript, IBM Notes, Lotus Notes, XPages, LotusScript, Workflow
 
 
 

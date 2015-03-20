@@ -1,9 +1,15 @@
 package org.riverframework;
 
 public interface Database {
+	public Database open(String... location);
+
 	public boolean isOpen();
 
-	public Database open(String... location);
+	public String getServer();
+
+	public String getFilePath();
+
+	public String getName();
 
 	public Database getMainReplica();
 

@@ -1,23 +1,34 @@
-package org.riverframework.lotusnotes;
+package org.riverframework.domino;
 
 import static org.junit.Assert.assertTrue;
+import lotus.domino.NotesThread;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
+import org.riverframework.domino.Database;
+import org.riverframework.domino.DefaultDatabase;
+import org.riverframework.domino.DefaultDocument;
+import org.riverframework.domino.DefaultDocumentCollection;
+import org.riverframework.domino.DefaultSession;
+import org.riverframework.domino.Document;
+import org.riverframework.domino.DocumentCollection;
+import org.riverframework.domino.Session;
 
 public class DocumenCollectionTest {
-	final Session session = DefaultSession.getInstance();
+	private Session session = DefaultSession.getInstance();
 	private Database rDatabase = null;
 
 	final String TEST_FORM = "TestForm";
 
 	@Before
 	public void init() {
+		NotesThread.sinitThread();
+
 		try {
-			session.open(Context.getServerAndPort(), Context.getUser(), Context.getPassword());
-			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
+			session.open(LocalContext.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, "", LocalContext.getDatabase());
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
@@ -26,6 +37,7 @@ public class DocumenCollectionTest {
 	@After
 	public void close() {
 		session.close();
+		NotesThread.stermThread();
 	}
 
 	@Test
@@ -52,7 +64,7 @@ public class DocumenCollectionTest {
 	public void testRemove() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
-		org.riverframework.lotusnotes.DefaultDocumentCollection rIterator = (DefaultDocumentCollection) rDatabase.getAllDocuments();
+		org.riverframework.domino.DefaultDocumentCollection rIterator = (DefaultDocumentCollection) rDatabase.getAllDocuments();
 		rIterator.remove();
 	}
 

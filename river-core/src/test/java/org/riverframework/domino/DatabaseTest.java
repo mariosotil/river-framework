@@ -1,29 +1,37 @@
-package org.riverframework.lotusnotes;
+package org.riverframework.domino;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import lotus.domino.Document;
+import lotus.domino.NotesThread;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
+import org.riverframework.domino.Database;
+import org.riverframework.domino.DefaultDatabase;
+import org.riverframework.domino.DefaultSession;
+import org.riverframework.domino.DefaultView;
+import org.riverframework.domino.Session;
 
 public class DatabaseTest {
-	final Session session = DefaultSession.getInstance();
 	final String TEST_FORM = "TestForm";
 	final String TEST_VIEW = "TestView";
 	final String TEST_GRAPH = "TestGraph";
 
+	private Session session = DefaultSession.getInstance();
 	private DefaultDatabase rDatabase = null;
 	private VacationDatabase rVacationDatabase = null;
 
 	@Before
 	public void init() {
-		try {
-			session.open(Context.getServerAndPort(), Context.getUser(), Context.getPassword());
+		NotesThread.sinitThread();
 
-			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
-			rVacationDatabase = session.getDatabase(VacationDatabase.class, Context.getServer(), Context.getDatabase());
+		try {
+			session.open(LocalContext.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, "", LocalContext.getDatabase());
+
+			rVacationDatabase = session.getDatabase(VacationDatabase.class, "", LocalContext.getDatabase());
 
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -33,27 +41,15 @@ public class DatabaseTest {
 	@After
 	public void close() {
 		session.close();
+		NotesThread.stermThread();
 	}
 
 	@Test
-	public void testCreateAndGetDocument() {
+	public void testOpenedDatabase() {
+
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
-
-		DefaultDocument rDocument = rDatabase.createDocument(DefaultDocument.class);
-
-		assertTrue("There is a problem creating a new document in the test database.", rDocument.isOpen());
-
-		String universalId = rDocument
-				.setField("TEST_FIELD", "YES")
-				.setField("Form", "TestForm")
-				.save(false)
-				.getUniversalId();
-		rDocument = null;
-
-		rDocument = rDatabase.getDocument(DefaultDocument.class, universalId);
-
-		assertTrue("There is a problem getting the document created in the test database.",
-				rDocument.isOpen());
+		assertFalse("The file path could not be detected.", rDatabase.getFilePath().equals(""));
+		assertFalse("The database name could not be detected.", rDatabase.getName().equals(""));
 	}
 
 	// @Test
@@ -83,29 +79,8 @@ public class DatabaseTest {
 		assertTrue("There is a problem getting the view created in the test database.", rView.isOpen());
 	}
 
-	// @Test
-	// public void testGetDocumentIndexView() {
-	// assertTrue("The test database could not be opened.", rDatabase.isOpen());
-	//
-	// org.riverframework.View rView = rDatabase.getDocumentIndex();
-	//
-	// assertTrue("There is a problem opening the Document Index view.", rView.isOpen());
-	// }
-
-	// @Test
-	// public void testGetRelationIndexView() {
-	// assertTrue("The test database could not be opened.", rDatabase.isOpen());
-	//
-	// org.riverframework.View rView = rDatabase.getRelationIndex();
-	//
-	// assertTrue("There is a problem opening the Relation Index view.", rView.isOpen());
-	// }
-
-	/*
-	 * Testing makeDocument
-	 */
-	static class VacationDatabase extends org.riverframework.lotusnotes.DefaultDatabase {
-		protected VacationDatabase(Session s, lotus.domino.Database obj) {
+	static class VacationDatabase extends org.riverframework.domino.DefaultDatabase {
+		protected VacationDatabase(Session s, org.openntf.domino.Database obj) {
 			super(s, obj);
 		}
 
@@ -114,9 +89,9 @@ public class DatabaseTest {
 		}
 	}
 
-	static class VacationRequest extends org.riverframework.lotusnotes.DefaultDocument {
+	static class VacationRequest extends org.riverframework.domino.DefaultDocument {
 
-		public VacationRequest(Database d, Document doc) {
+		protected VacationRequest(Database d, org.openntf.domino.Document doc) {
 			super(d, doc);
 		}
 

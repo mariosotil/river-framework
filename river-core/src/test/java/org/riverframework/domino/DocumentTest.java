@@ -1,4 +1,4 @@
-package org.riverframework.lotusnotes;
+package org.riverframework.domino;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -8,12 +8,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
-import lotus.domino.Document;
+import lotus.domino.NotesThread;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openntf.domino.Document;
 import org.riverframework.RiverException;
+import org.riverframework.domino.Database;
+import org.riverframework.domino.DefaultDatabase;
+import org.riverframework.domino.DefaultDocument;
+import org.riverframework.domino.DefaultSession;
+import org.riverframework.domino.Session;
 
 public class DocumentTest {
 	final Session session = DefaultSession.getInstance();
@@ -24,11 +30,12 @@ public class DocumentTest {
 
 	@Before
 	public void init() {
-		try {
-			session.open(Context.getServerAndPort(), Context.getUser(), Context.getPassword());
+		NotesThread.sinitThread();
 
-			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
-			rComplexDatabase = session.getDatabase(ComplexDatabase.class, Context.getServer(), Context.getDatabase());
+		try {
+			session.open(LocalContext.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, "", LocalContext.getDatabase());
+			rComplexDatabase = session.getDatabase(ComplexDatabase.class, "", LocalContext.getDatabase());
 
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -38,6 +45,8 @@ public class DocumentTest {
 	@After
 	public void close() {
 		session.close();
+		NotesThread.stermThread();
+
 	}
 
 	@Test
@@ -487,9 +496,9 @@ public class DocumentTest {
 		}
 	}
 
-	static class ComplexDatabase extends org.riverframework.lotusnotes.DefaultDatabase {
+	static class ComplexDatabase extends org.riverframework.domino.DefaultDatabase {
 
-		protected ComplexDatabase(Session s, lotus.domino.Database obj) {
+		protected ComplexDatabase(Session s, org.openntf.domino.Database obj) {
 			super(s, obj);
 		}
 

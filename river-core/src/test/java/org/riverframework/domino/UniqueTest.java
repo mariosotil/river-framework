@@ -1,22 +1,31 @@
-package org.riverframework.lotusnotes;
+package org.riverframework.domino;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import lotus.domino.NotesThread;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
+import org.riverframework.domino.Database;
+import org.riverframework.domino.DefaultDatabase;
+import org.riverframework.domino.DefaultDocument;
+import org.riverframework.domino.DefaultSession;
+import org.riverframework.domino.Session;
+import org.riverframework.domino.Unique;
 
 public class UniqueTest {
 	final Session session = DefaultSession.getInstance();
-	private org.riverframework.lotusnotes.Database rDatabase = null;
+	private org.riverframework.domino.Database rDatabase = null;
 
 	@Before
 	public void init() {
+		NotesThread.sinitThread();
+
 		try {
-			session.open(Context.getServerAndPort(), Context.getUser(), Context.getPassword());
-			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
+			session.open(LocalContext.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, "", LocalContext.getDatabase());
 
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -26,13 +35,14 @@ public class UniqueTest {
 	@After
 	public void close() {
 		session.close();
+		NotesThread.stermThread();
 	}
 
 	static class NoUniqueDocument extends DefaultDocument {
 		protected final static String FORM_NAME = Session.PREFIX + "NoUnique";
 		protected final static String FIELD_ID = Session.PREFIX + "Id";
 
-		protected NoUniqueDocument(Database d, lotus.domino.Document doc) {
+		protected NoUniqueDocument(Database d, org.openntf.domino.Document doc) {
 			super(d, doc);
 		}
 
@@ -47,7 +57,7 @@ public class UniqueTest {
 		protected final static String FORM_NAME = Session.PREFIX + "Unique";
 		protected final static String FIELD_ID = Session.PREFIX + "Id";
 
-		protected UniqueDocument(Database d, lotus.domino.Document doc) {
+		protected UniqueDocument(Database d, org.openntf.domino.Document doc) {
 			super(d, doc);
 		}
 
@@ -68,13 +78,13 @@ public class UniqueTest {
 		}
 
 		@Override
-		public org.riverframework.lotusnotes.Document setId(String id) {
+		public org.riverframework.domino.Document setId(String id) {
 			setField(FIELD_ID, id);
 			return this;
 		}
 
 		@Override
-		public org.riverframework.lotusnotes.Document generateId() {
+		public org.riverframework.domino.Document generateId() {
 			// Do nothing
 			return this;
 		}

@@ -1,4 +1,4 @@
-package org.riverframework.lotusnotes;
+package org.riverframework.domino;
 
 import java.util.Random;
 

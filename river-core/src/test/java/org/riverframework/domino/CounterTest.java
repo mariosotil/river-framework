@@ -1,21 +1,28 @@
-package org.riverframework.lotusnotes;
+package org.riverframework.domino;
 
 import static org.junit.Assert.assertTrue;
+import lotus.domino.NotesThread;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
+import org.riverframework.domino.Counter;
+import org.riverframework.domino.DefaultDatabase;
+import org.riverframework.domino.DefaultSession;
+import org.riverframework.domino.Session;
 
 public class CounterTest {
-	final Session session = DefaultSession.getInstance();
-	private org.riverframework.lotusnotes.Database rDatabase = null;
+	private Session session = DefaultSession.getInstance();
+	private org.riverframework.domino.Database rDatabase = null;
 
 	@Before
 	public void init() {
+		NotesThread.sinitThread();
+
 		try {
-			session.open(Context.getServerAndPort(), Context.getUser(), Context.getPassword());
-			rDatabase = session.getDatabase(DefaultDatabase.class, Context.getServer(), Context.getDatabase());
+			session.open(LocalContext.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, "", LocalContext.getDatabase());
 
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -25,6 +32,7 @@ public class CounterTest {
 	@After
 	public void close() {
 		session.close();
+		NotesThread.stermThread();
 	}
 
 	@Test

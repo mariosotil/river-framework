@@ -7,14 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
-import org.riverframework.domino.Database;
-import org.riverframework.domino.DefaultDatabase;
-import org.riverframework.domino.DefaultDocument;
-import org.riverframework.domino.DefaultDocumentCollection;
-import org.riverframework.domino.DefaultSession;
-import org.riverframework.domino.Document;
-import org.riverframework.domino.DocumentCollection;
-import org.riverframework.domino.Session;
 
 public class DocumenCollectionTest {
 	private Session session = DefaultSession.getInstance();
@@ -27,8 +19,8 @@ public class DocumenCollectionTest {
 		NotesThread.sinitThread();
 
 		try {
-			session.open(LocalContext.getPassword());
-			rDatabase = session.getDatabase(DefaultDatabase.class, "", LocalContext.getDatabase());
+			session.open(Credentials.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}

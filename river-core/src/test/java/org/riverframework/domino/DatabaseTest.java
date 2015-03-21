@@ -8,11 +8,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
-import org.riverframework.domino.Database;
-import org.riverframework.domino.DefaultDatabase;
-import org.riverframework.domino.DefaultSession;
-import org.riverframework.domino.DefaultView;
-import org.riverframework.domino.Session;
 
 public class DatabaseTest {
 	final String TEST_FORM = "TestForm";
@@ -28,10 +23,9 @@ public class DatabaseTest {
 		NotesThread.sinitThread();
 
 		try {
-			session.open(LocalContext.getPassword());
-			rDatabase = session.getDatabase(DefaultDatabase.class, "", LocalContext.getDatabase());
-
-			rVacationDatabase = session.getDatabase(VacationDatabase.class, "", LocalContext.getDatabase());
+			session.open(Credentials.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
+			rVacationDatabase = session.getDatabase(VacationDatabase.class, "", Context.getDatabase());
 
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -82,10 +76,6 @@ public class DatabaseTest {
 	static class VacationDatabase extends org.riverframework.domino.DefaultDatabase {
 		protected VacationDatabase(Session s, org.openntf.domino.Database obj) {
 			super(s, obj);
-		}
-
-		public VacationDatabase(Session s, String... location) {
-			super(s, location);
 		}
 	}
 

@@ -1,8 +1,6 @@
 package org.riverframework;
 
 public interface Database {
-	public Database open(String... location);
-
 	public boolean isOpen();
 
 	public String getServer();
@@ -15,11 +13,9 @@ public interface Database {
 
 	public <U extends View> U getView(Class<U> type, String... parameters);
 
-	public <U extends Document> U createDocument(Class<U> clazz, String... parameters);
+	public Document createDocument(String... parameters);
 
-	public <U extends Document> U getDocument(Class<U> clazz, String... parameters);
-
-	public <U extends Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters);
+	public Document getDocument(String... parameters);
 
 	public DocumentCollection getAllDocuments();
 

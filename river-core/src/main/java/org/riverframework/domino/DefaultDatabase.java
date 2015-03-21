@@ -3,58 +3,16 @@ package org.riverframework.domino;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import org.riverframework.Document;
 import org.riverframework.RiverException;
 
 public class DefaultDatabase implements org.riverframework.domino.Database {
 	public static final String METHOD_GETINDEXNAME = "getIndexName";
 	protected Session session = null;
-	// private Counter counter = null;
 	protected org.openntf.domino.Database database = null;
 
 	protected DefaultDatabase(org.riverframework.domino.Session s, org.openntf.domino.Database obj) {
 		session = s;
-		open(obj);
-	}
-
-	public DefaultDatabase(org.riverframework.domino.Session s, String... location) {
-		session = s;
-		open(location);
-	}
-
-	@Override
-	public Database open(org.openntf.domino.Database obj) {
 		database = obj;
-		return this;
-	}
-
-	@Override
-	public Database open(String... location) {
-		if (location.length != 2)
-			throw new RiverException("It is expected two parameters: server and path; or server and replicaID");
-
-		String server = location[0];
-		String path = location[1];
-
-		try {
-			if (path.length() == 16) {
-				database = session.getNotesSession().getDatabase(null, " ", true);
-				database.openByReplicaID(server, path);
-			}
-
-			if (database == null || !database.isOpen()) {
-				database = session.getNotesSession().getDatabase(server, path, false);
-			}
-
-			if (database != null && !database.isOpen()) {
-				database = null;
-			}
-
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
-		return this;
 	}
 
 	@Override
@@ -114,7 +72,12 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 	}
 
 	@Override
-	public <U extends org.riverframework.Document> U createDocument(Class<U> clazz, String... parameters) {
+	public org.riverframework.domino.Document createDocument(String... parameters) {
+		return createDocument(DefaultDocument.class, parameters);
+	}
+
+	@Override
+	public <U extends org.riverframework.domino.Document> U createDocument(Class<U> clazz, String... parameters) {
 		U rDoc = null;
 		org.openntf.domino.Document doc = null;
 
@@ -122,10 +85,9 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 			throw new RiverException("The clazz parameter can not be null.");
 
 		try {
-			if (Document.class.isAssignableFrom(clazz)) {
-
+			if (DefaultDocument.class.isAssignableFrom(clazz)) {
 				doc = database.createDocument();
-				doc.replaceItemValue(org.riverframework.Document.FIELD_CLASS, clazz.getSimpleName());
+				doc.replaceItemValue(org.riverframework.Document.FIELD_CLASS, clazz.getCanonicalName());
 
 				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
 				constructor.setAccessible(true);
@@ -136,7 +98,7 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		}
 
 		if (rDoc == null) {
-			rDoc = clazz.cast(new DefaultDocument(this, null));
+			rDoc = clazz.cast(getDocument(clazz, (org.openntf.domino.Document) null));
 		} else {
 			((DefaultDocument) rDoc).afterCreate().setModified(false);
 		}
@@ -145,18 +107,21 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 	}
 
 	@Override
-	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, String... parameters) {
+	public org.riverframework.domino.Document getDocument(String... parameters) {
+		return getDocument(null, false, parameters);
+	}
+
+	@Override
+	public <U extends org.riverframework.domino.Document> U getDocument(Class<U> clazz, String... parameters) {
 		return getDocument(clazz, false, parameters);
 	}
 
 	@Override
-	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters)
+	public <U extends org.riverframework.domino.Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist,
+			String... parameters)
 	{
 		U rDoc = null;
 		org.openntf.domino.Document doc = null;
-
-		if (clazz == null)
-			throw new RiverException("The clazz parameter can not be null.");
 
 		try {
 			if (parameters.length > 0) {
@@ -166,11 +131,11 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 					doc = database.getDocumentByUNID(id);
 				}
 
-				if (doc == null && (id).length() == 8) {
+				if (doc == null && id.length() == 8) {
 					doc = database.getDocumentByID(id);
 				}
 
-				if (doc == null && Unique.class.isAssignableFrom(clazz)) {
+				if (doc == null && clazz != null && Unique.class.isAssignableFrom(clazz)) {
 					Method method = clazz.getMethod(METHOD_GETINDEXNAME);
 					if (method == null)
 						throw new RiverException("The class " + clazz.getSimpleName()
@@ -200,20 +165,44 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 						((Unique) rDoc).setId(id);
 					}
 				} else {
-					if (DefaultDocument.class.isAssignableFrom(clazz)) {
-						if (rDoc == null || !rDoc.isOpen()) {
-							Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
-							constructor.setAccessible(true);
-							rDoc = clazz.cast(constructor.newInstance(this, doc));
-						}
-					}
+					// Returning what was found
+					rDoc = clazz.cast(getDocument(clazz, doc));
 				}
 			} else {
+				// There's no parameters. Returning a closed 'clazz' object
 				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
 				constructor.setAccessible(true);
 				rDoc = clazz.cast(constructor.newInstance(this, null));
 			}
 
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
+		return rDoc;
+	}
+
+	@Override
+	public org.riverframework.domino.Document getDocument(org.openntf.domino.Document doc) {
+		return getDocument(null, doc);
+	}
+
+	@Override
+	public <U extends org.riverframework.domino.Document> U getDocument(Class<U> clazz, org.openntf.domino.Document doc) {
+		U rDoc = null;
+
+		try {
+			Constructor<?> constructor = null;
+
+			if (clazz != null && DefaultDocument.class.isAssignableFrom(clazz)) {
+				constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
+				constructor.setAccessible(true);
+			} else {
+				constructor = DefaultDocument.class.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
+				constructor.setAccessible(true);
+			}
+
+			rDoc = clazz.cast(constructor.newInstance(this, doc));
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}

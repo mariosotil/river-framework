@@ -8,12 +8,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
-import org.riverframework.domino.Database;
-import org.riverframework.domino.DefaultDatabase;
-import org.riverframework.domino.DefaultDocument;
-import org.riverframework.domino.DefaultSession;
-import org.riverframework.domino.Session;
-import org.riverframework.domino.Unique;
 
 public class UniqueTest {
 	final Session session = DefaultSession.getInstance();
@@ -24,8 +18,8 @@ public class UniqueTest {
 		NotesThread.sinitThread();
 
 		try {
-			session.open(LocalContext.getPassword());
-			rDatabase = session.getDatabase(DefaultDatabase.class, "", LocalContext.getDatabase());
+			session.open(Credentials.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
 
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -39,8 +33,8 @@ public class UniqueTest {
 	}
 
 	static class NoUniqueDocument extends DefaultDocument {
-		protected final static String FORM_NAME = Session.PREFIX + "NoUnique";
-		protected final static String FIELD_ID = Session.PREFIX + "Id";
+		protected final static String FORM_NAME = Session.OBJECT_PREFIX + "NoUnique";
+		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 
 		protected NoUniqueDocument(Database d, org.openntf.domino.Document doc) {
 			super(d, doc);
@@ -54,15 +48,15 @@ public class UniqueTest {
 	}
 
 	static class UniqueDocument extends DefaultDocument implements Unique {
-		protected final static String FORM_NAME = Session.PREFIX + "Unique";
-		protected final static String FIELD_ID = Session.PREFIX + "Id";
+		protected final static String FORM_NAME = Session.OBJECT_PREFIX + "Unique";
+		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 
 		protected UniqueDocument(Database d, org.openntf.domino.Document doc) {
 			super(d, doc);
 		}
 
 		public static String getIndexName() {
-			return Session.PREFIX + "Unique_Index";
+			return Session.OBJECT_PREFIX + "Unique_Index";
 		}
 
 		@Override

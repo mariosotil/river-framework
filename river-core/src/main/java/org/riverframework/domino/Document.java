@@ -1,6 +1,5 @@
 package org.riverframework.domino;
 
-
 /*
  * Loads an document
  * <p>
@@ -11,8 +10,8 @@ package org.riverframework.domino;
  */
 
 public interface Document extends org.riverframework.Document {
-	public static final String FIELD_CLASS = Session.PREFIX + "Class";
-	public static final String FIELD_ID = Session.PREFIX + "Id";
+	public static final String FIELD_CLASS = Session.FIELD_PREFIX + "class";
+	public static final String FIELD_ID = Session.FIELD_PREFIX + "id";
 	public static final boolean FORCE_SAVE = true;
 
 	public String getForm();

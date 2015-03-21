@@ -34,6 +34,7 @@ public class DefaultSession implements org.riverframework.domino.Session {
 	@Override
 	public Session open(String... parameters) {
 		try {
+			String username = "";
 			String password = "";
 			lotus.domino.Session s = null;
 
@@ -46,6 +47,13 @@ public class DefaultSession implements org.riverframework.domino.Session {
 			case 1:
 				password = parameters[0];
 				s = NotesFactory.createSession((String) null, (String) null, password);
+				session = Factory.fromLotus(s, org.openntf.domino.impl.Session.class, null);
+				break;
+
+			case 2:
+				username = parameters[0];
+				password = parameters[1];
+				s = NotesFactory.createSession((String) null, username, password);
 				session = Factory.fromLotus(s, org.openntf.domino.impl.Session.class, null);
 				break;
 
@@ -66,31 +74,60 @@ public class DefaultSession implements org.riverframework.domino.Session {
 	}
 
 	@Override
-	public org.openntf.domino.Session getNotesSession() {
-		if (session == null)
-			throw new RiverException("You can't get a null Lotus Notes session");
-		return session;
+	public org.openntf.domino.DateTime Java2NotesTime(java.util.Date d) {
+		org.openntf.domino.DateTime result = session.createDateTime(d);
+		return result;
 	}
 
 	@Override
-	public <U extends org.riverframework.Database> U getDatabase(Class<U> clazz, String... parameters) {
+	public <U extends org.riverframework.Database> U getDatabase(Class<U> clazz, String... location) {
 		U rDatabase = null;
+		org.openntf.domino.Database database = null;
 
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
 
+		if (!DefaultDatabase.class.isAssignableFrom(clazz))
+			throw new RiverException("The clazz parameter must inherit from DefaultDatabase.");
+
+		if (location.length != 2)
+			throw new RiverException("It is expected two parameters: server and path; or server and replicaID");
+
+		String server = location[0];
+		String path = location[1];
+
 		try {
-			if (DefaultDatabase.class.isAssignableFrom(clazz)) {
-				Constructor<?> constructor = clazz.getDeclaredConstructor(Session.class, String[].class);
-				constructor.setAccessible(true);
-				rDatabase = clazz.cast(constructor.newInstance(this, parameters));
+			if (path.length() == 16) {
+				database = session.getDatabase(null, " ", true);
+				database.openByReplicaID(server, path);
+			}
+
+			if (database == null || !database.isOpen()) {
+				database = session.getDatabase(server, path, false);
+			}
+
+			if (database != null && !database.isOpen()) {
+				database = null;
 			}
 
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
 
+		try {
+			Constructor<?> constructor = clazz.getDeclaredConstructor(Session.class, org.openntf.domino.Database.class);
+			constructor.setAccessible(true);
+			rDatabase = clazz.cast(constructor.newInstance(this, database));
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
 		return rDatabase;
+	}
+
+	@Override
+	public String getUserName() {
+		return session.getUserName();
 	}
 
 	@Override

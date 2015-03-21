@@ -2,8 +2,7 @@ package org.riverframework.domino;
 
 import org.riverframework.RiverException;
 
-public class DefaultDocumentCollection implements
-		org.riverframework.domino.DocumentCollection {
+public class DefaultDocumentCollection implements org.riverframework.domino.DocumentCollection {
 	protected Database rDatabase;
 	protected org.openntf.domino.DocumentCollection col = null;
 	protected org.openntf.domino.Document doc = null;
@@ -33,14 +32,14 @@ public class DefaultDocumentCollection implements
 	}
 
 	@Override
-	public Document next() {
+	public org.riverframework.domino.Document next() {
 		org.openntf.domino.Document current = doc;
 		try {
 			doc = col.getNextDocument(doc);
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
-		Document rDoc = new DefaultDocument(rDatabase, current);
+		Document rDoc = rDatabase.getDocument(current);
 		return rDoc;
 	}
 
@@ -48,5 +47,4 @@ public class DefaultDocumentCollection implements
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}
-
 }

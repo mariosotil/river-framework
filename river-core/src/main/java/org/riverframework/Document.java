@@ -12,8 +12,8 @@ import java.util.Vector;
  */
 
 public interface Document {
-	public static final String FIELD_CLASS = Session.PREFIX + "Class";
-	public static final String FIELD_ID = Session.PREFIX + "Id";
+	public static final String FIELD_CLASS = Session.FIELD_PREFIX + "class";
+	public static final String FIELD_ID = Session.FIELD_PREFIX + "id";
 	public static final boolean FORCE_SAVE = true;
 
 	public boolean compareFieldValue(String field, Object value);

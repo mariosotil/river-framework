@@ -65,12 +65,13 @@ public class PeopleAddressBook {
 	public static void main(String[] args) {
 		NotesThread.sinitThread();
 
-		Session session = DefaultSession.getInstance().open("passw0rd");
-		System.out.println("User=" + session.getNotesSession().getCommonUserName());
+		Session session = DefaultSession.getInstance().open(Credentials.getPassword());
 		Database database = session.getDatabase(DefaultDatabase.class, "", filepath);
+
+	
+		System.out.println("User=" + session.getUserName());
 		System.out.println("Database=" + database.getName());
 
 		NotesThread.stermThread();
 	}
-
 }

@@ -15,11 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openntf.domino.Document;
 import org.riverframework.RiverException;
-import org.riverframework.domino.Database;
-import org.riverframework.domino.DefaultDatabase;
-import org.riverframework.domino.DefaultDocument;
-import org.riverframework.domino.DefaultSession;
-import org.riverframework.domino.Session;
 
 public class DocumentTest {
 	final Session session = DefaultSession.getInstance();
@@ -33,9 +28,9 @@ public class DocumentTest {
 		NotesThread.sinitThread();
 
 		try {
-			session.open(LocalContext.getPassword());
-			rDatabase = session.getDatabase(DefaultDatabase.class, "", LocalContext.getDatabase());
-			rComplexDatabase = session.getDatabase(ComplexDatabase.class, "", LocalContext.getDatabase());
+			session.open(Credentials.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
+			rComplexDatabase = session.getDatabase(ComplexDatabase.class, "", Context.getDatabase());
 
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -500,10 +495,6 @@ public class DocumentTest {
 
 		protected ComplexDatabase(Session s, org.openntf.domino.Database obj) {
 			super(s, obj);
-		}
-
-		public ComplexDatabase(Session s, String... location) {
-			super(s, location);
 		}
 	}
 

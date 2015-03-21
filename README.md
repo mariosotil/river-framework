@@ -15,7 +15,9 @@ This is a Workflow Application Framework in an **EARLY development stage**. This
 - Version 0.2
   - Generation of unique identifiers for the documents
   - Opening documents by a unique id
-  - Use org.openntf.domino.\* libraries instead lotus.domino.\*
+  - Credentials file (~/.river-framework/credentials)
+  - Using org.openntf.domino package instead lotus.domino
+  - Local session using a installed IBM Notes client 
 
 ## What I'm working on now?
 
@@ -29,6 +31,7 @@ There are a lot of features that I will add to this framework:
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs
   - Creation of a IBM Notes objects pool
+  - Local session using a installed IBM Domino server 
   - A new set of examples in Java, SSJS, XPages and LotusScript
 - Version 0.4
   - Connection to other NoSQL server: MongoDB

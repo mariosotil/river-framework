@@ -143,11 +143,11 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 
 		try {
 			if (temp.get(0) instanceof java.util.Date) {
-				org.openntf.domino.Session session = DefaultSession.getInstance().getNotesSession();
+				Session session = DefaultSession.getInstance();
 
 				for (int i = 0; i < temp.size(); i++) {
 					// Always save as org.openntf.domino.DateTime
-					temp.set(i, session.createDateTime((java.util.Date) temp.get(i)));
+					temp.set(i, session.Java2NotesTime((java.util.Date) temp.get(i)));
 				}
 			}
 			document.replaceItemValue(field, temp);

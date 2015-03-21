@@ -20,11 +20,11 @@ public class SessionTest {
 		NotesThread.sinitThread();
 
 		try {
-			Session session = DefaultSession.getInstance().open(LocalContext.getPassword());
+			Session session = DefaultSession.getInstance().open(Credentials.getPassword());
 
 			assertTrue("Notes Session could not be retrieved", session.isOpen());
 			assertFalse("There's a problem with the Session. I can't retrieve the current user name.",
-					session.getNotesSession().getCommonUserName().equals(""));
+					session.getUserName().equals(""));
 
 			DefaultSession.getInstance().close();
 		} catch (Exception e) {

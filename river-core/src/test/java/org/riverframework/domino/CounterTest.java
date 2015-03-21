@@ -7,10 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.RiverException;
-import org.riverframework.domino.Counter;
-import org.riverframework.domino.DefaultDatabase;
-import org.riverframework.domino.DefaultSession;
-import org.riverframework.domino.Session;
 
 public class CounterTest {
 	private Session session = DefaultSession.getInstance();
@@ -21,8 +17,8 @@ public class CounterTest {
 		NotesThread.sinitThread();
 
 		try {
-			session.open(LocalContext.getPassword());
-			rDatabase = session.getDatabase(DefaultDatabase.class, "", LocalContext.getDatabase());
+			session.open(Credentials.getPassword());
+			rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
 
 		} catch (Exception e) {
 			throw new RiverException(e);

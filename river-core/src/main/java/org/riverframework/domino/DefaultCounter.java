@@ -3,14 +3,14 @@ package org.riverframework.domino;
 import org.riverframework.RiverException;
 
 public class DefaultCounter extends DefaultDocument implements Counter, Unique {
-	protected final static String FORM_NAME = Session.PREFIX + "Counter";
-	protected final static String FIELD_ID = Session.PREFIX + "Id";
-	protected final static String FIELD_COUNT = Session.PREFIX + "Count";
+	protected final static String FORM_NAME = Session.OBJECT_PREFIX + "counter";
+	protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
+	protected final static String FIELD_COUNT = Session.FIELD_PREFIX + "count";
 
 	protected View index = null;
 
 	public static String getIndexName() {
-		return Session.PREFIX + "Counter_Index";
+		return Session.OBJECT_PREFIX + "Counter_Index";
 	}
 
 	protected DefaultCounter(Database d, org.openntf.domino.Document doc) {
@@ -20,7 +20,7 @@ public class DefaultCounter extends DefaultDocument implements Counter, Unique {
 	@Override
 	protected Counter afterCreate() {
 		setForm(FORM_NAME)
-		.setField(FIELD_COUNT, 0);
+				.setField(FIELD_COUNT, 0);
 
 		return this;
 	}
@@ -39,10 +39,10 @@ public class DefaultCounter extends DefaultDocument implements Counter, Unique {
 
 	@Override
 	public Document generateId() {
-		//Do nothing
+		// Do nothing
 		return this;
 	}
-	
+
 	@Override
 	public long getCount() {
 		// TODO: synchronize this and test it

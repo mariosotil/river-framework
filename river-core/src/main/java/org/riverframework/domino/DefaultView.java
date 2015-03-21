@@ -24,16 +24,16 @@ public class DefaultView implements org.riverframework.domino.View {
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
 
-		try {
-			if (DefaultDocument.class.isAssignableFrom(clazz)) {
+		if (DefaultDocument.class.isAssignableFrom(clazz)) {
 
-				doc = view.getDocumentByKey(key, true);
+			doc = view.getDocumentByKey(key, true);
 
+			try {
 				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
 				rDoc = clazz.cast(constructor.newInstance(rDatabase, doc));
+			} catch (Exception e) {
+				throw new RiverException(e);
 			}
-		} catch (Exception e) {
-			throw new RiverException(e);
 		}
 
 		if (rDoc == null) {
@@ -51,26 +51,24 @@ public class DefaultView implements org.riverframework.domino.View {
 	}
 
 	@Override
+	public DocumentCollection getAllDocuments() {
+		org.openntf.domino.DocumentCollection col = view.getAllDocuments(); // Always exact match
+		DocumentCollection result = new DefaultDocumentCollection(rDatabase, col);
+
+		return result;
+	}
+
+	@Override
 	public DocumentCollection getAllDocumentsByKey(Object key) {
-		DocumentCollection rDocumentIterator = null;
+		org.openntf.domino.DocumentCollection col = view.getAllDocumentsByKey(key, true); // Always exact match
+		DocumentCollection result = new DefaultDocumentCollection(rDatabase, col);
 
-		try {
-			org.openntf.domino.DocumentCollection col = view.getAllDocumentsByKey(key, true); // Always exact match
-			rDocumentIterator = new DefaultDocumentCollection(rDatabase, col);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
-		return rDocumentIterator;
+		return result;
 	}
 
 	@Override
 	public View refresh() {
-		try {
-			view.refresh();
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		view.refresh();
 		return this;
 	}
 
@@ -78,12 +76,8 @@ public class DefaultView implements org.riverframework.domino.View {
 	 * Implementing Iterator
 	 */
 	protected void initIterator() {
-		try {
-			if (view != null) {
-				iteratorDoc = view.getFirstDocument();
-			}
-		} catch (Exception e) {
-			throw new RiverException(e);
+		if (view != null) {
+			iteratorDoc = view.getFirstDocument();
 		}
 	}
 
@@ -93,14 +87,10 @@ public class DefaultView implements org.riverframework.domino.View {
 	}
 
 	@Override
-	public Document next() {
+	public org.riverframework.domino.Document next() {
 		org.openntf.domino.Document current = iteratorDoc;
-		try {
-			iteratorDoc = view.getNextDocument(iteratorDoc);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-		Document rDoc = new DefaultDocument(rDatabase, current);
+		iteratorDoc = view.getNextDocument(iteratorDoc);
+		Document rDoc = rDatabase.getDocument(current);
 		return rDoc;
 	}
 

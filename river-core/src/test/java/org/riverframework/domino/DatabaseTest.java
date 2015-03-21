@@ -2,6 +2,7 @@ package org.riverframework.domino;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import lotus.domino.NotesThread;
 
 import org.junit.After;
@@ -27,6 +28,7 @@ public class DatabaseTest {
 			rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
 			rVacationDatabase = session.getDatabase(VacationDatabase.class, "", Context.getDatabase());
 
+			rDatabase.getAllDocuments().removeAll();
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
@@ -115,6 +117,37 @@ public class DatabaseTest {
 
 	@Test
 	public void testGetMainReplica() {
-		// TODO: test this
+		fail("Not implemented yet.");
+	}
+
+	@Test
+	public void testSearch() {
+		assertTrue("The test database could not be instantiated.", rDatabase != null);
+		assertTrue("The test database could not be opened.", rDatabase.isOpen());
+
+		DocumentCollection col = null;
+		col = rDatabase.getAllDocuments().removeAll();
+
+		RandomString rs = new RandomString(10);
+
+		for (int i = 0; i < 10; i++) {
+			rDatabase.createDocument(DefaultDocument.class)
+					.setForm(TEST_FORM)
+					.setField("Value", rs.nextString())
+					.save();
+		}
+
+		rDatabase.createDocument(DefaultDocument.class)
+				.setForm(TEST_FORM)
+				.setField("Value", "THIS_IS_THE_DOC")
+				.save();
+
+		col = null;
+		col = rDatabase.search("THIS IS IMPOSSIBLE TO FIND");
+		assertFalse("The search returns values for a query that would returns nothing.", col.hasNext());
+
+		col = null;
+		col = rDatabase.search("THIS_IS_THE_DOC");
+		assertTrue("The search does not returns values for a query that would returns something.", col.hasNext());
 	}
 }

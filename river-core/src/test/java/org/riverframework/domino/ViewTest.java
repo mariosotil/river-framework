@@ -7,7 +7,6 @@ import lotus.domino.NotesThread;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.riverframework.RiverException;
 
 public class ViewTest {
 	final String TEST_FORM = "TestForm";
@@ -20,13 +19,9 @@ public class ViewTest {
 	public void init() {
 		NotesThread.sinitThread();
 
-		try {
-			session.open(Credentials.getPassword());
-			rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
-
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		session.open(Credentials.getPassword());
+		rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
+		rDatabase.getAllDocuments().removeAll();
 	}
 
 	@After

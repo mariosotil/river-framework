@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.riverframework.RiverException;
-
 /**
  * Loads an IBM Notes document
  * <p>
@@ -45,13 +43,9 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	}
 
 	protected boolean setFieldIfNecessary(String field, Object value) {
-		try {
-			if (!compareFieldValue(field, value)) {
-				replaceFieldValue(field, value);
-				return true;
-			}
-		} catch (Exception e) {
-			throw new RiverException(e);
+		if (!compareFieldValue(field, value)) {
+			replaceFieldValue(field, value);
+			return true;
 		}
 
 		return false;
@@ -63,30 +57,25 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 
 		boolean equal = false;
 
-		try {
-			Vector<Object> oldValues = getField(field);
-			Vector<Object> newValues = null;
+		Vector<Object> oldValues = getField(field);
+		Vector<Object> newValues = null;
 
-			if (value instanceof java.util.Vector) {
-				newValues = (Vector<Object>) value;
-			} else if (value instanceof Object[]) {
-				newValues = new Vector<Object>();
-				for (Object o : (Object[]) value) {
-					newValues.add(o);
-				}
-			} else {
-				newValues = new Vector<Object>();
-				newValues.add(value);
+		if (value instanceof java.util.Vector) {
+			newValues = (Vector<Object>) value;
+		} else if (value instanceof Object[]) {
+			newValues = new Vector<Object>();
+			for (Object o : (Object[]) value) {
+				newValues.add(o);
 			}
+		} else {
+			newValues = new Vector<Object>();
+			newValues.add(value);
+		}
 
-			if (value instanceof Number[] || value instanceof Number) {
-				equal = numericEquals(newValues, oldValues);
-			} else {
-				equal = oldValues.equals(newValues);
-			}
-
-		} catch (Exception e) {
-			throw new RiverException(e);
+		if (value instanceof Number[] || value instanceof Number) {
+			equal = numericEquals(newValues, oldValues);
+		} else {
+			equal = oldValues.equals(newValues);
 		}
 
 		return equal;
@@ -106,23 +95,12 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 
 	@Override
 	public String getUniversalId() {
-		String result = "";
-		try {
-			result = document.getUniversalID();
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
+		String result = document.getUniversalID();
 		return result;
 	}
 
 	protected Document internalRecalc() {
-		try {
-			document.computeWithForm(true, false);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
+		document.computeWithForm(true, false);
 		return this;
 	}
 
@@ -141,19 +119,15 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 			temp.add(value);
 		}
 
-		try {
-			if (temp.get(0) instanceof java.util.Date) {
-				Session session = DefaultSession.getInstance();
+		if (temp.get(0) instanceof java.util.Date) {
+			Session session = DefaultSession.getInstance();
 
-				for (int i = 0; i < temp.size(); i++) {
-					// Always save as org.openntf.domino.DateTime
-					temp.set(i, session.Java2NotesTime((java.util.Date) temp.get(i)));
-				}
+			for (int i = 0; i < temp.size(); i++) {
+				// Always save as org.openntf.domino.DateTime
+				temp.set(i, session.Java2NotesTime((java.util.Date) temp.get(i)));
 			}
-			document.replaceItemValue(field, temp);
-		} catch (Exception e) {
-			throw new RiverException(e);
 		}
+		document.replaceItemValue(field, temp);
 
 		return true;
 	}
@@ -163,22 +137,15 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	public Vector<Object> getField(String field) {
 		Vector<Object> value = null;
 
-		try {
-			value = document.getItemValue(field);
+		value = document.getItemValue(field);
 
-			// Always returns a java.util.Date object
-			if (!value.isEmpty()) {
-				if (value.get(0) instanceof org.openntf.domino.DateTime) {
-					for (int i = 0; i < value.size(); i++) {
-						value.set(i, ((org.openntf.domino.DateTime) value.get(i)).toJavaDate());
-					}
+		// Always returns a java.util.Date object
+		if (!value.isEmpty()) {
+			if (value.get(0) instanceof org.openntf.domino.DateTime) {
+				for (int i = 0; i < value.size(); i++) {
+					value.set(i, ((org.openntf.domino.DateTime) value.get(i)).toJavaDate());
 				}
 			}
-		} catch (Exception e) {
-			throw new RiverException(e);
-		} finally {
-			if (value == null)
-				value = new Vector<Object>();
 		}
 
 		return value;
@@ -188,12 +155,8 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	public String getFieldAsString(String field) {
 		String result = "";
 
-		try {
-			if (document.hasItem(field)) {
-				result = document.getItemValueString(field);
-			}
-		} catch (Exception e) {
-			throw new RiverException(e);
+		if (document.hasItem(field)) {
+			result = document.getItemValueString(field);
 		}
 
 		return result;
@@ -201,68 +164,47 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 
 	@Override
 	public int getFieldAsInteger(String field) {
-		int result = 0;
-
-		try {
-			result = document.getItemValueInteger(field);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
+		int result = document.getItemValueInteger(field);
 		return result;
 	}
 
 	@Override
 	public double getFieldAsDouble(String field) {
-		double result = 0;
-
-		try {
-			result = document.getItemValueDouble(field);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
+		double result = document.getItemValueDouble(field);
 		return result;
 	}
 
 	@Override
 	public Date getFieldAsDate(String field) {
-		Date result = null;
-		try {
-			result = ((org.openntf.domino.DateTime) document.getItemValueDateTimeArray(field).elementAt(0))
-					.toJavaDate();
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		Date result = ((org.openntf.domino.DateTime) document
+				.getItemValueDateTimeArray(field)
+				.elementAt(0))
+				.toJavaDate();
 
 		return result;
 	}
 
 	@Override
 	public boolean isFieldEmpty(String field) {
-		try {
-			if (!document.hasItem(field))
-				return true;
+		if (!document.hasItem(field))
+			return true;
 
-			org.openntf.domino.Item item = document.getFirstItem(field);
-			if (item != null) {
-				if (item.getType() == org.openntf.domino.Item.RICHTEXT) {
-					if (!document.getEmbeddedObjects().isEmpty()) {
-						for (@SuppressWarnings("unchecked")
-						Iterator<org.openntf.domino.EmbeddedObject> i = document.getEmbeddedObjects()
-								.iterator(); i.hasNext();) {
-							org.openntf.domino.EmbeddedObject eo = i.next();
-							if (eo.getType() != 0)
-								return false;
-						}
+		org.openntf.domino.Item item = document.getFirstItem(field);
+		if (item != null) {
+			if (item.getType() == org.openntf.domino.Item.RICHTEXT) {
+				if (!document.getEmbeddedObjects().isEmpty()) {
+					for (@SuppressWarnings("unchecked")
+					Iterator<org.openntf.domino.EmbeddedObject> i = document.getEmbeddedObjects()
+							.iterator(); i.hasNext();) {
+						org.openntf.domino.EmbeddedObject eo = i.next();
+						if (eo.getType() != 0)
+							return false;
 					}
 				}
-
-				if (item.getText() != "")
-					return false;
 			}
-		} catch (Exception e) {
-			throw new RiverException(e);
+
+			if (item.getText() != "")
+				return false;
 		}
 
 		return true;
@@ -286,14 +228,7 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 
 	@Override
 	public boolean isNew() {
-		boolean result = false;
-
-		try {
-			result = document.isNewNote();
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
+		boolean result = document.isNewNote();
 		return result;
 	}
 
@@ -318,36 +253,24 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 
 	@Override
 	public org.riverframework.domino.DefaultDocument remove() {
-		try {
-			if (document != null) {
-				document.remove(true);
-				document = null;
-			}
-		} catch (Exception e) {
-			throw new RiverException(e);
+		if (document != null) {
+			document.remove(true);
+			document = null;
 		}
+
 		return this;
 	}
 
 	protected Document saveImplementation() {
-		try {
-			document.save(true, false);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
+		document.save(true, false);
 		return this;
 	}
 
 	@Override
 	public Document save(boolean force) {
-		try {
-			if (force || isModified) {
-				saveImplementation();
-				isModified = false;
-			}
-		} catch (Exception e) {
-			throw new RiverException(e);
+		if (force || isModified) {
+			saveImplementation();
+			isModified = false;
 		}
 
 		return this;
@@ -371,13 +294,7 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	}
 
 	public boolean isConflict() {
-		boolean result;
-		try {
-			result = document.hasItem(org.riverframework.domino.DefaultDocument.FIELD_IS_CONFLICT);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
+		boolean result = document.hasItem(org.riverframework.domino.DefaultDocument.FIELD_IS_CONFLICT);
 		return result;
 	}
 

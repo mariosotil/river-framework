@@ -24,5 +24,8 @@ public interface Database extends org.riverframework.Database {
 	public org.riverframework.domino.DocumentCollection getAllDocuments();
 
 	@Override
+	public org.riverframework.domino.DocumentCollection search(String query);
+
+	@Override
 	public org.riverframework.domino.Counter getCounter(String key);
 }

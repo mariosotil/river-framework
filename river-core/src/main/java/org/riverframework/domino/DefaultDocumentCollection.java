@@ -1,29 +1,23 @@
 package org.riverframework.domino;
 
-import org.riverframework.RiverException;
-
 public class DefaultDocumentCollection implements org.riverframework.domino.DocumentCollection {
 	protected Database rDatabase;
 	protected org.openntf.domino.DocumentCollection col = null;
 	protected org.openntf.domino.Document doc = null;
 
 	public DefaultDocumentCollection(Database d, org.openntf.domino.DocumentCollection c) {
-		try {
-			rDatabase = d;
-			col = c;
-			initIterator();
-
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		rDatabase = d;
+		col = c;
+		initIterator();
 	}
 
 	protected void initIterator() {
-		try {
-			doc = col.getFirstDocument();
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		doc = col.getFirstDocument();
+	}
+
+	@Override
+	public int size(){
+		return col.size();
 	}
 
 	@Override
@@ -34,11 +28,7 @@ public class DefaultDocumentCollection implements org.riverframework.domino.Docu
 	@Override
 	public org.riverframework.domino.Document next() {
 		org.openntf.domino.Document current = doc;
-		try {
-			doc = col.getNextDocument(doc);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		doc = col.getNextDocument(doc);
 		Document rDoc = rDatabase.getDocument(current);
 		return rDoc;
 	}
@@ -46,5 +36,16 @@ public class DefaultDocumentCollection implements org.riverframework.domino.Docu
 	@Override
 	public void remove() {
 		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public void filter(String query) {
+		col.FTSearch(query);
+	}
+	
+	@Override
+	public DocumentCollection removeAll() {
+		col.removeAll(true);
+		return this;
 	}
 }

@@ -2,7 +2,6 @@ package org.riverframework.domino;
 
 import java.lang.reflect.Constructor;
 
-import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
 
 import org.openntf.domino.utils.Factory;
@@ -33,11 +32,11 @@ public class DefaultSession implements org.riverframework.domino.Session {
 
 	@Override
 	public Session open(String... parameters) {
-		try {
-			String username = "";
-			String password = "";
-			lotus.domino.Session s = null;
+		String username = "";
+		String password = "";
+		lotus.domino.Session s = null;
 
+		try {
 			switch (parameters.length) {
 			case 0:
 				s = NotesFactory.createSession();
@@ -61,8 +60,8 @@ public class DefaultSession implements org.riverframework.domino.Session {
 				session = null;
 				break;
 			}
-		} catch (NotesException e) {
-			throw new RiverException("There is a problem about the Session opening", e);
+		} catch (Exception e) {
+			throw new RiverException("There is a problem opening the Session ", e);
 		}
 
 		return INSTANCE;
@@ -91,27 +90,22 @@ public class DefaultSession implements org.riverframework.domino.Session {
 			throw new RiverException("The clazz parameter must inherit from DefaultDatabase.");
 
 		if (location.length != 2)
-			throw new RiverException("It is expected two parameters: server and path; or server and replicaID");
+			throw new RiverException("It is expected two parameters: server and path, or server and replicaID");
 
 		String server = location[0];
 		String path = location[1];
 
-		try {
-			if (path.length() == 16) {
-				database = session.getDatabase(null, " ", true);
-				database.openByReplicaID(server, path);
-			}
+		if (path.length() == 16) {
+			database = session.getDatabase(null, " ", true);
+			database.openByReplicaID(server, path);
+		}
 
-			if (database == null || !database.isOpen()) {
-				database = session.getDatabase(server, path, false);
-			}
+		if (database == null || !database.isOpen()) {
+			database = session.getDatabase(server, path, false);
+		}
 
-			if (database != null && !database.isOpen()) {
-				database = null;
-			}
-
-		} catch (Exception e) {
-			throw new RiverException(e);
+		if (database != null && !database.isOpen()) {
+			database = null;
 		}
 
 		try {

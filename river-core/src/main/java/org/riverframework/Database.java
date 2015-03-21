@@ -1,5 +1,7 @@
 package org.riverframework;
 
+import org.riverframework.domino.DocumentCollection;
+
 public interface Database {
 	public boolean isOpen();
 
@@ -18,6 +20,8 @@ public interface Database {
 	public Document getDocument(String... parameters);
 
 	public DocumentCollection getAllDocuments();
+
+	public DocumentCollection search(String query);
 
 	public Counter getCounter(String key);
 

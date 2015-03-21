@@ -14,7 +14,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openntf.domino.Document;
-import org.riverframework.RiverException;
 
 public class DocumentTest {
 	final Session session = DefaultSession.getInstance();
@@ -27,14 +26,11 @@ public class DocumentTest {
 	public void init() {
 		NotesThread.sinitThread();
 
-		try {
-			session.open(Credentials.getPassword());
-			rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
-			rComplexDatabase = session.getDatabase(ComplexDatabase.class, "", Context.getDatabase());
+		session.open(Credentials.getPassword());
+		rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
+		rComplexDatabase = session.getDatabase(ComplexDatabase.class, "", Context.getDatabase());
 
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		rDatabase.getAllDocuments().removeAll();
 	}
 
 	@After

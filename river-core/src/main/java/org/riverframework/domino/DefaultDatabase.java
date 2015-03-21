@@ -17,38 +17,22 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 
 	@Override
 	public String getServer() {
-		try {
-			return database.getServer();
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		return database.getServer();
 	}
 
 	@Override
 	public String getFilePath() {
-		try {
-			return database.getFilePath();
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		return database.getFilePath();
 	}
 
 	@Override
 	public String getName() {
-		try {
-			return database.getTitle();
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		return database.getTitle();
 	}
 
 	@Override
 	public boolean isOpen() {
-		try {
-			return (database != null && database.isOpen());
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		return (database != null && database.isOpen());
 	}
 
 	@Override
@@ -56,15 +40,11 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		String adminServer = "";
 		String replicaId = "";
 
-		try {
-			adminServer = database.getACL().getAdministrationServer();
-			if (adminServer.equals(""))
-				return this;
+		adminServer = database.getACL().getAdministrationServer();
+		if (adminServer.equals(""))
+			return this;
 
-			replicaId = database.getReplicaID();
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		replicaId = database.getReplicaID();
 
 		DefaultDatabase d = session.getDatabase(DefaultDatabase.class, adminServer, replicaId);
 
@@ -84,17 +64,17 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
 
-		try {
-			if (DefaultDocument.class.isAssignableFrom(clazz)) {
-				doc = database.createDocument();
-				doc.replaceItemValue(org.riverframework.Document.FIELD_CLASS, clazz.getCanonicalName());
+		if (DefaultDocument.class.isAssignableFrom(clazz)) {
+			doc = database.createDocument();
+			doc.replaceItemValue(org.riverframework.Document.FIELD_CLASS, clazz.getCanonicalName());
 
+			try {
 				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
 				constructor.setAccessible(true);
 				rDoc = clazz.cast(constructor.newInstance(this, doc));
+			} catch (Exception e) {
+				throw new RiverException(e);
 			}
-		} catch (Exception e) {
-			throw new RiverException(e);
 		}
 
 		if (rDoc == null) {
@@ -123,60 +103,76 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		U rDoc = null;
 		org.openntf.domino.Document doc = null;
 
-		try {
-			if (parameters.length > 0) {
-				String id = parameters[0];
+		if (parameters.length > 0) {
+			String id = parameters[0];
 
-				if (id.length() == 32) {
-					doc = database.getDocumentByUNID(id);
+			if (id.length() == 32) {
+				doc = database.getDocumentByUNID(id);
+			}
+
+			if (doc == null && id.length() == 8) {
+				doc = database.getDocumentByID(id);
+			}
+
+			if (doc == null && clazz != null && Unique.class.isAssignableFrom(clazz)) {
+				Method method = null;
+				try {
+					method = clazz.getMethod(METHOD_GETINDEXNAME);
+				} catch (Exception e) {
+					throw new RiverException(e);
 				}
 
-				if (doc == null && id.length() == 8) {
-					doc = database.getDocumentByID(id);
-				}
+				if (method == null)
+					throw new RiverException("The class " + clazz.getSimpleName()
+							+ " implements Unique but it does not implement the method " + METHOD_GETINDEXNAME + ".");
 
-				if (doc == null && clazz != null && Unique.class.isAssignableFrom(clazz)) {
-					Method method = clazz.getMethod(METHOD_GETINDEXNAME);
-					if (method == null)
-						throw new RiverException("The class " + clazz.getSimpleName()
-								+ " implements Unique but it does not implement the method " + METHOD_GETINDEXNAME + ".");
+				String indexName = "";
 
+				try {
 					method.setAccessible(true);
-					String indexName = (String) method.invoke(null);
-					if (indexName.equals(""))
-						throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but its method "
-								+ METHOD_GETINDEXNAME + " returns an empty string.");
-
-					org.openntf.domino.View view = database.getView(indexName);
-					if (view == null)
-						throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but the index view "
-								+ indexName + " does not exist.");
-
-					view.refresh();
-					doc = view.getDocumentByKey(id, true);
+					indexName = (String) method.invoke(null);
+				} catch (Exception e) {
+					throw new RiverException(e);
 				}
 
-				if (doc == null && createIfDoesNotExist) {
-					// Creating a new document
-					rDoc = createDocument(clazz, parameters);
+				if (indexName.equals(""))
+					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but its method "
+							+ METHOD_GETINDEXNAME + " returns an empty string.");
 
-					// If implements "Unique", setting the Id
-					if (Unique.class.isAssignableFrom(clazz)) {
-						((Unique) rDoc).setId(id);
-					}
-				} else {
-					// Returning what was found
-					rDoc = clazz.cast(getDocument(clazz, doc));
+				org.openntf.domino.View view = database.getView(indexName);
+				if (view == null)
+					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but the index view "
+							+ indexName + " does not exist.");
+
+				view.refresh();
+				doc = view.getDocumentByKey(id, true);
+			}
+
+			if (doc == null && createIfDoesNotExist) {
+				// Creating a new document
+				if (clazz == null)
+					throw new RiverException(
+							"It's not possible create the document if it does not exists, if the class parameter is null.");
+
+				rDoc = createDocument(clazz, parameters);
+
+				// If implements "Unique", setting the Id
+				if (Unique.class.isAssignableFrom(clazz)) {
+					((Unique) rDoc).setId(id);
 				}
 			} else {
-				// There's no parameters. Returning a closed 'clazz' object
+				// Returning what was found
+				rDoc = clazz.cast(getDocument(clazz, doc));
+			}
+		} else {
+			// There's no parameters. Returning a closed 'clazz' object
+			try {
 				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
 				constructor.setAccessible(true);
 				rDoc = clazz.cast(constructor.newInstance(this, null));
+			} catch (Exception e) {
+				throw new RiverException(e);
 			}
-
-		} catch (Exception e) {
-			throw new RiverException(e);
 		}
 
 		return rDoc;
@@ -187,22 +183,41 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		return getDocument(null, doc);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <U extends org.riverframework.domino.Document> U getDocument(Class<U> clazz, org.openntf.domino.Document doc) {
 		U rDoc = null;
+		Class<?> c = null;
+
+		if (clazz == null) {
+			// If there's no a explicit class...
+			if (doc != null) {
+				// we try to get it from the document
+				String className = doc.getItemValueString(Document.FIELD_CLASS);
+				try {
+					c = Class.forName(className);
+				} catch (ClassNotFoundException e) {
+					c = null;
+				}
+			}
+			// If that was not possible, we assumed the DefaultDocument.class
+			if (c == null)
+				c = DefaultDocument.class;
+
+		} else {
+			// If the class was explicit declared, we check if it inherit from DefaultDocument
+			if (DefaultDocument.class.isAssignableFrom(clazz)) {
+				c = clazz;
+			} else {
+				// Otherwise, we assumed the DefaultDocument.class
+				c = DefaultDocument.class;
+			}
+		}
 
 		try {
-			Constructor<?> constructor = null;
-
-			if (clazz != null && DefaultDocument.class.isAssignableFrom(clazz)) {
-				constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
-				constructor.setAccessible(true);
-			} else {
-				constructor = DefaultDocument.class.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
-				constructor.setAccessible(true);
-			}
-
-			rDoc = clazz.cast(constructor.newInstance(this, doc));
+			Constructor<?> constructor = c.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
+			constructor.setAccessible(true);
+			rDoc = (U) constructor.newInstance(this, doc);
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
@@ -219,22 +234,18 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
 
-		try {
-			view = database.getView(id);
+		view = database.getView(id);
 
-			if (view != null)
-				view.setAutoUpdate(false);
+		if (view != null)
+			view.setAutoUpdate(false);
 
-			if (DefaultView.class.isAssignableFrom(clazz)) {
+		if (DefaultView.class.isAssignableFrom(clazz)) {
+			try {
 				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.View.class);
 				constructor.setAccessible(true);
 				rView = clazz.cast(constructor.newInstance(this, view));
-			}
-		} catch (Exception e) {
-			throw new RiverException(e);
-		} finally {
-			if (rView == null) {
-				rView = clazz.cast(new DefaultView(this, null));
+			} catch (Exception e) {
+				throw new RiverException(e);
 			}
 		}
 
@@ -242,19 +253,19 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 	}
 
 	@Override
-	public DocumentCollection getAllDocuments() {
-		DocumentCollection rDocumentIterator = null;
-		org.openntf.domino.DocumentCollection col = null;
+	public org.riverframework.domino.DocumentCollection getAllDocuments() {
+		org.openntf.domino.DocumentCollection col = database.getAllDocuments();
+		DocumentCollection result = new DefaultDocumentCollection(this, col);
 
-		try {
-			col = database.getAllDocuments();
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
+		return result;
+	}
 
-		rDocumentIterator = new DefaultDocumentCollection(this, col);
+	@Override
+	public org.riverframework.domino.DocumentCollection search(String query) {
+		org.openntf.domino.DocumentCollection col = database.FTSearch(query);
+		DocumentCollection result = new DefaultDocumentCollection(this, col);
 
-		return rDocumentIterator;
+		return result;
 	}
 
 	@Override

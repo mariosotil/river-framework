@@ -1,6 +1,9 @@
 package org.riverframework.domino.demo;
 
+import javax.sound.midi.Synthesizer;
+
 import org.openntf.domino.Document;
+
 import lotus.domino.NotesThread;
 
 import org.riverframework.domino.*;
@@ -36,41 +39,58 @@ import org.riverframework.domino.*;
 public class PeopleAddressBook {
 	private static final String filepath = "PeopleAddressBook.nsf";
 
-	static class People extends DefaultDocument implements Unique {
-
-		protected People(Database d, Document doc) {
-			super(d, doc);
-		}
-
-		public static String getIndexName() {
-			return "vi_ap_people_index";
-		}
-
-		public String getId() {
-			return getFieldAsString("ca_pe_name");
-		}
-
-		public org.riverframework.domino.Document generateId() {
-			// Do nothing
-			return this;
-		}
-
-		public org.riverframework.domino.Document setId(String arg0) {
-			setField("ca_pe_name", arg0);
-			return this;
-		}
-
-	}
-
 	public static void main(String[] args) {
 		NotesThread.sinitThread();
 
 		Session session = DefaultSession.getInstance().open(Credentials.getPassword());
 		Database database = session.getDatabase(DefaultDatabase.class, "", filepath);
 
-	
 		System.out.println("User=" + session.getUserName());
 		System.out.println("Database=" + database.getName());
+
+		// Deleting everything
+		database.getAllDocuments().removeAll();
+
+		// Creating three persons
+		database.createDocument(Person.class)
+		.setField("Name", "John Doe")
+		.save();
+
+		database.createDocument(Person.class)
+		.setField("Name", "Jane Doe")
+		.save();
+
+		database.createDocument(Person.class)
+		.setField("Name", "John Smith")
+		.save();
+		
+		// Searching
+		String query = "Doe";
+		System.out.println("searching for '" + query + "'...");
+		DocumentCollection col = database.search(query);
+				
+		// Printing the results
+		System.out.println("Found " + col.size() + " persons.");
+		
+		while(col.hasNext()) {
+			Person p = (Person) col.next();
+			System.out.println("Name=" + p.getFieldAsString("Name"));
+		}
+		
+		// Searching
+		query = "John";
+		System.out.println("searching for '" + query + "'...");
+		col = database.search(query);
+				
+		// Printing the results
+		System.out.println("Found " + col.size() + " persons.");
+		
+		while(col.hasNext()) {
+			Person p = (Person) col.next();
+			System.out.println("Name=" + p.getFieldAsString("Name"));
+		}
+				
+		System.out.println("Done.");
 
 		NotesThread.stermThread();
 	}

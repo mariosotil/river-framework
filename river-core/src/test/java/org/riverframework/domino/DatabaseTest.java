@@ -75,13 +75,13 @@ public class DatabaseTest {
 		assertTrue("There is a problem getting the view created in the test database.", rView.isOpen());
 	}
 
-	static class VacationDatabase extends org.riverframework.domino.DefaultDatabase {
+	static class VacationDatabase extends DefaultDatabase {
 		protected VacationDatabase(Session s, org.openntf.domino.Database obj) {
 			super(s, obj);
 		}
 	}
 
-	static class VacationRequest extends org.riverframework.domino.DefaultDocument {
+	static class VacationRequest extends DefaultDocument {
 
 		protected VacationRequest(Database d, org.openntf.domino.Document doc) {
 			super(d, doc);
@@ -150,4 +150,75 @@ public class DatabaseTest {
 		col = rDatabase.search("THIS_IS_THE_DOC");
 		assertTrue("The search does not returns values for a query that would returns something.", col.hasNext());
 	}
+
+	static class Person extends DefaultDocument implements Unique {
+
+		protected Person(Database d, org.openntf.domino.Document doc) {
+			super(d, doc);
+		}
+
+		public static String getIndexName() {
+			return "vi_ap_people_index";
+		}
+
+		@Override
+		public String getId() {
+			return getFieldAsString("ca_pe_name");
+		}
+
+		@Override
+		public org.riverframework.domino.Document generateId() {
+			// Do nothing
+			return this;
+		}
+
+		@Override
+		public org.riverframework.domino.Document setId(String arg0) {
+			setField("ca_pe_name", arg0);
+			return this;
+		}
+
+	}
+
+	@Test
+	public void testGetDocument() {
+		assertTrue("The test database could not be instantiated.", rDatabase != null);
+		assertTrue("The test database could not be opened.", rDatabase.isOpen());
+
+		rDatabase.getAllDocuments().removeAll();
+
+		rDatabase.createDocument(Person.class)
+				.setId("John")
+				.setForm("fo_ap_people")
+				.setField("Age", 30)
+				.save();
+
+		rDatabase.createDocument(Person.class)
+				.setId("Kathy")
+				.setForm("fo_ap_people")
+				.setField("Age", 25)
+				.save();
+
+		rDatabase.createDocument(Person.class)
+				.setId("Jake")
+				.setForm("fo_ap_people")
+				.setField("Age", 27)
+				.save();
+
+		Document p = rDatabase.getDocument(Person.class, "Kathy");
+		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());
+		assertTrue("It could not possible get the Kathy's age.", p.getFieldAsInteger("Age") == 25);
+
+		String unid = p.getUniversalId();
+		p = null;
+		p = rDatabase.getDocument(unid);
+		assertTrue("It should be possible to load a person object for Kathy with its Universal Id.", p.isOpen());
+
+		p = null;
+		p = rDatabase.getDocument("Kathy");
+		assertFalse("It should not be possible to load a person object for Kathy without indicate its class.", p.isOpen());
+
+
+	}
+
 }

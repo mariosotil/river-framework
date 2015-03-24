@@ -54,14 +54,17 @@ public class PeopleAddressBook {
 		// Creating three persons
 		database.createDocument(Person.class)
 		.setField("Name", "John Doe")
+		.setField("Age", 35)
 		.save();
 
 		database.createDocument(Person.class)
 		.setField("Name", "Jane Doe")
+		.setField("Age", 29)
 		.save();
 
 		database.createDocument(Person.class)
 		.setField("Name", "John Smith")
+		.setField("Age", 30)
 		.save();
 		
 		// Searching
@@ -89,7 +92,17 @@ public class PeopleAddressBook {
 			Person p = (Person) col.next();
 			System.out.println("Name=" + p.getFieldAsString("Name"));
 		}
-				
+
+		// Finding person by Id
+		String id = "John Doe";
+		Person p = (Person) database.getDocument(id);
+		if (p.isOpen()) {
+			System.out.println("Found " + id + ". His age is " + p.getFieldAsString("Age"));
+		} else {
+			System.out.println("Not found " + id + ".");
+		}
+		
+		
 		System.out.println("Done.");
 
 		NotesThread.stermThread();

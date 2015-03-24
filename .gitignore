@@ -18,6 +18,7 @@ target/
  
 # My files #
 DevelopmentNotes
+*.log
  
 ######################
 # Windows

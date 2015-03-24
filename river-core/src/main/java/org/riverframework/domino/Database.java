@@ -2,7 +2,15 @@ package org.riverframework.domino;
 
 public interface Database extends org.riverframework.Database {
 	@Override
+	public org.riverframework.domino.Session getSession();
+	
+	@Override
 	public org.riverframework.domino.Document createDocument(String... parameters);
+
+	@Override
+	public org.riverframework.domino.View getView(String... parameters);
+
+	public <U extends org.riverframework.domino.View> U getView(Class<U> clazz, String... parameters);
 
 	public <U extends org.riverframework.domino.Document> U createDocument(Class<U> clazz, String... parameters);
 
@@ -26,6 +34,9 @@ public interface Database extends org.riverframework.Database {
 	@Override
 	public org.riverframework.domino.DocumentCollection search(String query);
 
+	@Override
+	public org.riverframework.domino.Database refreshSearchIndex();
+		
 	@Override
 	public org.riverframework.domino.Counter getCounter(String key);
 }

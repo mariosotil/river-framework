@@ -17,9 +17,20 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	public static final String FIELD_IS_CONFLICT = "$Conflict";
 	public static final String FIELD_FORM = "Form";
 
-	protected static Database rDatabase = null;
+	protected Database rDatabase = null;
 	protected org.openntf.domino.Document document = null;
 	protected boolean isModified = false;
+
+	protected DefaultDocument(Database d, org.openntf.domino.Document doc) {
+		rDatabase = d;
+		document = doc;
+		isModified = false;
+	}
+
+	@Override
+	public org.riverframework.domino.Database getDatabase() {
+		return rDatabase;
+	}
 
 	public static String getIndexName() {
 		return "";
@@ -85,12 +96,6 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	public Document setField(String field, Object value) {
 		isModified = setFieldIfNecessary(field, value) || isModified;
 		return this;
-	}
-
-	protected DefaultDocument(Database d, org.openntf.domino.Document doc) {
-		rDatabase = d;
-		document = doc;
-		isModified = false;
 	}
 
 	@Override
@@ -261,15 +266,10 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 		return this;
 	}
 
-	protected Document saveImplementation() {
-		document.save(true, false);
-		return this;
-	}
-
 	@Override
 	public Document save(boolean force) {
 		if (force || isModified) {
-			saveImplementation();
+			document.save(true, false);
 			isModified = false;
 		}
 
@@ -306,10 +306,4 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	public Document recalc() {
 		return internalRecalc();
 	}
-
-	@Override
-	public Database getDatabase() {
-		return rDatabase;
-	}
-
 }

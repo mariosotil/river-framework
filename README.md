@@ -4,13 +4,40 @@
 
 Hi, 
 
-This is a Workflow Application Framework in an **EARLY development stage**. This version only has the following features: 
+This is a Workflow Application Framework in an **EARLY development stage**. So far, the code written with this framework looks like this:
+
+    //Opening session from the credentials file
+    Session session = DefaultSession.getInstance().open(Credentials.getPassword());
+    Database database = session.getDatabase(DefaultDatabase.class, "", "db.nsf");
+    
+    // Creating one person
+    Person jd = (Person) database.createDocument(Person.class)
+      .generateId()
+      .setField("Name", "John Doe")
+      .setField("Age", 35)
+      .save();
+    
+    // Saving its Id generated in the last line
+    String johnDoeId = jd.getId();
+    
+    // Searching people with surname "Doe"				
+    DocumentCollection col = database.search("Doe");
+    System.out.println("Found " + col.size() + " persons.");
+		
+    // Finding a John Doe by Id
+    Document p = database.getDocument(Person.class, johnDoeId);
+    if (p.isOpen()) {
+      System.out.println("Found " + johnDoeId);
+      System.out.println("His name is " + p.getFieldAsString("Name"));
+      System.out.println("His age is " + p.getFieldAsInteger("Age"));
+    } 
+
+So far, this framework has the following features: 
 
 - Version 0.1
   - It is using IBM Notes as NoSQL server
   - It lets you connect to an IBM Notes database and the possibility to access its views and create or modify documents.
   - Document collections: array, list, iterator
-  - The design has method chaining and the Null Object pattern
   - It has a set of JUnit tests
 
 - Version 0.2

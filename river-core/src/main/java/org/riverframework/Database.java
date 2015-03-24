@@ -1,8 +1,11 @@
 package org.riverframework;
 
 import org.riverframework.domino.DocumentCollection;
+import org.riverframework.domino.Session;
 
 public interface Database {
+	public Session getSession();
+	
 	public boolean isOpen();
 
 	public String getServer();
@@ -13,7 +16,7 @@ public interface Database {
 
 	public Database getMainReplica();
 
-	public <U extends View> U getView(Class<U> type, String... parameters);
+	public View<?> getView(String... parameters);
 
 	public Document createDocument(String... parameters);
 
@@ -23,6 +26,8 @@ public interface Database {
 
 	public DocumentCollection search(String query);
 
+	public Database refreshSearchIndex();
+	
 	public Counter getCounter(String key);
 
 }

@@ -1,9 +1,5 @@
 package org.riverframework.domino.demo;
 
-import javax.sound.midi.Synthesizer;
-
-import org.openntf.domino.Document;
-
 import lotus.domino.NotesThread;
 
 import org.riverframework.domino.*;
@@ -52,20 +48,27 @@ public class PeopleAddressBook {
 		database.getAllDocuments().removeAll();
 
 		// Creating three persons
-		database.createDocument(Person.class)
+		 
+		Person jd = (Person) database.createDocument(Person.class)
+		.generateId()
 		.setField("Name", "John Doe")
 		.setField("Age", 35)
 		.save();
 
+		String johnDoeId = jd.getId();
+				
 		database.createDocument(Person.class)
+		.generateId()
 		.setField("Name", "Jane Doe")
 		.setField("Age", 29)
 		.save();
 
 		database.createDocument(Person.class)
+		.generateId()
 		.setField("Name", "John Smith")
 		.setField("Age", 30)
 		.save();
+		
 		
 		// Searching
 		String query = "Doe";
@@ -93,13 +96,12 @@ public class PeopleAddressBook {
 			System.out.println("Name=" + p.getFieldAsString("Name"));
 		}
 
-		// Finding person by Id
-		String id = "John Doe";
-		Person p = (Person) database.getDocument(id);
+		// Finding a John Doe by Id
+		Document p = database.getDocument(Person.class, johnDoeId);
 		if (p.isOpen()) {
-			System.out.println("Found " + id + ". His age is " + p.getFieldAsString("Age"));
+			System.out.println("Found " + johnDoeId + ". His name is " + p.getFieldAsString("Name") + " and his age is " + p.getFieldAsInteger("Age"));
 		} else {
-			System.out.println("Not found " + id + ".");
+			System.out.println("Not found " + johnDoeId + ".");
 		}
 		
 		

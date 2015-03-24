@@ -5,19 +5,29 @@ import java.lang.reflect.Constructor;
 import org.riverframework.RiverException;
 
 public class DefaultView implements org.riverframework.domino.View {
-	protected Database rDatabase = null;
-	protected org.openntf.domino.View view = null;
-	org.openntf.domino.Document iteratorDoc = null;
+	protected Database database = null;
+	protected org.openntf.domino.View _view = null;
+	protected org.openntf.domino.Document _doc = null;
 
 	protected DefaultView(Database d, org.openntf.domino.View obj) {
-		rDatabase = d;
-		view = obj;
+		database = d;
+		_view = obj;
 
 		initIterator();
 	}
 
 	@Override
-	public <U extends org.riverframework.Document> U getDocumentByKey(Class<U> clazz, Object key) {
+	public org.riverframework.domino.Database getDatabase() {
+		return database;
+	}
+
+	@Override
+	public org.riverframework.domino.Document getDocumentByKey(String key) {
+		return getDocumentByKey(DefaultDocument.class, key);
+	}
+
+	@Override
+	public <U extends org.riverframework.domino.Document> U getDocumentByKey(Class<U> clazz, String key) {
 		U rDoc = null;
 		org.openntf.domino.Document doc = null;
 
@@ -26,18 +36,18 @@ public class DefaultView implements org.riverframework.domino.View {
 
 		if (DefaultDocument.class.isAssignableFrom(clazz)) {
 
-			doc = view.getDocumentByKey(key, true);
+			doc = _view.getDocumentByKey(key, true);
 
 			try {
 				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
-				rDoc = clazz.cast(constructor.newInstance(rDatabase, doc));
+				rDoc = clazz.cast(constructor.newInstance(database, doc));
 			} catch (Exception e) {
 				throw new RiverException(e);
 			}
 		}
 
 		if (rDoc == null) {
-			rDoc = clazz.cast(new DefaultDocument(rDatabase, null));
+			rDoc = clazz.cast(new DefaultDocument(database, null));
 		} else {
 			((DefaultDocument) rDoc).afterCreate().setModified(false);
 		}
@@ -47,28 +57,34 @@ public class DefaultView implements org.riverframework.domino.View {
 
 	@Override
 	public boolean isOpen() {
-		return view != null;
+		return _view != null;
 	}
 
 	@Override
 	public DocumentCollection getAllDocuments() {
-		org.openntf.domino.DocumentCollection col = view.getAllDocuments(); // Always exact match
-		DocumentCollection result = new DefaultDocumentCollection(rDatabase, col);
+		org.openntf.domino.DocumentCollection col = _view.getAllDocuments(); // Always exact match
+		DocumentCollection result = new DefaultDocumentCollection(database, col);
 
 		return result;
 	}
 
 	@Override
 	public DocumentCollection getAllDocumentsByKey(Object key) {
-		org.openntf.domino.DocumentCollection col = view.getAllDocumentsByKey(key, true); // Always exact match
-		DocumentCollection result = new DefaultDocumentCollection(rDatabase, col);
+		org.openntf.domino.DocumentCollection col = _view.getAllDocumentsByKey(key, true); // Always exact match
+		DocumentCollection result = new DefaultDocumentCollection(database, col);
 
 		return result;
 	}
 
 	@Override
 	public View refresh() {
-		view.refresh();
+		_view.refresh();
+		return this;
+	}
+
+	@Override
+	public View filter(String query) {
+		_view.FTSearch(query);
 		return this;
 	}
 
@@ -76,21 +92,21 @@ public class DefaultView implements org.riverframework.domino.View {
 	 * Implementing Iterator
 	 */
 	protected void initIterator() {
-		if (view != null) {
-			iteratorDoc = view.getFirstDocument();
+		if (_view != null) {
+			_doc = _view.getFirstDocument();
 		}
 	}
 
 	@Override
 	public boolean hasNext() {
-		return iteratorDoc != null;
+		return _doc != null;
 	}
 
 	@Override
 	public org.riverframework.domino.Document next() {
-		org.openntf.domino.Document current = iteratorDoc;
-		iteratorDoc = view.getNextDocument(iteratorDoc);
-		Document rDoc = rDatabase.getDocument(current);
+		org.openntf.domino.Document current = _doc;
+		_doc = _view.getNextDocument(_doc);
+		Document rDoc = database.getDocument(current);
 		return rDoc;
 	}
 

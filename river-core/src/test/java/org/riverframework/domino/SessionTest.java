@@ -11,13 +11,11 @@ import org.junit.Test;
 public class SessionTest {
 	@Before
 	public void open() {
-
+		NotesThread.sinitThread();
 	}
 
 	@Test
 	public void testSession() {
-		NotesThread.sinitThread();
-
 		Session session = DefaultSession.getInstance().open(Credentials.getPassword());
 
 		assertTrue("Notes Session could not be retrieved", session.isOpen());
@@ -25,11 +23,27 @@ public class SessionTest {
 				session.getUserName().equals(""));
 
 		DefaultSession.getInstance().close();
-
-		NotesThread.stermThread();
 	}
 
+	@Test
+	public void testSessionUUID() {
+		Session session = DefaultSession.getInstance().open(Credentials.getPassword());
+
+		assertTrue("Notes Session could not be retrieved", session.isOpen());
+		
+		String uuid1 = session.getUUID();
+		
+		Database rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
+		
+		String uuid2 = rDatabase.getSession().getUUID();
+		
+		assertTrue("It was retrieved differents UUID from the first session and the session object from the database", uuid1.equals(uuid2));
+
+		DefaultSession.getInstance().close();
+	}
+	
 	@After
 	public void close() {
+		NotesThread.stermThread();
 	}
 }

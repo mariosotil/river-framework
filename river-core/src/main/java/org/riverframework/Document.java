@@ -16,6 +16,8 @@ public interface Document {
 	public static final String FIELD_ID = Session.FIELD_PREFIX + "id";
 	public static final boolean FORCE_SAVE = true;
 
+	public Database getDatabase();
+	
 	public boolean compareFieldValue(String field, Object value);
 
 	public Document setField(String field, Object value);
@@ -47,7 +49,5 @@ public interface Document {
 	public Document save();
 
 	public Document recalc();
-
-	public Database getDatabase();
 
 }

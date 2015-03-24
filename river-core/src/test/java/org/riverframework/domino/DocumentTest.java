@@ -126,6 +126,13 @@ public class DocumentTest {
 		String newValue = rDoc.getFieldAsString(testField);
 
 		assertTrue("The value retrieved was different to the saved", newValue.equals(testValue));
+
+		rDoc.setField(testField, 20);
+		String strValue = rDoc.getFieldAsString(testField);
+		int intValue = rDoc.getFieldAsInteger(testField);
+
+		assertFalse("The integer value can not be retrieved as string. ", "20".equals(strValue));
+		assertTrue("The integer value can be retrieved as integer. ", 20 == intValue);
 	}
 
 	@Test

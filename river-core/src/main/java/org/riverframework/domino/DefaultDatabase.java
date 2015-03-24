@@ -8,31 +8,36 @@ import org.riverframework.RiverException;
 public class DefaultDatabase implements org.riverframework.domino.Database {
 	public static final String METHOD_GETINDEXNAME = "getIndexName";
 	protected Session session = null;
-	protected org.openntf.domino.Database database = null;
+	protected org.openntf.domino.Database _db = null;
 
 	protected DefaultDatabase(org.riverframework.domino.Session s, org.openntf.domino.Database obj) {
 		session = s;
-		database = obj;
+		_db = obj;
+	}
+	
+	@Override
+	public org.riverframework.domino.Session getSession() {
+		return session;
 	}
 
 	@Override
 	public String getServer() {
-		return database.getServer();
+		return _db.getServer();
 	}
 
 	@Override
 	public String getFilePath() {
-		return database.getFilePath();
+		return _db.getFilePath();
 	}
 
 	@Override
 	public String getName() {
-		return database.getTitle();
+		return _db.getTitle();
 	}
 
 	@Override
 	public boolean isOpen() {
-		return (database != null && database.isOpen());
+		return (_db != null && _db.isOpen());
 	}
 
 	@Override
@@ -40,11 +45,11 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		String adminServer = "";
 		String replicaId = "";
 
-		adminServer = database.getACL().getAdministrationServer();
+		adminServer = _db.getACL().getAdministrationServer();
 		if (adminServer.equals(""))
 			return this;
 
-		replicaId = database.getReplicaID();
+		replicaId = _db.getReplicaID();
 
 		DefaultDatabase d = session.getDatabase(DefaultDatabase.class, adminServer, replicaId);
 
@@ -65,7 +70,7 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 			throw new RiverException("The clazz parameter can not be null.");
 
 		if (DefaultDocument.class.isAssignableFrom(clazz)) {
-			doc = database.createDocument();
+			doc = _db.createDocument();
 			doc.replaceItemValue(org.riverframework.Document.FIELD_CLASS, clazz.getCanonicalName());
 
 			try {
@@ -96,6 +101,7 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		return getDocument(clazz, false, parameters);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <U extends org.riverframework.domino.Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist,
 			String... parameters)
@@ -107,11 +113,11 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 			String id = parameters[0];
 
 			if (id.length() == 32) {
-				doc = database.getDocumentByUNID(id);
+				doc = _db.getDocumentByUNID(id);
 			}
 
 			if (doc == null && id.length() == 8) {
-				doc = database.getDocumentByID(id);
+				doc = _db.getDocumentByID(id);
 			}
 
 			if (doc == null && clazz != null && Unique.class.isAssignableFrom(clazz)) {
@@ -139,7 +145,7 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but its method "
 							+ METHOD_GETINDEXNAME + " returns an empty string.");
 
-				org.openntf.domino.View view = database.getView(indexName);
+				org.openntf.domino.View view = _db.getView(indexName);
 				if (view == null)
 					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but the index view "
 							+ indexName + " does not exist.");
@@ -162,7 +168,11 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 				}
 			} else {
 				// Returning what was found
-				rDoc = clazz.cast(getDocument(clazz, doc));
+				if (clazz == null) {
+					rDoc = (U) getDocument(DefaultDocument.class, doc);
+				} else {
+					rDoc = clazz.cast(getDocument(clazz, doc));
+				}
 			}
 		} else {
 			// There's no parameters. Returning a closed 'clazz' object
@@ -226,7 +236,12 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 	}
 
 	@Override
-	public <U extends org.riverframework.View> U getView(Class<U> clazz, String... parameters) {
+	public org.riverframework.domino.View getView(String... parameters) {
+		return getView(DefaultView.class, parameters);
+	}
+
+	@Override
+	public <U extends org.riverframework.domino.View> U getView(Class<U> clazz, String... parameters) {
 		U rView = null;
 		org.openntf.domino.View view = null;
 		String id = parameters[0];
@@ -234,7 +249,7 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
 
-		view = database.getView(id);
+		view = _db.getView(id);
 
 		if (view != null)
 			view.setAutoUpdate(false);
@@ -254,7 +269,7 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 
 	@Override
 	public org.riverframework.domino.DocumentCollection getAllDocuments() {
-		org.openntf.domino.DocumentCollection col = database.getAllDocuments();
+		org.openntf.domino.DocumentCollection col = _db.getAllDocuments();
 		DocumentCollection result = new DefaultDocumentCollection(this, col);
 
 		return result;
@@ -262,10 +277,16 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 
 	@Override
 	public org.riverframework.domino.DocumentCollection search(String query) {
-		org.openntf.domino.DocumentCollection col = database.FTSearch(query);
+		org.openntf.domino.DocumentCollection col = _db.FTSearch(query);
 		DocumentCollection result = new DefaultDocumentCollection(this, col);
 
 		return result;
+	}
+
+	@Override
+	public org.riverframework.domino.Database refreshSearchIndex() {
+		_db.updateFTIndex(false);
+		return this;
 	}
 
 	@Override

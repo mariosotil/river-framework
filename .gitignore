@@ -19,7 +19,8 @@ target/
 # My files #
 DevelopmentNotes
 *.log
- 
+*.zip
+
 ######################
 # Windows
 ######################

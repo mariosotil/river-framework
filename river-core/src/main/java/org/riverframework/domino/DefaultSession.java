@@ -1,6 +1,7 @@
 package org.riverframework.domino;
 
 import java.lang.reflect.Constructor;
+import java.util.UUID;
 
 import lotus.domino.NotesFactory;
 
@@ -12,22 +13,28 @@ public class DefaultSession implements org.riverframework.domino.Session {
 	// public static final boolean DO_NOT_USE_POOL = false;
 
 	public static final String PREFIX = "RIVER_";
-
 	private final static Session INSTANCE = new DefaultSession();
-	private static org.openntf.domino.Session session = null;
-
+	
+	private org.openntf.domino.Session _session = null;
+	private UUID sessionUUID = null;
+	
 	protected DefaultSession() {
 		// Exists only to defeat instantiation.
+		sessionUUID = UUID.randomUUID();
 	}
 
 	public static Session getInstance() {
 		return INSTANCE;
 	}
 
+	public String getUUID() {
+		return sessionUUID.toString();
+	}
+	
 	public void setSession(org.openntf.domino.Session s) {
 		if (s == null)
 			throw new RiverException("You can't set a null Lotus Notes session");
-		session = s;
+		_session = s;
 	}
 
 	@Override
@@ -40,24 +47,24 @@ public class DefaultSession implements org.riverframework.domino.Session {
 			switch (parameters.length) {
 			case 0:
 				s = NotesFactory.createSession();
-				session = Factory.fromLotus(s, org.openntf.domino.impl.Session.class, null);
+				_session = Factory.fromLotus(s, org.openntf.domino.impl.Session.class, null);
 				break;
 
 			case 1:
 				password = parameters[0];
 				s = NotesFactory.createSession((String) null, (String) null, password);
-				session = Factory.fromLotus(s, org.openntf.domino.impl.Session.class, null);
+				_session = Factory.fromLotus(s, org.openntf.domino.impl.Session.class, null);
 				break;
 
 			case 2:
 				username = parameters[0];
 				password = parameters[1];
 				s = NotesFactory.createSession((String) null, username, password);
-				session = Factory.fromLotus(s, org.openntf.domino.impl.Session.class, null);
+				_session = Factory.fromLotus(s, org.openntf.domino.impl.Session.class, null);
 				break;
 
 			default:
-				session = null;
+				_session = null;
 				break;
 			}
 		} catch (Exception e) {
@@ -69,12 +76,12 @@ public class DefaultSession implements org.riverframework.domino.Session {
 
 	@Override
 	public boolean isOpen() {
-		return (session != null);
+		return (_session != null);
 	}
 
 	@Override
 	public org.openntf.domino.DateTime Java2NotesTime(java.util.Date d) {
-		org.openntf.domino.DateTime result = session.createDateTime(d);
+		org.openntf.domino.DateTime result = _session.createDateTime(d);
 		return result;
 	}
 
@@ -96,12 +103,12 @@ public class DefaultSession implements org.riverframework.domino.Session {
 		String path = location[1];
 
 		if (path.length() == 16) {
-			database = session.getDatabase(null, " ", true);
+			database = _session.getDatabase(null, " ", true);
 			database.openByReplicaID(server, path);
 		}
 
 		if (database == null || !database.isOpen()) {
-			database = session.getDatabase(server, path, false);
+			database = _session.getDatabase(server, path, false);
 		}
 
 		if (database != null && !database.isOpen()) {
@@ -121,7 +128,7 @@ public class DefaultSession implements org.riverframework.domino.Session {
 
 	@Override
 	public String getUserName() {
-		return session.getUserName();
+		return _session.getUserName();
 	}
 
 	@Override

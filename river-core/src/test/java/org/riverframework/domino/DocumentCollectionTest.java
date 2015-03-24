@@ -69,6 +69,8 @@ public class DocumentCollectionTest {
 				.setForm(TEST_FORM)
 				.setField("Value", "THIS_IS_THE_DOC")
 				.save();
+		
+		rDatabase.refreshSearchIndex();
 
 		col = null;
 		col = rDatabase.search("THIS IS IMPOSSIBLE TO FIND");
@@ -77,14 +79,13 @@ public class DocumentCollectionTest {
 		col = null;
 		col = rDatabase.search("THIS_IS_THE_DOC");
 		assertTrue("The search does not returns values for a query that would returns something.", col.size() > 0);
-
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void testRemove() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
-		org.riverframework.domino.DefaultDocumentCollection rIterator = (DefaultDocumentCollection) rDatabase.getAllDocuments();
+		DocumentCollection rIterator = rDatabase.getAllDocuments();
 		rIterator.remove();
 	}
 

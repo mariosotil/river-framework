@@ -1,35 +1,40 @@
 package org.riverframework.domino;
 
 public class DefaultDocumentCollection implements org.riverframework.domino.DocumentCollection {
-	protected Database rDatabase;
-	protected org.openntf.domino.DocumentCollection col = null;
-	protected org.openntf.domino.Document doc = null;
+	protected Database database;
+	protected org.openntf.domino.DocumentCollection _col = null;
+	protected org.openntf.domino.Document _doc = null;
 
 	public DefaultDocumentCollection(Database d, org.openntf.domino.DocumentCollection c) {
-		rDatabase = d;
-		col = c;
+		database = d;
+		_col = c;
 		initIterator();
 	}
 
+	@Override
+	public org.riverframework.domino.Database getDatabase() {
+		return database;
+	}
+
 	protected void initIterator() {
-		doc = col.getFirstDocument();
+		_doc = _col.getFirstDocument();
 	}
 
 	@Override
 	public int size(){
-		return col.size();
+		return _col.size();
 	}
 
 	@Override
 	public boolean hasNext() {
-		return doc != null;
+		return _doc != null;
 	}
 
 	@Override
 	public org.riverframework.domino.Document next() {
-		org.openntf.domino.Document current = doc;
-		doc = col.getNextDocument(doc);
-		Document rDoc = rDatabase.getDocument(current);
+		org.openntf.domino.Document current = _doc;
+		_doc = _col.getNextDocument(_doc);
+		Document rDoc = database.getDocument(current);
 		return rDoc;
 	}
 
@@ -39,13 +44,14 @@ public class DefaultDocumentCollection implements org.riverframework.domino.Docu
 	}
 	
 	@Override
-	public void filter(String query) {
-		col.FTSearch(query);
+	public DocumentCollection filter(String query) {
+		_col.FTSearch(query);
+		return this;
 	}
 	
 	@Override
 	public DocumentCollection removeAll() {
-		col.removeAll(true);
+		_col.removeAll(true);
 		return this;
 	}
 }

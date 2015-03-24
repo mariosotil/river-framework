@@ -14,6 +14,9 @@ public interface Document extends org.riverframework.Document {
 	public static final String FIELD_ID = Session.FIELD_PREFIX + "id";
 	public static final boolean FORCE_SAVE = true;
 
+	@Override
+	public org.riverframework.domino.Database getDatabase();
+
 	public String getForm();
 
 	public String getUniversalId();
@@ -37,8 +40,5 @@ public interface Document extends org.riverframework.Document {
 
 	@Override
 	public org.riverframework.domino.Document recalc();
-
-	@Override
-	public org.riverframework.domino.Database getDatabase();
 
 }

@@ -10,6 +10,7 @@ This is a Workflow Application Framework in an **EARLY development stage**. This
   - It is using IBM Notes as NoSQL server
   - It lets you connect to an IBM Notes database and the possibility to access its views and create or modify documents.
   - Document collections: array, list, iterator
+  - The design has method chaining and the Null Object pattern
   - It has a set of JUnit tests
 
 - Version 0.2

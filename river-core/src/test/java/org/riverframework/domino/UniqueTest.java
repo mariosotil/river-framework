@@ -18,7 +18,7 @@ public class UniqueTest {
 
 		session.open(Credentials.getPassword());
 		rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
-		rDatabase.getAllDocuments().removeAll();
+		rDatabase.getAllDocuments().deleteAll();
 	}
 
 	@After
@@ -31,7 +31,7 @@ public class UniqueTest {
 		protected final static String FORM_NAME = Session.OBJECT_PREFIX + "NoUnique";
 		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 
-		protected NoUniqueDocument(Database d, org.openntf.domino.Document doc) {
+		protected NoUniqueDocument(Database d, lotus.domino.Document doc) {
 			super(d, doc);
 		}
 
@@ -46,7 +46,7 @@ public class UniqueTest {
 		protected final static String FORM_NAME = Session.OBJECT_PREFIX + "Unique";
 		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 
-		protected UniqueDocument(Database d, org.openntf.domino.Document doc) {
+		protected UniqueDocument(Database d, lotus.domino.Document doc) {
 			super(d, doc);
 		}
 

@@ -1,10 +1,9 @@
 package org.riverframework;
 
-import java.util.Iterator;
+import java.util.List;
 
-public interface DocumentCollection<T> extends Iterator<T> {
+public interface DocumentCollection<T> extends List<T> {
 	public Database getDatabase();
 	
-	@SuppressWarnings("rawtypes")
-	public DocumentCollection removeAll();
+	public DocumentCollection<T> deleteAll();
 }

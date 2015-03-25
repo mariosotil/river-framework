@@ -21,9 +21,9 @@ public interface Database extends org.riverframework.Database {
 
 	public <U extends org.riverframework.domino.Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters);
 
-	public <U extends org.riverframework.domino.Document> U getDocument(Class<U> clazz, org.openntf.domino.Document doc);
+	public <U extends org.riverframework.domino.Document> U getDocument(Class<U> clazz, lotus.domino.Document doc);
 
-	public org.riverframework.domino.Document getDocument(org.openntf.domino.Document doc);
+	public org.riverframework.domino.Document getDocument(lotus.domino.Document doc);
 
 	@Override
 	public org.riverframework.domino.Database getMainReplica();

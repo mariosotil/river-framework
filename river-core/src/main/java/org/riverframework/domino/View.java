@@ -17,10 +17,7 @@ public interface View extends org.riverframework.View<org.riverframework.domino.
 
 	@Override
 	public org.riverframework.domino.View refresh();
-	
-	public org.riverframework.domino.View filter(String query);
 
 	@Override
-	public org.riverframework.domino.Document next();
-
+	public org.riverframework.domino.DocumentCollection search(String query);
 }

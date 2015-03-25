@@ -2,7 +2,10 @@ package org.riverframework.domino;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+import java.util.Map;
+import java.util.Vector;
+
 import lotus.domino.NotesThread;
 
 import org.junit.After;
@@ -28,7 +31,7 @@ public class DatabaseTest {
 			rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
 			rVacationDatabase = session.getDatabase(VacationDatabase.class, "", Context.getDatabase());
 
-			rDatabase.getAllDocuments().removeAll();
+			rDatabase.getAllDocuments().deleteAll();
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
@@ -76,14 +79,14 @@ public class DatabaseTest {
 	}
 
 	static class VacationDatabase extends DefaultDatabase {
-		protected VacationDatabase(Session s, org.openntf.domino.Database obj) {
+		protected VacationDatabase(Session s, lotus.domino.Database obj) {
 			super(s, obj);
 		}
 	}
 
 	static class VacationRequest extends DefaultDocument {
 
-		protected VacationRequest(Database d, org.openntf.domino.Document doc) {
+		protected VacationRequest(Database d, lotus.domino.Document doc) {
 			super(d, doc);
 		}
 
@@ -115,10 +118,20 @@ public class DatabaseTest {
 		assertTrue("There is a problem getting a VacationRequest created in the test database.", rDocument.isOpen());
 	}
 
-	@Test
-	public void testGetMainReplica() {
-		fail("Not implemented yet.");
-	}
+//  2015.03.24 This not works with the current version of  
+//	@Test
+//	public void testGetMainReplica() {
+//		assertTrue("The test database could not be instantiated.", rDatabase != null);
+//		assertTrue("The test database could not be opened.", rDatabase.isOpen());
+//
+//		Database replica = rDatabase.getMainReplica();
+//
+//		assertTrue("The replica database could not be instantiated.", replica.isOpen());
+//		
+//		String replicaServer = replica.getServer();
+//		String testServer = Context.getServer();
+//		assertTrue("The replica database is not in the test server.", replicaServer.equals(testServer));
+//	}
 
 	@Test
 	public void testSearch() {
@@ -126,7 +139,7 @@ public class DatabaseTest {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
 		DocumentCollection col = null;
-		col = rDatabase.getAllDocuments().removeAll();
+		col = rDatabase.getAllDocuments().deleteAll();
 
 		RandomString rs = new RandomString(10);
 
@@ -142,18 +155,20 @@ public class DatabaseTest {
 				.setField("Value", "THIS_IS_THE_DOC")
 				.save();
 
+		rDatabase.refreshSearchIndex();
+		
 		col = null;
 		col = rDatabase.search("THIS IS IMPOSSIBLE TO FIND");
-		assertFalse("The search returns values for a query that would returns nothing.", col.hasNext());
+		assertTrue("The search returns values for a query that would returns nothing.", col.isEmpty());
 
 		col = null;
 		col = rDatabase.search("THIS_IS_THE_DOC");
-		assertTrue("The search does not returns values for a query that would returns something.", col.hasNext());
+		assertFalse("The search does not returns values for a query that would returns something.", col.isEmpty());
 	}
 
 	static class Person extends DefaultDocument implements Unique {
 
-		protected Person(Database d, org.openntf.domino.Document doc) {
+		protected Person(Database d, lotus.domino.Document doc) {
 			super(d, doc);
 		}
 
@@ -185,7 +200,7 @@ public class DatabaseTest {
 		assertTrue("The test database could not be instantiated.", rDatabase != null);
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
-		rDatabase.getAllDocuments().removeAll();
+		rDatabase.getAllDocuments().deleteAll();
 
 		rDatabase.createDocument(Person.class)
 				.setId("John")
@@ -218,6 +233,38 @@ public class DatabaseTest {
 		p = rDatabase.getDocument("Kathy");
 		assertFalse("It should not be possible to load a person object for Kathy without indicate its class.", p.isOpen());
 
+
+	}
+
+	@Test
+	public void testGetFields() {
+		assertTrue("The test database could not be instantiated.", rDatabase != null);
+		assertTrue("The test database could not be opened.", rDatabase.isOpen());
+
+		rDatabase.getAllDocuments().deleteAll();
+
+		rDatabase.createDocument(Person.class)
+				.setId("Kathy")
+				.setForm("fo_ap_people")
+				.setField("Age", 25)
+				.save();
+
+		Document p = rDatabase.getDocument(Person.class, "Kathy");
+		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());
+
+		Map<String, Vector<Object>> fields = p.getFields();
+		
+		assertTrue("It could not possible get the fields from the Kathy's document.", fields.size() > 0);
+		
+		Vector<Object> field = fields.get("ca_pe_name");
+		String value = field.get(0).toString();
+		
+		assertTrue("It could not possible get the field Name from the Kathy's document.", value.equals("Kathy"));
+		
+		field = fields.get("Age");
+		int age = ((Double) field.get(0)).intValue();
+		
+		assertTrue("It could not possible get the field Age from the Kathy's document.", age == 25);
 
 	}
 

@@ -17,7 +17,7 @@ public class CounterTest {
 
 		session.open(Credentials.getPassword());
 		rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
-		rDatabase.getAllDocuments().removeAll();
+		rDatabase.getAllDocuments().deleteAll();
 	}
 
 	@After

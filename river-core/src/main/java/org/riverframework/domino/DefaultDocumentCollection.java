@@ -1,57 +1,87 @@
 package org.riverframework.domino;
 
-public class DefaultDocumentCollection implements org.riverframework.domino.DocumentCollection {
-	protected Database database;
-	protected org.openntf.domino.DocumentCollection _col = null;
-	protected org.openntf.domino.Document _doc = null;
+import java.util.ArrayList;
 
-	public DefaultDocumentCollection(Database d, org.openntf.domino.DocumentCollection c) {
+import org.riverframework.RiverException;
+
+import lotus.domino.NotesException;
+
+public class DefaultDocumentCollection extends ArrayList<org.riverframework.domino.Document> 
+implements org.riverframework.domino.DocumentCollection{
+	private static final long serialVersionUID = -5032050258891587783L;
+	protected Database database;
+
+	public DefaultDocumentCollection(Database d) {
 		database = d;
-		_col = c;
-		initIterator();
 	}
 
+	@Override
+	public org.riverframework.domino.DocumentCollection loadFrom(lotus.domino.DocumentCollection _col) {
+		lotus.domino.Document _doc = null;
+		
+		clear();
+		try {
+			_doc = _col.getFirstDocument();
+			while (_doc != null) {
+				org.riverframework.domino.Document doc = database.getDocument(_doc);
+				this.add(doc);
+				_doc = _col.getNextDocument(_doc);
+			}
+		} catch (NotesException e) {
+			throw new RiverException();
+		}
+		
+		return this;
+	}
+	
+	@Override
+	public org.riverframework.domino.DocumentCollection loadFrom(lotus.domino.View _view) {
+		lotus.domino.Document _doc = null;
+		
+		clear();
+		try {
+			_doc = _view.getFirstDocument();
+			while (_doc != null) {
+				org.riverframework.domino.Document doc = database.getDocument(_doc);
+				this.add(doc);
+				_doc = _view.getNextDocument(_doc);
+			}
+		} catch (NotesException e) {
+			throw new RiverException();
+		}
+		
+		return this;
+	}
+	
+	@Override
+	public org.riverframework.domino.DocumentCollection loadFrom(lotus.domino.ViewEntryCollection _col) {
+		lotus.domino.ViewEntry _entry = null;
+		
+		clear();
+		try {
+			_entry = _col.getFirstEntry();
+			while (_entry != null) {
+				org.riverframework.domino.Document doc = database.getDocument(_entry.getDocument());
+				this.add(doc);
+				_entry = _col.getNextEntry(_entry);
+			}
+		} catch (NotesException e) {
+			throw new RiverException();
+		}
+		
+		return this;
+	}
+	
 	@Override
 	public org.riverframework.domino.Database getDatabase() {
 		return database;
 	}
-
-	protected void initIterator() {
-		_doc = _col.getFirstDocument();
-	}
-
-	@Override
-	public int size(){
-		return _col.size();
-	}
-
-	@Override
-	public boolean hasNext() {
-		return _doc != null;
-	}
-
-	@Override
-	public org.riverframework.domino.Document next() {
-		org.openntf.domino.Document current = _doc;
-		_doc = _col.getNextDocument(_doc);
-		Document rDoc = database.getDocument(current);
-		return rDoc;
-	}
-
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
-	}
 	
 	@Override
-	public DocumentCollection filter(String query) {
-		_col.FTSearch(query);
-		return this;
-	}
-	
-	@Override
-	public DocumentCollection removeAll() {
-		_col.removeAll(true);
-		return this;
+	public org.riverframework.domino.DocumentCollection deleteAll() {
+		for(org.riverframework.domino.Document doc : this) {
+			doc.delete();
+		}
+		return this;	
 	}
 }

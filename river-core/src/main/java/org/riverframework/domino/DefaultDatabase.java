@@ -3,14 +3,16 @@ package org.riverframework.domino;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+import lotus.domino.NotesException;
+
 import org.riverframework.RiverException;
 
 public class DefaultDatabase implements org.riverframework.domino.Database {
 	public static final String METHOD_GETINDEXNAME = "getIndexName";
 	protected Session session = null;
-	protected org.openntf.domino.Database _db = null;
+	protected lotus.domino.Database _db = null;
 
-	protected DefaultDatabase(org.riverframework.domino.Session s, org.openntf.domino.Database obj) {
+	protected DefaultDatabase(org.riverframework.domino.Session s, lotus.domino.Database obj) {
 		session = s;
 		_db = obj;
 	}
@@ -22,38 +24,57 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 
 	@Override
 	public String getServer() {
-		return _db.getServer();
+		try {
+			return _db.getServer();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 	}
 
 	@Override
 	public String getFilePath() {
-		return _db.getFilePath();
+		try {
+			return _db.getFilePath();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 	}
 
 	@Override
 	public String getName() {
-		return _db.getTitle();
+		try {
+			return _db.getTitle();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 	}
 
 	@Override
 	public boolean isOpen() {
-		return (_db != null && _db.isOpen());
+		try {
+			return (_db != null && _db.isOpen());
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 	}
 
 	@Override
 	public Database getMainReplica() {
-		String adminServer = "";
-		String replicaId = "";
+		throw new UnsupportedOperationException();
 
-		adminServer = _db.getACL().getAdministrationServer();
-		if (adminServer.equals(""))
-			return this;
-
-		replicaId = _db.getReplicaID();
-
-		DefaultDatabase d = session.getDatabase(DefaultDatabase.class, adminServer, replicaId);
-
-		return d;
+//		2015.03.25 - This feature does not work in the version 4 of Openntf Domino API
+//		String adminServer = "";
+//		String replicaId = "";
+//
+//		adminServer = _db.getACL().getAdministrationServer();
+//		if (adminServer.equals(""))
+//			return this;
+//
+//		replicaId = _db.getReplicaID();
+//
+//		Database d = session.getDatabase(DefaultDatabase.class, adminServer, replicaId);
+//
+//		return d;
 	}
 
 	@Override
@@ -64,17 +85,21 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 	@Override
 	public <U extends org.riverframework.domino.Document> U createDocument(Class<U> clazz, String... parameters) {
 		U rDoc = null;
-		org.openntf.domino.Document doc = null;
+		lotus.domino.Document doc = null;
 
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
 
 		if (DefaultDocument.class.isAssignableFrom(clazz)) {
-			doc = _db.createDocument();
-			doc.replaceItemValue(org.riverframework.Document.FIELD_CLASS, clazz.getCanonicalName());
+			try {
+				doc = _db.createDocument();
+				doc.replaceItemValue(org.riverframework.Document.FIELD_CLASS, clazz.getCanonicalName());
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
 
 			try {
-				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
+				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, lotus.domino.Document.class);
 				constructor.setAccessible(true);
 				rDoc = clazz.cast(constructor.newInstance(this, doc));
 			} catch (Exception e) {
@@ -83,7 +108,7 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		}
 
 		if (rDoc == null) {
-			rDoc = clazz.cast(getDocument(clazz, (org.openntf.domino.Document) null));
+			rDoc = clazz.cast(getDocument(clazz, (lotus.domino.Document) null));
 		} else {
 			((DefaultDocument) rDoc).afterCreate().setModified(false);
 		}
@@ -107,17 +132,25 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 			String... parameters)
 	{
 		U rDoc = null;
-		org.openntf.domino.Document doc = null;
+		lotus.domino.Document doc = null;
 
 		if (parameters.length > 0) {
 			String id = parameters[0];
 
 			if (id.length() == 32) {
-				doc = _db.getDocumentByUNID(id);
+				try {
+					doc = _db.getDocumentByUNID(id);
+				} catch (NotesException e) {
+					throw new RiverException(e);
+				}
 			}
 
 			if (doc == null && id.length() == 8) {
-				doc = _db.getDocumentByID(id);
+				try {
+					doc = _db.getDocumentByID(id);
+				} catch (NotesException e) {
+					throw new RiverException(e);
+				}
 			}
 
 			if (doc == null && clazz != null && Unique.class.isAssignableFrom(clazz)) {
@@ -145,13 +178,23 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but its method "
 							+ METHOD_GETINDEXNAME + " returns an empty string.");
 
-				org.openntf.domino.View view = _db.getView(indexName);
+				lotus.domino.View view;
+				try {
+					view = _db.getView(indexName);
+				} catch (NotesException e) {
+					throw new RiverException(e);
+				}
+
 				if (view == null)
 					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but the index view "
 							+ indexName + " does not exist.");
 
-				view.refresh();
-				doc = view.getDocumentByKey(id, true);
+				try {
+					view.refresh(); //TODO: this is EXPENSIVE!
+					doc = view.getDocumentByKey(id, true);
+				} catch (NotesException e) {
+					throw new RiverException(e);
+				}
 			}
 
 			if (doc == null && createIfDoesNotExist) {
@@ -177,7 +220,7 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		} else {
 			// There's no parameters. Returning a closed 'clazz' object
 			try {
-				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
+				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, lotus.domino.Document.class);
 				constructor.setAccessible(true);
 				rDoc = clazz.cast(constructor.newInstance(this, null));
 			} catch (Exception e) {
@@ -189,13 +232,13 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 	}
 
 	@Override
-	public org.riverframework.domino.Document getDocument(org.openntf.domino.Document doc) {
+	public org.riverframework.domino.Document getDocument(lotus.domino.Document doc) {
 		return getDocument(null, doc);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <U extends org.riverframework.domino.Document> U getDocument(Class<U> clazz, org.openntf.domino.Document doc) {
+	public <U extends org.riverframework.domino.Document> U getDocument(Class<U> clazz, lotus.domino.Document doc) {
 		U rDoc = null;
 		Class<?> c = null;
 
@@ -203,7 +246,13 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 			// If there's no a explicit class...
 			if (doc != null) {
 				// we try to get it from the document
-				String className = doc.getItemValueString(Document.FIELD_CLASS);
+				String className;
+				try {
+					className = doc.getItemValueString(Document.FIELD_CLASS);
+				} catch (NotesException e) {
+					throw new RiverException(e);
+				}
+				
 				try {
 					c = Class.forName(className);
 				} catch (ClassNotFoundException e) {
@@ -225,7 +274,7 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 		}
 
 		try {
-			Constructor<?> constructor = c.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
+			Constructor<?> constructor = c.getDeclaredConstructor(Database.class, lotus.domino.Document.class);
 			constructor.setAccessible(true);
 			rDoc = (U) constructor.newInstance(this, doc);
 		} catch (Exception e) {
@@ -243,20 +292,28 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 	@Override
 	public <U extends org.riverframework.domino.View> U getView(Class<U> clazz, String... parameters) {
 		U rView = null;
-		org.openntf.domino.View view = null;
+		lotus.domino.View view = null;
 		String id = parameters[0];
 
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
 
-		view = _db.getView(id);
+		try {
+			view = _db.getView(id);
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 
 		if (view != null)
-			view.setAutoUpdate(false);
+			try {
+				view.setAutoUpdate(false);
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
 
 		if (DefaultView.class.isAssignableFrom(clazz)) {
 			try {
-				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.View.class);
+				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, lotus.domino.View.class);
 				constructor.setAccessible(true);
 				rView = clazz.cast(constructor.newInstance(this, view));
 			} catch (Exception e) {
@@ -269,23 +326,38 @@ public class DefaultDatabase implements org.riverframework.domino.Database {
 
 	@Override
 	public org.riverframework.domino.DocumentCollection getAllDocuments() {
-		org.openntf.domino.DocumentCollection col = _db.getAllDocuments();
-		DocumentCollection result = new DefaultDocumentCollection(this, col);
+		lotus.domino.DocumentCollection _col;
+		try {
+			_col = _db.getAllDocuments();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+		DocumentCollection result = new DefaultDocumentCollection(this).loadFrom(_col);
 
 		return result;
 	}
 
 	@Override
 	public org.riverframework.domino.DocumentCollection search(String query) {
-		org.openntf.domino.DocumentCollection col = _db.FTSearch(query);
-		DocumentCollection result = new DefaultDocumentCollection(this, col);
+		lotus.domino.DocumentCollection _col;
+		try {
+			_col = _db.FTSearch(query);
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+		DocumentCollection result = new DefaultDocumentCollection(this).loadFrom(_col);
 
 		return result;
 	}
 
 	@Override
 	public org.riverframework.domino.Database refreshSearchIndex() {
-		_db.updateFTIndex(false);
+		try {
+			_db.updateFTIndex(false);
+		} catch (NotesException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return this;
 	}
 

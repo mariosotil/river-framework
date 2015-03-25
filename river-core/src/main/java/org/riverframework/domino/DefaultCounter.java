@@ -13,7 +13,7 @@ public class DefaultCounter extends DefaultDocument implements Counter, Unique {
 		return Session.OBJECT_PREFIX + "Counter_Index";
 	}
 
-	protected DefaultCounter(Database d, org.openntf.domino.Document doc) {
+	protected DefaultCounter(Database d, lotus.domino.Document doc) {
 		super(d, doc);
 	}
 

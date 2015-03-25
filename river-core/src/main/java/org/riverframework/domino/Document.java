@@ -1,6 +1,9 @@
 package org.riverframework.domino;
 
-/*
+import java.util.Map;
+import java.util.Vector;
+
+/**
  * Loads an document
  * <p>
  * This is a javadoc test
@@ -27,12 +30,16 @@ public interface Document extends org.riverframework.Document {
 	public org.riverframework.domino.Document setField(String field, Object value);
 
 	@Override
+	public Vector<Object> getField(String field);
+
+	public Map<String, Vector<Object>> getFields();
+	
+	@Override
 	public org.riverframework.domino.Document setModified(boolean m);
 
 	@Override
-	public org.riverframework.domino.Document remove();
+	public org.riverframework.domino.Document delete();
 
-	@Override
 	public org.riverframework.domino.Document save(boolean force);
 
 	@Override

@@ -19,7 +19,7 @@ public class DocumentCollectionTest {
 
 		session.open(Credentials.getPassword());
 		rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
-		rDatabase.getAllDocuments().removeAll();
+		rDatabase.getAllDocuments().deleteAll();
 	}
 
 	@After
@@ -29,32 +29,12 @@ public class DocumentCollectionTest {
 	}
 
 	@Test
-	public void testIteration() {
-		assertTrue("The test database could not be opened.", rDatabase.isOpen());
-
-		Document rDoc = rDatabase
-				.createDocument(DefaultDocument.class)
-				.setForm(TEST_FORM)
-				.save();
-
-		DocumentCollection rIterator = rDatabase.getAllDocuments();
-
-		rDoc = null;
-
-		while (rIterator.hasNext()) {
-			rDoc = rIterator.next();
-		}
-
-		assertTrue("There is a problem getting documents from the database.", rDoc != null && rDoc.isOpen());
-	}
-
-	@Test
 	public void testSize() {
 		assertTrue("The test database could not be instantiated.", rDatabase != null);
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
 		DocumentCollection col = null;
-		col = rDatabase.getAllDocuments().removeAll();
+		col = rDatabase.getAllDocuments().deleteAll();
 
 		RandomString rs = new RandomString(10);
 
@@ -81,16 +61,8 @@ public class DocumentCollectionTest {
 		assertTrue("The search does not returns values for a query that would returns something.", col.size() > 0);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testRemove() {
-		assertTrue("The test database could not be opened.", rDatabase.isOpen());
-
-		DocumentCollection rIterator = rDatabase.getAllDocuments();
-		rIterator.remove();
-	}
-
 	@Test
-	public void testRemoveAll() {
+	public void testDeleteAll() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
 		// Creating at least one document
@@ -101,7 +73,7 @@ public class DocumentCollectionTest {
 				.save();
 
 		DocumentCollection col = rDatabase.getAllDocuments();
-		col.removeAll();
+		col.deleteAll();
 
 		col = null;
 		col = rDatabase.getAllDocuments();

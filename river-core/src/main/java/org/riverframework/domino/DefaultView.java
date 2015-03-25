@@ -2,18 +2,18 @@ package org.riverframework.domino;
 
 import java.lang.reflect.Constructor;
 
+import lotus.domino.NotesException;
+
 import org.riverframework.RiverException;
 
 public class DefaultView implements org.riverframework.domino.View {
 	protected Database database = null;
-	protected org.openntf.domino.View _view = null;
-	protected org.openntf.domino.Document _doc = null;
+	protected lotus.domino.View _view = null;
+	protected lotus.domino.Document _doc = null;
 
-	protected DefaultView(Database d, org.openntf.domino.View obj) {
+	protected DefaultView(Database d, lotus.domino.View obj) {
 		database = d;
 		_view = obj;
-
-		initIterator();
 	}
 
 	@Override
@@ -29,17 +29,21 @@ public class DefaultView implements org.riverframework.domino.View {
 	@Override
 	public <U extends org.riverframework.domino.Document> U getDocumentByKey(Class<U> clazz, String key) {
 		U rDoc = null;
-		org.openntf.domino.Document doc = null;
+		lotus.domino.Document doc = null;
 
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
 
 		if (DefaultDocument.class.isAssignableFrom(clazz)) {
 
-			doc = _view.getDocumentByKey(key, true);
+			try {
+				doc = _view.getDocumentByKey(key, true);
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
 
 			try {
-				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.openntf.domino.Document.class);
+				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, lotus.domino.Document.class);
 				rDoc = clazz.cast(constructor.newInstance(database, doc));
 			} catch (Exception e) {
 				throw new RiverException(e);
@@ -62,56 +66,49 @@ public class DefaultView implements org.riverframework.domino.View {
 
 	@Override
 	public DocumentCollection getAllDocuments() {
-		org.openntf.domino.DocumentCollection col = _view.getAllDocuments(); // Always exact match
-		DocumentCollection result = new DefaultDocumentCollection(database, col);
+		lotus.domino.ViewEntryCollection _col;
+		try {
+			_col = _view.getAllEntries();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+		DocumentCollection result = new DefaultDocumentCollection(database).loadFrom(_col);
 
 		return result;
 	}
 
 	@Override
 	public DocumentCollection getAllDocumentsByKey(Object key) {
-		org.openntf.domino.DocumentCollection col = _view.getAllDocumentsByKey(key, true); // Always exact match
-		DocumentCollection result = new DefaultDocumentCollection(database, col);
+		lotus.domino.DocumentCollection _col;
+		try {
+			_col = _view.getAllDocumentsByKey(key, true);
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+		DocumentCollection result = new DefaultDocumentCollection(database).loadFrom(_col);
 
 		return result;
 	}
 
 	@Override
 	public View refresh() {
-		_view.refresh();
-		return this;
-	}
-
-	@Override
-	public View filter(String query) {
-		_view.FTSearch(query);
-		return this;
-	}
-
-	/*
-	 * Implementing Iterator
-	 */
-	protected void initIterator() {
-		if (_view != null) {
-			_doc = _view.getFirstDocument();
+		try {
+			_view.refresh();
+		} catch (NotesException e) {
+			throw new RiverException(e);
 		}
+		return this;
 	}
 
 	@Override
-	public boolean hasNext() {
-		return _doc != null;
-	}
+	public org.riverframework.domino.DocumentCollection search(String query) {
+		try {
+			_view.FTSearch(query);
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+		DocumentCollection result = new DefaultDocumentCollection(database).loadFrom(_view);
 
-	@Override
-	public org.riverframework.domino.Document next() {
-		org.openntf.domino.Document current = _doc;
-		_doc = _view.getNextDocument(_doc);
-		Document rDoc = database.getDocument(current);
-		return rDoc;
-	}
-
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
+		return result;
 	}
 }

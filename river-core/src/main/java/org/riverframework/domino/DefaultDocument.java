@@ -2,8 +2,14 @@ package org.riverframework.domino;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
+
+import org.riverframework.RiverException;
+
+import lotus.domino.NotesException;
 
 /**
  * Loads an IBM Notes document
@@ -18,10 +24,10 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	public static final String FIELD_FORM = "Form";
 
 	protected Database database = null;
-	protected org.openntf.domino.Document _doc = null;
+	protected lotus.domino.Document _doc = null;
 	protected boolean isModified = false;
 
-	protected DefaultDocument(Database d, org.openntf.domino.Document doc) {
+	protected DefaultDocument(Database d, lotus.domino.Document doc) {
 		database = d;
 		_doc = doc;
 		isModified = false;
@@ -106,12 +112,21 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 
 	@Override
 	public String getUniversalId() {
-		String result = _doc.getUniversalID();
+		String result;
+		try {
+			result = _doc.getUniversalID();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 		return result;
 	}
 
 	protected Document internalRecalc() {
-		_doc.computeWithForm(true, false);
+		try {
+			_doc.computeWithForm(true, false);
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 		return this;
 	}
 
@@ -134,13 +149,43 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 			Session session = DefaultSession.getInstance();
 
 			for (int i = 0; i < temp.size(); i++) {
-				// Always save as org.openntf.domino.DateTime
+				// Always save as lotus.domino.DateTime
 				temp.set(i, session.Java2NotesTime((java.util.Date) temp.get(i)));
 			}
 		}
-		_doc.replaceItemValue(field, temp);
+
+		try {
+			_doc.replaceItemValue(field, temp);
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 
 		return true;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Map<String, Vector<Object>> getFields() {
+		Vector<lotus.domino.Item> items;
+		try {
+			items = _doc.getItems();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+
+		Map<String, Vector<Object>> result = 
+				new HashMap<String, Vector<Object>>(items.size());
+
+		try {
+			for(lotus.domino.Item it : items) {
+				result.put(it.getName(),new Vector<Object>(it.getValues()));
+			}
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+
+
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -148,13 +193,21 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	public Vector<Object> getField(String field) {
 		Vector<Object> value = null;
 
-		value = _doc.getItemValue(field);
+		try {
+			value = (Vector<Object>) _doc.getItemValue(field);
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 
 		// Always returns a java.util.Date object
 		if (!value.isEmpty()) {
-			if (value.get(0) instanceof org.openntf.domino.DateTime) {
+			if (value.get(0) instanceof lotus.domino.DateTime) {
 				for (int i = 0; i < value.size(); i++) {
-					value.set(i, ((org.openntf.domino.DateTime) value.get(i)).toJavaDate());
+					try {
+						value.set(i, ((lotus.domino.DateTime) value.get(i)).toJavaDate());
+					} catch (NotesException e) {
+						throw new RiverException(e);
+					}
 				}
 			}
 		}
@@ -164,53 +217,77 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 
 	@Override
 	public String getFieldAsString(String field) {
-		String result = _doc.getItemValueString(field);
+		String result;
+		try {
+			result = _doc.getItemValueString(field);
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 		return result;
 	}
 
 	@Override
 	public int getFieldAsInteger(String field) {
-		int result = _doc.getItemValueInteger(field);
+		int result;
+		try {
+			result = _doc.getItemValueInteger(field);
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 		return result;
 	}
 
 	@Override
 	public double getFieldAsDouble(String field) {
-		double result = _doc.getItemValueDouble(field);
+		double result;
+		try {
+			result = _doc.getItemValueDouble(field);
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 		return result;
 	}
 
 	@Override
 	public Date getFieldAsDate(String field) {
-		Date result = ((org.openntf.domino.DateTime) _doc
-				.getItemValueDateTimeArray(field)
-				.elementAt(0))
-				.toJavaDate();
+		Date result;
+		try {
+			result = ((lotus.domino.DateTime) _doc
+					.getItemValueDateTimeArray(field)
+					.elementAt(0))
+					.toJavaDate();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 
 		return result;
 	}
 
 	@Override
 	public boolean isFieldEmpty(String field) {
-		if (!_doc.hasItem(field))
-			return true;
+		try {
+			if (!_doc.hasItem(field))
+				return true;
 
-		org.openntf.domino.Item item = _doc.getFirstItem(field);
-		if (item != null) {
-			if (item.getType() == org.openntf.domino.Item.RICHTEXT) {
-				if (!_doc.getEmbeddedObjects().isEmpty()) {
-					for (@SuppressWarnings("unchecked")
-					Iterator<org.openntf.domino.EmbeddedObject> i = _doc.getEmbeddedObjects()
-							.iterator(); i.hasNext();) {
-						org.openntf.domino.EmbeddedObject eo = i.next();
-						if (eo.getType() != 0)
-							return false;
+			lotus.domino.Item item = _doc.getFirstItem(field);
+			if (item != null) {
+				if (item.getType() == lotus.domino.Item.RICHTEXT) {
+					if (!_doc.getEmbeddedObjects().isEmpty()) {
+						for (@SuppressWarnings("unchecked")
+						Iterator<lotus.domino.EmbeddedObject> i = _doc.getEmbeddedObjects()
+						.iterator(); i.hasNext();) {
+							lotus.domino.EmbeddedObject eo = i.next();
+							if (eo.getType() != 0)
+								return false;
+						}
 					}
 				}
-			}
 
-			if (item.getText() != "")
-				return false;
+				if (item.getText() != "")
+					return false;
+			}
+		} catch (NotesException e) {
+			throw new RiverException(e);
 		}
 
 		return true;
@@ -234,7 +311,12 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 
 	@Override
 	public boolean isNew() {
-		boolean result = _doc.isNewNote();
+		boolean result;
+		try {
+			result = _doc.isNewNote();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 		return result;
 	}
 
@@ -258,9 +340,13 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	//
 
 	@Override
-	public org.riverframework.domino.DefaultDocument remove() {
+	public org.riverframework.domino.Document delete() {
 		if (_doc != null) {
-			_doc.remove(true);
+			try {
+				_doc.remove(true);
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
 			_doc = null;
 		}
 
@@ -268,9 +354,13 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	}
 
 	@Override
-	public Document save(boolean force) {
+	public org.riverframework.domino.Document save(boolean force) {
 		if (force || isModified) {
-			_doc.save(true, false);
+			try {
+				_doc.save(true, false);
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
 			isModified = false;
 		}
 
@@ -278,7 +368,7 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	}
 
 	@Override
-	public Document save() {
+	public org.riverframework.domino.Document save() {
 		save(true);
 		return this;
 	}
@@ -295,7 +385,12 @@ public class DefaultDocument implements org.riverframework.domino.Document {
 	}
 
 	public boolean isConflict() {
-		boolean result = _doc.hasItem(org.riverframework.domino.DefaultDocument.FIELD_IS_CONFLICT);
+		boolean result;
+		try {
+			result = _doc.hasItem(org.riverframework.domino.DefaultDocument.FIELD_IS_CONFLICT);
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 		return result;
 	}
 

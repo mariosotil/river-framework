@@ -21,7 +21,7 @@ public class ViewTest {
 
 		session.open(Credentials.getPassword());
 		rDatabase = session.getDatabase(DefaultDatabase.class, "", Context.getDatabase());
-		rDatabase.getAllDocuments().removeAll();
+		rDatabase.getAllDocuments().deleteAll();
 	}
 
 	@After
@@ -45,7 +45,7 @@ public class ViewTest {
 		String key = rs.nextString();
 
 		rDoc.setField("TestKeyColumn1", key)
-				.save();
+		.save();
 		rView.refresh();
 
 		rDoc = null;
@@ -123,30 +123,45 @@ public class ViewTest {
 	 */
 
 	@Test
-	public void testIteration() {
+	public void testGetDocumentCollection() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
-		DefaultDocument rDoc = (DefaultDocument) rDatabase
-				.createDocument(DefaultDocument.class)
-				.setForm(TEST_FORM)
-				.save();
+		rDatabase.getAllDocuments().deleteAll();
 
-		DefaultView rView = rDatabase.getView(DefaultView.class, TEST_VIEW);
-
-		rDoc = null;
-
-		while (rView.hasNext()) {
-			rDoc = (DefaultDocument) rView.next();
+		for(int i = 0; i < 10; i++) {
+			rDatabase.createDocument(DefaultDocument.class)
+					.setForm(TEST_FORM)
+					.setField("Counter", i)
+					.save();
 		}
 
-		assertTrue("There is a problem getting documents from the database.", rDoc != null && rDoc.isOpen());
-	}
+		View rView = rDatabase.getView(DefaultView.class, TEST_VIEW);
+		DocumentCollection col = rView.getAllDocuments();
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testRemove() {
+		assertTrue("There is a problem getting documents from the database.", col.size() == 10);
+	}
+	
+	@Test
+	public void testSearch() {
 		assertTrue("The test database could not be opened.", rDatabase.isOpen());
 
-		DefaultView rView = rDatabase.getView(DefaultView.class, TEST_VIEW);
-		rView.remove();
+		rDatabase.getAllDocuments().deleteAll();
+
+		for(int i = 0; i < 10; i++) {
+			rDatabase.createDocument(DefaultDocument.class)
+					.setForm(TEST_FORM)
+					.setField("Text", "I_AM_THE_" + i)
+					.save();
+		}
+
+		rDatabase.refreshSearchIndex();
+		
+		DocumentCollection col = rDatabase
+				.getView(DefaultView.class, TEST_VIEW)
+				.search("I_AM_THE_4");
+
+		assertTrue("There is a problem finding documents from the database.", col.size() == 1);
+		assertTrue("There is a problem finding documents from the database.", 
+				col.get(0).getFieldAsString("Text").equals("I_AM_THE_4"));
 	}
 }

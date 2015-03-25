@@ -42,9 +42,7 @@ public interface Document {
 
 	public boolean isNew();
 
-	public Document remove();
-
-	public Document save(boolean force);
+	public Document delete();
 
 	public Document save();
 

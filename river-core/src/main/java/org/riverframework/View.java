@@ -1,6 +1,6 @@
 package org.riverframework;
 
-public interface View<T> extends java.util.Iterator<T> {
+public interface View<T> {
 	public Database getDatabase();
 
 	public boolean isOpen();
@@ -12,4 +12,6 @@ public interface View<T> extends java.util.Iterator<T> {
 	public DocumentCollection<?> getAllDocumentsByKey(Object key);
 
 	public View<?> refresh();
+	
+	public DocumentCollection<?> search(String query);
 }

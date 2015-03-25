@@ -37,20 +37,23 @@ So far, this framework has the following features:
 - Version 0.1
   - It is using IBM Notes as NoSQL server
   - It lets you connect to an IBM Notes database and the possibility to access its views and create or modify documents.
-  - Document collections: array, list, iterator
+  - Document collections: array~~, list, iterator~~
   - It has a set of JUnit tests
 
 - Version 0.2
   - Generation of unique identifiers for the documents
   - Opening documents by a unique id
   - Credentials file (~/.river-framework/credentials)
-  - Using org.openntf.domino package instead lotus.domino
+  - ~~Using the org.openntf.domino package instead lotus.domino~~
   - Support to local session using a installed IBM Notes client 
+  - First example in Java~~, SSJS, and XPages~~
 
 ## What I'm working on now?
 
-- Version 0.2
-  - First examples in Java, SSJS, and XPages
+- Version 0.2.5
+  - Rolling back from the org.openntf.domino package to lotus.domino
+  - Working on memory management
+  - Improvements in DocumentCollection as array
 
 ## What is in the ToDo list?
 
@@ -59,7 +62,7 @@ There are a lot of features that I will add to this framework:
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs
   - Creation of a IBM Notes objects pool
-  - A new set of examples in Java, SSJS, XPages and LotusScript
+  - Examples in Java, SSJS, XPages and LotusScript
 - Version 0.4
   - Connection to other NoSQL server: MongoDB
 - Next versions

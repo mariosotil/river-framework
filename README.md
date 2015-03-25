@@ -53,6 +53,7 @@ So far, this framework has the following features:
 - Version 0.2.5
   - Rolling back from the org.openntf.domino package to lotus.domino
   - Working on memory management
+  - Creation of a IBM Notes objects pool
   - Improvements in DocumentCollection as array
 
 ## What is in the ToDo list?
@@ -61,7 +62,6 @@ There are a lot of features that I will add to this framework:
 
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs
-  - Creation of a IBM Notes objects pool
   - Examples in Java, SSJS, XPages and LotusScript
 - Version 0.4
   - Connection to other NoSQL server: MongoDB

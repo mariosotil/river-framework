@@ -2,15 +2,15 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.riverframework</groupId>
   <artifactId>river-framework</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.5</version>
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source/>
-          <target/>
+           <source>1.6</source>
+           <target>1.6</target>
         </configuration>
       </plugin>
     </plugins>
@@ -19,19 +19,39 @@
   <url>http://www.riverframework.org</url>
   <dependencies>
   	<dependency>
-  		<groupId>junit</groupId>
-  		<artifactId>junit</artifactId>
-  		<version>4.12</version>
-  	</dependency>
-  	<dependency>
   		<groupId>org.jgrapht</groupId>
   		<artifactId>jgrapht-core</artifactId>
   		<version>0.9.0</version>
   	</dependency>
   	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<version>4.12</version>
+  	</dependency>
+  	<dependency>
   		<groupId>org.ini4j</groupId>
   		<artifactId>ini4j</artifactId>
   		<version>0.5.4</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>log4j</groupId>
+  		<artifactId>log4j</artifactId>
+  		<version>1.2.17</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.easymock</groupId>
+  		<artifactId>easymock</artifactId>
+  		<version>3.3.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.google.inject</groupId>
+  		<artifactId>guice</artifactId>
+  		<version>3.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.google.inject.extensions</groupId>
+  		<artifactId>guice-assistedinject</artifactId>
+  		<version>3.0</version>
   	</dependency>
   </dependencies>
 </project>

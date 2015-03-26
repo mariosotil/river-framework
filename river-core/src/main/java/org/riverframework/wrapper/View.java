@@ -1,14 +1,9 @@
-package org.riverframework;
-
+package org.riverframework.wrapper;
 
 public interface View {
-	public Database getDatabase();
-
-	public boolean isOpen();
-
 	public Document getDocumentByKey(String key);
 
-	public <U extends Document> U getDocumentByKey(Class<U> clazz, String key);
+	public boolean isOpen();
 
 	public DocumentCollection getAllDocuments();
 

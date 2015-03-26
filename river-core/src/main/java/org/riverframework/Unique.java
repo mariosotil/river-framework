@@ -6,4 +6,5 @@ public interface Unique extends Document {
 	public Document setId(String id);
 
 	public String getId();
+
 }

@@ -2,9 +2,9 @@ package org.riverframework.domino.demo;
 
 import lotus.domino.NotesThread;
 
-import org.riverframework.domino.*;
+import org.riverframework.impl.*;
 
-/*
+/**
  * To run this demo, you will need:
  * 
  * - IBM Notes installed in your computer
@@ -39,13 +39,13 @@ public class PeopleAddressBook {
 		NotesThread.sinitThread();
 
 		Session session = DefaultSession.getInstance().open(Credentials.getPassword());
-		Database database = session.getDatabase(DefaultDatabase.class, "", filepath);
+		Database database = session.getDatabase(PeopleDatabase.class, "", filepath);
 
 		System.out.println("User=" + session.getUserName());
 		System.out.println("Database=" + database.getName());
 
 		// Deleting everything
-		database.getAllDocuments().removeAll();
+		database.getAllDocuments().deleteAll();
 
 		// Creating three persons
 		 
@@ -78,8 +78,8 @@ public class PeopleAddressBook {
 		// Printing the results
 		System.out.println("Found " + col.size() + " persons.");
 		
-		while(col.hasNext()) {
-			Person p = (Person) col.next();
+		for(Document doc : col) {
+			Person p = (Person) doc;
 			System.out.println("Name=" + p.getFieldAsString("Name"));
 		}
 		
@@ -91,8 +91,8 @@ public class PeopleAddressBook {
 		// Printing the results
 		System.out.println("Found " + col.size() + " persons.");
 		
-		while(col.hasNext()) {
-			Person p = (Person) col.next();
+		for(Document doc : col) {
+			Person p = (Person) doc;
 			System.out.println("Name=" + p.getFieldAsString("Name"));
 		}
 

@@ -1,13 +1,13 @@
 package org.riverframework.domino.demo;
 
-import org.riverframework.domino.Document;
-import org.riverframework.domino.Database;
-import org.riverframework.domino.DefaultDocument;
-import org.riverframework.domino.Unique;
+import org.riverframework.impl.Document;
+import org.riverframework.impl.Database;
+import org.riverframework.impl.DefaultDocument;
+import org.riverframework.impl.Unique;
 
 class Person extends DefaultDocument implements Unique {
 
-	protected Person(Database d, org.openntf.domino.Document doc) {
+	protected Person(Database d, org.riverframework.wrapper.Document doc) {
 		super(d, doc);
 	}
 
@@ -24,13 +24,13 @@ class Person extends DefaultDocument implements Unique {
 		return getFieldAsString("ca_pe_id");
 	}
 
-	public org.riverframework.domino.Document generateId() {
+	public Document generateId() {
 		long id = database.getCounter("PERSON").getCount();
 		setField("ca_pe_id", String.valueOf(id));
 		return this;
 	}
 
-	public org.riverframework.domino.Document setId(String arg0) {
+	public Document setId(String arg0) {
 		throw new UnsupportedOperationException();
 	}
 

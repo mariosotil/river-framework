@@ -1,11 +1,36 @@
 package org.riverframework;
 
-import org.riverframework.domino.DocumentCollection;
-import org.riverframework.domino.Session;
-
 public interface Database {
 	public Session getSession();
-	
+
+	public Document createDocument(String... parameters);
+
+	public View getView(String... parameters);
+
+	public <U extends View> U getView(Class<U> clazz, String... parameters);
+
+	public <U extends Document> U createDocument(Class<U> clazz, String... parameters);
+
+	public Document getDocument(String... parameters);
+
+	public <U extends Document> U getDocument(Class<U> clazz, String... parameters);
+
+	public <U extends Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters);
+
+	public <U extends Document> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document doc);
+
+	public Document getDocument(org.riverframework.wrapper.Document doc);
+
+	public Database getMainReplica();
+
+	public DocumentCollection getAllDocuments();
+
+	public DocumentCollection search(String query);
+
+	public Database refreshSearchIndex();
+
+	public Counter getCounter(String key);
+
 	public boolean isOpen();
 
 	public String getServer();
@@ -13,21 +38,5 @@ public interface Database {
 	public String getFilePath();
 
 	public String getName();
-
-	public Database getMainReplica();
-
-	public View<?> getView(String... parameters);
-
-	public Document createDocument(String... parameters);
-
-	public Document getDocument(String... parameters);
-
-	public DocumentCollection getAllDocuments();
-
-	public DocumentCollection search(String query);
-
-	public Database refreshSearchIndex();
-	
-	public Counter getCounter(String key);
 
 }

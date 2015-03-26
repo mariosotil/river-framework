@@ -1,8 +1,7 @@
 package org.riverframework;
 
-@SuppressWarnings("serial")
 public class RiverException extends RuntimeException {
-	// static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6867771909552313131L;
 
 	public RiverException() {
 		super();

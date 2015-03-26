@@ -5,8 +5,8 @@ public interface Session {
 	public static final String FIELD_PREFIX = "RIVER_";
 
 	public String getUUID();
-	
-	public Session open(String... parameters);
+
+	public Session open(org.riverframework.wrapper.Session _s);
 
 	public <U extends Database> U getDatabase(Class<U> type, String... parameters);
 
@@ -15,4 +15,5 @@ public interface Session {
 	public String getUserName();
 
 	public void close();
+
 }

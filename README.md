@@ -49,14 +49,15 @@ So far, this framework has the following features:
   - First example in Java
 
 - Version 0.2.5
-  - ~~Rolling back from the `org.openntf.domino` package to lotus.domino~~
-  - Improvement in the design, wrapping the `lotus.domino` and the `org.openntf.domino classes` 
+  - ~~Rolling back from the `org.openntf.domino` package to `lotus.domino`~~
+  - Improvement in the design, wrapping the `lotus.domino` and the `org.openntf.domino` classes with the `org.riverframework.wrapper`classes
+  - The package `org.riverframework.core` will control the wrapped classes 
   - Improvements in DocumentCollection as array
 
 ## What I'm working on now?
 
 - Version 0.2.5
-  - Applying dependency injection
+  - Applying dependency injection with Guice
   - Working on `org.riverframework.wrapper.domino` memory management
   - Creation of an objects pool
 

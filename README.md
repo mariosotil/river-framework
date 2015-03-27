@@ -6,31 +6,33 @@ Hi,
 
 This is a Workflow Application Framework in an **EARLY development stage**. So far, the code written with this framework looks like this:
 
-    //Opening session from the credentials file
-    Session session = DefaultSession.getInstance().open(Credentials.getPassword());
-    Database database = session.getDatabase(DefaultDatabase.class, "", "db.nsf");
+```java
+//Opening session from the credentials file
+Session session = DefaultSession.getInstance().open(Credentials.getPassword());
+Database database = session.getDatabase(DefaultDatabase.class, "", "db.nsf");
     
-    // Creating one person
-    Person jd = (Person) database.createDocument(Person.class)
-      .generateId()
-      .setField("Name", "John Doe")
-      .setField("Age", 35)
-      .save();
+// Creating one person
+Person jd = (Person) database.createDocument(Person.class)
+  .generateId()
+  .setField("Name", "John Doe")
+  .setField("Age", 35)
+  .save();
     
-    // Saving its Id generated in the last line
-    String johnDoeId = jd.getId();
+// Saving its Id generated in the last line
+String johnDoeId = jd.getId();
     
-    // Searching people with surname "Doe"				
-    DocumentCollection col = database.search("Doe");
-    System.out.println("Found " + col.size() + " persons.");
+// Searching people with surname "Doe"				
+DocumentCollection col = database.search("Doe");
+System.out.println("Found " + col.size() + " persons.");
 		
-    // Finding a John Doe by Id
-    Document p = database.getDocument(Person.class, johnDoeId);
-    if (p.isOpen()) {
-      System.out.println("Found " + johnDoeId);
-      System.out.println("His name is " + p.getFieldAsString("Name"));
-      System.out.println("His age is " + p.getFieldAsInteger("Age"));
-    } 
+// Finding a John Doe by Id
+Document p = database.getDocument(Person.class, johnDoeId);
+if (p.isOpen()) {
+  System.out.println("Found " + johnDoeId);
+  System.out.println("His name is " + p.getFieldAsString("Name"));
+  System.out.println("His age is " + p.getFieldAsInteger("Age"));
+} 
+```
 
 So far, this framework has the following features: 
 
@@ -53,18 +55,22 @@ So far, this framework has the following features:
   - Improvement in the design, wrapping the `lotus.domino` and the `org.openntf.domino` classes with the `org.riverframework.wrapper`classes
   - The package `org.riverframework.core` will control the wrapped classes 
   - Improvements in DocumentCollection as array
+  - Redesign the JUnit tests for testing the wrappers for `lotus.domino` and the `org.openntf.domino`, and testing the core with each wrapper
 
 ## What I'm working on now?
 
 - Version 0.2.5
   - Applying dependency injection with Guice
-  - Working on `org.riverframework.wrapper.domino` memory management
-  - Creation of an objects pool
+  - Creating a wrapper and JUnit tests for Hazelcast (http://hazelcast.com/)
+  - Update the Java example
 
 ## What is in the ToDo list?
 
 There are a lot of features that I will add to this framework:
 
+- Version 0.2.6
+  - Working on `org.riverframework.wrapper.domino` memory management
+  - Creation of an objects pool
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs
   - Examples in Java, SSJS, XPages and LotusScript

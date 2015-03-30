@@ -1,6 +1,6 @@
 package org.riverframework;
 
-public interface Database {
+public interface Database extends Base {
 	public Session getSession();
 
 	public Document createDocument(String... parameters);

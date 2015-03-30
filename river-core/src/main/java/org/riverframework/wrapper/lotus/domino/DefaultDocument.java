@@ -27,6 +27,11 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 		_doc = d;
 	}
 
+	@Override
+	public Object getWrappedObject() {
+		return _doc;
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Document setField(String field, Object value) {
@@ -265,5 +270,17 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 			throw new RiverException(e);
 		}
 		return this;
+	}
+
+	@Override
+	public void close() {
+		try {
+			if (_doc != null)
+				_doc.recycle();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		} finally {
+			_doc = null;
+		}
 	}
 }

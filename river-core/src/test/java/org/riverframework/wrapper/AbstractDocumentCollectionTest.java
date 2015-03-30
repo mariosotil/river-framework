@@ -30,7 +30,7 @@ public abstract class AbstractDocumentCollectionTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = context.getSession();
+				session = (Session) context.getSession().getWrappedObject();
 				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 
@@ -42,7 +42,7 @@ public abstract class AbstractDocumentCollectionTest {
 
 	@After
 	public void close() {
-		session.close();
+		context.closeSession();
 	}
 
 	@Test

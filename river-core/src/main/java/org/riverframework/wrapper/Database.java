@@ -1,6 +1,6 @@
 package org.riverframework.wrapper;
 
-public interface Database {
+public interface Database extends Base {
 	public String getObjectId();
 
 	public String getServer();

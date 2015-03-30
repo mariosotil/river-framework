@@ -1,6 +1,6 @@
 package org.riverframework.wrapper;
 
-public interface Session {
+public interface Session extends Base {
 	public boolean isOpen();
 
 	public org.riverframework.wrapper.Database getDatabase(String... location);

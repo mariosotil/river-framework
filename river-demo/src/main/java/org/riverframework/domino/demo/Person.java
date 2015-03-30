@@ -1,9 +1,9 @@
 package org.riverframework.domino.demo;
 
-import org.riverframework.impl.Document;
-import org.riverframework.impl.Database;
-import org.riverframework.impl.DefaultDocument;
-import org.riverframework.impl.Unique;
+import org.riverframework.Document;
+import org.riverframework.Database;
+import org.riverframework.core.DefaultDocument;
+import org.riverframework.Unique;
 
 class Person extends DefaultDocument implements Unique {
 

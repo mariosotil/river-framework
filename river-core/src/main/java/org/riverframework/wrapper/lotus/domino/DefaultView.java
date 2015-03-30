@@ -15,6 +15,11 @@ class DefaultView implements org.riverframework.wrapper.View {
 	}
 
 	@Override
+	public Object getWrappedObject() {
+		return _view;
+	}
+
+	@Override
 	public Document getDocumentByKey(String key) {
 		lotus.domino.Document _doc = null;
 
@@ -80,5 +85,17 @@ class DefaultView implements org.riverframework.wrapper.View {
 		DocumentCollection result = new DefaultDocumentCollection(_view);
 
 		return result;
+	}
+
+	@Override
+	public void close() {
+		try {
+			if (_view != null)
+				_view.recycle();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		} finally {
+			_view = null;
+		}
 	}
 }

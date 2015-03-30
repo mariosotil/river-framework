@@ -12,6 +12,11 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 	}
 
 	@Override
+	public Object getWrappedObject() {
+		return null;
+	}
+
+	@Override
 	public boolean isOpen() {
 		return false;
 	}

@@ -3,6 +3,7 @@ package org.riverframework.core;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+import org.riverframework.Base;
 import org.riverframework.Counter;
 import org.riverframework.Database;
 import org.riverframework.DocumentCollection;
@@ -15,9 +16,24 @@ public class DefaultDatabase implements org.riverframework.Database {
 	protected Session session = null;
 	protected org.riverframework.wrapper.Database _database = null;
 
-	protected DefaultDatabase(org.riverframework.Session s, org.riverframework.wrapper.Database obj) {
+	protected DefaultDatabase(org.riverframework.Session s, org.riverframework.wrapper.Database _db) {
 		session = s;
-		_database = obj;
+		_database = _db;
+	}
+
+	@Override
+	public String getObjectId() {
+		return _database.getObjectId();
+	}
+
+	@Override
+	public Base getParent() {
+		return session;
+	}
+
+	@Override
+	public Object getWrappedObject() {
+		return _database;
 	}
 
 	@Override
@@ -265,5 +281,10 @@ public class DefaultDatabase implements org.riverframework.Database {
 		Counter counter = getDocument(DefaultCounter.class, true, key);
 
 		return counter;
+	}
+
+	@Override
+	public void close() {
+		_database.close();
 	}
 }

@@ -37,35 +37,35 @@ public abstract class AbstractSessionTest {
 		String password = Credentials.getPassword();
 		assertFalse("Password can be an empty string", password.equals(""));
 
-		Session session = DefaultSession.getInstance().setWrappedSession(context.getSession());
+		Session session = context.getSession();
 
 		assertTrue("Notes Session could not be retrieved", session.isOpen());
 		assertFalse("There's a problem with the Session. I can't retrieve the current user name.",
 				session.getUserName().equals(""));
 
-		DefaultSession.getInstance().close();
+		context.closeSession();
 	}
 
 	@Test
-	public void testSessionUUID() {
-		Session session = DefaultSession.getInstance().setWrappedSession(context.getSession());
+	public void testSessionObjectId() {
+		Session session = context.getSession();
 
 		assertTrue("Notes Session could not be retrieved", session.isOpen());
 
-		String uuid1 = session.getUUID();
+		String uuid1 = session.getObjectId();
 
 		Database database = session.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
 
-		String uuid2 = database.getSession().getUUID();
+		String uuid2 = database.getSession().getObjectId();
 
 		assertTrue("It was retrieved differents UUID from the first session and the session object from the database", uuid1.equals(uuid2));
 
-		DefaultSession.getInstance().close();
+		context.closeSession();
 	}
 
 	@Test
 	public void testOpeningRemoteDatabase() {
-		Session session = DefaultSession.getInstance().setWrappedSession(context.getSession());
+		Session session = context.getSession();
 
 		assertTrue("Notes Session could not be retrieved", session.isOpen());
 
@@ -73,7 +73,7 @@ public abstract class AbstractSessionTest {
 
 		assertTrue("Remote database could not be opened", database.isOpen());
 
-		DefaultSession.getInstance().close();
+		context.closeSession();
 	}
 
 	// 2015.03.25 - This feature does not work in the version 4 of Openntf Domino API

@@ -1,20 +1,19 @@
-package org.riverframework.core.lotus.domino;
+package org.riverframework.core.lotus.domino._remote;
 
 import lotus.domino.NotesThread;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 public class DocumentCollectionTest extends org.riverframework.core.AbstractDocumentCollectionTest {
-	@Before
-	public void open() {
+	@BeforeClass
+	public static void before() {
 		NotesThread.sinitThread();
-		super.open();
 	}
 
-	@After
-	public void close() {
-		super.close();
+	@AfterClass
+	public static void after() {
 		NotesThread.stermThread();
 	}
+
 }

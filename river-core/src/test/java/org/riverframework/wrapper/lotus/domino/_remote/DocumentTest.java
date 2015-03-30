@@ -2,19 +2,18 @@ package org.riverframework.wrapper.lotus.domino._remote;
 
 import lotus.domino.NotesThread;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
-public class DocumentTest  extends org.riverframework.wrapper.AbstractDocumentTest {
-	@Before
-	public void open() {
+public class DocumentTest extends org.riverframework.wrapper.AbstractDocumentTest {
+	@BeforeClass
+	public static void before() {
 		NotesThread.sinitThread();
-		super.open();
 	}
 
-	@After
-	public void close() {
-		super.close();
+	@AfterClass
+	public static void after() {
 		NotesThread.stermThread();
 	}
+
 }

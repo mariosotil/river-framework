@@ -1,7 +1,6 @@
 package org.riverframework;
 
-
-public interface View {
+public interface View extends Base {
 	public Database getDatabase();
 
 	public boolean isOpen();

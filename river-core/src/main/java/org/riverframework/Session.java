@@ -1,12 +1,8 @@
 package org.riverframework;
 
-public interface Session {
+public interface Session extends Base {
 	public static final String OBJECT_PREFIX = "RIVER_";
 	public static final String FIELD_PREFIX = "RIVER_";
-
-	public String getUUID();
-
-	public Session open(org.riverframework.wrapper.Session _s);
 
 	public <U extends Database> U getDatabase(String... parameters);
 
@@ -17,7 +13,7 @@ public interface Session {
 	public String getUserName();
 
 	public void close();
-	
-	public Session setWrappedSession(org.riverframework.wrapper.Session s);
+
+	public Session open(org.riverframework.wrapper.Session s);
 
 }

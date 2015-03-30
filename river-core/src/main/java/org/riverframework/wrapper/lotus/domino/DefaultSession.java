@@ -30,6 +30,11 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 	}
 
 	@Override
+	public Object getWrappedObject() {
+		return _session;
+	}
+
+	@Override
 	public boolean isOpen() {
 		return (_session != null);
 	}
@@ -79,6 +84,13 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 
 	@Override
 	public void close() {
-
+		try {
+			if (_session != null)
+				_session.recycle();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		} finally {
+			_session = null;
+		}
 	}
 }

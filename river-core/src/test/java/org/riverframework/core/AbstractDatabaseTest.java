@@ -41,7 +41,7 @@ public abstract class AbstractDatabaseTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = DefaultSession.getInstance().setWrappedSession(context.getSession());
+				session = context.getSession();
 				database = session.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
 				vacationDatabase = session.getDatabase(VacationDatabase.class, context.getTestDatabaseServer(),
 						context.getTestDatabasePath());
@@ -55,7 +55,7 @@ public abstract class AbstractDatabaseTest {
 
 	@After
 	public void close() {
-		session.close();
+		context.closeSession();
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public abstract class AbstractDatabaseTest {
 				.setField("TEST_FIELD", "YES")
 				.setForm("TestForm")
 				.save()
-				.getUniversalId();
+				.getObjectId();
 
 		doc = null;
 		doc = vacationDatabase.getDocument(VacationRequest.class, universalId);
@@ -286,7 +286,7 @@ public abstract class AbstractDatabaseTest {
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());
 		assertTrue("It could not possible get the Kathy's age.", p.getFieldAsInteger("Age") == 25);
 
-		String unid = p.getUniversalId();
+		String unid = p.getObjectId();
 		p = null;
 		p = database.getDocument(unid);
 		assertTrue("It should be possible to load a person object for Kathy with its Universal Id.", p.isOpen());

@@ -2,19 +2,18 @@ package org.riverframework.core.org.openntf.domino;
 
 import lotus.domino.NotesThread;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 public class CounterTest extends org.riverframework.core.AbstractCounterTest {
-	@Before
-	public void open() {
+	@BeforeClass
+	public static void before() {
 		NotesThread.sinitThread();
-		super.open();
 	}
 
-	@After
-	public void close() {
-		super.close();
+	@AfterClass
+	public static void after() {
 		NotesThread.stermThread();
 	}
+
 }

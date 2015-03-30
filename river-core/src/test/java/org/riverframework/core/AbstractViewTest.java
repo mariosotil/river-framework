@@ -37,7 +37,7 @@ public abstract class AbstractViewTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = DefaultSession.getInstance().setWrappedSession(context.getSession());
+				session = context.getSession();
 				database = session.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 			}
@@ -48,7 +48,7 @@ public abstract class AbstractViewTest {
 
 	@After
 	public void close() {
-		session.close();
+		context.closeSession();
 	}
 
 	@Test

@@ -1,8 +1,21 @@
 package org.riverframework.domino.demo;
 
+import java.util.Map;
+
 import lotus.domino.NotesThread;
 
-import org.riverframework.impl.*;
+import java.util.Vector;
+import org.riverframework.Database;
+import org.riverframework.Document;
+import org.riverframework.DocumentCollection;
+import org.riverframework.Session;
+import org.riverframework.core.Credentials;
+import org.riverframework.core.DefaultSession;
+import org.riverframework.wrapper.SessionFactory;
+import org.riverframework.wrapper.SessionModule;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * To run this demo, you will need:
@@ -37,8 +50,14 @@ public class PeopleAddressBook {
 
 	public static void main(String[] args) {
 		NotesThread.sinitThread();
-
-		Session session = DefaultSession.getInstance().open(Credentials.getPassword());
+		
+		Session session = RiverFramework.getSession(RiverFramework.MODULE_LOTUS_DOMINO, null, null, Credentials.getPassword());
+		
+		Injector injector = Guice.createInjector(new SessionModule());
+		SessionFactory sessionFactory = injector.getInstance(SessionFactory.class);
+		org.riverframework.wrapper.Session _session = sessionFactory.createDomino(null, null, Credentials.getPassword());		
+		Session session = DefaultSession.getInstance().setWrappedSession(_session);
+		
 		Database database = session.getDatabase(PeopleDatabase.class, "", filepath);
 
 		System.out.println("User=" + session.getUserName());
@@ -69,6 +88,7 @@ public class PeopleAddressBook {
 		.setField("Age", 30)
 		.save();
 		
+		database.refreshSearchIndex();
 		
 		// Searching
 		String query = "Doe";
@@ -79,6 +99,7 @@ public class PeopleAddressBook {
 		System.out.println("Found " + col.size() + " persons.");
 		
 		for(Document doc : col) {
+			//Map<String, Vector<Object>> fields = doc.getFields();
 			Person p = (Person) doc;
 			System.out.println("Name=" + p.getFieldAsString("Name"));
 		}

@@ -12,7 +12,7 @@ import java.util.Vector;
  * @version 0.0.x
  */
 
-public interface Document {
+public interface Document extends Base {
 	public static final String FIELD_ID = Session.FIELD_PREFIX + "id";
 	public static final boolean FORCE_SAVE = true;
 
@@ -50,7 +50,7 @@ public interface Document {
 
 	public String getForm();
 
-	public String getUniversalId();
+	public String getObjectId();
 
 	public Document setForm(String form);
 

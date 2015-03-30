@@ -31,12 +31,17 @@ public abstract class AbstractSessionTest {
 		}
 	}
 
+	@After
+	public void close() {
+		context.closeSession();
+	}
+
 	@Test
 	public void testSession() {
 		String password = Credentials.getPassword();
 		assertFalse("Password can't be an empty string", password.equals(""));
 
-		Session session = context.getSession();
+		Session session = (Session) context.getSession().getWrappedObject();
 
 		assertTrue("Notes Session could not be retrieved", session.isOpen());
 		assertFalse("There's a problem with the Session. I can't retrieve the current user name.",
@@ -48,16 +53,12 @@ public abstract class AbstractSessionTest {
 		String password = Credentials.getPassword();
 		assertFalse("Password can be an empty string", password.equals(""));
 
-		Session session = context.getSession();
+		Session session = (Session) context.getSession().getWrappedObject();
 
 		assertTrue("Notes Session could not be retrieved", session.isOpen());
 
 		Database database = session.getDatabase(context.getRemoteDatabaseServer(), context.getRemoteDatabasePath());
 
 		assertTrue("Remote database could not be opened", database.isOpen());
-	}
-
-	@After
-	public void close() {
 	}
 }

@@ -39,7 +39,7 @@ public abstract class AbstractDocumentTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = DefaultSession.getInstance().setWrappedSession(context.getSession());
+				session = context.getSession();
 				database = session.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
 				complexDatabase = session
 						.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
@@ -54,7 +54,7 @@ public abstract class AbstractDocumentTest {
 
 	@After
 	public void close() {
-		session.close();
+		context.closeSession();
 	}
 
 	@Test
@@ -379,7 +379,7 @@ public abstract class AbstractDocumentTest {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
-		String uniqueId = rDoc.getUniversalId();
+		String uniqueId = rDoc.getObjectId();
 
 		assertFalse("It could not be retrieved de document's unique id.", uniqueId.equals(""));
 	}
@@ -408,7 +408,7 @@ public abstract class AbstractDocumentTest {
 		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
 
 		rDoc.setField("Form", TEST_FORM);
-		uniqueId = rDoc.getUniversalId();
+		uniqueId = rDoc.getObjectId();
 
 		rDoc = null;
 		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
@@ -417,7 +417,7 @@ public abstract class AbstractDocumentTest {
 
 		rDoc = null;
 		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getUniversalId();
+		uniqueId = rDoc.getObjectId();
 		rDoc.save(false);
 		rDoc = null;
 		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
@@ -428,7 +428,7 @@ public abstract class AbstractDocumentTest {
 
 		rDoc = null;
 		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getUniversalId();
+		uniqueId = rDoc.getObjectId();
 		rDoc.save();
 		rDoc = null;
 		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
@@ -439,7 +439,7 @@ public abstract class AbstractDocumentTest {
 
 		rDoc = null;
 		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getUniversalId();
+		uniqueId = rDoc.getObjectId();
 		rDoc.save(false);
 		rDoc = null;
 		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
@@ -450,7 +450,7 @@ public abstract class AbstractDocumentTest {
 
 		rDoc = null;
 		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getUniversalId();
+		uniqueId = rDoc.getObjectId();
 		rDoc.save(true);
 		rDoc = null;
 		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
@@ -461,7 +461,7 @@ public abstract class AbstractDocumentTest {
 
 		rDoc = null;
 		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getUniversalId();
+		uniqueId = rDoc.getObjectId();
 		rDoc.save(true);
 		rDoc = null;
 		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
@@ -472,7 +472,7 @@ public abstract class AbstractDocumentTest {
 
 		rDoc = null;
 		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getUniversalId();
+		uniqueId = rDoc.getObjectId();
 		rDoc.setField("SOME_TEST_FIELD", rs.nextString());
 		rDoc.save(false);
 		rDoc = null;
@@ -484,7 +484,7 @@ public abstract class AbstractDocumentTest {
 
 		rDoc = null;
 		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getUniversalId();
+		uniqueId = rDoc.getObjectId();
 		rDoc.setField("SOME_TEST_FIELD", rs.nextString());
 		rDoc.save(true);
 		rDoc = null;

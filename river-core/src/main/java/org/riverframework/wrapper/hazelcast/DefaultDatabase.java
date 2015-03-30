@@ -10,6 +10,11 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	}
 
 	@Override
+	public Object getWrappedObject() {
+		return null;
+	}
+
+	@Override
 	public String getObjectId() {
 		return "";
 	}
@@ -63,5 +68,9 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	@Override
 	public Database refreshSearchIndex() {
 		return null;
+	}
+
+	@Override
+	public void close() {
 	}
 }

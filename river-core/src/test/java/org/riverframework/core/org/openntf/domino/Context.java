@@ -1,11 +1,9 @@
 package org.riverframework.core.org.openntf.domino;
 
+import org.riverframework.Modules;
+import org.riverframework.RiverFramework;
+import org.riverframework.Session;
 import org.riverframework.core.Credentials;
-import org.riverframework.wrapper.SessionFactory;
-import org.riverframework.wrapper.SessionModule;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 
 public final class Context extends org.riverframework.core.AbstractContext {
 	@Override
@@ -14,12 +12,15 @@ public final class Context extends org.riverframework.core.AbstractContext {
 	}
 
 	@Override
-	public org.riverframework.wrapper.Session getSession() {
-		Injector injector = Guice.createInjector(new SessionModule());
-		SessionFactory sessionFactory = injector.getInstance(SessionFactory.class);
+	public Session getSession() {
+		Session session = RiverFramework.getSession(
+				Modules.MODULE_ORG_OPENNTF_DOMINO,
+				null, null, Credentials.getPassword());
+		return session;
+	}
 
-		org.riverframework.wrapper.Session _session = sessionFactory.createOpenntf(null, null, Credentials.getPassword());
-
-		return _session;
+	@Override
+	public void closeSession() {
+		RiverFramework.closeSession(Modules.MODULE_ORG_OPENNTF_DOMINO);
 	}
 }

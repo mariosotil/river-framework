@@ -13,7 +13,7 @@ import java.util.Vector;
  * @version 0.0.x
  */
 
-public interface Document {
+public interface Document extends Base {
 	public Document setField(String field, Object value);
 
 	public String getObjectId();

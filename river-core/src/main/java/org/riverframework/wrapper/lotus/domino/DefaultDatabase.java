@@ -16,6 +16,11 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	}
 
 	@Override
+	public Object getWrappedObject() {
+		return _database;
+	}
+
+	@Override
 	public String getObjectId() {
 		try {
 			return _database.getReplicaID();
@@ -157,5 +162,17 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			throw new RiverException(e);
 		}
 		return this;
+	}
+
+	@Override
+	public void close() {
+		try {
+			if (_database != null)
+				_database.recycle();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		} finally {
+			_database = null;
+		}
 	}
 }

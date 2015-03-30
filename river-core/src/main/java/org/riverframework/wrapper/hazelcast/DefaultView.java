@@ -9,6 +9,11 @@ class DefaultView implements org.riverframework.wrapper.View {
 	}
 
 	@Override
+	public Object getWrappedObject() {
+		return null;
+	}
+
+	@Override
 	public Document getDocumentByKey(String key) {
 		return null;
 	}
@@ -36,5 +41,9 @@ class DefaultView implements org.riverframework.wrapper.View {
 	@Override
 	public DocumentCollection search(String query) {
 		return null;
+	}
+
+	@Override
+	public void close() {
 	}
 }

@@ -3,6 +3,7 @@ package org.riverframework.core;
 import java.lang.reflect.Constructor;
 import java.util.UUID;
 
+import org.riverframework.Base;
 import org.riverframework.Database;
 import org.riverframework.RiverException;
 import org.riverframework.Session;
@@ -12,38 +13,35 @@ public class DefaultSession implements org.riverframework.Session {
 	// public static final boolean DO_NOT_USE_POOL = false;
 
 	public static final String PREFIX = "RIVER_";
-	private final static Session INSTANCE = new DefaultSession();
 
 	private org.riverframework.wrapper.Session _session = null;
 	private UUID sessionUUID = null;
 
-	protected DefaultSession() {
+	protected DefaultSession(org.riverframework.wrapper.Session _s) {
 		// Exists only to defeat instantiation.
+		_session = _s;
 		sessionUUID = UUID.randomUUID();
 	}
 
-	public static Session getInstance() {
-		return INSTANCE;
-	}
-
 	@Override
-	public String getUUID() {
+	public String getObjectId() {
 		return sessionUUID.toString();
 	}
 
 	@Override
-	public Session setWrappedSession(org.riverframework.wrapper.Session s) {
-		if (s == null)
-			throw new RiverException("You can't set a null Lotus Notes session");
-		_session = s;
-		
-		return this;
+	public Base getParent() {
+		return null;
+	}
+
+	@Override
+	public Object getWrappedObject() {
+		return _session;
 	}
 
 	@Override
 	public Session open(org.riverframework.wrapper.Session _s) {
 		_session = _s;
-		return INSTANCE;
+		return this;
 	}
 
 	@Override
@@ -55,7 +53,7 @@ public class DefaultSession implements org.riverframework.Session {
 	public <U extends Database> U getDatabase(String... parameters) {
 		return getDatabase(null, parameters);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U extends org.riverframework.Database> U getDatabase(Class<U> clazz, String... location) {
@@ -102,6 +100,6 @@ public class DefaultSession implements org.riverframework.Session {
 
 	@Override
 	public void close() {
-
+		_session.close();
 	}
 }

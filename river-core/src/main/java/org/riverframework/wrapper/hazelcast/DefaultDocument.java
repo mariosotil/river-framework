@@ -19,6 +19,11 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	}
 
 	@Override
+	public Object getWrappedObject() {
+		return null;
+	}
+
+	@Override
 	public Document setField(String field, Object value) {
 		return this;
 	}
@@ -91,5 +96,9 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	@Override
 	public Document save() {
 		return this;
+	}
+
+	@Override
+	public void close() {
 	}
 }

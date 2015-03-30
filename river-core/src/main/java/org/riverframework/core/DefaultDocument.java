@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.riverframework.Base;
 import org.riverframework.Database;
 import org.riverframework.Document;
 
@@ -24,10 +25,26 @@ public class DefaultDocument implements org.riverframework.Document {
 	protected org.riverframework.wrapper.Document _doc = null;
 	protected boolean isModified = false;
 
-	protected DefaultDocument(Database d, org.riverframework.wrapper.Document doc) {
+	protected DefaultDocument(Database d, org.riverframework.wrapper.Document _d) {
 		database = d;
-		_doc = doc;
+		_doc = _d;
 		isModified = false;
+	}
+
+	@Override
+	public String getObjectId() {
+		String result = _doc.getObjectId();
+		return result;
+	}
+
+	@Override
+	public Base getParent() {
+		return database;
+	}
+
+	@Override
+	public Object getWrappedObject() {
+		return _doc;
 	}
 
 	@Override
@@ -105,12 +122,6 @@ public class DefaultDocument implements org.riverframework.Document {
 	public Document setField(String field, Object value) {
 		isModified = setFieldIfNecessary(field, value) || isModified;
 		return this;
-	}
-
-	@Override
-	public String getUniversalId() {
-		String result = _doc.getObjectId();
-		return result;
 	}
 
 	protected Document internalRecalc() {
@@ -244,5 +255,10 @@ public class DefaultDocument implements org.riverframework.Document {
 	@Override
 	public Document recalc() {
 		return internalRecalc();
+	}
+
+	@Override
+	public void close() {
+		_doc.close();
 	}
 }

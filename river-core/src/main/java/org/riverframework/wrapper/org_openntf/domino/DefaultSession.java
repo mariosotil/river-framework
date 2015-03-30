@@ -31,6 +31,11 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 	}
 
 	@Override
+	public Object getWrappedObject() {
+		return _session;
+	}
+
+	@Override
 	public boolean isOpen() {
 		return (_session != null);
 	}
@@ -57,9 +62,9 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 			_database = _session.getDatabase(server, path, false);
 		}
 
-		if (_database != null && !_database.isOpen()) {
-			_database = null;
-		}
+		// if (_database != null && !_database.isOpen()) {
+		// _database = null;
+		// }
 
 		Database database = new DefaultDatabase(_database);
 		return database;
@@ -72,6 +77,6 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 
 	@Override
 	public void close() {
-
+		_session = null;
 	}
 }

@@ -1,7 +1,5 @@
 package org.riverframework;
 
-import org.riverframework.wrapper.Session;
-
 public interface Context {
 	public String getTestDatabaseServer();
 
@@ -14,4 +12,6 @@ public interface Context {
 	public String getConfigurationFileName();
 
 	public Session getSession();
+
+	public void closeSession();
 }

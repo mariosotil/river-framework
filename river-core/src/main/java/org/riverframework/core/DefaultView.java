@@ -2,6 +2,7 @@ package org.riverframework.core;
 
 import java.lang.reflect.Constructor;
 
+import org.riverframework.Base;
 import org.riverframework.Database;
 import org.riverframework.DocumentCollection;
 import org.riverframework.RiverException;
@@ -15,6 +16,21 @@ public class DefaultView implements org.riverframework.View {
 	protected DefaultView(Database d, org.riverframework.wrapper.View obj) {
 		database = d;
 		_view = obj;
+	}
+
+	@Override
+	public String getObjectId() {
+		return ""; // _view.getObjectId();
+	}
+
+	@Override
+	public Base getParent() {
+		return database;
+	}
+
+	@Override
+	public Object getWrappedObject() {
+		return _view;
 	}
 
 	@Override
@@ -90,5 +106,11 @@ public class DefaultView implements org.riverframework.View {
 		_col = _view.search(query);
 		DocumentCollection result = new DefaultDocumentCollection(database).loadFrom(_col);
 		return result;
+	}
+
+	@Override
+	public void close() {
+		_doc.close();
+		_view.close();
 	}
 }

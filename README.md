@@ -8,8 +8,9 @@ This is a Workflow Application Framework in an **EARLY development stage**. So f
 
 ```java
 //Opening session from the credentials file
-Session session = DefaultSession.getInstance().open(Credentials.getPassword());
-Database database = session.getDatabase(DefaultDatabase.class, "", "db.nsf");
+Session session = RiverFramework.getSession(Modules.MODULE_LOTUS_DOMINO,
+				null, null, Credentials.getPassword());
+Database database = session.getDatabase(DefaultDatabase.class, "", "example.nsf");
     
 // Creating one person
 Person jd = (Person) database.createDocument(Person.class)
@@ -32,6 +33,8 @@ if (p.isOpen()) {
   System.out.println("His name is " + p.getFieldAsString("Name"));
   System.out.println("His age is " + p.getFieldAsInteger("Age"));
 } 
+
+session.close();
 ```
 
 So far, this framework has the following features: 

@@ -14,7 +14,7 @@ public class SessionModule extends AbstractModule {
 						org.riverframework.wrapper.lotus.domino.DefaultSession.class)
 				.implement(org.riverframework.wrapper.Session.class,
 						Names.named("Openntf"),
-						org.riverframework.wrapper.org_openntf.domino.DefaultSession.class)
+						org.riverframework.wrapper.org.openntf.domino.DefaultSession.class)
 				.implement(org.riverframework.wrapper.Session.class,
 						Names.named("Hazelcast"),
 						org.riverframework.wrapper.hazelcast.DefaultSession.class)

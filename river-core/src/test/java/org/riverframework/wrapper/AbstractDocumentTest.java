@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Constructor;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.Vector;
 
 import org.junit.After;
@@ -279,4 +280,38 @@ public abstract class AbstractDocumentTest {
 				non_existent.equals(""));
 	}
 
+	@Test
+	public void testGetFields() {
+		assertTrue("The test database could not be opened.", database.isOpen());
+
+		Calendar cal1 = Calendar.getInstance();
+		cal1.set(2015,03,15);
+		
+		Date date1 = cal1.getTime();
+		
+		Document doc = database.createDocument()
+				.setField("Form", TEST_FORM)
+				.setField("String", "HI!")
+				.setField("Date", date1)
+				.setField("Number", 75.3)
+				.setField("StringArray", new String[]{"A", "B", "C"})
+				.setField("Empty", "")
+				.save();
+
+		Map<String, Vector<Object>> fields = doc.getFields();
+		
+		assertTrue("The String value retrieved was different to the saved", fields.get("String").get(0).equals("HI!"));
+		
+		Date date2 = (Date) fields.get("Date").get(0);		
+		long l1 = Long.valueOf(date1.getTime() / 1000).intValue();
+		long l2 = Long.valueOf(date2.getTime() / 1000).intValue();
+		assertTrue("The Date value [" + date2.toString() + "] retrieved was different to the saved [" + date1.toString() + "]", 
+				l1 == l2); 
+
+		assertTrue("The Number value retrieved was different to the saved", ((Double) fields.get("Number").get(0)).compareTo(75.3) == 0);
+		assertTrue("The String array retrieved was different to the saved", fields.get("StringArray").get(2).equals("C"));
+		assertTrue("The Empty String value retrieved was different to the saved", fields.get("Empty").get(0).equals(""));
+		
+	}
 }
+

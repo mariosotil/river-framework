@@ -1,4 +1,4 @@
-package org.riverframework.wrapper.org_openntf.domino;
+package org.riverframework.wrapper.org.openntf.domino;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -130,7 +130,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 				if (!_doc.getEmbeddedObjects().isEmpty()) {
 					for (@SuppressWarnings("unchecked")
 					Iterator<org.openntf.domino.EmbeddedObject> i = _doc.getEmbeddedObjects()
-							.iterator(); i.hasNext();) {
+					.iterator(); i.hasNext();) {
 						org.openntf.domino.EmbeddedObject eo = i.next();
 						if (eo.getType() != 0)
 							return false;
@@ -161,7 +161,25 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 				new HashMap<String, Vector<Object>>(items.size());
 
 		for (org.openntf.domino.Item it : items) {
-			result.put(it.getName(), new Vector<Object>(it.getValues()));
+			String name = it.getName();
+			Vector<Object> values = it.getValues();
+			if (values == null) {
+				values = new Vector<Object>();
+			}
+
+			if (values.isEmpty()) {
+				values.add("");
+			}
+
+			if (values.get(0) instanceof org.openntf.domino.DateTime) {
+				for (int i = 0; i < values.size(); i++) {
+					// Always save as org.openntf.domino.DateTime
+					Date _date = ((org.openntf.domino.DateTime) values.get(i)).toJavaDate();
+					values.set(i, _date);
+				}
+			}
+
+			result.put(name, values);
 		}
 
 		return result;

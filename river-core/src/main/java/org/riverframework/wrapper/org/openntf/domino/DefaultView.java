@@ -1,4 +1,4 @@
-package org.riverframework.wrapper.org_openntf.domino;
+package org.riverframework.wrapper.org.openntf.domino;
 
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentCollection;

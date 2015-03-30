@@ -7,8 +7,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import lotus.domino.Item;
 import lotus.domino.NotesException;
 
+//import org.apache.log4j.Logger;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 
@@ -21,6 +23,7 @@ import org.riverframework.wrapper.Document;
  * @version 0.0.x
  */
 class DefaultDocument implements org.riverframework.wrapper.Document {
+	//static Logger logWrapper = Logger.getLogger(DefaultDocument.class.getName());
 	protected lotus.domino.Document _doc = null;
 
 	public DefaultDocument(lotus.domino.Document d) {
@@ -179,7 +182,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 					if (!_doc.getEmbeddedObjects().isEmpty()) {
 						for (@SuppressWarnings("unchecked")
 						Iterator<lotus.domino.EmbeddedObject> i = _doc.getEmbeddedObjects()
-								.iterator(); i.hasNext();) {
+						.iterator(); i.hasNext();) {
 							lotus.domino.EmbeddedObject eo = i.next();
 							if (eo.getType() != 0)
 								return false;
@@ -211,19 +214,55 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Map<String, Vector<Object>> getFields() {
-		Vector<lotus.domino.Item> items;
+		Map<String, Vector<Object>> result = null;
+
 		try {
+//			logWrapper.debug("getFields: " + _doc.getUniversalID());
+//			logWrapper.debug("getFields: loading items");
+
+			Vector<lotus.domino.Item> items;
 			items = _doc.getItems();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
 
-		Map<String, Vector<Object>> result =
-				new HashMap<String, Vector<Object>>(items.size());
+//			logWrapper.debug("getFields: found " + items.size());
+			result = new HashMap<String, Vector<Object>>(items.size());
 
-		try {
 			for (lotus.domino.Item it : items) {
-				result.put(it.getName(), new Vector<Object>(it.getValues()));
+				String name = it.getName();
+				int type = it.getType();
+//				logWrapper.debug("getFields: item=" + name + ", type=" + type);
+
+				Vector<Object> values = null;
+				
+				if (type == Item.DATETIMES 
+						|| type == Item.NAMES 
+						|| type == Item.NUMBERS
+						|| type == Item.READERS
+						|| type == Item.RICHTEXT
+						|| type == Item.TEXT) {
+					values = it.getValues();
+				}
+				
+				if (values == null) {
+//					logWrapper.debug("getFields: it's null");
+					values = new Vector<Object>();
+				}
+
+				if (values.isEmpty()) {
+//					logWrapper.debug("getFields: it's empty");
+					values.add("");
+				}
+
+				if (!values.isEmpty()) {
+					if (values.get(0) instanceof lotus.domino.DateTime) {
+//						logWrapper.debug("getFields: it's datetime");
+						for (int i = 0; i < values.size(); i++) {
+							values.set(i, ((lotus.domino.DateTime) values.get(i)).toJavaDate());
+						}
+					}
+				}
+
+//				logWrapper.debug("getFields: saving into the map");
+				result.put(name, values);
 			}
 		} catch (NotesException e) {
 			throw new RiverException(e);

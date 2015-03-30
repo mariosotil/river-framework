@@ -2,6 +2,7 @@ package org.riverframework.core;
 
 import java.io.File;
 
+import org.apache.log4j.BasicConfigurator;
 import org.ini4j.Wini;
 import org.riverframework.RiverException;
 import org.riverframework.Session;
@@ -12,6 +13,10 @@ public abstract class AbstractContext implements org.riverframework.Context {
 	private String remoteDatabaseServer = "";
 	private String remoteDatabasePath = "";
 
+	static {
+		BasicConfigurator.configure();
+	}
+	
 	public AbstractContext() {
 		// Exists only to defeat instantiation
 		try {

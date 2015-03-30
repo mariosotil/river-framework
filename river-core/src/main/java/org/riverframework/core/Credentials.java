@@ -5,6 +5,7 @@ import java.io.File;
 import org.ini4j.Wini;
 
 public final class Credentials {
+	private static String server;
 	private static String username;
 	private static String password;
 
@@ -15,12 +16,17 @@ public final class Credentials {
 
 			Wini credentials = new Wini(new File(location));
 
+			server = credentials.get("default", "server");
 			username = credentials.get("default", "username");
 			password = credentials.get("default", "password");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static String getServer() {
+		return server;
 	}
 
 	public static String getUsername() {

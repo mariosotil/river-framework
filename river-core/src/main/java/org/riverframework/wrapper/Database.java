@@ -3,8 +3,6 @@ package org.riverframework.wrapper;
 public interface Database {
 	public String getObjectId();
 
-	public String getMainServer();
-
 	public String getServer();
 
 	public String getFilePath();

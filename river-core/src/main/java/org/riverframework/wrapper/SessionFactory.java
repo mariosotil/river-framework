@@ -8,4 +8,7 @@ public interface SessionFactory {
 
 	@Named("Openntf")
 	Session createOpenntf(String... parameters);
+
+	@Named("Hazelcast")
+	Session createHazelcast(String... parameters);
 }

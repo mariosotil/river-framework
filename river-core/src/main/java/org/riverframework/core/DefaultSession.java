@@ -3,6 +3,7 @@ package org.riverframework.core;
 import java.lang.reflect.Constructor;
 import java.util.UUID;
 
+import org.riverframework.Database;
 import org.riverframework.RiverException;
 import org.riverframework.Session;
 
@@ -30,10 +31,13 @@ public class DefaultSession implements org.riverframework.Session {
 		return sessionUUID.toString();
 	}
 
-	public void setSession(org.riverframework.wrapper.Session s) {
+	@Override
+	public Session setWrappedSession(org.riverframework.wrapper.Session s) {
 		if (s == null)
 			throw new RiverException("You can't set a null Lotus Notes session");
 		_session = s;
+		
+		return this;
 	}
 
 	@Override
@@ -48,12 +52,19 @@ public class DefaultSession implements org.riverframework.Session {
 	}
 
 	@Override
+	public <U extends Database> U getDatabase(String... parameters) {
+		return getDatabase(null, parameters);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
 	public <U extends org.riverframework.Database> U getDatabase(Class<U> clazz, String... location) {
-		U rDatabase = null;
-		org.riverframework.wrapper.Database database = null;
+		U database = null;
+		Class<U> c = clazz;
+		org.riverframework.wrapper.Database _database = null;
 
-		if (clazz == null)
-			throw new RiverException("The clazz parameter can not be null.");
+		if (c == null)
+			c = (Class<U>) DefaultDatabase.class;
 
 		if (!DefaultDatabase.class.isAssignableFrom(clazz))
 			throw new RiverException("The clazz parameter must inherit from DefaultDatabase.");
@@ -64,24 +75,24 @@ public class DefaultSession implements org.riverframework.Session {
 		String server = location[0];
 		String path = location[1];
 
-		if (database == null || !database.isOpen()) {
-			database = _session.getDatabase(server, path);
+		if (_database == null || !_database.isOpen()) {
+			_database = _session.getDatabase(server, path);
 		}
 
-		if (database != null && !database.isOpen()) {
-			database = null;
+		if (_database != null && !_database.isOpen()) {
+			_database = null;
 		}
 
 		try {
-			Constructor<?> constructor = clazz.getDeclaredConstructor(Session.class,
+			Constructor<?> constructor = c.getDeclaredConstructor(Session.class,
 					org.riverframework.wrapper.Database.class);
 			constructor.setAccessible(true);
-			rDatabase = clazz.cast(constructor.newInstance(this, database));
+			database = c.cast(constructor.newInstance(this, _database));
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
 
-		return rDatabase;
+		return database;
 	}
 
 	@Override

@@ -46,23 +46,6 @@ public class DefaultDatabase implements org.riverframework.Database {
 	}
 
 	@Override
-	public Database getMainReplica() {
-		String adminServer = "";
-		String replicaId = "";
-
-		adminServer = _database.getMainServer();
-
-		if (adminServer.equals(""))
-			return this;
-
-		replicaId = _database.getObjectId();
-
-		Database d = session.getDatabase(DefaultDatabase.class, adminServer, replicaId);
-
-		return d;
-	}
-
-	@Override
 	public org.riverframework.Document createDocument(String... parameters) {
 		return createDocument(DefaultDocument.class, parameters);
 	}

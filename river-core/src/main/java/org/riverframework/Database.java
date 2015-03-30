@@ -21,8 +21,6 @@ public interface Database {
 
 	public Document getDocument(org.riverframework.wrapper.Document doc);
 
-	public Database getMainReplica();
-
 	public DocumentCollection getAllDocuments();
 
 	public DocumentCollection search(String query);

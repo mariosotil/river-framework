@@ -55,16 +55,16 @@ So far, this framework has the following features:
 
 - Version 0.2.5
   - ~~Rolling back from the `org.openntf.domino` package to `lotus.domino`~~
-  - Improvement in the design, wrapping the `lotus.domino` and the `org.openntf.domino` classes with the `org.riverframework.wrapper`classes
+  - Improvements in the design, wrapping the `lotus.domino` and the `org.openntf.domino` classes with the `org.riverframework.wrapper`classes
   - The package `org.riverframework.core` will control the wrapped classes 
+  - Improvements in the design, making the modules for the wrappers classes be totally separated from the core. So, each module can be loaded on runtime.
   - Improvements in DocumentCollection as array
   - Redesign the JUnit tests for testing the wrappers for `lotus.domino` and the `org.openntf.domino`, and testing the core with each wrapper
 
 ## What I'm working on now?
 
 - Version 0.2.5
-  - Applying dependency injection with Guice
-  - Creating a wrapper and JUnit tests for Hazelcast (http://hazelcast.com/)
+  - Creating a module and JUnit tests for Hazelcast (http://hazelcast.com/)
   - Update the Java example
 
 ## What is in the ToDo list?
@@ -73,7 +73,7 @@ There are a lot of features that I will add to this framework:
 
 - Version 0.2.6
   - Working on `org.riverframework.wrapper.domino` memory management
-  - Creation of an objects pool
+  - Creation of an object pool
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs
   - Examples in Java, SSJS, XPages and LotusScript

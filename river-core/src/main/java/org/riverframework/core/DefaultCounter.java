@@ -19,7 +19,7 @@ public class DefaultCounter extends DefaultDocument implements Counter, Unique {
 		return Session.OBJECT_PREFIX + "Counter_Index";
 	}
 
-	protected DefaultCounter(Database d, org.riverframework.wrapper.Document doc) {
+	protected DefaultCounter(Database d, org.riverframework.module.Document doc) {
 		super(d, doc);
 	}
 

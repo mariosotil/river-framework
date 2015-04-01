@@ -22,10 +22,10 @@ public class DefaultDocument implements org.riverframework.Document {
 	public static final String FIELD_FORM = "Form";
 
 	protected Database database = null;
-	protected org.riverframework.wrapper.Document _doc = null;
+	protected org.riverframework.module.Document _doc = null;
 	protected boolean isModified = false;
 
-	protected DefaultDocument(Database d, org.riverframework.wrapper.Document _d) {
+	protected DefaultDocument(Database d, org.riverframework.module.Document _d) {
 		database = d;
 		_doc = _d;
 		isModified = false;

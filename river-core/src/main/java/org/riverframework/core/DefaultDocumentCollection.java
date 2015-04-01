@@ -14,9 +14,9 @@ public class DefaultDocumentCollection extends ArrayList<org.riverframework.Docu
 	}
 
 	@Override
-	public org.riverframework.DocumentCollection loadFrom(org.riverframework.wrapper.DocumentCollection _col) {
+	public org.riverframework.DocumentCollection loadFrom(org.riverframework.module.DocumentCollection _col) {
 		clear();
-		for (org.riverframework.wrapper.Document _doc : _col) {
+		for (org.riverframework.module.Document _doc : _col) {
 			org.riverframework.Document doc = database.getDocument(_doc);
 			this.add(doc);
 		}

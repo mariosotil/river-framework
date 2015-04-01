@@ -93,13 +93,13 @@ public abstract class AbstractDatabaseTest {
 	}
 
 	static class VacationDatabase extends DefaultDatabase {
-		protected VacationDatabase(Session s, org.riverframework.wrapper.Database obj) {
+		protected VacationDatabase(Session s, org.riverframework.module.Database obj) {
 			super(s, obj);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document _doc) {
+		public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, org.riverframework.module.Document _doc) {
 			U doc = null;
 			Class<U> c = null;
 
@@ -123,7 +123,7 @@ public abstract class AbstractDatabaseTest {
 
 	static class VacationRequest extends DefaultDocument {
 
-		protected VacationRequest(Database d, org.riverframework.wrapper.Document _doc) {
+		protected VacationRequest(Database d, org.riverframework.module.Document _doc) {
 			super(d, _doc);
 		}
 
@@ -230,7 +230,7 @@ public abstract class AbstractDatabaseTest {
 
 	static class Person extends DefaultDocument implements Document, Unique {
 
-		protected Person(Database d, org.riverframework.wrapper.Document doc) {
+		protected Person(Database d, org.riverframework.module.Document doc) {
 			super(d, doc);
 		}
 

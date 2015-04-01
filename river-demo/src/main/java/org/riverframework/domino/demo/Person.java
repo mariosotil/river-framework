@@ -7,7 +7,7 @@ import org.riverframework.Unique;
 
 class Person extends DefaultDocument implements Unique {
 
-	protected Person(Database d, org.riverframework.wrapper.Document doc) {
+	protected Person(Database d, org.riverframework.module.Document doc) {
 		super(d, doc);
 	}
 

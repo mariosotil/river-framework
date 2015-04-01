@@ -14,9 +14,9 @@ import org.riverframework.Unique;
 public class DefaultDatabase implements org.riverframework.Database {
 	public static final String METHOD_GETINDEXNAME = "getIndexName";
 	protected Session session = null;
-	protected org.riverframework.wrapper.Database _database = null;
+	protected org.riverframework.module.Database _database = null;
 
-	protected DefaultDatabase(org.riverframework.Session s, org.riverframework.wrapper.Database _db) {
+	protected DefaultDatabase(org.riverframework.Session s, org.riverframework.module.Database _db) {
 		session = s;
 		_database = _db;
 	}
@@ -69,7 +69,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 	@Override
 	public <U extends org.riverframework.Document> U createDocument(Class<U> clazz, String... parameters) {
 		U rDoc = null;
-		org.riverframework.wrapper.Document doc = null;
+		org.riverframework.module.Document doc = null;
 
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
@@ -78,7 +78,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 			doc = _database.createDocument();
 
 			try {
-				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
+				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.riverframework.module.Document.class);
 				constructor.setAccessible(true);
 				rDoc = clazz.cast(constructor.newInstance(this, doc));
 			} catch (Exception e) {
@@ -87,7 +87,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 		}
 
 		if (rDoc == null) {
-			rDoc = clazz.cast(getDocument(clazz, (org.riverframework.wrapper.Document) null));
+			rDoc = clazz.cast(getDocument(clazz, (org.riverframework.module.Document) null));
 		} else {
 			((DefaultDocument) rDoc).afterCreate().setModified(false);
 		}
@@ -111,7 +111,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 			String... parameters)
 	{
 		U doc = null;
-		org.riverframework.wrapper.Document _doc = null;
+		org.riverframework.module.Document _doc = null;
 
 		if (parameters.length > 0) {
 			String id = parameters[0];
@@ -143,7 +143,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but its method "
 							+ METHOD_GETINDEXNAME + " returns an empty string.");
 
-				org.riverframework.wrapper.View indexView = _database.getView(indexName);
+				org.riverframework.module.View indexView = _database.getView(indexName);
 
 				if (indexView == null)
 					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but the index view "
@@ -176,7 +176,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 		} else {
 			// There's no parameters. Returning a closed 'clazz' object
 			try {
-				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
+				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.riverframework.module.Document.class);
 				constructor.setAccessible(true);
 				doc = clazz.cast(constructor.newInstance(this, null));
 			} catch (Exception e) {
@@ -188,13 +188,13 @@ public class DefaultDatabase implements org.riverframework.Database {
 	}
 
 	@Override
-	public org.riverframework.Document getDocument(org.riverframework.wrapper.Document doc) {
+	public org.riverframework.Document getDocument(org.riverframework.module.Document doc) {
 		return getDocument(null, doc);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document _doc) {
+	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, org.riverframework.module.Document _doc) {
 		U doc = null;
 		Class<?> c = null;
 
@@ -213,7 +213,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 		}
 
 		try {
-			Constructor<?> constructor = c.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
+			Constructor<?> constructor = c.getDeclaredConstructor(Database.class, org.riverframework.module.Document.class);
 			constructor.setAccessible(true);
 			doc = (U) constructor.newInstance(this, _doc);
 		} catch (Exception e) {
@@ -231,7 +231,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 	@Override
 	public <U extends org.riverframework.View> U getView(Class<U> clazz, String... parameters) {
 		U view = null;
-		org.riverframework.wrapper.View _view = null;
+		org.riverframework.module.View _view = null;
 		String id = parameters[0];
 
 		if (clazz == null)
@@ -241,7 +241,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 
 		if (DefaultView.class.isAssignableFrom(clazz)) {
 			try {
-				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.View.class);
+				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.riverframework.module.View.class);
 				constructor.setAccessible(true);
 				view = clazz.cast(constructor.newInstance(this, _view));
 			} catch (Exception e) {
@@ -254,7 +254,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 
 	@Override
 	public org.riverframework.DocumentCollection getAllDocuments() {
-		org.riverframework.wrapper.DocumentCollection _col;
+		org.riverframework.module.DocumentCollection _col;
 		_col = _database.getAllDocuments();
 		DocumentCollection result = new DefaultDocumentCollection(this).loadFrom(_col);
 
@@ -263,7 +263,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 
 	@Override
 	public org.riverframework.DocumentCollection search(String query) {
-		org.riverframework.wrapper.DocumentCollection _col;
+		org.riverframework.module.DocumentCollection _col;
 		_col = _database.search(query);
 		DocumentCollection result = new DefaultDocumentCollection(this).loadFrom(_col);
 

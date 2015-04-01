@@ -14,6 +14,6 @@ public interface Session extends Base {
 
 	public void close();
 
-	public Session open(org.riverframework.wrapper.Session s);
+	public Session open(org.riverframework.module.Session s);
 
 }

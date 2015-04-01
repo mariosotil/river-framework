@@ -16,7 +16,7 @@ import org.riverframework.Context;
 import org.riverframework.Database;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
-import org.riverframework.wrapper.Document;
+import org.riverframework.module.Document;
 
 public abstract class AbstractDocumentTest {
 	protected Session session = null;
@@ -514,7 +514,7 @@ public abstract class AbstractDocumentTest {
 
 	static class ComplexDatabase extends org.riverframework.core.DefaultDatabase {
 
-		protected ComplexDatabase(Session s, org.riverframework.wrapper.Database obj) {
+		protected ComplexDatabase(Session s, org.riverframework.module.Database obj) {
 			super(s, obj);
 		}
 	}

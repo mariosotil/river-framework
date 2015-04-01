@@ -14,10 +14,10 @@ public class DefaultSession implements org.riverframework.Session {
 
 	public static final String PREFIX = "RIVER_";
 
-	private org.riverframework.wrapper.Session _session = null;
+	private org.riverframework.module.Session _session = null;
 	private UUID sessionUUID = null;
 
-	protected DefaultSession(org.riverframework.wrapper.Session _s) {
+	protected DefaultSession(org.riverframework.module.Session _s) {
 		// Exists only to defeat instantiation.
 		_session = _s;
 		sessionUUID = UUID.randomUUID();
@@ -39,7 +39,7 @@ public class DefaultSession implements org.riverframework.Session {
 	}
 
 	@Override
-	public Session open(org.riverframework.wrapper.Session _s) {
+	public Session open(org.riverframework.module.Session _s) {
 		_session = _s;
 		return this;
 	}
@@ -59,7 +59,7 @@ public class DefaultSession implements org.riverframework.Session {
 	public <U extends org.riverframework.Database> U getDatabase(Class<U> clazz, String... location) {
 		U database = null;
 		Class<U> c = clazz;
-		org.riverframework.wrapper.Database _database = null;
+		org.riverframework.module.Database _database = null;
 
 		if (c == null)
 			c = (Class<U>) DefaultDatabase.class;
@@ -83,7 +83,7 @@ public class DefaultSession implements org.riverframework.Session {
 
 		try {
 			Constructor<?> constructor = c.getDeclaredConstructor(Session.class,
-					org.riverframework.wrapper.Database.class);
+					org.riverframework.module.Database.class);
 			constructor.setAccessible(true);
 			database = c.cast(constructor.newInstance(this, _database));
 		} catch (Exception e) {

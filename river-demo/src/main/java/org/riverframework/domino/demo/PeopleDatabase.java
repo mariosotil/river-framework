@@ -3,7 +3,7 @@ package org.riverframework.domino.demo;
 import org.riverframework.core.DefaultDatabase;
 import org.riverframework.core.DefaultDocument;
 import org.riverframework.Session;
-import org.riverframework.wrapper.Database;
+import org.riverframework.module.Database;
 
 public class PeopleDatabase extends DefaultDatabase {
 
@@ -13,7 +13,7 @@ public class PeopleDatabase extends DefaultDatabase {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document doc) {
+	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, org.riverframework.module.Document doc) {
 		U rDoc = null;
 		Class<U> c = clazz;
 

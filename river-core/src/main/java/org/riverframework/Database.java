@@ -17,9 +17,9 @@ public interface Database extends Base {
 
 	public <U extends Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters);
 
-	public <U extends Document> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document doc);
+	public <U extends Document> U getDocument(Class<U> clazz, org.riverframework.module.Document doc);
 
-	public Document getDocument(org.riverframework.wrapper.Document doc);
+	public Document getDocument(org.riverframework.module.Document doc);
 
 	public DocumentCollection getAllDocuments();
 

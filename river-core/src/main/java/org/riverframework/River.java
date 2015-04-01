@@ -1,26 +1,19 @@
 package org.riverframework;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.riverframework.core.DefaultSession;
-import org.riverframework.module.SessionFactory;
-import org.riverframework.module.SessionModule;
-
-import com.google.inject.Guice;
-import com.google.inject.Inject;
 
 public class River {
-	public final static String MODULE_LOTUS_DOMINO = "RiverModuleLotus";
-	public final static String MODULE_ORG_OPENNTF_DOMINO = "RiverModuleOpenntf";
-	public final static String MODULE_HAZELCAST = "RiverModuleHazelcast";
+	public final static String MODULE_LOTUS_DOMINO = "org.riverframework.module.lotus.domino";
+	public final static String MODULE_ORG_OPENNTF_DOMINO = "org.riverframework.module.org.openntf.domino";
+	public final static String MODULE_HAZELCAST = "org.riverframework.module.hazelcast";
 
 	private static Map<String, Session> map = new HashMap<String, Session>();
-	private final static River INSTANCE = Guice.createInjector(new SessionModule()).getInstance(River.class);
-
-	@Inject
-	private SessionFactory sessionFactory;
+	private final static River INSTANCE = new River();
 
 	protected River() {
 		// Exists only to defeat instantiation
@@ -40,19 +33,23 @@ public class River {
 		if (session == null) {
 			// If not exists, we create it using the factory
 
-			if (module.equals(MODULE_LOTUS_DOMINO)) {
-				_session = sessionFactory.create(org.riverframework.module.lotus.domino.Factory.createSession(parameters));
-			} else if (module.equals(MODULE_ORG_OPENNTF_DOMINO)) {
-				_session = sessionFactory.create(org.riverframework.module.org.openntf.domino.Factory.createSession(parameters));
-			} else if (module.equals(MODULE_HAZELCAST)) {
-				_session = sessionFactory.create(org.riverframework.module.hazelcast.Factory.createSession(parameters));
-			}
+			Class<?> clazzFactory = null;
 
 			try {
-				Class<? extends Session> c = DefaultSession.class;
-				Constructor<?> constructor = c.getDeclaredConstructor(org.riverframework.module.Session.class);
+				clazzFactory = Class.forName(module + ".Factory");
+			} catch (ClassNotFoundException e1) {
+				throw new RiverException("The module '" + module + "' is not loaded. Check the CLASSPATH.");
+			}
+
+			Method method;
+			try {
+				method = clazzFactory.getDeclaredMethod("createSession", String[].class);
+				method.setAccessible(true);
+				_session = (org.riverframework.module.Session) method.invoke(null, new Object[] { parameters });
+
+				Constructor<?> constructor = DefaultSession.class.getDeclaredConstructor(org.riverframework.module.Session.class);
 				constructor.setAccessible(true);
-				session = c.cast(constructor.newInstance(_session));
+				session = (DefaultSession) constructor.newInstance(_session);
 			} catch (Exception e) {
 				throw new RiverException(e);
 			}

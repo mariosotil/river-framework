@@ -7,8 +7,8 @@ Hi,
 This is a Workflow Application Framework in an **EARLY development stage**. So far, the code written with this framework looks like this:
 
 ```java
-//Opening session from the credentials file
-Session session = RiverFramework.getSession(Modules.MODULE_LOTUS_DOMINO,
+//Opening a session from the credentials file
+Session session = River.getInstance().getSession(River.MODULE_LOTUS_DOMINO,
 				null, null, Credentials.getPassword());
 Database database = session.getDatabase(DefaultDatabase.class, "", "example.nsf");
     

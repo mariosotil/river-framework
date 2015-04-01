@@ -1,7 +1,10 @@
 package org.riverframework.module.hazelcast;
 
-public class Factory {
-	public static MockSession createSession(String... parameters) {
+import org.riverframework.module.Session;
+
+class Factory {
+	@SuppressWarnings("unused")
+	private static Session createSession(String... parameters) {
 		return null;
 	}
 }

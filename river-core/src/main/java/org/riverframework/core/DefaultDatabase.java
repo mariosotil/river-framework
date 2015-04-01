@@ -188,6 +188,13 @@ public class DefaultDatabase implements org.riverframework.Database {
 	}
 
 	@Override
+	public Class<? extends org.riverframework.Document> detectClass(org.riverframework.module.Document doc) {
+		Class<? extends org.riverframework.Document> clazz = null;
+
+		return clazz;
+	}
+
+	@Override
 	public org.riverframework.Document getDocument(org.riverframework.module.Document doc) {
 		return getDocument(null, doc);
 	}
@@ -196,21 +203,13 @@ public class DefaultDatabase implements org.riverframework.Database {
 	@Override
 	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, org.riverframework.module.Document _doc) {
 		U doc = null;
-		Class<?> c = null;
+		Class<? extends org.riverframework.Document> c = clazz;
 
-		if (clazz == null) {
-			// If there's no a explicit class...
+		if (c == null)
+			c = detectClass(_doc);
+
+		if (c == null)
 			c = DefaultDocument.class;
-
-		} else {
-			// If the class was explicit declared, we check if it inherit from DefaultDocument
-			if (DefaultDocument.class.isAssignableFrom(clazz)) {
-				c = clazz;
-			} else {
-				// Otherwise, we assumed the DefaultDocument.class
-				c = DefaultDocument.class;
-			}
-		}
 
 		try {
 			Constructor<?> constructor = c.getDeclaredConstructor(Database.class, org.riverframework.module.Document.class);

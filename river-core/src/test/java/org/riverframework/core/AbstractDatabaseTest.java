@@ -97,27 +97,13 @@ public abstract class AbstractDatabaseTest {
 			super(s, obj);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, org.riverframework.module.Document _doc) {
-			U doc = null;
-			Class<U> c = null;
+		public Class<? extends org.riverframework.Document> detectClass(org.riverframework.module.Document _doc) {
+			String form = _doc.getFieldAsString("Form").toLowerCase();
+			if (form.equals("fo_vacation_request"))
+				return VacationRequest.class;
 
-			if (clazz == null) {
-				// If there's no a explicit class...
-				String form = _doc.getFieldAsString("Form").toLowerCase();
-				if (form.equals("fo_vacation_request")) {
-					c = (Class<U>) VacationRequest.class;
-				} else {
-					c = (Class<U>) DefaultDocument.class;
-				}
-			} else {
-				c = clazz;
-			}
-
-			doc = super.getDocument(c, _doc);
-
-			return doc;
+			return null;
 		}
 	}
 

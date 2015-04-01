@@ -21,6 +21,8 @@ public interface Database extends Base {
 
 	public Document getDocument(org.riverframework.module.Document doc);
 
+	public Class<? extends org.riverframework.Document> detectClass(org.riverframework.module.Document doc);
+
 	public DocumentCollection getAllDocuments();
 
 	public DocumentCollection search(String query);

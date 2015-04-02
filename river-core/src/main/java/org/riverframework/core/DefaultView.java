@@ -2,6 +2,7 @@ package org.riverframework.core;
 
 import java.lang.reflect.Constructor;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.Base;
 import org.riverframework.Database;
 import org.riverframework.DocumentCollection;
@@ -29,7 +30,7 @@ public class DefaultView implements org.riverframework.View {
 	}
 
 	@Override
-	public Object getWrappedObject() {
+	public Object getModuleObject() {
 		return _view;
 	}
 
@@ -112,5 +113,10 @@ public class DefaultView implements org.riverframework.View {
 	public void close() {
 		_doc.close();
 		_view.close();
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

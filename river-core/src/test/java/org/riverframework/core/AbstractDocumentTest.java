@@ -14,9 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.Database;
+import org.riverframework.Document;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
-import org.riverframework.module.Document;
 
 public abstract class AbstractDocumentTest {
 	protected Session session = null;
@@ -337,32 +337,32 @@ public abstract class AbstractDocumentTest {
 	 */
 
 	@Test
-	public void testIsConflict() {
+	public void testHasField() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document could not be created", rDoc.isOpen());
-		assertFalse("The document is new and is set as a conflict.", rDoc.isConflict());
+		assertTrue("The document could not be created", doc.isOpen());
+		assertFalse("The document is new and is set as a conflict.", doc.hasField("THIS_FIELD_DOES_NOT_EXIST"));
 
-		rDoc.setField("Form", TEST_FORM);
-		rDoc.setField("$Conflict", "");
+		doc.setField("Form", TEST_FORM);
+		doc.setField("THIS_FIELD_DOES_NOT_EXIST", "");
 
-		assertTrue("The document is a conflict and was not detected.", rDoc.isConflict());
+		assertTrue("The document is a conflict and was not detected.", doc.hasField("THIS_FIELD_DOES_NOT_EXIST"));
 	}
 
 	@Test
 	public void testIsOpen() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.getDocument(DefaultDocument.class);
+		Document doc = database.getDocument(DefaultDocument.class);
 
-		assertFalse("The document is not being detected as NOT open.", rDoc.isOpen());
+		assertFalse("The document is not being detected as NOT open.", doc.isOpen());
 
-		rDoc = null;
-		rDoc = database.createDocument(DefaultDocument.class);
+		doc = null;
+		doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document could not be created", rDoc.isOpen());
+		assertTrue("The document could not be created", doc.isOpen());
 	}
 
 	@Test
@@ -497,8 +497,8 @@ public abstract class AbstractDocumentTest {
 
 	// Classes to testing the implementations
 	static class SimpleRequest extends DefaultDocument {
-		protected SimpleRequest(Database d, Document doc) {
-			super(d, doc);
+		protected SimpleRequest(Database d, org.riverframework.module.Document _d) {
+			super(d, _d);
 		}
 
 		@Override

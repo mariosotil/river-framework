@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.Base;
 import org.riverframework.Database;
 import org.riverframework.Document;
@@ -14,13 +15,8 @@ import org.riverframework.Document;
  * <p>
  * This is a javadoc test
  * 
- * @author mario.sotil@gmail.com
- * @version 0.0.x
  */
 public class DefaultDocument implements org.riverframework.Document {
-	public static final String FIELD_IS_CONFLICT = "$Conflict";
-	public static final String FIELD_FORM = "Form";
-
 	protected Database database = null;
 	protected org.riverframework.module.Document _doc = null;
 	protected boolean isModified = false;
@@ -43,7 +39,7 @@ public class DefaultDocument implements org.riverframework.Document {
 	}
 
 	@Override
-	public Object getWrappedObject() {
+	public Object getModuleObject() {
 		return _doc;
 	}
 
@@ -233,18 +229,8 @@ public class DefaultDocument implements org.riverframework.Document {
 	}
 
 	@Override
-	public String getForm() {
-		return getFieldAsString(FIELD_FORM);
-	}
-
-	@Override
-	public Document setForm(String form) {
-		setField(FIELD_FORM, form);
-		return this;
-	}
-
-	public boolean isConflict() {
-		boolean result = _doc.existField(org.riverframework.core.DefaultDocument.FIELD_IS_CONFLICT);
+	public boolean hasField(String field) {
+		boolean result = _doc.hasField(field);
 		return result;
 	}
 
@@ -260,5 +246,10 @@ public class DefaultDocument implements org.riverframework.Document {
 	@Override
 	public void close() {
 		_doc.close();
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

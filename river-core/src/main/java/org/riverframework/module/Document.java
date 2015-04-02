@@ -32,7 +32,7 @@ public interface Document extends Base {
 
 	public boolean isFieldEmpty(String field);
 
-	public boolean existField(String field);
+	public boolean hasField(String field);
 
 	public Map<String, Vector<Object>> getFields();
 

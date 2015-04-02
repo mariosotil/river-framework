@@ -10,11 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.RandomString;
-import org.riverframework.module.Database;
-import org.riverframework.module.Document;
-import org.riverframework.module.DocumentCollection;
-import org.riverframework.module.Session;
-import org.riverframework.module.View;
 
 public abstract class AbstractViewTest {
 	final String TEST_FORM = "TestForm";
@@ -38,7 +33,7 @@ public abstract class AbstractViewTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session) context.getSession().getWrappedObject();
+				session = (Session) context.getSession().getModuleObject();
 				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 
@@ -159,6 +154,7 @@ public abstract class AbstractViewTest {
 		}
 
 		View view = database.getView(TEST_VIEW);
+		view.refresh();
 		DocumentCollection col = view.getAllDocuments();
 
 		assertTrue("There is a problem getting documents from the database.", col.size() == 10);

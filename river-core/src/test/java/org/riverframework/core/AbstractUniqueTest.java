@@ -13,6 +13,7 @@ import org.riverframework.Database;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
 import org.riverframework.Unique;
+import org.riverframework.module.Document;
 
 public abstract class AbstractUniqueTest {
 	protected Session session = null;
@@ -47,35 +48,35 @@ public abstract class AbstractUniqueTest {
 	}
 
 	static class NoUniqueDocument extends DefaultDocument {
-		protected final static String FORM_NAME = Session.OBJECT_PREFIX + "NoUnique";
-		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
-
-		protected NoUniqueDocument(Database d, org.riverframework.module.Document doc) {
-			super(d, doc);
+		protected NoUniqueDocument(Database d, Document _d) {
+			super(d, _d);
 		}
+
+		protected final static String FORM_NAME = Session.ELEMENT_PREFIX + "NoUnique";
+		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 
 		@Override
 		protected NoUniqueDocument afterCreate() {
-			setForm(FORM_NAME);
+			setField("Form", FORM_NAME);
 			return this;
 		}
 	}
 
 	static class UniqueDocument extends DefaultDocument implements Unique {
-		protected final static String FORM_NAME = Session.OBJECT_PREFIX + "Unique";
-		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
-
-		protected UniqueDocument(Database d, org.riverframework.module.Document doc) {
-			super(d, doc);
+		protected UniqueDocument(Database d, Document _d) {
+			super(d, _d);
 		}
 
+		protected final static String FORM_NAME = Session.ELEMENT_PREFIX + "Unique";
+		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
+
 		public static String getIndexName() {
-			return Session.OBJECT_PREFIX + "Unique_Index";
+			return Session.ELEMENT_PREFIX + "Unique_Index";
 		}
 
 		@Override
 		protected UniqueDocument afterCreate() {
-			setForm(FORM_NAME);
+			setField("Form", FORM_NAME);
 			return this;
 		}
 

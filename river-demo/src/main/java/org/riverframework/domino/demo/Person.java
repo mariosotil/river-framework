@@ -16,7 +16,7 @@ class Person extends DefaultDocument implements Unique {
 	}
 	
 	protected Document afterCreate() {
-		setForm("fo_ap_person");
+		setField("Form", "fo_ap_person");
 		return this;
 	}
 

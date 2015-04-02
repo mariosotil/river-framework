@@ -1,5 +1,6 @@
 package org.riverframework.module.org.openntf.domino;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.module.Document;
 import org.riverframework.module.DocumentCollection;
 import org.riverframework.module.View;
@@ -61,5 +62,10 @@ class DefaultView implements org.riverframework.module.View {
 	@Override
 	public void close() {
 		_view = null;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

@@ -38,7 +38,7 @@ public abstract class AbstractDatabaseTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session) context.getSession().getWrappedObject();
+				session = (Session) context.getSession().getModuleObject();
 				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 			}

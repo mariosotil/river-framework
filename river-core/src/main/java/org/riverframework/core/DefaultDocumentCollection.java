@@ -2,6 +2,7 @@ package org.riverframework.core;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.Database;
 
 public class DefaultDocumentCollection extends ArrayList<org.riverframework.Document>
@@ -9,7 +10,7 @@ public class DefaultDocumentCollection extends ArrayList<org.riverframework.Docu
 	private static final long serialVersionUID = -5032050258891587783L;
 	protected Database database;
 
-	public DefaultDocumentCollection(Database d) {
+	protected DefaultDocumentCollection(Database d) {
 		database = d;
 	}
 
@@ -35,5 +36,10 @@ public class DefaultDocumentCollection extends ArrayList<org.riverframework.Docu
 			doc.delete();
 		}
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

@@ -3,6 +3,7 @@ package org.riverframework.core;
 import java.lang.reflect.Constructor;
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.Base;
 import org.riverframework.Database;
 import org.riverframework.RiverException;
@@ -34,14 +35,8 @@ public class DefaultSession implements org.riverframework.Session {
 	}
 
 	@Override
-	public Object getWrappedObject() {
+	public Object getModuleObject() {
 		return _session;
-	}
-
-	@Override
-	public Session open(org.riverframework.module.Session _s) {
-		_session = _s;
-		return this;
 	}
 
 	@Override
@@ -101,5 +96,10 @@ public class DefaultSession implements org.riverframework.Session {
 	@Override
 	public void close() {
 		_session.close();
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

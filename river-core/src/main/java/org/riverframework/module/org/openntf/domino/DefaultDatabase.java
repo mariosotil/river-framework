@@ -1,5 +1,6 @@
 package org.riverframework.module.org.openntf.domino;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.module.Database;
 import org.riverframework.module.Document;
 import org.riverframework.module.DocumentCollection;
@@ -119,5 +120,10 @@ class DefaultDatabase implements org.riverframework.module.Database {
 	@Override
 	public void close() {
 		_database = null;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

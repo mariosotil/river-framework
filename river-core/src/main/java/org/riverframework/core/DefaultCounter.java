@@ -1,5 +1,6 @@
 package org.riverframework.core;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.Counter;
 import org.riverframework.Database;
 import org.riverframework.Document;
@@ -9,23 +10,23 @@ import org.riverframework.Unique;
 import org.riverframework.View;
 
 public class DefaultCounter extends DefaultDocument implements Counter, Unique {
-	protected final static String FORM_NAME = Session.OBJECT_PREFIX + "counter";
+	protected DefaultCounter(Database d, org.riverframework.module.Document _d) {
+		super(d, _d);
+	}
+
+	protected final static String FORM_NAME = Session.ELEMENT_PREFIX + "counter";
 	protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 	protected final static String FIELD_COUNT = Session.FIELD_PREFIX + "count";
 
 	protected View index = null;
 
 	public static String getIndexName() {
-		return Session.OBJECT_PREFIX + "Counter_Index";
-	}
-
-	protected DefaultCounter(Database d, org.riverframework.module.Document doc) {
-		super(d, doc);
+		return Session.ELEMENT_PREFIX + "Counter_Index";
 	}
 
 	@Override
 	protected Counter afterCreate() {
-		setForm(FORM_NAME)
+		setField("Form", FORM_NAME)
 				.setField(FIELD_COUNT, 0);
 
 		return this;
@@ -63,4 +64,8 @@ public class DefaultCounter extends DefaultDocument implements Counter, Unique {
 		return n;
 	}
 
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 }

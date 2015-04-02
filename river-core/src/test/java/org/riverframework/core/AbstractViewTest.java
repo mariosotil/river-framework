@@ -61,7 +61,7 @@ public abstract class AbstractViewTest {
 		assertTrue("The test view could not be created in the test database.", view.isOpen());
 
 		Document doc = database.createDocument(DefaultDocument.class)
-				.setForm(TEST_FORM);
+				.setField("Form", TEST_FORM);
 
 		String key = rs.nextString();
 
@@ -151,12 +151,13 @@ public abstract class AbstractViewTest {
 
 		for (int i = 0; i < 10; i++) {
 			database.createDocument(DefaultDocument.class)
-					.setForm(TEST_FORM)
+					.setField("Form", TEST_FORM)
 					.setField("Counter", i)
 					.save();
 		}
 
 		View view = database.getView(DefaultView.class, TEST_VIEW);
+		view.refresh();
 		DocumentCollection col = view.getAllDocuments();
 
 		assertTrue("There is a problem getting documents from the database.", col.size() == 10);
@@ -170,7 +171,7 @@ public abstract class AbstractViewTest {
 
 		for (int i = 0; i < 10; i++) {
 			database.createDocument(DefaultDocument.class)
-					.setForm(TEST_FORM)
+					.setField("Form", TEST_FORM)
 					.setField("Text", "I_AM_THE_" + i)
 					.save();
 		}

@@ -43,7 +43,7 @@ public abstract class AbstractSessionTest {
 		String password = Credentials.getPassword();
 		assertFalse("Password can't be an empty string", password.equals(""));
 
-		Session session = (Session) context.getSession().getWrappedObject();
+		Session session = (Session) context.getSession().getModuleObject();
 
 		assertTrue("Notes Session could not be retrieved", session.isOpen());
 		assertFalse("There's a problem with the Session. I can't retrieve the current user name.",
@@ -55,7 +55,7 @@ public abstract class AbstractSessionTest {
 		String password = Credentials.getPassword();
 		assertFalse("Password can be an empty string", password.equals(""));
 
-		Session session = (Session) context.getSession().getWrappedObject();
+		Session session = (Session) context.getSession().getModuleObject();
 
 		assertTrue("Notes Session could not be retrieved", session.isOpen());
 

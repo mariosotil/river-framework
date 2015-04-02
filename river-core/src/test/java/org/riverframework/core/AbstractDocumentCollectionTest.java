@@ -60,13 +60,13 @@ public abstract class AbstractDocumentCollectionTest {
 
 		for (int i = 0; i < 10; i++) {
 			database.createDocument(DefaultDocument.class)
-					.setForm(TEST_FORM)
+					.setField("Form", TEST_FORM)
 					.setField("Value", rs.nextString())
 					.save();
 		}
 
 		database.createDocument(DefaultDocument.class)
-				.setForm(TEST_FORM)
+				.setField("Form", TEST_FORM)
 				.setField("Value", "THIS_IS_THE_DOC")
 				.save();
 
@@ -89,7 +89,7 @@ public abstract class AbstractDocumentCollectionTest {
 		@SuppressWarnings("unused")
 		Document rDoc = database
 				.createDocument(DefaultDocument.class)
-				.setForm(TEST_FORM)
+				.setField("Form", TEST_FORM)
 				.save();
 
 		DocumentCollection col = database.getAllDocuments();

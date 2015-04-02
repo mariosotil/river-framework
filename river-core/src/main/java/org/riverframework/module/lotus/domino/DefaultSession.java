@@ -1,19 +1,44 @@
 package org.riverframework.module.lotus.domino;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
+
 import lotus.domino.NotesException;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.RiverException;
 import org.riverframework.module.Database;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
-
 public class DefaultSession implements org.riverframework.module.Session {
 	private lotus.domino.Session _session = null;
+	private Map<Integer, WeakReference<lotus.domino.Base>> registeredObjects = null;
+	private Map<Integer, WeakReference<Vector<lotus.domino.Item>>> registeredVectors = null;
 
-	@Inject
-	public DefaultSession(@Assisted lotus.domino.Session obj) {
+	public DefaultSession(lotus.domino.Session obj) {
 		_session = obj;
+		registeredObjects = new HashMap<Integer, WeakReference<lotus.domino.Base>>();
+		registeredVectors = new HashMap<Integer, WeakReference<Vector<lotus.domino.Item>>>();
+	}
+
+	public void registerObject(lotus.domino.Base obj) {
+		if (obj != null) {
+			int id = obj.hashCode();
+			if (registeredObjects.get(id) == null) {
+				registeredObjects.put(id, new WeakReference<lotus.domino.Base>(obj));
+			}
+		}
+	}
+
+	public void registerVector(Vector<lotus.domino.Item> obj) {
+		if (obj != null) {
+			int id = obj.hashCode();
+			if (registeredVectors.get(id) == null) {
+				registeredVectors.put(id, new WeakReference<Vector<lotus.domino.Item>>(obj));
+			}
+		}
 	}
 
 	@Override
@@ -53,10 +78,18 @@ public class DefaultSession implements org.riverframework.module.Session {
 				_database = null;
 			}
 		} catch (NotesException e) {
+			try {
+				if (_database != null)
+					_database.recycle();
+			} catch (NotesException e1) {
+			} finally {
+				_database = null;
+			}
+
 			throw new RiverException(e);
 		}
 
-		Database database = new DefaultDatabase(_database);
+		Database database = new DefaultDatabase(this, _database);
 		return database;
 	}
 
@@ -72,6 +105,42 @@ public class DefaultSession implements org.riverframework.module.Session {
 	@Override
 	public void close() {
 		try {
+			// Recycling all registered objects before closing the session
+			Iterator<Map.Entry<Integer, WeakReference<lotus.domino.Base>>> itObj = registeredObjects.entrySet().iterator();
+			while (itObj.hasNext()) {
+				Map.Entry<Integer, WeakReference<lotus.domino.Base>> entry = itObj.next();
+				WeakReference<lotus.domino.Base> ref = entry.getValue();
+				if (ref != null) {
+					lotus.domino.Base obj = ref.get();
+					if (obj != null) {
+						obj.recycle();
+						obj = null;
+					}
+					ref = null;
+				}
+			}
+
+			// Recycling all the items vectors before closing the session
+			Iterator<Map.Entry<Integer, WeakReference<Vector<lotus.domino.Item>>>> itVec = registeredVectors.entrySet().iterator();
+			while (itVec.hasNext()) {
+				Map.Entry<Integer, WeakReference<Vector<lotus.domino.Item>>> entry = itVec.next();
+				WeakReference<Vector<lotus.domino.Item>> ref = entry.getValue();
+				if (ref != null) {
+					Vector<lotus.domino.Item> vec = ref.get();
+					Iterator<lotus.domino.Item> it2 = vec.iterator();
+					while (it2.hasNext()) {
+						lotus.domino.Item obj = it2.next();
+						if (obj != null) {
+							obj.recycle();
+							obj = null;
+						}
+					}
+					it2 = null;
+					vec = null;
+					ref = null;
+				}
+			}
+
 			if (_session != null)
 				_session.recycle();
 		} catch (NotesException e) {
@@ -79,5 +148,10 @@ public class DefaultSession implements org.riverframework.module.Session {
 		} finally {
 			_session = null;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

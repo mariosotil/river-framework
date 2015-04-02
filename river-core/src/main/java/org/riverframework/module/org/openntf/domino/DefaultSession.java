@@ -1,16 +1,13 @@
 package org.riverframework.module.org.openntf.domino;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.RiverException;
 import org.riverframework.module.Database;
-
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 
 public class DefaultSession implements org.riverframework.module.Session {
 	private org.openntf.domino.Session _session = null;
 
-	@Inject
-	public DefaultSession(@Assisted org.openntf.domino.Session obj) {
+	public DefaultSession(org.openntf.domino.Session obj) {
 		_session = obj;
 	}
 
@@ -62,5 +59,10 @@ public class DefaultSession implements org.riverframework.module.Session {
 	@Override
 	public void close() {
 		_session = null;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

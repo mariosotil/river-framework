@@ -2,6 +2,7 @@ package org.riverframework.module.org.openntf.domino;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.module.Document;
 import org.riverframework.module.DocumentCollection;
 
@@ -54,4 +55,8 @@ class DefaultDocumentCollection extends ArrayList<Document> implements DocumentC
 		return this;
 	}
 
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 }

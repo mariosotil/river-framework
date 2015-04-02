@@ -3,6 +3,7 @@ package org.riverframework.core;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.Base;
 import org.riverframework.Counter;
 import org.riverframework.Database;
@@ -32,7 +33,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 	}
 
 	@Override
-	public Object getWrappedObject() {
+	public Object getModuleObject() {
 		return _database;
 	}
 
@@ -89,6 +90,8 @@ public class DefaultDatabase implements org.riverframework.Database {
 		if (rDoc == null) {
 			rDoc = clazz.cast(getDocument(clazz, (org.riverframework.module.Document) null));
 		} else {
+			// TODO: IMPROVE this! It should not be need to cast to call afterCreate and setModified should not be in
+			// the Document interface
 			((DefaultDocument) rDoc).afterCreate().setModified(false);
 		}
 
@@ -285,5 +288,10 @@ public class DefaultDatabase implements org.riverframework.Database {
 	@Override
 	public void close() {
 		_database.close();
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

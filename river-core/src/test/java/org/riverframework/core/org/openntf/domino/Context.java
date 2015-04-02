@@ -14,7 +14,7 @@ public final class Context extends org.riverframework.core.AbstractContext {
 	public Session getSession() {
 		Session session = River.getInstance().getSession(
 				River.MODULE_ORG_OPENNTF_DOMINO,
-				null, null, Credentials.getPassword());
+				(String) null, (String) null, Credentials.getPassword());
 		return session;
 	}
 

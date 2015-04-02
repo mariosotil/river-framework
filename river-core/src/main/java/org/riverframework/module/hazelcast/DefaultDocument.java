@@ -69,7 +69,7 @@ class DefaultDocument implements org.riverframework.module.Document {
 	}
 
 	@Override
-	public boolean existField(String field) {
+	public boolean hasField(String field) {
 		return false;
 	}
 

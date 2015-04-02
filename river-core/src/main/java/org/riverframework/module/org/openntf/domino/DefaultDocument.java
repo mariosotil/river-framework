@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.module.Document;
 
 /**
@@ -130,7 +131,7 @@ class DefaultDocument implements org.riverframework.module.Document {
 				if (!_doc.getEmbeddedObjects().isEmpty()) {
 					for (@SuppressWarnings("unchecked")
 					Iterator<org.openntf.domino.EmbeddedObject> i = _doc.getEmbeddedObjects()
-					.iterator(); i.hasNext();) {
+							.iterator(); i.hasNext();) {
 						org.openntf.domino.EmbeddedObject eo = i.next();
 						if (eo.getType() != 0)
 							return false;
@@ -146,7 +147,7 @@ class DefaultDocument implements org.riverframework.module.Document {
 	}
 
 	@Override
-	public boolean existField(String field) {
+	public boolean hasField(String field) {
 		boolean result;
 		result = _doc.hasItem(field);
 		return result;
@@ -216,5 +217,10 @@ class DefaultDocument implements org.riverframework.module.Document {
 	@Override
 	public void close() {
 		_doc = null;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

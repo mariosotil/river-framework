@@ -108,14 +108,13 @@ public abstract class AbstractDatabaseTest {
 	}
 
 	static class VacationRequest extends DefaultDocument {
-
-		protected VacationRequest(Database d, org.riverframework.module.Document _doc) {
-			super(d, _doc);
+		protected VacationRequest(Database d, org.riverframework.module.Document _d) {
+			super(d, _d);
 		}
 
 		@Override
 		protected VacationRequest afterCreate() {
-			setForm("fo_vacation_request");
+			setField("Form", "fo_vacation_request");
 			return this;
 		}
 	}
@@ -130,7 +129,7 @@ public abstract class AbstractDatabaseTest {
 
 		String universalId = doc
 				.setField("TEST_FIELD", "YES")
-				.setForm("TestForm")
+				.setField("Form", "TestForm")
 				.save()
 				.getObjectId();
 
@@ -152,13 +151,13 @@ public abstract class AbstractDatabaseTest {
 
 		for (int i = 0; i < 10; i++) {
 			database.createDocument(DefaultDocument.class)
-					.setForm(TEST_FORM)
+					.setField("Form", TEST_FORM)
 					.setField("Value", rs.nextString())
 					.save();
 		}
 
 		database.createDocument(DefaultDocument.class)
-				.setForm(TEST_FORM)
+				.setField("Form", TEST_FORM)
 				.setField("Value", "THIS_IS_THE_DOC")
 				.save();
 
@@ -215,9 +214,8 @@ public abstract class AbstractDatabaseTest {
 	}
 
 	static class Person extends DefaultDocument implements Document, Unique {
-
-		protected Person(Database d, org.riverframework.module.Document doc) {
-			super(d, doc);
+		protected Person(Database d, org.riverframework.module.Document _d) {
+			super(d, _d);
 		}
 
 		public static String getIndexName() {
@@ -252,19 +250,19 @@ public abstract class AbstractDatabaseTest {
 
 		database.createDocument(Person.class)
 				.setId("John")
-				.setForm("fo_ap_people")
+				.setField("Form", "fo_ap_people")
 				.setField("Age", 30)
 				.save();
 
 		database.createDocument(Person.class)
 				.setId("Kathy")
-				.setForm("fo_ap_people")
+				.setField("Form", "fo_ap_people")
 				.setField("Age", 25)
 				.save();
 
 		database.createDocument(Person.class)
 				.setId("Jake")
-				.setForm("fo_ap_people")
+				.setField("Form", "fo_ap_people")
 				.setField("Age", 27)
 				.save();
 
@@ -291,7 +289,7 @@ public abstract class AbstractDatabaseTest {
 
 		database.createDocument(Person.class)
 				.setId("Kathy")
-				.setForm("fo_ap_people")
+				.setField("Form", "fo_ap_people")
 				.setField("Age", 25)
 				.save();
 

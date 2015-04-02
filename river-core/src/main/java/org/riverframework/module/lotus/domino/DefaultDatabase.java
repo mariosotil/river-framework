@@ -2,6 +2,7 @@ package org.riverframework.module.lotus.domino;
 
 import lotus.domino.NotesException;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.RiverException;
 import org.riverframework.module.Database;
 import org.riverframework.module.Document;
@@ -9,10 +10,13 @@ import org.riverframework.module.DocumentCollection;
 import org.riverframework.module.View;
 
 class DefaultDatabase implements org.riverframework.module.Database {
+	protected org.riverframework.module.Session session = null;
 	protected lotus.domino.Database _database = null;
 
-	protected DefaultDatabase(lotus.domino.Database obj) {
+	protected DefaultDatabase(org.riverframework.module.Session s, lotus.domino.Database obj) {
 		_database = obj;
+		session = s;
+		((DefaultSession) session).registerObject(_database);
 	}
 
 	@Override
@@ -75,10 +79,11 @@ class DefaultDatabase implements org.riverframework.module.Database {
 			throw new RiverException(e);
 		}
 
-		Document doc = new DefaultDocument(_doc);
+		Document doc = new DefaultDocument(session, _doc);
 		return doc;
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public Document getDocument(String... parameters)
 	{
@@ -96,11 +101,19 @@ class DefaultDatabase implements org.riverframework.module.Database {
 					_doc = _database.getDocumentByID(id);
 				}
 			} catch (NotesException e) {
+				try {
+					if (_doc != null)
+						_doc.recycle();
+				} catch (NotesException e1) {
+				} finally {
+					_doc = null;
+				}
+
 				throw new RiverException(e);
 			}
 		}
 
-		Document doc = new DefaultDocument(_doc);
+		Document doc = new DefaultDocument(session, _doc);
 		return doc;
 	}
 
@@ -121,7 +134,7 @@ class DefaultDatabase implements org.riverframework.module.Database {
 			throw new RiverException(e);
 		}
 
-		View view = new DefaultView(_view);
+		View view = new DefaultView(session, _view);
 		return view;
 	}
 
@@ -135,7 +148,13 @@ class DefaultDatabase implements org.riverframework.module.Database {
 			throw new RiverException(e);
 		}
 
-		DocumentCollection col = new DefaultDocumentCollection(_col);
+		DocumentCollection col = new DefaultDocumentCollection(session, _col);
+
+		try {
+			_col.recycle();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 
 		return col;
 	}
@@ -149,8 +168,14 @@ class DefaultDatabase implements org.riverframework.module.Database {
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
-		DocumentCollection result = new DefaultDocumentCollection(_col);
 
+		DocumentCollection result = new DefaultDocumentCollection(session, _col);
+
+		try {
+			_col.recycle();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 		return result;
 	}
 
@@ -174,5 +199,10 @@ class DefaultDatabase implements org.riverframework.module.Database {
 		} finally {
 			_database = null;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

@@ -7,9 +7,8 @@ Hi,
 This is a Workflow Application Framework in an **EARLY development stage**. So far, the code written with this framework looks like this:
 
 ```java
-//Opening a session from the credentials file
-Session session = River.getInstance().getSession(River.MODULE_LOTUS_DOMINO,
-				null, null, Credentials.getPassword());
+//Opening a session using the current ID file
+Session session = River.getInstance().getSession(River.MODULE_LOTUS_DOMINO);
 Database database = session.getDatabase(DefaultDatabase.class, "", "example.nsf");
     
 // Creating one person
@@ -60,25 +59,32 @@ So far, this framework has the following features:
   - Improvements in the design, making the modules for the wrappers classes be totally separated from the core. So, each module can be loaded on runtime.
   - Improvements in DocumentCollection as array
   - Redesign the JUnit tests for testing the wrappers for `lotus.domino` and the `org.openntf.domino`, and testing the core with each wrapper
+  - Improvements in the `org.riverframework.module.lotus.domino` memory management. All the objects are recycled when the session is closed.
+  - Update the Java example
 
 ## What I'm working on now?
 
-- Version 0.2.5
-  - Creating a module and JUnit tests for Hazelcast (http://hazelcast.com/)
-  - Update the Java example
+- Version 0.2.6
+  - As the logical separation was done, physically separate the current Framework in three JAR files: the Core, the lotus.domino module and the org.openntf.domino module.
+  - Publish the JARs in a public Maven repository
+  - Creating a module and JUnit tests for a NoSQL in-memory database
+  - Create new Java examples
 
 ## What is in the ToDo list?
 
 There are a lot of features that I will add to this framework:
 
-- Version 0.2.6
-  - Working on `org.riverframework.wrapper.domino` memory management
-  - Creation of an object pool
+- Version 0.2.7
+  - Redesign the current class structure inspired in IBM Notes (Session -> Database -> Document, View, DocumentCollection), looking for a more simple approach.
+  - Update the Java example
+  
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs
   - Examples in Java, SSJS, XPages and LotusScript
+  
 - Version 0.4
   - Connection to other NoSQL server: MongoDB
+  
 - Next versions
   - Logging of changes in the fields of a document
   - Control of the data change propagation between related documents (1..\*, \*..\*)

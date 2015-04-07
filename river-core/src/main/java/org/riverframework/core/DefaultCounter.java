@@ -20,7 +20,8 @@ public class DefaultCounter extends DefaultDocument implements Counter, Unique {
 
 	protected View index = null;
 
-	public static String getIndexName() {
+	@Override
+	public String getIndexName() {
 		return Session.ELEMENT_PREFIX + "Counter_Index";
 	}
 

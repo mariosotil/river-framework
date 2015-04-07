@@ -1,101 +1,95 @@
 package org.riverframework;
 
 /**
- * This interface exposes the methods for control a NoSQL database.
+ * Exposes the methods for control a NoSQL database.
  * 
  * @author mario.sotil@gmail.com
  *
  */
 public interface Database extends Base {
 	/**
-	 * @return the Session that instanced the database
+	 * Returns the Session that instanced the database
+	 * @return a Session object. 
 	 */
 	public Session getSession();
 
 	/**
 	 * *
-	 * 
+	 * Creates a document. The parameters needed will depend on what module is loaded.
 	 * @param parameters
-	 *            a set of Strings that will let the Database create a Document. The strings needed will depend on what
-	 *            module is being used.
+	 *            a set of Strings that will let the Database create a Document. 
 	 * @return a new Document
 	 */
 	public Document createDocument(String... parameters);
 
 	/**
+	 * Returns an existent view. The parameters needed will depend on what module is being used.
 	 * @param parameters
-	 *            a set of Strings that will let the Database get an existent View. The strings needed will depend on
-	 *            what module is being used.
+	 *            a set of Strings that will let the Database get an existent View. 
 	 * @return a DefaultView object
 	 */
 	public View getView(String... parameters);
 
 	/**
-	 * This method returns a View object instanced from the 'clazz' parameter. The clazz must inherit from DefaultView.
+	 * Returns a View object instanced from the 'clazz' parameter. The clazz must inherit from DefaultView. The parameters needed will depend on what module is being used.
 	 * 
 	 * @param clazz
-	 *            a class that inherits from DefaultView and implements the core View interface.
+	 *            a class that inherits from DefaultView and implements the View interface.
 	 * @param parameters
-	 *            a set of Strings that will let the Database get an existent View. The strings needed will depend on
-	 *            what module is being used.
+	 *            a set of Strings that will let the Database get an existent View. 
 	 * @return a 'clazz' object
 	 */
 	public <U extends View> U getView(Class<U> clazz, String... parameters);
 
 	/**
-	 * This method creates a Document object instanced from the 'clazz' parameter. The clazz must inherit from
-	 * DefaultDocument.
+	 * Creates a Document object instanced from the 'clazz' parameter. The clazz must inherit from
+	 * DefaultDocument. The parameters needed will depend on what module is being used.
 	 * 
 	 * @param clazz
 	 *            a class that inherits from DefaultDocument and implements Document.
 	 * @param parameters
-	 *            a set of Strings that will let the Database creates a new Document. The strings needed will depend on
-	 *            what module is being used.
-	 * @return
+	 *            a set of Strings that will let the Database creates a new Document. 
+	 * @return a 'clazz' object
 	 */
 	public <U extends Document> U createDocument(Class<U> clazz, String... parameters);
 
 	/**
-	 * This method retrieve an existent Document using the parameters selected.
+	 * Returns an existent Document. The parameters needed will depend on what module is being used.
 	 * 
 	 * @param parameters
-	 *            a set of Strings that will let the Database locate an existent new Document. The strings needed will
-	 *            depend on what module is being used.
+	 *            a set of Strings that will let the Database locate an existent new Document. 
 	 * @return the Document found. If no document is found, the method returns a closed Document object
 	 */
 	public Document getDocument(String... parameters);
 
 	/**
-	 * This method retrieve a Document object instanced from the 'clazz' parameter. The clazz must inherit from
-	 * DefaultDocument.
+	 * Returns a Document object instanced from the 'clazz' parameter. The clazz must inherit from
+	 * DefaultDocument. The parameters needed will depend on what module is being used.
 	 * 
 	 * @param clazz
 	 *            a class that inherits from DefaultDocument and implements Document.
 	 * @param parameters
-	 *            a set of Strings that will let the Database locate an existent new Document. The strings needed will
-	 *            depend on what module is being used.
+	 *            a set of Strings that will let the Database locate an existent new Document. 
 	 * @return the Document found. If no document is found, the method returns a closed Document object
 	 */
 	public <U extends Document> U getDocument(Class<U> clazz, String... parameters);
 
 	/**
-	 * 
-	 * This method retrieve a Document object instanced from the 'clazz' parameter. The clazz must inherit from
-	 * DefaultDocument. If the
+	 * Returns a Document object instanced from the 'clazz' parameter. The clazz must inherit from
+	 * DefaultDocument. The parameter createIfDoesNotExist lets to create the document if the method fails to found it. The parameters needed will depend on what module is being used.
 	 * 
 	 * @param clazz
 	 *            a class that inherits from DefaultDocument and implements Document.
 	 * @param createIfDoesNotExist
 	 *            if it's true and no document is found, the method returns a new document instanced from 'clazz'
 	 * @param parameters
-	 *            a set of Strings that will let the Database locate an existent new Document. The strings needed will
-	 *            depend on what module is being used.
-	 * @return the Document found. If no document is found, the method returns a closed Document object
+	 *            a set of Strings that will let the Database locate an existent new Document. 
+	 * @return the Document found. If no document is found, and createIfDoesNotExist is false, the method returns a closed Document object
 	 */
 	public <U extends Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters);
 
 	/**
-	 * This method creates a Document object instanced from the 'clazz' parameter. The clazz must inherit from
+	 * Creates a Document object instanced from the 'clazz' parameter, using a Module Document. The clazz must inherit from
 	 * DefaultDocument.
 	 * 
 	 * @param clazz
@@ -107,7 +101,7 @@ public interface Database extends Base {
 	public <U extends Document> U getDocument(Class<U> clazz, org.riverframework.module.Document doc);
 
 	/**
-	 * This method creates a Document object. The class is detected from the object doc using the rules write in the
+	 * Creates a Document object. The class is detected from the object doc using the rules write in the
 	 * method detectClass
 	 * 
 	 * @param doc
@@ -117,8 +111,8 @@ public interface Database extends Base {
 	public Document getDocument(org.riverframework.module.Document doc);
 
 	/**
-	 * This method returns the class that getDocument(doc) must use following arbitrary conditions as some field from
-	 * the doc object
+	 * Returns the class that getDocument(doc) must use following arbitrary conditions as some field from
+	 * the doc object.
 	 * 
 	 * @param doc
 	 *            an module Document object
@@ -143,16 +137,15 @@ public interface Database extends Base {
 	public DocumentCollection search(String query);
 
 	/**
-	 * It refresh the database index. How this index is refreshed will depend on how is implemented in the module
+	 * Refresh the database index. How this index is refreshed will depend on how is implemented in the module
 	 * loaded.
 	 * 
-	 * @return the object intself for method chaining
+	 * @return the object itself for method chaining
 	 */
 	public Database refreshSearchIndex();
 
 	/**
-	 * This method returns an Counter object to be used to generate autoincremental ids, for example, when it's
-	 * implemented the Unique interface.
+	 * Returns an Counter object to be used to generate autoincremental ids, for be used for implement the Unique interface.
 	 * 
 	 * @param key
 	 *            the key for the counter
@@ -161,15 +154,15 @@ public interface Database extends Base {
 	public Counter getCounter(String key);
 
 	/**
-	 * If the core Database object is created, but the module Database is null or can't be opened, this method will
-	 * return false.
+	 * Returns true if the Module Database object was opened. If the Module Database is null or can't be opened, this method will
+	 * returns false.
 	 * 
 	 * @return true if the module Database is opened
 	 */
 	public boolean isOpen();
 
 	/**
-	 * This method returns the server where the database is allocated. The String returned will depend on how is
+	 * Returns the server where the database is allocated. The String returned will depend on how is
 	 * implemented the module loaded.
 	 * 
 	 * @return the Database server
@@ -177,7 +170,7 @@ public interface Database extends Base {
 	public String getServer();
 
 	/**
-	 * This method returns the file path where the database is allocated. The String returned will depend on how is
+	 * Returns the file path where the database is allocated. The String returned will depend on how is
 	 * implemented the module loaded.
 	 * 
 	 * @return the Database file path
@@ -185,7 +178,7 @@ public interface Database extends Base {
 	public String getFilePath();
 
 	/**
-	 * This method returns the database name. The String returned will depend on how is
+	 * Returns the database name. The String returned will depend on how is
 	 * implemented the module loaded.
 	 * 
 	 * @return the Database name

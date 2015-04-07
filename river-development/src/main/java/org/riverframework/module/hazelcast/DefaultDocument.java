@@ -15,7 +15,7 @@ import org.riverframework.module.Document;
  * @version 0.0.x
  */
 class DefaultDocument implements org.riverframework.module.Document {
-	public DefaultDocument(lotus.domino.Document d) {
+	public DefaultDocument(Object d) {
 	}
 
 	@Override

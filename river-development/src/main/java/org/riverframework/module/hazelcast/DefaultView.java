@@ -5,7 +5,7 @@ import org.riverframework.module.DocumentCollection;
 import org.riverframework.module.View;
 
 class DefaultView implements org.riverframework.module.View {
-	public DefaultView(lotus.domino.View v) {
+	public DefaultView(Object v) {
 	}
 
 	@Override

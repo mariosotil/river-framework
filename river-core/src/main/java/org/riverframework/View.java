@@ -8,23 +8,22 @@ public interface View extends Base {
 	public Database getDatabase();
 
 	/**
-	 * If the core View object is created, but the module View is null or can't be opened, this method will
-	 * return false.
+	 * Returns true if the module View was opened,is null or can't be opened, this method wi
 	 * 
 	 * @return true if the module Database is opened
 	 */
 	public boolean isOpen();
 
 	/**
-	 * This method returns a core Document searching by the parameter key.
+	 * Searches by the key and returns a Document object. If nothing is found, it will be an object closed.
 	 * 
 	 * @param key
-	 * @return a core Document object. If nothing is found, it will be an object closed.
+	 * @return a Document object. 
 	 */
 	public Document getDocumentByKey(String key);
 
 	/**
-	 * This method returns a core Document searching for the key.
+	 * Searches by the key and returns a 'clazz' instance. If nothing is found, it will be an object closed.
 	 *
 	 * @param clazz
 	 *            a class that inherits from DefaultDocument and implements Document.
@@ -34,30 +33,27 @@ public interface View extends Base {
 	public <U extends Document> U getDocumentByKey(Class<U> clazz, String key);
 
 	/**
-	 * This method returns a core DocumentCollection object with all the documents as core Document.
+	 * Returns a core DocumentCollection object with all the documents from the database.
 	 * 
 	 * @return a core DocumentCollection object
 	 */
 	public DocumentCollection getAllDocuments();
 
 	/**
-	 * This method returns a core DocumentCollection object with all the documents as core Document, searching by the
-	 * parameter key..
-	 * 
+	 * Searches by the key and returns a DocumentCollection object with all the documents that match. 
 	 * @return a core DocumentCollection object
 	 */
 	public DocumentCollection getAllDocumentsByKey(Object key);
 
 	/**
-	 * This method force the view to refresh its index. Its behavior will depend on how the module loaded is
-	 * implemented.
+	 * Refresh the view index. This method could be expensive depending on the module used. It must be used with care.
 	 * 
-	 * @return
+	 * @return this View, for method chaining
 	 */
 	public View refresh();
 
 	/**
-	 * Returns the documents that match the query as a DocumentCollection object. The style of the query depends on how
+	 * Searches by the query and returns a DocumentCollection object with the documents that match. So far, The style of the query will depend on how
 	 * is implemented in the module loaded. For example, in IBM Notes is just something like "Black AND Dog"
 	 * 
 	 * @param query

@@ -16,7 +16,7 @@ public interface Document extends Base {
 	public Database getDatabase();
 
 	/**
-	 * This method compares a field from the Document with some value. If they are equal, it returns true
+	 * Compares a field from the Document with some value. If they are equal, it returns true
 	 * 
 	 * @param field
 	 *            the field that value will be compared
@@ -27,7 +27,7 @@ public interface Document extends Base {
 	public boolean compareFieldValue(String field, Object value);
 
 	/**
-	 * This method set the field's value
+	 * Set a field with the indicated value. If the field does not exist, it will create it. 
 	 * 
 	 * @param field
 	 *            the field to be set
@@ -38,6 +38,7 @@ public interface Document extends Base {
 	public Document setField(String field, Object value);
 
 	/**
+	 * Returns the values of a field as a Vector object. If the field does not exist or is empty, it will returns an empty Vector.
 	 * @param field
 	 *            the field to be get
 	 * @return the values as a vector
@@ -45,6 +46,7 @@ public interface Document extends Base {
 	public Vector<Object> getField(String field);
 
 	/**
+	 * Returns the value of a field as a String object. If the field is an array, it will returns the first value. If the field does not exist or is empty, it will returns an empty string.
 	 * @param field
 	 *            the field to be get
 	 * @return the value as a String
@@ -52,81 +54,72 @@ public interface Document extends Base {
 	public String getFieldAsString(String field);
 
 	/**
+	 * Returns the value of a field as a integer. If the field is an array, it will returns the first value. If the field does not exist or is empty, it will returns 0. 
 	 * @param field
 	 *            the field to be get
-	 * @return the value as an integer. If the value can't be converted to an integer, it would returns zero. Anyway, it
-	 *         will depend on how the module loaded is implemented.
+	 * @return the value as an integer.
 	 */
 	public int getFieldAsInteger(String field);
 
 	/**
+	 * Returns the value of a field as a double. If the field is an array, it will returns the first value. If the field does not exist or is empty, it will returns 0.
 	 * @param field
 	 *            the field to be get
-	 * @return the value as a double. If the value can't be converted to a double, it would returns zero. Anyway, it
-	 *         will depend on how the module loaded is implemented.
+	 * @return the value as a double. 
 	 */
 	public double getFieldAsDouble(String field);
 
 	/**
+	 * Returns the value of a field as a date. If the field is an array, it will returns the first value. If the field does not exist or is empty, it will returns null.
 	 * @param field
 	 *            the field to be get
-	 * @return the value as a java.util.Date. If the value can't be converted to a date, it would returns null. Anyway,
-	 *         it will depend on how the module loaded is implemented.
+	 * @return the value as a java.util.Date. 
 	 */
 	public java.util.Date getFieldAsDate(String field);
 
 	/**
+	 * Returns true if the field does not exists or is an empty string, zero or null. 
 	 * @param field
 	 *            the field to be evaluated
-	 * @return true if the field's value is an empty String, zero or null
+	 * @return true if the field is empty
 	 */
 	public boolean isFieldEmpty(String field);
 
 	/**
-	 * @return true if any Document's field was modified
+	 * Returns true is any field of this document was changed since the last save.
+	 * @return true if the Document was modified
 	 */
 	public boolean isModified();
 
 	/**
-	 * This method set the modified flag. It SHOULD NOT be used at less you know what are you doing.
-	 * 
-	 * @param m
-	 *            true to set the document as modified.
-	 * @return the same Document, for method chaining
-	 */
-	// TODO: find the way to remove this method from the interface
-	public Document setModified(boolean m);
-
-	/**
-	 * If the core Document object is created, but the module Document is null or can't be opened, this method will
-	 * return false.
+	 * Returns false if the Module Document is null or can't be opened.
 	 * 
 	 * @return true if the module Database is opened
 	 */
 	public boolean isOpen();
 
 	/**
-	 * @return true if the Document was created and not saved. Its behavior will depend on how the module loaded is
-	 *         implemented.
+	 * Returns true if the Document was recently created and still has not been saved. 
+	 * @return true if is a new document. 
 	 */
 	public boolean isNew();
 
 	/**
-	 * This method would make a hard deletion. Its behavior will depend on how the module loaded is implemented.
+	 * Makes a hard deletion. Its behavior will depend on how the module loaded is implemented.
 	 * 
 	 * @return the same Document, for method chaining
 	 */
 	public Document delete();
 
 	/**
-	 * This method would save the Document. Its behavior will depend on how the module loaded is implemented.
+	 * Saves the Document. Its behavior will depend on how the module loaded is implemented.
 	 * 
 	 * @return the same Document, for method chaining
 	 */
 	public Document save();
 
 	/**
-	 * This method would request a Document recalculation. Its behavior will depend on how the module loaded is
+	 * Requests a Document recalculation. Its behavior will depend on how the module loaded is
 	 * implemented.
 	 * 
 	 * @return the same Document, for method chaining
@@ -141,7 +134,8 @@ public interface Document extends Base {
 	public boolean hasField(String field);
 
 	/**
-	 * @return all the Document's fields and their values as a HashMap object.
+	 * Returns all the fields and its a values as a HashMap object.
+	 * @return the fields and their values.
 	 */
 	public Map<String, Vector<Object>> getFields();
 

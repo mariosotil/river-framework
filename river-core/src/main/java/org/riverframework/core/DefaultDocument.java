@@ -27,6 +27,15 @@ public class DefaultDocument implements org.riverframework.Document {
 		isModified = false;
 	}
 
+	protected Document setModified(boolean m) {
+		isModified = m;
+		return this;
+	}
+	
+	protected Document afterCreate() {
+		return this;
+	}
+
 	@Override
 	public String getObjectId() {
 		String result = _doc.getObjectId();
@@ -46,10 +55,6 @@ public class DefaultDocument implements org.riverframework.Document {
 	@Override
 	public org.riverframework.Database getDatabase() {
 		return database;
-	}
-
-	public static String getIndexName() {
-		return "";
 	}
 
 	protected static boolean numericEquals(Vector<Object> c1, Vector<Object> c2) {
@@ -172,12 +177,6 @@ public class DefaultDocument implements org.riverframework.Document {
 	}
 
 	@Override
-	public Document setModified(boolean m) {
-		isModified = m;
-		return this;
-	}
-
-	@Override
 	public boolean isOpen() {
 		return _doc != null && _doc.isOpen();
 	}
@@ -234,11 +233,7 @@ public class DefaultDocument implements org.riverframework.Document {
 		return result;
 	}
 
-	protected Document afterCreate() {
-		return this;
-	}
-
-	@Override
+		@Override
 	public Document recalc() {
 		return internalRecalc();
 	}

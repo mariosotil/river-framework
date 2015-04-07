@@ -6,7 +6,7 @@ import org.riverframework.module.DocumentCollection;
 import org.riverframework.module.View;
 
 class DefaultDatabase implements org.riverframework.module.Database {
-	protected DefaultDatabase(lotus.domino.Database obj) {
+	protected DefaultDatabase(Object obj) {
 	}
 
 	@Override

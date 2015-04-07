@@ -46,30 +46,28 @@ public class DefaultView implements org.riverframework.View {
 
 	@Override
 	public <U extends org.riverframework.Document> U getDocumentByKey(Class<U> clazz, String key) {
-		U rDoc = null;
-		org.riverframework.module.Document doc = null;
+		U doc = null;
+		org.riverframework.module.Document _doc = null;
 
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
 
 		if (DefaultDocument.class.isAssignableFrom(clazz)) {
-			doc = _view.getDocumentByKey(key);
+			_doc = _view.getDocumentByKey(key);
 
 			try {
 				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.riverframework.module.Document.class);
-				rDoc = clazz.cast(constructor.newInstance(database, doc));
+				doc = clazz.cast(constructor.newInstance(database, _doc));
 			} catch (Exception e) {
 				throw new RiverException(e);
 			}
 		}
 
-		if (rDoc == null) {
-			rDoc = clazz.cast(new DefaultDocument(database, null));
-		} else {
-			((DefaultDocument) rDoc).afterCreate().setModified(false);
-		}
-
-		return rDoc;
+		if (doc == null) {
+			doc = clazz.cast(new DefaultDocument(database, null));
+		} 
+		
+		return doc;
 	}
 
 	@Override
@@ -81,7 +79,7 @@ public class DefaultView implements org.riverframework.View {
 	public DocumentCollection getAllDocuments() {
 		org.riverframework.module.DocumentCollection _col;
 		_col = _view.getAllDocuments();
-		DocumentCollection result = new DefaultDocumentCollection(database).loadFrom(_col);
+		DocumentCollection result = new DefaultDocumentCollection(database, _col);
 
 		return result;
 	}
@@ -90,7 +88,7 @@ public class DefaultView implements org.riverframework.View {
 	public DocumentCollection getAllDocumentsByKey(Object key) {
 		org.riverframework.module.DocumentCollection _col;
 		_col = _view.getAllDocumentsByKey(key);
-		DocumentCollection result = new DefaultDocumentCollection(database).loadFrom(_col);
+		DocumentCollection result = new DefaultDocumentCollection(database, _col);
 
 		return result;
 	}
@@ -105,7 +103,7 @@ public class DefaultView implements org.riverframework.View {
 	public org.riverframework.DocumentCollection search(String query) {
 		org.riverframework.module.DocumentCollection _col;
 		_col = _view.search(query);
-		DocumentCollection result = new DefaultDocumentCollection(database).loadFrom(_col);
+		DocumentCollection result = new DefaultDocumentCollection(database, _col);
 		return result;
 	}
 

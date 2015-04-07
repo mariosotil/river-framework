@@ -16,7 +16,7 @@ public interface Session extends Base {
 	public static final String FIELD_PREFIX = "RIVER_";
 
 	/**
-	 * This method returns a core Database object after open a module Database, using the parameters indicated.
+	 * Returns a core Database object after open a module Database, using the parameters indicated.
 	 * 
 	 * @param parameters
 	 *            the parameters needed to open an existent module Database. How this parameters must to be set will
@@ -26,7 +26,7 @@ public interface Session extends Base {
 	public <U extends Database> U getDatabase(String... parameters);
 
 	/**
-	 * This method returns a core Database object after open a module Database, using the parameters indicated.
+	 * Returns a core Database object after open a module Database, using the parameters indicated.
 	 * 
 	 * @param clazz
 	 *            a class that inherits from DefaultDatabase and implements the core Database interface.
@@ -38,24 +38,21 @@ public interface Session extends Base {
 	public <U extends Database> U getDatabase(Class<U> type, String... parameters);
 
 	/**
-	 * If the core Session object is created, but the module Session is null or can't be opened, this method will
-	 * return false.
+	 * Returns true if the module was loaded and the session opened. 
 	 * 
-	 * @return true if the module Session is opened
+	 * @return true if it's opened
 	 */
 	public boolean isOpen();
 
 	/**
-	 * This method should returns the current user name logged with this session. Its behavior will depend on how the
-	 * module loaded is implemented.
+	 * Returns the current user name logged with this session. 
 	 * 
 	 * @return the current user name
 	 */
 	public String getUserName();
 
 	/**
-	 * This method close the session and frees its resources, etc. Its behavior will depend on how the module loaded is
-	 * implemented.
+	 * Close the session and frees its resources, handles, etc.
 	 */
 	@Override
 	public void close();

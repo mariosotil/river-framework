@@ -33,15 +33,10 @@
   		<artifactId>ini4j</artifactId>
   		<version>0.5.4</version>
   	</dependency>
-  	  	<dependency>
-  		<groupId>com.google.inject</groupId>
-  		<artifactId>guice</artifactId>
-  		<version>3.0</version>
-  	</dependency>
   	<dependency>
-  		<groupId>com.google.inject.extensions</groupId>
-  		<artifactId>guice-assistedinject</artifactId>
-  		<version>3.0</version>
+  		<groupId>org.riverframework</groupId>
+  		<artifactId>river-module-lotus-domino</artifactId>
+  		<version>0.1.0</version>
   	</dependency>
-  </dependencies>
+   </dependencies>
 </project>

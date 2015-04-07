@@ -70,7 +70,8 @@ public abstract class AbstractUniqueTest {
 		protected final static String FORM_NAME = Session.ELEMENT_PREFIX + "Unique";
 		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 
-		public static String getIndexName() {
+		@Override
+		public String getIndexName() {
 			return Session.ELEMENT_PREFIX + "Unique_Index";
 		}
 

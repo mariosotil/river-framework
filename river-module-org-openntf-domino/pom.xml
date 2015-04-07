@@ -2,8 +2,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.riverframework</groupId>
-	<artifactId>river-core</artifactId>
-	<version>0.2.5</version>
+	<artifactId>river-module-org-openntf-domino</artifactId>
+	<version>0.1.0</version>
 	<build>
 		<plugins>
 			<plugin>
@@ -14,7 +14,7 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			<plugin>
+						<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 				<executions>
@@ -44,9 +44,14 @@
 	<url>http://www.riverframework.org</url>
 	<dependencies>
 		<dependency>
-			<groupId>org.jgrapht</groupId>
-			<artifactId>jgrapht-core</artifactId>
-			<version>0.9.0</version>
+			<groupId>lotus.domino</groupId>
+			<artifactId>lotus.domino</artifactId>
+			<version>9.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -55,25 +60,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.ini4j</groupId>
-			<artifactId>ini4j</artifactId>
-			<version>0.5.4</version>
+			<groupId>org.openntf.domino</groupId>
+			<artifactId>org.openntf.domino</artifactId>
+			<version>4.0</version>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-		</dependency>
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<version>3.3.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.3.2</version>
+			<groupId>org.riverframework</groupId>
+			<artifactId>river-core</artifactId>
+			<version>0.2.5</version>
 		</dependency>
 	</dependencies>
 </project>

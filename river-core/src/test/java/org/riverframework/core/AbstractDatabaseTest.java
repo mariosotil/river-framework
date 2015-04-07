@@ -218,7 +218,7 @@ public abstract class AbstractDatabaseTest {
 			super(d, _d);
 		}
 
-		public static String getIndexName() {
+		public String getIndexName() {
 			return "vi_ap_people_index";
 		}
 

@@ -8,10 +8,9 @@ package org.riverframework;
  */
 public interface Base {
 	/**
-	 * Returns an Id from the object instanced. This could be very different, and it will depend about the module used
-	 * in that moment.
+	 * Returns the id from the object instanced. Its behavior will depend on how the module loaded is implemented.
 	 * 
-	 * @return an string Id.
+	 * @return its id.
 	 */
 	public String getObjectId();
 
@@ -24,14 +23,14 @@ public interface Base {
 	public Base getParent();
 
 	/**
-	 * Returns the object created from the module. You should not need to use it.
+	 * Returns the object created through the module loaded. You should not need to use it.
 	 * 
 	 * @return the object created from the module
 	 */
 	public Object getModuleObject();
 
 	/**
-	 * This method should close the resources, handlers, etc. opened by the instance.
+	 * Close the resources, handlers, etc. opened by this instance.
 	 */
 	public void close();
 }

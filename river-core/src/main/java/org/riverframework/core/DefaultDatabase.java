@@ -69,33 +69,35 @@ public class DefaultDatabase implements org.riverframework.Database {
 
 	@Override
 	public <U extends org.riverframework.Document> U createDocument(Class<U> clazz, String... parameters) {
-		U rDoc = null;
-		org.riverframework.module.Document doc = null;
+		U doc = null;
+		org.riverframework.module.Document _doc = null;
 
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
 
 		if (DefaultDocument.class.isAssignableFrom(clazz)) {
-			doc = _database.createDocument();
+			_doc = _database.createDocument();
 
 			try {
 				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.riverframework.module.Document.class);
 				constructor.setAccessible(true);
-				rDoc = clazz.cast(constructor.newInstance(this, doc));
+				doc = clazz.cast(constructor.newInstance(this, _doc));
 			} catch (Exception e) {
 				throw new RiverException(e);
 			}
 		}
 
-		if (rDoc == null) {
-			rDoc = clazz.cast(getDocument(clazz, (org.riverframework.module.Document) null));
+		if (doc == null) {
+			doc = clazz.cast(getDocument(clazz, (org.riverframework.module.Document) null));
 		} else {
-			// TODO: IMPROVE this! It should not be need to cast to call afterCreate and setModified should not be in
-			// the Document interface
-			((DefaultDocument) rDoc).afterCreate().setModified(false);
+			if(doc instanceof DefaultDocument) {
+				DefaultDocument temp = (DefaultDocument) doc; 
+				temp.afterCreate();
+				temp.setModified(false);
+			}
 		}
 
-		return rDoc;
+		return doc;
 	}
 
 	@Override
@@ -122,22 +124,14 @@ public class DefaultDatabase implements org.riverframework.Database {
 			_doc = _database.getDocument(id);
 
 			if (!_doc.isOpen() && clazz != null && Unique.class.isAssignableFrom(clazz)) {
-				Method method = null;
-				try {
-					method = clazz.getMethod(METHOD_GETINDEXNAME);
-				} catch (Exception e) {
-					throw new RiverException(e);
-				}
-
-				if (method == null)
-					throw new RiverException("The class " + clazz.getSimpleName()
-							+ " implements Unique but it does not implement the method " + METHOD_GETINDEXNAME + ".");
-
 				String indexName = "";
-
 				try {
+					Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.riverframework.module.Document.class);
+					constructor.setAccessible(true);
+					U uniqueDoc = clazz.cast(constructor.newInstance(this, null));
+					Method method = clazz.getMethod(METHOD_GETINDEXNAME);
 					method.setAccessible(true);
-					indexName = (String) method.invoke(null);
+					indexName = (String) method.invoke(uniqueDoc);
 				} catch (Exception e) {
 					throw new RiverException(e);
 				}
@@ -152,7 +146,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but the index view "
 							+ indexName + " does not exist.");
 
-				indexView.refresh(); // TODO: this is EXPENSIVE!
+				indexView.refresh(); // TODO: this is EXPENSIVE!!
 				_doc = indexView.getDocumentByKey(id);
 			}
 
@@ -258,7 +252,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 	public org.riverframework.DocumentCollection getAllDocuments() {
 		org.riverframework.module.DocumentCollection _col;
 		_col = _database.getAllDocuments();
-		DocumentCollection result = new DefaultDocumentCollection(this).loadFrom(_col);
+		DocumentCollection result = new DefaultDocumentCollection(this, _col);
 
 		return result;
 	}
@@ -267,7 +261,7 @@ public class DefaultDatabase implements org.riverframework.Database {
 	public org.riverframework.DocumentCollection search(String query) {
 		org.riverframework.module.DocumentCollection _col;
 		_col = _database.search(query);
-		DocumentCollection result = new DefaultDocumentCollection(this).loadFrom(_col);
+		DocumentCollection result = new DefaultDocumentCollection(this, _col);
 
 		return result;
 	}

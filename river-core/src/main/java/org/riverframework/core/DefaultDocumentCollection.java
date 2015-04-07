@@ -6,23 +6,16 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.Database;
 
 public class DefaultDocumentCollection extends ArrayList<org.riverframework.Document>
-		implements org.riverframework.DocumentCollection {
+implements org.riverframework.DocumentCollection {
 	private static final long serialVersionUID = -5032050258891587783L;
 	protected Database database;
 
-	protected DefaultDocumentCollection(Database d) {
+	protected DefaultDocumentCollection(Database d, org.riverframework.module.DocumentCollection _col) {
 		database = d;
-	}
-
-	@Override
-	public org.riverframework.DocumentCollection loadFrom(org.riverframework.module.DocumentCollection _col) {
-		clear();
 		for (org.riverframework.module.Document _doc : _col) {
 			org.riverframework.Document doc = database.getDocument(_doc);
 			this.add(doc);
 		}
-
-		return this;
 	}
 
 	@Override

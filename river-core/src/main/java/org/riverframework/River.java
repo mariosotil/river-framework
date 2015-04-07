@@ -8,10 +8,9 @@ import java.util.Map;
 import org.riverframework.core.DefaultSession;
 
 /**
- * This static class is used for load a River NoSQL module, and create and close core Session objects that controls that
- * modules.
+ * This static class is used for load a River NoSQL module, and create and close core Session objects for control the data.
  * 
- * The session objects are used to creates core Database, Document, etc. objects.
+ * The session objects are used for create the Database, Document, View and DocumentCollection objects.
  * 
  * 
  * @author mario.sotil@gmail.com
@@ -20,7 +19,6 @@ import org.riverframework.core.DefaultSession;
 public class River {
 	public final static String MODULE_LOTUS_DOMINO = "org.riverframework.module.lotus.domino";
 	public final static String MODULE_ORG_OPENNTF_DOMINO = "org.riverframework.module.org.openntf.domino";
-	public final static String MODULE_HAZELCAST = "org.riverframework.module.hazelcast";
 
 	private static Map<String, Session> map = new HashMap<String, Session>();
 	private final static River INSTANCE = new River();
@@ -37,7 +35,7 @@ public class River {
 	}
 
 	/**
-	 * This method loads a module that wraps libraries as lotus.domino or org.openntf.domino and creates a core Session
+	 * Loads a module that wraps libraries as lotus.domino or org.openntf.domino and creates a core Session
 	 * object. Its behavior will depend on how the module is implemented. Anyway, this method creates the session just
 	 * one time and returns the same every time is called. To free the memory, resources, etc., it's necessary to call
 	 * the close method at the end of the program or process.
@@ -89,7 +87,7 @@ public class River {
 	}
 
 	/**
-	 * This method will call the Session close method to free resources, memory, etc. Also, it will remove it from its
+	 * Call the Session close method to free resources, memory, etc. Also, it will remove it from its
 	 * internal table.
 	 * 
 	 * @param module

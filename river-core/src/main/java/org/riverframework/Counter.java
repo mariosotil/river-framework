@@ -1,7 +1,7 @@
 package org.riverframework;
 
 /**
- * This class let you get counters to be used to assign incremental Ids to the documents. It's used with the Unique
+ * Get counters to be used to assign incremental ids to the documents. It's used with the Unique
  * interface.
  * 
  * @author mario.sotil@gmail.com
@@ -9,9 +9,9 @@ package org.riverframework;
  */
 public interface Counter extends org.riverframework.Document {
 	/**
-	 * Every time this method is called, it returns a new number in incremental way.
+	 * Returns a new number on an incremental way. 
 	 * 
-	 * @return a new number incremented by one.
+	 * @return a number.
 	 */
 	public long getCount();
 }

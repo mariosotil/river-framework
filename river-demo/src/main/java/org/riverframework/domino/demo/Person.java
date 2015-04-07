@@ -11,7 +11,7 @@ class Person extends DefaultDocument implements Unique {
 		super(d, doc);
 	}
 
-	public static String getIndexName() {
+	public String getIndexName() {
 		return "vi_ap_person_index";
 	}
 	

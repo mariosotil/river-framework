@@ -1,8 +1,12 @@
 package org.riverframework.module;
 
+/**
+ * Defines the common operations to control a NoSQL database. 
+ *   
+ * @author mario.sotil@gmail.com
+ *
+ */
 public interface Database extends Base {
-	public String getObjectId();
-
 	public String getServer();
 
 	public String getFilePath();

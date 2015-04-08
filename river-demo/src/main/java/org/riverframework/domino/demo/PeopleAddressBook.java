@@ -38,7 +38,7 @@ import org.riverframework.core.Credentials;
  */
 
 public class PeopleAddressBook {
-	private static final String filepath = "PeopleAddressBook.nsf";
+	private static final String filepath = "PeopleAddressBookX.nsf";
 
 	public static void main(String[] args) {
 		NotesThread.sinitThread();
@@ -55,16 +55,16 @@ public class PeopleAddressBook {
 		// Creating three persons
 		 
 		Person jd = (Person) database.createDocument(Person.class)
-		.generateId()
 		.setField("Name", "John Doe")
 		.setField("Age", 35)
+		.generateId()
 		.save();
 
 		String johnDoeId = jd.getId();
 				
 		database.createDocument(Person.class)
-		.generateId()
 		.setField("Name", "Jane Doe")
+		.generateId()
 		.setField("Age", 29)
 		.save();
 

@@ -19,6 +19,15 @@ class DefaultView implements org.riverframework.module.View {
 	}
 
 	@Override
+	public String getObjectId() {
+		try {
+			return _view.getName();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+	}
+
+	@Override
 	public Object getReferencedObject() {
 		return _view;
 	}

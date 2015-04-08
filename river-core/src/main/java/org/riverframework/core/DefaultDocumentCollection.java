@@ -1,38 +1,18 @@
 package org.riverframework.core;
 
-import java.util.ArrayList;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.Database;
 
-public class DefaultDocumentCollection extends ArrayList<org.riverframework.Document>
+/**
+ * It is used to manage collections of Documents. 
+ * 
+ * @author mario.sotil@gmail.com
+ *
+ */
+public final class DefaultDocumentCollection extends AbstractDocumentCollection 
 implements org.riverframework.DocumentCollection {
-	private static final long serialVersionUID = -5032050258891587783L;
-	protected Database database;
+	private static final long serialVersionUID = -3371532017518314494L;
 
 	protected DefaultDocumentCollection(Database d, org.riverframework.module.DocumentCollection _col) {
-		database = d;
-		for (org.riverframework.module.Document _doc : _col) {
-			org.riverframework.Document doc = database.getDocument(_doc);
-			this.add(doc);
-		}
-	}
-
-	@Override
-	public org.riverframework.Database getDatabase() {
-		return database;
-	}
-
-	@Override
-	public org.riverframework.DocumentCollection deleteAll() {
-		for (org.riverframework.Document doc : this) {
-			doc.delete();
-		}
-		return this;
-	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		super (d, _col);
 	}
 }

@@ -9,7 +9,13 @@ import org.riverframework.Session;
 import org.riverframework.Unique;
 import org.riverframework.View;
 
-public class DefaultCounter extends DefaultDocument implements Counter, Unique {
+/**
+ * It is used to manage counters into the Database. This counters can be used to create unique Ids.
+ * 
+ * @author mario.sotil@gmail.com
+ *
+ */
+public final class DefaultCounter extends AbstractDocument<DefaultCounter> implements Counter, Unique {
 	protected DefaultCounter(Database d, org.riverframework.module.Document _d) {
 		super(d, _d);
 	}
@@ -26,7 +32,7 @@ public class DefaultCounter extends DefaultDocument implements Counter, Unique {
 	}
 
 	@Override
-	protected Counter afterCreate() {
+	protected DefaultCounter afterCreate() {
 		setField("Form", FORM_NAME)
 				.setField(FIELD_COUNT, 0);
 
@@ -68,5 +74,10 @@ public class DefaultCounter extends DefaultDocument implements Counter, Unique {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+
+	@Override
+	protected DefaultCounter getThis() {
+		return this;
 	}
 }

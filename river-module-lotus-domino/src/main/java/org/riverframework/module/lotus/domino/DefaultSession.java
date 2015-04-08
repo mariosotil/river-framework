@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
 import lotus.domino.NotesException;
@@ -16,11 +17,18 @@ public class DefaultSession implements org.riverframework.module.Session {
 	private lotus.domino.Session _session = null;
 	private Map<Integer, WeakReference<lotus.domino.Base>> registeredObjects = null;
 	private Map<Integer, WeakReference<Vector<lotus.domino.Item>>> registeredVectors = null;
+	private UUID sessionUUID = null;
 
 	public DefaultSession(lotus.domino.Session obj) {
 		_session = obj;
 		registeredObjects = new HashMap<Integer, WeakReference<lotus.domino.Base>>();
 		registeredVectors = new HashMap<Integer, WeakReference<Vector<lotus.domino.Item>>>();
+		sessionUUID = UUID.randomUUID();
+	}
+
+	@Override
+	public String getObjectId() {
+		return sessionUUID.toString();
 	}
 
 	public void registerObject(lotus.domino.Base obj) {

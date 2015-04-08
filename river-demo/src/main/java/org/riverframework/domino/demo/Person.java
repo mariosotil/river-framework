@@ -2,10 +2,10 @@ package org.riverframework.domino.demo;
 
 import org.riverframework.Document;
 import org.riverframework.Database;
-import org.riverframework.core.DefaultDocument;
+import org.riverframework.core.AbstractDocument;
 import org.riverframework.Unique;
 
-class Person extends DefaultDocument implements Unique {
+class Person extends AbstractDocument<Person> implements Unique {
 
 	protected Person(Database d, org.riverframework.module.Document doc) {
 		super(d, doc);
@@ -15,7 +15,7 @@ class Person extends DefaultDocument implements Unique {
 		return "vi_ap_person_index";
 	}
 	
-	protected Document afterCreate() {
+	protected Person afterCreate() {
 		setField("Form", "fo_ap_person");
 		return this;
 	}
@@ -24,7 +24,7 @@ class Person extends DefaultDocument implements Unique {
 		return getFieldAsString("ca_pe_id");
 	}
 
-	public Document generateId() {
+	public Person generateId() {
 		long id = database.getCounter("PERSON").getCount();
 		setField("ca_pe_id", String.valueOf(id));
 		return this;
@@ -32,6 +32,11 @@ class Person extends DefaultDocument implements Unique {
 
 	public Document setId(String arg0) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	protected Person getThis() {
+		return this;
 	}
 
 }

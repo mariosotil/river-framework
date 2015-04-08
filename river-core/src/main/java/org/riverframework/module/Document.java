@@ -16,8 +16,6 @@ import java.util.Vector;
 public interface Document extends Base {
 	public Document setField(String field, Object value);
 
-	public String getObjectId();
-
 	public Document recalc();
 
 	public Vector<Object> getField(String field);

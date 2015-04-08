@@ -92,7 +92,7 @@ public abstract class AbstractDatabaseTest {
 		assertTrue("There is a problem getting the view created in the test database.", view.isOpen());
 	}
 
-	static class VacationDatabase extends DefaultDatabase {
+	static class VacationDatabase extends AbstractDatabase {
 		protected VacationDatabase(Session s, org.riverframework.module.Database obj) {
 			super(s, obj);
 		}
@@ -107,7 +107,7 @@ public abstract class AbstractDatabaseTest {
 		}
 	}
 
-	static class VacationRequest extends DefaultDocument {
+	static class VacationRequest extends AbstractDocument<VacationRequest> {
 		protected VacationRequest(Database d, org.riverframework.module.Document _d) {
 			super(d, _d);
 		}
@@ -115,6 +115,11 @@ public abstract class AbstractDatabaseTest {
 		@Override
 		protected VacationRequest afterCreate() {
 			setField("Form", "fo_vacation_request");
+			return this;
+		}
+
+		@Override
+		protected VacationRequest getThis() {
 			return this;
 		}
 	}
@@ -213,7 +218,7 @@ public abstract class AbstractDatabaseTest {
 		}
 	}
 
-	static class Person extends DefaultDocument implements Document, Unique {
+	static class Person extends AbstractDocument<Person> implements Document, Unique {
 		protected Person(Database d, org.riverframework.module.Document _d) {
 			super(d, _d);
 		}
@@ -236,6 +241,11 @@ public abstract class AbstractDatabaseTest {
 		@Override
 		public org.riverframework.Document setId(String arg0) {
 			setField("ca_pe_name", arg0);
+			return this;
+		}
+
+		@Override
+		protected Person getThis() {
 			return this;
 		}
 

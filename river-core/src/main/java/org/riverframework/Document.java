@@ -112,6 +112,13 @@ public interface Document extends Base {
 	public Document delete();
 
 	/**
+	 * Saves the Document asking if it has to force it or do it only if the document was modified 
+	 * @param force how to save
+	 * @return the same Document, for method chaining
+	 */
+	public Document save(boolean force);
+
+	/**
 	 * Saves the Document. Its behavior will depend on how the module loaded is implemented.
 	 * 
 	 * @return the same Document, for method chaining

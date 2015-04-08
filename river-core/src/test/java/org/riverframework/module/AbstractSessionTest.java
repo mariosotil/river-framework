@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.core.Credentials;
-import org.riverframework.module.Database;
 import org.riverframework.module.Session;
 
 public abstract class AbstractSessionTest {
@@ -48,19 +47,5 @@ public abstract class AbstractSessionTest {
 		assertTrue("Notes Session could not be retrieved", session.isOpen());
 		assertFalse("There's a problem with the Session. I can't retrieve the current user name.",
 				session.getUserName().equals(""));
-	}
-
-	@Test
-	public void testOpeningRemoteDatabase() {
-		String password = Credentials.getPassword();
-		assertFalse("Password can be an empty string", password.equals(""));
-
-		Session session = (Session) context.getSession().getModuleObject();
-
-		assertTrue("Notes Session could not be retrieved", session.isOpen());
-
-		Database database = session.getDatabase(context.getRemoteDatabaseServer(), context.getRemoteDatabasePath());
-
-		assertTrue("Remote database could not be opened", database.isOpen());
 	}
 }

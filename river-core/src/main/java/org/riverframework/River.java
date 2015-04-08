@@ -11,8 +11,7 @@ import org.riverframework.core.DefaultSession;
  * This static class is used for load a River NoSQL module, and create and close core Session objects for control the data.
  * 
  * The session objects are used for create the Database, Document, View and DocumentCollection objects.
- * 
- * 
+ *  
  * @author mario.sotil@gmail.com
  *
  */
@@ -41,12 +40,12 @@ public class River {
 	 * the close method at the end of the program or process.
 	 * 
 	 * @param module
-	 *            the full name package. There are some consts defined as River.MODULE_LOTUS_DOMINO or
-	 *            River.MODULE_ORG_OPENNTF_DOMINO to help
+	 *            the package's full name. You can use the constants defined as River.MODULE_LOTUS_DOMINO or
+	 *            River.MODULE_ORG_OPENNTF_DOMINO 
 	 * @param parameters
 	 *            their values and how to set them will depend exclusively on how the module is implemented. Check the
 	 *            module documentation.
-	 * @return
+	 * @return a Session object
 	 */
 	public Session getSession(String module, Object... parameters) {
 		// This will be the session loaded depending the selected module
@@ -87,10 +86,10 @@ public class River {
 	}
 
 	/**
-	 * Call the Session close method to free resources, memory, etc. Also, it will remove it from its
+	 * Calls the Session close method to free resources, memory, etc. Also, it will remove it from its
 	 * internal table.
 	 * 
-	 * @param module
+	 * @param module the package's full name
 	 */
 	public void closeSession(String module) {
 		Session session = map.get(module);

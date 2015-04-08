@@ -47,7 +47,7 @@ public abstract class AbstractUniqueTest {
 		context.closeSession();
 	}
 
-	static class NoUniqueDocument extends DefaultDocument {
+	static class NoUniqueDocument extends AbstractDocument<NoUniqueDocument> {
 		protected NoUniqueDocument(Database d, Document _d) {
 			super(d, _d);
 		}
@@ -60,9 +60,14 @@ public abstract class AbstractUniqueTest {
 			setField("Form", FORM_NAME);
 			return this;
 		}
+
+		@Override
+		protected NoUniqueDocument getThis() {
+			return this;
+		}
 	}
 
-	static class UniqueDocument extends DefaultDocument implements Unique {
+	static class UniqueDocument extends AbstractDocument<UniqueDocument> implements Unique {
 		protected UniqueDocument(Database d, Document _d) {
 			super(d, _d);
 		}
@@ -88,7 +93,7 @@ public abstract class AbstractUniqueTest {
 		}
 
 		@Override
-		public org.riverframework.Document setId(String id) {
+		public UniqueDocument setId(String id) {
 			setField(FIELD_ID, id);
 			return this;
 		}
@@ -96,6 +101,11 @@ public abstract class AbstractUniqueTest {
 		@Override
 		public org.riverframework.Document generateId() {
 			// Do nothing
+			return this;
+		}
+
+		@Override
+		protected UniqueDocument getThis() {
 			return this;
 		}
 	}

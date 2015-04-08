@@ -18,5 +18,4 @@ public class RiverException extends RuntimeException {
 	public RiverException(String message, Exception e) {
 		super(message, e);
 	}
-
 }

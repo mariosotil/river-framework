@@ -63,20 +63,7 @@ public abstract class AbstractSessionTest {
 		context.closeSession();
 	}
 
-	@Test
-	public void testOpeningRemoteDatabase() {
-		Session session = context.getSession();
-
-		assertTrue("Notes Session could not be retrieved", session.isOpen());
-
-		Database database = session.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
-
-		assertTrue("Remote database could not be opened", database.isOpen());
-
-		context.closeSession();
-	}
-
-	// 2015.03.25 - This feature does not work in the version 4 of Openntf Domino API
+	// 2015.03.25 - This feature does not work in the version 4.0 of Openntf Domino API
 	// @Test
 	// public void testOpeningByReplicaID() {
 	// Session session = DefaultSession.getInstance().open(Credentials.getPassword());

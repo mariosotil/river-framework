@@ -61,19 +61,19 @@ public abstract class AbstractDocumentTest {
 	public void testCompareFieldValue() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document could not be created", rDoc.isOpen());
-		assertFalse("A document was created but it is set as modified", rDoc.isModified());
+		assertTrue("The document could not be created", doc.isOpen());
+		assertFalse("A document was created but it is set as modified", doc.isModified());
 
-		rDoc.setField("Form", TEST_FORM);
+		doc.setField("Form", TEST_FORM);
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		calendar.set(Calendar.MILLISECOND, 0);
 		Date testDate = calendar.getTime();
 
-		rDoc.setField("FIELD_STRING", "SOME_TEXT")
+		doc.setField("FIELD_STRING", "SOME_TEXT")
 				.setField("FIELD_INTEGER", 100)
 				.setField("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0)
 				.setField("FIELD_DOUBLE_WITH_DECIMALS", 100.55)
@@ -84,44 +84,44 @@ public abstract class AbstractDocumentTest {
 						(Arrays.asList(new String[] { "VAL1", "VAL2" })));
 
 		assertTrue("The String saved must be equal to the test value",
-				rDoc.compareFieldValue("FIELD_STRING", "SOME_TEXT"));
+				doc.compareFieldValue("FIELD_STRING", "SOME_TEXT"));
 		assertFalse("The String saved must be different to a random value",
-				rDoc.compareFieldValue("FIELD_STRING", "SODIUHOUIFD"));
+				doc.compareFieldValue("FIELD_STRING", "SODIUHOUIFD"));
 
 		assertTrue("The Integer saved must be equal to the test value",
-				rDoc.compareFieldValue("FIELD_INTEGER", 100));
+				doc.compareFieldValue("FIELD_INTEGER", 100));
 		assertFalse("The Integer saved must be different to a random value",
-				rDoc.compareFieldValue("FIELD_INTEGER", 3847));
+				doc.compareFieldValue("FIELD_INTEGER", 3847));
 
 		assertTrue("The Double WITHOUT decimals saved must be equal to the test value",
-				rDoc.compareFieldValue("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0));
+				doc.compareFieldValue("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0));
 		assertFalse("The Double WITHOUT decimals saved must be different to a random value",
-				rDoc.compareFieldValue("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.89));
+				doc.compareFieldValue("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.89));
 
 		assertTrue("The Double WITH decimals saved must be equal to the test value",
-				rDoc.compareFieldValue("FIELD_DOUBLE_WITH_DECIMALS", 100.55));
+				doc.compareFieldValue("FIELD_DOUBLE_WITH_DECIMALS", 100.55));
 		assertFalse("The Double WITH decimals saved must be different to a random value",
-				rDoc.compareFieldValue("FIELD_DOUBLE_WITH_DECIMALS", 100.89));
+				doc.compareFieldValue("FIELD_DOUBLE_WITH_DECIMALS", 100.89));
 
 		assertTrue("The Date saved must be equal to the test value",
-				rDoc.compareFieldValue("FIELD_DATE", testDate));
+				doc.compareFieldValue("FIELD_DATE", testDate));
 		calendar.set(2012, 1, 15, 5, 25, 12);
 		Date randomDate = calendar.getTime();
 		assertFalse("The Date saved must be different to a random value",
-				rDoc.compareFieldValue("FIELD_DATE", randomDate));
+				doc.compareFieldValue("FIELD_DATE", randomDate));
 
 		assertTrue("The String array saved must be equal to the test value",
-				rDoc.compareFieldValue("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" }));
+				doc.compareFieldValue("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" }));
 		assertFalse("The String array saved must be different to a random value",
-				rDoc.compareFieldValue("FIELD_STRING_ARRAY", new String[] { "VALWW", "VALZZ" }));
+				doc.compareFieldValue("FIELD_STRING_ARRAY", new String[] { "VALWW", "VALZZ" }));
 
 		assertTrue(
 				"The Vector saved must be equal to the test value",
-				rDoc.compareFieldValue("FIELD_STRING_VECTOR",
+				doc.compareFieldValue("FIELD_STRING_VECTOR",
 						new String[] { "VAL1", "VAL2" }));
 		assertFalse(
 				"The Vector saved must be different to a random value",
-				rDoc.compareFieldValue("FIELD_STRING_VECTOR",
+				doc.compareFieldValue("FIELD_STRING_VECTOR",
 						new String[] { "VAL1", "VALZZ" }));
 	}
 
@@ -131,23 +131,23 @@ public abstract class AbstractDocumentTest {
 
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document could not be created", rDoc.isOpen());
-		assertFalse("A document was created but it is set as modified", rDoc.isModified());
+		assertTrue("The document could not be created", doc.isOpen());
+		assertFalse("A document was created but it is set as modified", doc.isModified());
 
-		rDoc.setField("Form", TEST_FORM);
+		doc.setField("Form", TEST_FORM);
 
 		String testField = DefaultSession.PREFIX + "TestSetField";
 		String testValue = rs.nextString();
-		rDoc.setField(testField, testValue);
-		String newValue = rDoc.getFieldAsString(testField);
+		doc.setField(testField, testValue);
+		String newValue = doc.getFieldAsString(testField);
 
 		assertTrue("The value retrieved was different to the saved", newValue.equals(testValue));
 
-		rDoc.setField(testField, 20);
-		String strValue = rDoc.getFieldAsString(testField);
-		int intValue = rDoc.getFieldAsInteger(testField);
+		doc.setField(testField, 20);
+		String strValue = doc.getFieldAsString(testField);
+		int intValue = doc.getFieldAsInteger(testField);
 
 		assertFalse("The integer value can not be retrieved as string. ", "20".equals(strValue));
 		assertTrue("The integer value can be retrieved as integer. ", 20 == intValue);
@@ -157,17 +157,17 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsInteger() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document could not be created", rDoc.isOpen());
-		assertFalse("A document was created but it is set as modified", rDoc.isModified());
+		assertTrue("The document could not be created", doc.isOpen());
+		assertFalse("A document was created but it is set as modified", doc.isModified());
 
-		rDoc.setField("Form", TEST_FORM);
+		doc.setField("Form", TEST_FORM);
 
 		String testField = DefaultSession.PREFIX + "TestSetField";
 		int testValue = 1000;
-		rDoc.setField(testField, testValue);
-		int newValue = rDoc.getFieldAsInteger(testField);
+		doc.setField(testField, testValue);
+		int newValue = doc.getFieldAsInteger(testField);
 
 		assertTrue("The value retrieved was different to the saved", newValue == testValue);
 	}
@@ -176,17 +176,17 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsDouble() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document could not be created", rDoc.isOpen());
-		assertFalse("A document was created but it is set as modified", rDoc.isModified());
+		assertTrue("The document could not be created", doc.isOpen());
+		assertFalse("A document was created but it is set as modified", doc.isModified());
 
-		rDoc.setField("Form", TEST_FORM);
+		doc.setField("Form", TEST_FORM);
 
 		String testField = DefaultSession.PREFIX + "TestSetField";
 		Double testValue = 100.45;
-		rDoc.setField(testField, testValue);
-		Double newValue = rDoc.getFieldAsDouble(testField);
+		doc.setField(testField, testValue);
+		Double newValue = doc.getFieldAsDouble(testField);
 
 		assertTrue("The value retrieved was different to the saved",
 				Double.compare(newValue, testValue) == 0);
@@ -196,17 +196,17 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsDate() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document could not be created", rDoc.isOpen());
-		assertFalse("A document was created but it is set as modified", rDoc.isModified());
+		assertTrue("The document could not be created", doc.isOpen());
+		assertFalse("A document was created but it is set as modified", doc.isModified());
 
-		rDoc.setField("Form", TEST_FORM);
+		doc.setField("Form", TEST_FORM);
 
 		String testField = DefaultSession.PREFIX + "TestSetField";
 		Date testValue = new Date();
-		rDoc.setField(testField, testValue);
-		Date newValue = rDoc.getFieldAsDate(testField);
+		doc.setField(testField, testValue);
+		Date newValue = doc.getFieldAsDate(testField);
 
 		// Lotus Notes does not save the milliseconds
 		Calendar calendar = Calendar.getInstance();
@@ -221,16 +221,16 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsArrayString() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document could not be created", rDoc.isOpen());
-		assertFalse("A document was created but it is set as modified", rDoc.isModified());
+		assertTrue("The document could not be created", doc.isOpen());
+		assertFalse("A document was created but it is set as modified", doc.isModified());
 
-		rDoc.setField("Form", TEST_FORM);
+		doc.setField("Form", TEST_FORM);
 
 		String testField = DefaultSession.PREFIX + "TestSetField";
-		rDoc.setField(testField, new String[] { "VAL1", "VAL2" });
-		Vector<Object> newValue = rDoc.getField(testField);
+		doc.setField(testField, new String[] { "VAL1", "VAL2" });
+		Vector<Object> newValue = doc.getField(testField);
 
 		assertTrue("The Array saved is different to the Array retrieved", newValue.size() == 2
 				&& newValue.get(0).equals("VAL1") && newValue.get(1).equals("VAL2"));
@@ -240,16 +240,16 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsVector() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document could not be created", rDoc.isOpen());
-		assertFalse("A document was created but it is set as modified", rDoc.isModified());
+		assertTrue("The document could not be created", doc.isOpen());
+		assertFalse("A document was created but it is set as modified", doc.isModified());
 
-		rDoc.setField("Form", TEST_FORM);
+		doc.setField("Form", TEST_FORM);
 
 		String testField = DefaultSession.PREFIX + "TestSetField";
-		rDoc.setField(testField, new String[] { "VAL1", "VAL2" });
-		Vector<Object> newValue = rDoc.getField(testField);
+		doc.setField(testField, new String[] { "VAL1", "VAL2" });
+		Vector<Object> newValue = doc.getField(testField);
 
 		assertTrue("The Vector saved is different to the Vector retrieved", newValue.size() == 2
 				&& newValue.get(0).equals("VAL1") && newValue.get(1).equals("VAL2"));
@@ -261,47 +261,47 @@ public abstract class AbstractDocumentTest {
 
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document could not be created", rDoc.isOpen());
-		assertFalse("A document was created but it is set as modified", rDoc.isModified());
+		assertTrue("The document could not be created", doc.isOpen());
+		assertFalse("A document was created but it is set as modified", doc.isModified());
 
-		rDoc.setField("Form", TEST_FORM);
+		doc.setField("Form", TEST_FORM);
 
 		String testField = DefaultSession.PREFIX + "TestSetField";
 		String testValue = rs.nextString();
-		rDoc.setField(testField, testValue);
+		doc.setField(testField, testValue);
 
-		assertTrue("The document was modified but its flag is still false", rDoc.isModified());
+		assertTrue("The document was modified but its flag is still false", doc.isModified());
 
-		rDoc.save();
-		assertFalse("The document was saved but it is still set as modified", rDoc.isModified());
+		doc.save();
+		assertFalse("The document was saved but it is still set as modified", doc.isModified());
 
-		rDoc.setField(testField, testValue);
-		assertFalse("A document's field was set with the same value, but now the document it's set as modified", rDoc.isModified());
+		doc.setField(testField, testValue);
+		assertFalse("A document's field was set with the same value, but now the document it's set as modified", doc.isModified());
 
 		String anotherValue = rs.nextString();
-		rDoc.setField(testField, anotherValue);
-		assertTrue("The document was modified but its flag is still false", rDoc.isModified());
+		doc.setField(testField, anotherValue);
+		assertTrue("The document was modified but its flag is still false", doc.isModified());
 
-		rDoc.save();
-		assertFalse("The document was saved but it is still set as modified", rDoc.isModified());
+		doc.save();
+		assertFalse("The document was saved but it is still set as modified", doc.isModified());
 	}
 
 	@Test
 	public void testGetIsFieldEmpty() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document could not be created", rDoc.isOpen());
+		assertTrue("The document could not be created", doc.isOpen());
 
-		rDoc.setField("Form", TEST_FORM);
-		rDoc.setField("THIS_FIELD_EXISTS", "SOME_VALUE");
+		doc.setField("Form", TEST_FORM);
+		doc.setField("THIS_FIELD_EXISTS", "SOME_VALUE");
 
 		assertTrue("An inexistent field was not detected.",
-				rDoc.isFieldEmpty("THIS_FIELD_DOES_NOT_EXIST"));
-		assertFalse("An existent field was not detected.", rDoc.isFieldEmpty("THIS_FIELD_EXISTS"));
+				doc.isFieldEmpty("THIS_FIELD_DOES_NOT_EXIST"));
+		assertFalse("An existent field was not detected.", doc.isFieldEmpty("THIS_FIELD_EXISTS"));
 	}
 
 	/*
@@ -369,17 +369,17 @@ public abstract class AbstractDocumentTest {
 	public void testIsNew() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
 
-		assertTrue("The document is new and is not detected like that.", rDoc.isNew());
+		assertTrue("The document is new and is not detected like that.", doc.isNew());
 	}
 
 	@Test
 	public void testGetUniversalId() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
-		String uniqueId = rDoc.getObjectId();
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		String uniqueId = doc.getObjectId();
 
 		assertFalse("It could not be retrieved de document's unique id.", uniqueId.equals(""));
 	}
@@ -405,104 +405,104 @@ public abstract class AbstractDocumentTest {
 
 		RandomString rs = new RandomString(10);
 		String uniqueId = "";
-		DefaultDocument rDoc = database.createDocument(DefaultDocument.class);
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
 
-		rDoc.setField("Form", TEST_FORM);
-		uniqueId = rDoc.getObjectId();
+		doc.setField("Form", TEST_FORM);
+		uniqueId = doc.getObjectId();
 
-		rDoc = null;
-		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = null;
+		doc = database.getDocument(DefaultDocument.class, uniqueId);
 
-		assertFalse("A document that was not saved was found in the database.", rDoc.isOpen());
+		assertFalse("A document that was not saved was found in the database.", doc.isOpen());
 
-		rDoc = null;
-		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getObjectId();
-		rDoc.save(false);
-		rDoc = null;
-		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = null;
+		doc = database.createDocument(DefaultDocument.class);
+		uniqueId = doc.getObjectId();
+		doc.save(false);
+		doc = null;
+		doc = database.getDocument(DefaultDocument.class, uniqueId);
 
 		assertFalse(
 				"A document was created, NOT MODIFIED and saved with NOT FORCE parameter was found in the database.",
-				rDoc.isOpen());
+				doc.isOpen());
 
-		rDoc = null;
-		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getObjectId();
-		rDoc.save();
-		rDoc = null;
-		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = null;
+		doc = database.createDocument(DefaultDocument.class);
+		uniqueId = doc.getObjectId();
+		doc.save();
+		doc = null;
+		doc = database.getDocument(DefaultDocument.class, uniqueId);
 
 		assertFalse(
 				"A document was created, NOT MODIFIED and saved with A IMPLICIT NOT FORCE parameter was found in the database.",
-				rDoc.isOpen());
+				doc.isOpen());
 
-		rDoc = null;
-		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getObjectId();
-		rDoc.save(false);
-		rDoc = null;
-		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = null;
+		doc = database.createDocument(DefaultDocument.class);
+		uniqueId = doc.getObjectId();
+		doc.save(false);
+		doc = null;
+		doc = database.getDocument(DefaultDocument.class, uniqueId);
 
 		assertFalse(
 				"A document was created, NOT MODIFIED and saved with NOT FORCE parameter was found in the database.",
-				rDoc.isOpen());
+				doc.isOpen());
 
-		rDoc = null;
-		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getObjectId();
-		rDoc.save(true);
-		rDoc = null;
-		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
-
-		assertTrue(
-				"A document was created, NOT MODIFIED and saved with FORCE parameter was not found in the database.",
-				rDoc.isOpen());
-
-		rDoc = null;
-		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getObjectId();
-		rDoc.save(true);
-		rDoc = null;
-		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = null;
+		doc = database.createDocument(DefaultDocument.class);
+		uniqueId = doc.getObjectId();
+		doc.save(true);
+		doc = null;
+		doc = database.getDocument(DefaultDocument.class, uniqueId);
 
 		assertTrue(
 				"A document was created, NOT MODIFIED and saved with FORCE parameter was not found in the database.",
-				rDoc.isOpen());
+				doc.isOpen());
 
-		rDoc = null;
-		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getObjectId();
-		rDoc.setField("SOME_TEST_FIELD", rs.nextString());
-		rDoc.save(false);
-		rDoc = null;
-		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = null;
+		doc = database.createDocument(DefaultDocument.class);
+		uniqueId = doc.getObjectId();
+		doc.save(true);
+		doc = null;
+		doc = database.getDocument(DefaultDocument.class, uniqueId);
+
+		assertTrue(
+				"A document was created, NOT MODIFIED and saved with FORCE parameter was not found in the database.",
+				doc.isOpen());
+
+		doc = null;
+		doc = database.createDocument(DefaultDocument.class);
+		uniqueId = doc.getObjectId();
+		doc.setField("SOME_TEST_FIELD", rs.nextString());
+		doc.save(false);
+		doc = null;
+		doc = database.getDocument(DefaultDocument.class, uniqueId);
 
 		assertTrue(
 				"A document was created, MODIFIED and saved with NOT FORCE parameter was not found in the database.",
-				rDoc.isOpen());
+				doc.isOpen());
 
-		rDoc = null;
-		rDoc = database.createDocument(DefaultDocument.class);
-		uniqueId = rDoc.getObjectId();
-		rDoc.setField("SOME_TEST_FIELD", rs.nextString());
-		rDoc.save(true);
-		rDoc = null;
-		rDoc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = null;
+		doc = database.createDocument(DefaultDocument.class);
+		uniqueId = doc.getObjectId();
+		doc.setField("SOME_TEST_FIELD", rs.nextString());
+		doc.save(true);
+		doc = null;
+		doc = database.getDocument(DefaultDocument.class, uniqueId);
 
 		assertTrue(
 				"A document was created, MODIFIED and saved with FORCE parameter was not found in the database.",
-				rDoc.isOpen());
+				doc.isOpen());
 	}
 
 	// Classes to testing the implementations
-	static class SimpleRequest extends DefaultDocument {
+	static class SimpleRequest extends AbstractDocument<SimpleRequest> {
 		protected SimpleRequest(Database d, org.riverframework.module.Document _d) {
 			super(d, _d);
 		}
 
 		@Override
-		protected DefaultDocument internalRecalc() {
+		protected SimpleRequest internalRecalc() {
 			super.internalRecalc();
 
 			RandomString rs = new RandomString(10);
@@ -510,9 +510,14 @@ public abstract class AbstractDocumentTest {
 
 			return this;
 		}
+
+		@Override
+		protected SimpleRequest getThis() {
+			return this;
+		}
 	}
 
-	static class ComplexDatabase extends org.riverframework.core.DefaultDatabase {
+	static class ComplexDatabase extends AbstractDatabase {
 
 		protected ComplexDatabase(Session s, org.riverframework.module.Database obj) {
 			super(s, obj);

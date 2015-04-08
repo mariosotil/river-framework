@@ -1,16 +1,25 @@
 package org.riverframework.module.org.openntf.domino;
 
+import java.util.UUID;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.RiverException;
 import org.riverframework.module.Database;
 
 public class DefaultSession implements org.riverframework.module.Session {
 	private org.openntf.domino.Session _session = null;
+	private UUID sessionUUID = null;
 
 	public DefaultSession(org.openntf.domino.Session obj) {
 		_session = obj;
+		sessionUUID = UUID.randomUUID();
 	}
 
+	@Override
+	public String getObjectId() {
+		return sessionUUID.toString();
+	}
+	
 	@Override
 	public Object getReferencedObject() {
 		return _session;

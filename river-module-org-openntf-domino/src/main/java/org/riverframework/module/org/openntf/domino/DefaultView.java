@@ -2,7 +2,7 @@ package org.riverframework.module.org.openntf.domino;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.module.Document;
-import org.riverframework.module.DocumentCollection;
+import org.riverframework.module.DocumentList;
 import org.riverframework.module.View;
 
 class DefaultView implements org.riverframework.module.View {
@@ -35,17 +35,17 @@ class DefaultView implements org.riverframework.module.View {
 	}
 
 	@Override
-	public DocumentCollection getAllDocuments() {
+	public DocumentList getAllDocuments() {
 		org.openntf.domino.ViewEntryCollection _col = _view.getAllEntries();
-		DocumentCollection result = new DefaultDocumentCollection(_col);
+		DocumentList result = new DefaultListCollection(_col);
 
 		return result;
 	}
 
 	@Override
-	public DocumentCollection getAllDocumentsByKey(Object key) {
+	public DocumentList getAllDocumentsByKey(Object key) {
 		org.openntf.domino.DocumentCollection _col = _view.getAllDocumentsByKey(key, true);
-		DocumentCollection result = new DefaultDocumentCollection(_col);
+		DocumentList result = new DefaultListCollection(_col);
 
 		return result;
 	}
@@ -57,9 +57,9 @@ class DefaultView implements org.riverframework.module.View {
 	}
 
 	@Override
-	public DocumentCollection search(String query) {
+	public DocumentList search(String query) {
 		_view.FTSearch(query);
-		DocumentCollection result = new DefaultDocumentCollection(_view);
+		DocumentList result = new DefaultListCollection(_view);
 
 		return result;
 	}

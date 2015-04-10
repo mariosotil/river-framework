@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.module.Document;
-import org.riverframework.module.DocumentCollection;
+import org.riverframework.module.DocumentList;
 
-class DefaultDocumentCollection extends ArrayList<Document> implements DocumentCollection {
+class DefaultListCollection extends ArrayList<Document> implements DocumentList {
 	private static final long serialVersionUID = 5182350124794069975L;
 
 	@SuppressWarnings("deprecation")
-	public DefaultDocumentCollection(org.openntf.domino.DocumentCollection _col) {
+	public DefaultListCollection(org.openntf.domino.DocumentCollection _col) {
 		org.openntf.domino.Document _doc = null;
 
 		clear();
@@ -22,7 +22,7 @@ class DefaultDocumentCollection extends ArrayList<Document> implements DocumentC
 		}
 	}
 
-	public DefaultDocumentCollection(org.openntf.domino.View _view) {
+	public DefaultListCollection(org.openntf.domino.View _view) {
 		org.openntf.domino.Document _doc = null;
 
 		clear();
@@ -35,7 +35,7 @@ class DefaultDocumentCollection extends ArrayList<Document> implements DocumentC
 	}
 
 	@SuppressWarnings("deprecation")
-	public DefaultDocumentCollection(org.openntf.domino.ViewEntryCollection _col) {
+	public DefaultListCollection(org.openntf.domino.ViewEntryCollection _col) {
 		org.openntf.domino.ViewEntry _entry = null;
 
 		clear();
@@ -48,7 +48,7 @@ class DefaultDocumentCollection extends ArrayList<Document> implements DocumentC
 	}
 
 	@Override
-	public DocumentCollection deleteAll() {
+	public DocumentList deleteAll() {
 		for (Document doc : this) {
 			doc.delete();
 		}

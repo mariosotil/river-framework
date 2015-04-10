@@ -201,7 +201,7 @@ class DefaultDocument implements org.riverframework.module.Document {
 	@Override
 	public Document delete() {
 		if (_doc != null) {
-			_doc.remove(true);
+			_doc.removePermanently(true);
 			_doc = null;
 		}
 

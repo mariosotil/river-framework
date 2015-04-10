@@ -12,12 +12,12 @@ import org.riverframework.Database;
  * @author mario.sotil@gmail.com
  *
  */
-public abstract class AbstractDocumentCollection extends ArrayList<org.riverframework.Document>
-implements org.riverframework.DocumentCollection {
+public abstract class AbstractDocumentList extends ArrayList<org.riverframework.Document>
+implements org.riverframework.DocumentList {
 	private static final long serialVersionUID = -5032050258891587783L;
 	protected Database database;
 
-	protected AbstractDocumentCollection(Database d, org.riverframework.module.DocumentCollection _col) {
+	protected AbstractDocumentList(Database d, org.riverframework.module.DocumentList _col) {
 		database = d;
 		for (org.riverframework.module.Document _doc : _col) {
 			org.riverframework.Document doc = database.getDocument(_doc);
@@ -31,7 +31,7 @@ implements org.riverframework.DocumentCollection {
 	}
 
 	@Override
-	public org.riverframework.DocumentCollection deleteAll() {
+	public org.riverframework.DocumentList deleteAll() {
 		for (org.riverframework.Document doc : this) {
 			doc.delete();
 		}

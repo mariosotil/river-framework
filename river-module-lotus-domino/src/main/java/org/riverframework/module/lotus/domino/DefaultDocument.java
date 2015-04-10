@@ -305,7 +305,7 @@ class DefaultDocument implements org.riverframework.module.Document {
 	public Document delete() {
 		if (_doc != null) {
 			try {
-				_doc.remove(true);
+				_doc.removePermanently(true);
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			}

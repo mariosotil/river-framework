@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.RiverException;
 import org.riverframework.module.Database;
 import org.riverframework.module.Document;
-import org.riverframework.module.DocumentCollection;
+import org.riverframework.module.DocumentList;
 import org.riverframework.module.View;
 
 class DefaultDatabase implements org.riverframework.module.Database {
@@ -139,7 +139,7 @@ class DefaultDatabase implements org.riverframework.module.Database {
 	}
 
 	@Override
-	public DocumentCollection getAllDocuments() {
+	public DocumentList getAllDocuments() {
 		lotus.domino.DocumentCollection _col;
 
 		try {
@@ -148,7 +148,7 @@ class DefaultDatabase implements org.riverframework.module.Database {
 			throw new RiverException(e);
 		}
 
-		DocumentCollection col = new DefaultDocumentCollection(session, _col);
+		DocumentList col = new DefaultDocumentList(session, _col);
 
 		try {
 			_col.recycle();
@@ -160,7 +160,7 @@ class DefaultDatabase implements org.riverframework.module.Database {
 	}
 
 	@Override
-	public DocumentCollection search(String query) {
+	public DocumentList search(String query) {
 		lotus.domino.DocumentCollection _col;
 
 		try {
@@ -169,7 +169,7 @@ class DefaultDatabase implements org.riverframework.module.Database {
 			throw new RiverException(e);
 		}
 
-		DocumentCollection result = new DefaultDocumentCollection(session, _col);
+		DocumentList result = new DefaultDocumentList(session, _col);
 
 		try {
 			_col.recycle();

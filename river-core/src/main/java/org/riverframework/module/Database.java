@@ -21,9 +21,9 @@ public interface Database extends Base {
 
 	public View getView(String... parameters);
 
-	public DocumentCollection getAllDocuments();
+	public DocumentList getAllDocuments();
 
-	public DocumentCollection search(String query);
+	public DocumentList search(String query);
 
 	public Database refreshSearchIndex();
 }

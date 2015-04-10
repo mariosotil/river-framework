@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.ClosedObjectException;
 import org.riverframework.Database;
+import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.Session;
 
@@ -29,7 +30,8 @@ public abstract class AbstractSession implements org.riverframework.Session {
 
 	@Override
 	public String getObjectId() {
-		if (!isOpen()) throw new ClosedObjectException("The Session object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Session object is closed.");
 
 		return _session.getObjectId();
 	}
@@ -52,7 +54,8 @@ public abstract class AbstractSession implements org.riverframework.Session {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U extends org.riverframework.Database> U getDatabase(Class<U> clazz, String... location) {
-		if (!isOpen()) throw new ClosedObjectException("The Session object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Session object is closed.");
 
 		U database = null;
 		Class<U> c = clazz;
@@ -92,14 +95,26 @@ public abstract class AbstractSession implements org.riverframework.Session {
 
 	@Override
 	public String getUserName() {
-		if (!isOpen()) throw new ClosedObjectException("The Session object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Session object is closed.");
 
 		return _session.getUserName();
 	}
 
+	/**
+	 * It's the really responsible to close the session. It's called by the close() method. It's hide from the
+	 * real world as a protected method, because it never has to be called alone. Only the River factory class can call
+	 * it.
+	 */
+	protected void protectedClose() {
+		_session.close();
+	}
+
 	@Override
 	public void close() {
-		_session.close();
+		// This is for prevent that the session be closed but not purged from the River factory class.
+		String module = _session.getClass().getPackage().getName();
+		River.closeSession(module);
 	}
 
 	@Override

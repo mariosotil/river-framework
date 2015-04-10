@@ -12,7 +12,7 @@ public final class Context extends org.riverframework.core.AbstractContext {
 
 	@Override
 	public Session getSession() {
-		Session session = River.getInstance().getSession(
+		Session session = River.getSession(
 				River.MODULE_ORG_OPENNTF_DOMINO,
 				(String) null, (String) null, Credentials.getPassword());
 		return session;
@@ -20,6 +20,6 @@ public final class Context extends org.riverframework.core.AbstractContext {
 
 	@Override
 	public void closeSession() {
-		River.getInstance().closeSession(River.MODULE_ORG_OPENNTF_DOMINO);
+		River.closeSession(River.MODULE_ORG_OPENNTF_DOMINO);
 	}
 }

@@ -5,7 +5,7 @@ import java.lang.reflect.Constructor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.ClosedObjectException;
 import org.riverframework.Database;
-import org.riverframework.DocumentCollection;
+import org.riverframework.DocumentList;
 import org.riverframework.RiverException;
 import org.riverframework.View;
 
@@ -81,23 +81,23 @@ public abstract class AbstractView implements org.riverframework.View {
 	}
 
 	@Override
-	public DocumentCollection getAllDocuments() {
+	public DocumentList getAllDocuments() {
 		if (!isOpen()) throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.module.DocumentCollection _col;
+		org.riverframework.module.DocumentList _col;
 		_col = _view.getAllDocuments();
-		DocumentCollection result = new DefaultDocumentCollection(database, _col);
+		DocumentList result = new DefaultDocumentList(database, _col);
 
 		return result;
 	}
 
 	@Override
-	public DocumentCollection getAllDocumentsByKey(Object key) {
+	public DocumentList getAllDocumentsByKey(Object key) {
 		if (!isOpen()) throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.module.DocumentCollection _col;
+		org.riverframework.module.DocumentList _col;
 		_col = _view.getAllDocumentsByKey(key);
-		DocumentCollection result = new DefaultDocumentCollection(database, _col);
+		DocumentList result = new DefaultDocumentList(database, _col);
 
 		return result;
 	}
@@ -111,12 +111,12 @@ public abstract class AbstractView implements org.riverframework.View {
 	}
 
 	@Override
-	public org.riverframework.DocumentCollection search(String query) {
+	public org.riverframework.DocumentList search(String query) {
 		if (!isOpen()) throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.module.DocumentCollection _col;
+		org.riverframework.module.DocumentList _col;
 		_col = _view.search(query);
-		DocumentCollection result = new DefaultDocumentCollection(database, _col);
+		DocumentList result = new DefaultDocumentList(database, _col);
 		return result;
 	}
 

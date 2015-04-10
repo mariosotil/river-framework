@@ -5,12 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.core.Credentials;
-import org.riverframework.module.Session;
 
 public abstract class AbstractSessionTest {
 	protected Context context = null;
@@ -32,20 +30,19 @@ public abstract class AbstractSessionTest {
 		}
 	}
 
-	@After
-	public void close() {
-		context.closeSession();
-	}
-
 	@Test
 	public void testSession() {
 		String password = Credentials.getPassword();
 		assertFalse("Password can't be an empty string", password.equals(""));
 
-		Session session = (Session) context.getSession().getModuleObject();
+		for (int i = 0; i < 10; i++) {
+			Session session = (Session) context.getSession().getModuleObject();
 
-		assertTrue("Notes Session could not be retrieved", session.isOpen());
-		assertFalse("There's a problem with the Session. I can't retrieve the current user name.",
-				session.getUserName().equals(""));
+			assertTrue("Notes Session could not be retrieved at the interation " + i, session.isOpen());
+			assertFalse("There's a problem with the Session at the iteration " + i + ". I can't retrieve the current user name.",
+					session.getUserName().equals(""));
+
+			context.closeSession();
+		}
 	}
 }

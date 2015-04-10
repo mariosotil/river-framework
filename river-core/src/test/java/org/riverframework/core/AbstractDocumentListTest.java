@@ -10,11 +10,11 @@ import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.Database;
 import org.riverframework.Document;
-import org.riverframework.DocumentCollection;
+import org.riverframework.DocumentList;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
 
-public abstract class AbstractDocumentCollectionTest {
+public abstract class AbstractDocumentListTest {
 	protected Session session = null;
 	protected Context context = null;
 	protected Database database = null;
@@ -53,7 +53,7 @@ public abstract class AbstractDocumentCollectionTest {
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentCollection col = null;
+		DocumentList col = null;
 		col = database.getAllDocuments().deleteAll();
 
 		RandomString rs = new RandomString(10);
@@ -92,7 +92,7 @@ public abstract class AbstractDocumentCollectionTest {
 				.setField("Form", TEST_FORM)
 				.save();
 
-		DocumentCollection col = database.getAllDocuments();
+		DocumentList col = database.getAllDocuments();
 		col.deleteAll();
 
 		col = null;

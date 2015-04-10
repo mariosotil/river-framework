@@ -5,7 +5,7 @@ import lotus.domino.NotesException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.RiverException;
 import org.riverframework.module.Document;
-import org.riverframework.module.DocumentCollection;
+import org.riverframework.module.DocumentList;
 import org.riverframework.module.View;
 
 class DefaultView implements org.riverframework.module.View {
@@ -61,7 +61,7 @@ class DefaultView implements org.riverframework.module.View {
 	}
 
 	@Override
-	public DocumentCollection getAllDocuments() {
+	public DocumentList getAllDocuments() {
 		lotus.domino.ViewEntryCollection _col;
 		try {
 			_col = _view.getAllEntries();
@@ -69,7 +69,7 @@ class DefaultView implements org.riverframework.module.View {
 			throw new RiverException(e);
 		}
 
-		DocumentCollection result = new DefaultDocumentCollection(session, _col);
+		DocumentList result = new DefaultDocumentList(session, _col);
 
 		try {
 			_col.recycle();
@@ -81,7 +81,7 @@ class DefaultView implements org.riverframework.module.View {
 	}
 
 	@Override
-	public DocumentCollection getAllDocumentsByKey(Object key) {
+	public DocumentList getAllDocumentsByKey(Object key) {
 		lotus.domino.DocumentCollection _col;
 		try {
 			_col = _view.getAllDocumentsByKey(key, true);
@@ -89,7 +89,7 @@ class DefaultView implements org.riverframework.module.View {
 			throw new RiverException(e);
 		}
 
-		DocumentCollection result = new DefaultDocumentCollection(session, _col);
+		DocumentList result = new DefaultDocumentList(session, _col);
 
 		try {
 			_col.recycle();
@@ -111,13 +111,13 @@ class DefaultView implements org.riverframework.module.View {
 	}
 
 	@Override
-	public DocumentCollection search(String query) {
+	public DocumentList search(String query) {
 		try {
 			_view.FTSearch(query);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
-		DocumentCollection result = new DefaultDocumentCollection(session, _view);
+		DocumentList result = new DefaultDocumentList(session, _view);
 
 		return result;
 	}

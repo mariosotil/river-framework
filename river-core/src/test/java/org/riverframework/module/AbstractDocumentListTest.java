@@ -11,10 +11,10 @@ import org.riverframework.Context;
 import org.riverframework.RandomString;
 import org.riverframework.module.Database;
 import org.riverframework.module.Document;
-import org.riverframework.module.DocumentCollection;
+import org.riverframework.module.DocumentList;
 import org.riverframework.module.Session;
 
-public abstract class AbstractDocumentCollectionTest {
+public abstract class AbstractDocumentListTest {
 	final String TEST_FORM = "TestForm";
 
 	protected Session session = null;
@@ -54,7 +54,7 @@ public abstract class AbstractDocumentCollectionTest {
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentCollection col = null;
+		DocumentList col = null;
 		col = database.getAllDocuments().deleteAll();
 
 		RandomString rs = new RandomString(10);
@@ -92,7 +92,7 @@ public abstract class AbstractDocumentCollectionTest {
 				.setField("Form", TEST_FORM)
 				.save();
 
-		DocumentCollection col = database.getAllDocuments();
+		DocumentList col = database.getAllDocuments();
 		col.deleteAll();
 
 		col = null;

@@ -3,7 +3,7 @@ package org.riverframework.module.org.openntf.domino;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.module.Database;
 import org.riverframework.module.Document;
-import org.riverframework.module.DocumentCollection;
+import org.riverframework.module.DocumentList;
 import org.riverframework.module.View;
 
 class DefaultDatabase implements org.riverframework.module.Database {
@@ -91,22 +91,22 @@ class DefaultDatabase implements org.riverframework.module.Database {
 	}
 
 	@Override
-	public DocumentCollection getAllDocuments() {
+	public DocumentList getAllDocuments() {
 		org.openntf.domino.DocumentCollection _col;
 
 		_col = _database.getAllDocuments();
 
-		DocumentCollection col = new DefaultDocumentCollection(_col);
+		DocumentList col = new DefaultListCollection(_col);
 
 		return col;
 	}
 
 	@Override
-	public DocumentCollection search(String query) {
+	public DocumentList search(String query) {
 		org.openntf.domino.DocumentCollection _col;
 
 		_col = _database.FTSearch(query);
-		DocumentCollection result = new DefaultDocumentCollection(_col);
+		DocumentList result = new DefaultListCollection(_col);
 
 		return result;
 	}

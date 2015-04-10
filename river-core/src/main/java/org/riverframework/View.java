@@ -33,17 +33,17 @@ public interface View extends Base {
 	public <U extends Document> U getDocumentByKey(Class<U> clazz, String key);
 
 	/**
-	 * Returns a core DocumentCollection object with all the documents from the database.
+	 * Returns a core DocumentList object with all the documents from the database.
 	 * 
-	 * @return a core DocumentCollection object
+	 * @return a core DocumentList object
 	 */
-	public DocumentCollection getAllDocuments();
+	public DocumentList getAllDocuments();
 
 	/**
-	 * Searches by the key and returns a DocumentCollection object with all the documents that match. 
-	 * @return a core DocumentCollection object
+	 * Searches by the key and returns a DocumentList object with all the documents that match. 
+	 * @return a core DocumentList object
 	 */
-	public DocumentCollection getAllDocumentsByKey(Object key);
+	public DocumentList getAllDocumentsByKey(Object key);
 
 	/**
 	 * Refresh the view index. This method could be expensive depending on the module used. It must be used with care.
@@ -53,11 +53,11 @@ public interface View extends Base {
 	public View refresh();
 
 	/**
-	 * Searches by the query and returns a DocumentCollection object with the documents that match. So far, The style of the query will depend on how
+	 * Searches by the query and returns a DocumentList object with the documents that match. So far, The style of the query will depend on how
 	 * is implemented in the module loaded. For example, in IBM Notes is just something like "Black AND Dog"
 	 * 
 	 * @param query
-	 * @return a DocumentCollection document
+	 * @return a DocumentList document
 	 */
-	public DocumentCollection search(String query);
+	public DocumentList search(String query);
 }

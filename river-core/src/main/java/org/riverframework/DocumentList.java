@@ -9,7 +9,7 @@ import java.util.List;
  * @author mario.sotil@gmail.com
  *
  */
-public interface DocumentCollection extends List<org.riverframework.Document> {
+public interface DocumentList extends List<org.riverframework.Document> {
 	/**
 	 * Returns the database where the documents that are in the collection belong  
 	 * @return a Database object
@@ -20,7 +20,7 @@ public interface DocumentCollection extends List<org.riverframework.Document> {
 	 * Loops around all the documents and call the delete method from each one. It would make a hard
 	 * deletion. Anyway, its behavior will depend on how the module loaded is implemented.
 	 * 
-	 * @return the same DocumentCollection, for method chaining
+	 * @return the same DocumentList, for method chaining
 	 */
-	public DocumentCollection deleteAll();
+	public DocumentList deleteAll();
 }

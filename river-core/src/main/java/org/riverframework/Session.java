@@ -38,14 +38,14 @@ public interface Session extends Base {
 	public <U extends Database> U getDatabase(Class<U> type, String... parameters);
 
 	/**
-	 * Returns true if the module was loaded and the session opened. 
+	 * Returns true if the module was loaded and the session opened.
 	 * 
 	 * @return true if it's opened
 	 */
 	public boolean isOpen();
 
 	/**
-	 * Returns the current user name logged with this session. 
+	 * Returns the current user name logged with this session.
 	 * 
 	 * @return the current user name
 	 */

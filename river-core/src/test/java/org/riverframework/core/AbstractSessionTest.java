@@ -37,13 +37,15 @@ public abstract class AbstractSessionTest {
 		String password = Credentials.getPassword();
 		assertFalse("Password can be an empty string", password.equals(""));
 
-		Session session = context.getSession();
+		for (int i = 0; i < 10; i++) {
+			Session session = context.getSession();
 
-		assertTrue("Notes Session could not be retrieved", session.isOpen());
-		assertFalse("There's a problem with the Session. I can't retrieve the current user name.",
-				session.getUserName().equals(""));
+			assertTrue("Notes Session could not be retrieved at the iteration " + i, session.isOpen());
+			assertFalse("There's a problem with the Session at the iteration " + i + ". I can't retrieve the current user name.",
+					session.getUserName().equals(""));
 
-		context.closeSession();
+			context.closeSession();
+		}
 	}
 
 	@Test

@@ -1,11 +1,11 @@
-package org.riverframework.module.lotus.domino._local;
+package org.riverframework.core.lotus.domino._inject_session;
 
 import lotus.domino.NotesThread;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-public class DocumentCollectionTest extends org.riverframework.module.AbstractDocumentCollectionTest {
+public class DocumentListTest extends org.riverframework.core.AbstractDocumentListTest {
 	@BeforeClass
 	public static void before() {
 		NotesThread.sinitThread();

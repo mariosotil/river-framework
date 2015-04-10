@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.Database;
 import org.riverframework.Document;
-import org.riverframework.DocumentCollection;
+import org.riverframework.DocumentList;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
 import org.riverframework.View;
@@ -158,7 +158,7 @@ public abstract class AbstractViewTest {
 
 		View view = database.getView(DefaultView.class, TEST_VIEW);
 		view.refresh();
-		DocumentCollection col = view.getAllDocuments();
+		DocumentList col = view.getAllDocuments();
 
 		assertTrue("There is a problem getting documents from the database.", col.size() == 10);
 	}
@@ -178,7 +178,7 @@ public abstract class AbstractViewTest {
 
 		database.refreshSearchIndex();
 
-		DocumentCollection col = database
+		DocumentList col = database
 				.getView(DefaultView.class, TEST_VIEW)
 				.search("I_AM_THE_4");
 

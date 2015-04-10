@@ -7,12 +7,12 @@ import lotus.domino.NotesException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.RiverException;
 import org.riverframework.module.Document;
-import org.riverframework.module.DocumentCollection;
+import org.riverframework.module.DocumentList;
 
-class DefaultDocumentCollection extends ArrayList<Document> implements DocumentCollection {
+class DefaultDocumentList extends ArrayList<Document> implements DocumentList {
 	private static final long serialVersionUID = -8572804835705647207L;
 
-	public DefaultDocumentCollection(org.riverframework.module.Session s, lotus.domino.DocumentCollection _col) {
+	public DefaultDocumentList(org.riverframework.module.Session s, lotus.domino.DocumentCollection _col) {
 		lotus.domino.Document _doc = null;
 
 		clear();
@@ -28,7 +28,7 @@ class DefaultDocumentCollection extends ArrayList<Document> implements DocumentC
 		}
 	}
 
-	public DefaultDocumentCollection(org.riverframework.module.Session s, lotus.domino.View _view) {
+	public DefaultDocumentList(org.riverframework.module.Session s, lotus.domino.View _view) {
 		lotus.domino.Document _doc = null;
 
 		clear();
@@ -44,7 +44,7 @@ class DefaultDocumentCollection extends ArrayList<Document> implements DocumentC
 		}
 	}
 
-	public DefaultDocumentCollection(org.riverframework.module.Session s, lotus.domino.ViewEntryCollection _col) {
+	public DefaultDocumentList(org.riverframework.module.Session s, lotus.domino.ViewEntryCollection _col) {
 		lotus.domino.ViewEntry _entry = null;
 
 		clear();
@@ -61,7 +61,7 @@ class DefaultDocumentCollection extends ArrayList<Document> implements DocumentC
 	}
 
 	@Override
-	public DocumentCollection deleteAll() {
+	public DocumentList deleteAll() {
 		for (Document doc : this) {
 			doc.delete();
 		}

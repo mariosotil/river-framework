@@ -8,11 +8,11 @@ import org.riverframework.Database;
  * @author mario.sotil@gmail.com
  *
  */
-public final class DefaultDocumentCollection extends AbstractDocumentCollection 
-implements org.riverframework.DocumentCollection {
+public final class DefaultDocumentList extends AbstractDocumentList 
+implements org.riverframework.DocumentList {
 	private static final long serialVersionUID = -3371532017518314494L;
 
-	protected DefaultDocumentCollection(Database d, org.riverframework.module.DocumentCollection _col) {
+	protected DefaultDocumentList(Database d, org.riverframework.module.DocumentList _col) {
 		super (d, _col);
 	}
 }

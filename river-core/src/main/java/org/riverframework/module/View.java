@@ -5,11 +5,11 @@ public interface View extends Base {
 
 	public boolean isOpen();
 
-	public DocumentCollection getAllDocuments();
+	public DocumentList getAllDocuments();
 
-	public DocumentCollection getAllDocumentsByKey(Object key);
+	public DocumentList getAllDocumentsByKey(Object key);
 
 	public View refresh();
 
-	public DocumentCollection search(String query);
+	public DocumentList search(String query);
 }

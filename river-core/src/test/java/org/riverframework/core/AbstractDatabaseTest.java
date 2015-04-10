@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.Database;
 import org.riverframework.Document;
-import org.riverframework.DocumentCollection;
+import org.riverframework.DocumentList;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
 import org.riverframework.Unique;
@@ -149,7 +149,7 @@ public abstract class AbstractDatabaseTest {
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentCollection col = null;
+		DocumentList col = null;
 		col = database.getAllDocuments().deleteAll();
 
 		RandomString rs = new RandomString(10);
@@ -199,20 +199,20 @@ public abstract class AbstractDatabaseTest {
 				.setField("Time", 27)
 				.save();
 
-		DocumentCollection col = vacationDatabase.getAllDocuments();
+		DocumentList col = vacationDatabase.getAllDocuments();
 
 		for (Document doc : col) {
-			assertTrue("It could not possible load the vacation request object from the DocumentCollection.", doc.isOpen());
+			assertTrue("It could not possible load the vacation request object from the DocumentList.", doc.isOpen());
 		}
 
 		for (int i = 0; i < col.size(); i++) {
 			Document v = col.get(i);
-			assertTrue("It could not possible load the vacation request object from the DocumentCollection.", v.isOpen());
+			assertTrue("It could not possible load the vacation request object from the DocumentList.", v.isOpen());
 		}
 
 		for (Document doc : col) {
-			assertTrue("It could not possible load the vacation request object from the DocumentCollection.", doc.isOpen());
-			assertTrue("The vacation request object from the DocumentCollection is an instance from " + doc.getClass().getName()
+			assertTrue("It could not possible load the vacation request object from the DocumentList.", doc.isOpen());
+			assertTrue("The vacation request object from the DocumentList is an instance from " + doc.getClass().getName()
 					+ ", and not from VacationRequest.",
 					doc.getClass().getSimpleName().contains("VacationRequest"));
 		}

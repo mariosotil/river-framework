@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.ClosedObjectException;
 import org.riverframework.Counter;
 import org.riverframework.Database;
-import org.riverframework.DocumentCollection;
+import org.riverframework.DocumentList;
 import org.riverframework.RiverException;
 import org.riverframework.Session;
 import org.riverframework.Unique;
@@ -262,23 +262,23 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 	}
 
 	@Override
-	public org.riverframework.DocumentCollection getAllDocuments() {
+	public org.riverframework.DocumentList getAllDocuments() {
 		if (!isOpen()) throw new ClosedObjectException("The Database object is closed.");
 
-		org.riverframework.module.DocumentCollection _col;
+		org.riverframework.module.DocumentList _col;
 		_col = _database.getAllDocuments();
-		DocumentCollection result = new DefaultDocumentCollection(this, _col);
+		DocumentList result = new DefaultDocumentList(this, _col);
 
 		return result;
 	}
 
 	@Override
-	public org.riverframework.DocumentCollection search(String query) {
+	public org.riverframework.DocumentList search(String query) {
 		if (!isOpen()) throw new ClosedObjectException("The Database object is closed.");
 
-		org.riverframework.module.DocumentCollection _col;
+		org.riverframework.module.DocumentList _col;
 		_col = _database.search(query);
-		DocumentCollection result = new DefaultDocumentCollection(this, _col);
+		DocumentList result = new DefaultDocumentList(this, _col);
 
 		return result;
 	}

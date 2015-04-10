@@ -36,7 +36,7 @@ if (p.isOpen()) {
 session.close();
 ```
 
-### Maven
+## Maven
 
 To load the modules from Maven, you can add these dependencies to your pom.xml file:
 
@@ -60,9 +60,9 @@ To load the modules from Maven, you can add these dependencies to your pom.xml f
 		</dependency>
 ```
 
-Both loads the last version of the core.
+Both modules load the last version of the core.
 
-### Features
+## Features
 
 So far, this framework has the following features: 
 

@@ -8,7 +8,7 @@ This is a Workflow Application Framework in an **EARLY development stage**. So f
 
 ```java
 //Opening a session using the current ID file
-Session session = River.getInstance().getSession(River.MODULE_LOTUS_DOMINO);
+Session session = River.getSession(River.MODULE_LOTUS_DOMINO);
 Database database = session.getDatabase(DefaultDatabase.class, "", "example.nsf");
     
 // Creating one person
@@ -19,22 +19,50 @@ Person jd = (Person) database.createDocument(Person.class)
   .save();
     
 // Saving its Id generated in the last line
-String johnDoeId = jd.getId();
+String id = jd.getId();
     
 // Searching people with surname "Doe"				
 DocumentCollection col = database.search("Doe");
 System.out.println("Found " + col.size() + " persons.");
 		
 // Finding a John Doe by Id
-Document p = database.getDocument(Person.class, johnDoeId);
+Document p = database.getDocument(Person.class, id);
 if (p.isOpen()) {
-  System.out.println("Found " + johnDoeId);
+  System.out.println("Found " + id);
   System.out.println("His name is " + p.getFieldAsString("Name"));
   System.out.println("His age is " + p.getFieldAsInteger("Age"));
 } 
 
 session.close();
 ```
+
+### Maven
+
+To load the modules from Maven, you can add these dependencies to your pom.xml file:
+
+- To use it with the original lotus.domino package from IBM Notes
+
+```xml
+		<dependency>
+			<groupId>org.riverframework</groupId>
+			<artifactId>river-module-lotus-domino</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+```
+
+- To use it with the the org.openntf.domino package from OpenNTF
+
+```xml
+		<dependency>
+			<groupId>org.riverframework</groupId>
+			<artifactId>river-module-org-openntf-domino</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+```
+
+Both loads the last version of the core.
+
+### Features
 
 So far, this framework has the following features: 
 
@@ -62,11 +90,13 @@ So far, this framework has the following features:
   - Improvements in the `org.riverframework.module.lotus.domino` memory management. All the objects are recycled when the session is closed.
   - Update the Java example
 
-## What I'm working on now?
-
 - Version 0.2.6
   - As the logical separation was done, physically separate the current Framework in three JAR files: the Core, the lotus.domino module and the org.openntf.domino module.
   - Publish the JARs in a public Maven repository
+
+## What I'm working on now?
+
+- Version 0.2.6
   - Creating a module and JUnit tests for a NoSQL in-memory database
   - Create new Java examples
 

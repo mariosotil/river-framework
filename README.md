@@ -7,8 +7,8 @@ Hi,
 This is a Workflow Application Framework in an **EARLY development stage**. So far, the code written with this framework looks like this:
 
 ```java
-//Opening a session using the current ID file
-Session session = River.getSession(River.MODULE_LOTUS_DOMINO);
+//Opening a session
+Session session = River.getSession(River.MODULE_LOTUS_DOMINO, "password");
 Database database = session.getDatabase(DefaultDatabase.class, "", "example.nsf");
     
 // Creating one person
@@ -22,7 +22,7 @@ Person jd = (Person) database.createDocument(Person.class)
 String id = jd.getId();
     
 // Searching people with surname "Doe"				
-DocumentCollection col = database.search("Doe");
+DocumentList col = database.search("Doe");
 System.out.println("Found " + col.size() + " persons.");
 		
 // Finding a John Doe by Id
@@ -121,7 +121,7 @@ There are a lot of features that I will add to this framework:
   - Administration tools (ie. change the state of a document)
   - Connections to other NoSQL servers like CouchDB, etc.
   - Thread support
-  - The main goal of the project: the support of workflow development with the features that are needed for the task:
+  - The support of workflow development with the features that are needed for the task:
     - Control of the states of the document
     - Control of the responsibles on each state
     - Control of the permissions to read on each state

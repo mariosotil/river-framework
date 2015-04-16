@@ -6,11 +6,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.module.Document;
 import org.riverframework.module.DocumentList;
 
-class DefaultListCollection extends ArrayList<Document> implements DocumentList {
+class DefaultDocumentList extends ArrayList<Document> implements DocumentList {
 	private static final long serialVersionUID = 5182350124794069975L;
 
 	@SuppressWarnings("deprecation")
-	public DefaultListCollection(org.openntf.domino.DocumentCollection _col) {
+	public DefaultDocumentList(org.openntf.domino.DocumentCollection _col) {
 		org.openntf.domino.Document _doc = null;
 
 		clear();
@@ -22,7 +22,7 @@ class DefaultListCollection extends ArrayList<Document> implements DocumentList 
 		}
 	}
 
-	public DefaultListCollection(org.openntf.domino.View _view) {
+	public DefaultDocumentList(org.openntf.domino.View _view) {
 		org.openntf.domino.Document _doc = null;
 
 		clear();
@@ -35,7 +35,7 @@ class DefaultListCollection extends ArrayList<Document> implements DocumentList 
 	}
 
 	@SuppressWarnings("deprecation")
-	public DefaultListCollection(org.openntf.domino.ViewEntryCollection _col) {
+	public DefaultDocumentList(org.openntf.domino.ViewEntryCollection _col) {
 		org.openntf.domino.ViewEntry _entry = null;
 
 		clear();

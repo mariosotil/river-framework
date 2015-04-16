@@ -14,9 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.RandomString;
-import org.riverframework.module.Database;
-import org.riverframework.module.Document;
-import org.riverframework.module.Session;
 
 public abstract class AbstractDocumentTest {
 	protected Session session = null;
@@ -75,8 +72,8 @@ public abstract class AbstractDocumentTest {
 		String strValue = doc.getFieldAsString(testField);
 		int intValue = doc.getFieldAsInteger(testField);
 
-		assertFalse("The integer value can not be retrieved as string. ", "20".equals(strValue));
-		assertTrue("The integer value can be retrieved as integer. ", 20 == intValue);
+		assertTrue("The integer value can not be retrieved as string. ", "20".equals(strValue) || "20.0".equals(strValue));
+		assertTrue("The integer value can not be retrieved as integer. ", 20 == intValue);
 	}
 
 	@Test
@@ -93,6 +90,24 @@ public abstract class AbstractDocumentTest {
 		int testValue = 1000;
 		doc.setField(testField, testValue);
 		int newValue = doc.getFieldAsInteger(testField);
+
+		assertTrue("The value retrieved was different to the saved", newValue == testValue);
+	}
+
+	@Test
+	public void testSetAndGetFieldAsLong() {
+		assertTrue("The test database could not be opened.", database.isOpen());
+
+		Document doc = database.createDocument();
+
+		assertTrue("The document could not be created", doc.isOpen());
+
+		doc.setField("Form", TEST_FORM);
+
+		String testField = "TestSetField";
+		long testValue = 1000100010L;
+		doc.setField(testField, testValue);
+		long newValue = doc.getFieldAsLong(testField);
 
 		assertTrue("The value retrieved was different to the saved", newValue == testValue);
 	}
@@ -126,15 +141,17 @@ public abstract class AbstractDocumentTest {
 
 		doc.setField("Form", TEST_FORM);
 
+		Calendar calendar = Calendar.getInstance();
+
 		String testField = "TestSetField";
-		Date testValue = new Date();
+		calendar.setTime(new Date());
+		calendar.set(Calendar.MILLISECOND, 0); // Databases as Lotus Notes does not support the milliseconds
+		Date testValue = calendar.getTime();
+
 		doc.setField(testField, testValue);
 		Date newValue = doc.getFieldAsDate(testField);
 
-		// Lotus Notes does not save the milliseconds
-		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(testValue);
-		calendar.set(Calendar.MILLISECOND, 0);
 		testValue = calendar.getTime();
 
 		assertTrue("The value retrieved was different to the saved", newValue.compareTo(testValue) == 0);
@@ -288,33 +305,32 @@ public abstract class AbstractDocumentTest {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		Calendar cal1 = Calendar.getInstance();
-		cal1.set(2015,03,15);
-		
+		cal1.set(2015, 03, 15);
+
 		Date date1 = cal1.getTime();
-		
+
 		Document doc = database.createDocument()
 				.setField("Form", TEST_FORM)
 				.setField("String", "HI!")
 				.setField("Date", date1)
 				.setField("Number", 75.3)
-				.setField("StringArray", new String[]{"A", "B", "C"})
+				.setField("StringArray", new String[] { "A", "B", "C" })
 				.setField("Empty", "")
 				.save();
 
 		Map<String, Vector<Object>> fields = doc.getFields();
-		
+
 		assertTrue("The String value retrieved was different to the saved", fields.get("String").get(0).equals("HI!"));
-		
-		Date date2 = (Date) fields.get("Date").get(0);		
+
+		Date date2 = (Date) fields.get("Date").get(0);
 		long l1 = Long.valueOf(date1.getTime() / 1000).intValue();
 		long l2 = Long.valueOf(date2.getTime() / 1000).intValue();
-		assertTrue("The Date value [" + date2.toString() + "] retrieved was different to the saved [" + date1.toString() + "]", 
-				l1 == l2); 
+		assertTrue("The Date value [" + date2.toString() + "] retrieved was different to the saved [" + date1.toString() + "]",
+				l1 == l2);
 
 		assertTrue("The Number value retrieved was different to the saved", ((Double) fields.get("Number").get(0)).compareTo(75.3) == 0);
 		assertTrue("The String array retrieved was different to the saved", fields.get("StringArray").get(2).equals("C"));
 		assertTrue("The Empty String value retrieved was different to the saved", fields.get("Empty").get(0).equals(""));
-		
+
 	}
 }
-

@@ -223,6 +223,7 @@ public abstract class AbstractDatabaseTest {
 			super(d, _d);
 		}
 
+		@Override
 		public String getIndexName() {
 			return "vi_ap_people_index";
 		}

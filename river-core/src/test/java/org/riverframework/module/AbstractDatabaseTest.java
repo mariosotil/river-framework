@@ -10,11 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.RandomString;
-import org.riverframework.module.Database;
-import org.riverframework.module.Document;
-import org.riverframework.module.DocumentList;
-import org.riverframework.module.Session;
-import org.riverframework.module.View;
 
 public abstract class AbstractDatabaseTest {
 	final String TEST_FORM = "TestForm";

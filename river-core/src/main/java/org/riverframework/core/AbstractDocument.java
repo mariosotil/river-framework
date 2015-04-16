@@ -11,13 +11,14 @@ import org.riverframework.Database;
 import org.riverframework.Document;
 
 /**
- * It is the implementation of the Document interface. It lets you manage its fields. 
+ * It is the implementation of the Document interface. It lets you manage its fields.
  * 
  * @author mario.sotil@gmail.com
  *
- * @param <T> The class that inherits from AbstractDocument. It's used to make possible the method chaining. 
+ * @param <T>
+ *            The class that inherits from AbstractDocument. It's used to make possible the method chaining.
  */
-public abstract class AbstractDocument <T extends AbstractDocument<T>> implements org.riverframework.Document {
+public abstract class AbstractDocument<T extends AbstractDocument<T>> implements org.riverframework.Document {
 	protected Database database = null;
 	protected org.riverframework.module.Document _doc = null;
 	protected boolean isModified = false;
@@ -30,22 +31,26 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	/**
 	 * Returns this object. It's used for make possible the method chaining.
+	 * 
 	 * @return this object.
 	 */
 	protected abstract T getThis();
-	
+
 	/**
 	 * Changes the "modified" flag. This method has to be used only if necessary.
-	 * @param m the new state
+	 * 
+	 * @param m
+	 *            the new state
 	 * @return this object
 	 */
 	protected T setModified(boolean m) {
 		isModified = m;
 		return getThis();
 	}
-	
+
 	/**
-	 * Allows to define the tasks that has to be made just after a Document is created into a Database. 
+	 * Allows to define the tasks that has to be made just after a Document is created into a Database.
+	 * 
 	 * @return this object
 	 */
 	protected T afterCreate() {
@@ -54,10 +59,12 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	/**
 	 * Allows to define tasks to refresh Document's fields
+	 * 
 	 * @return this object
 	 */
 	protected T internalRecalc() {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		_doc.recalc();
 		return getThis();
@@ -65,7 +72,8 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	@Override
 	public String getObjectId() {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		String result = _doc.getObjectId();
 		return result;
@@ -83,8 +91,11 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	/**
 	 * Compares two vectors and determines if they are numeric equals, independent of its type.
-	 * @param vector1 the first vector
-	 * @param vector2 the second vector
+	 * 
+	 * @param vector1
+	 *            the first vector
+	 * @param vector2
+	 *            the second vector
 	 * @return true if the vectors are numeric equals
 	 */
 	protected static boolean numericEquals(Vector<Object> vector1, Vector<Object> vector2) {
@@ -111,14 +122,20 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 	}
 
 	/**
-	 * Verifies if the new value is different from the field's old value. It's useful, for example, in NoSQL databases that
-	 * replicates data between servers. This verification prevents to mark a field as modified and to be replicated needlessly. 
-	 * @param field the field that we are checking before to be modified
-	 * @param value the new value
-	 * @return true if the new and the old values are different and the value was changed. 
+	 * Verifies if the new value is different from the field's old value. It's useful, for example, in NoSQL databases
+	 * that
+	 * replicates data between servers. This verification prevents to mark a field as modified and to be replicated
+	 * needlessly.
+	 * 
+	 * @param field
+	 *            the field that we are checking before to be modified
+	 * @param value
+	 *            the new value
+	 * @return true if the new and the old values are different and the value was changed.
 	 */
 	protected boolean setFieldIfNecessary(String field, Object value) {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		if (!compareFieldValue(field, value)) {
 			_doc.setField(field, value);
@@ -172,7 +189,8 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	@Override
 	public Vector<Object> getField(String field) {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		Vector<Object> value = _doc.getField(field);
 		return value;
@@ -180,7 +198,8 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	@Override
 	public String getFieldAsString(String field) {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		String result = _doc.getFieldAsString(field);
 		return result;
@@ -188,15 +207,26 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	@Override
 	public int getFieldAsInteger(String field) {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		int result = _doc.getFieldAsInteger(field);
 		return result;
 	}
 
 	@Override
+	public long getFieldAsLong(String field) {
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
+
+		long result = _doc.getFieldAsLong(field);
+		return result;
+	}
+
+	@Override
 	public double getFieldAsDouble(String field) {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		double result = _doc.getFieldAsDouble(field);
 		return result;
@@ -204,7 +234,8 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	@Override
 	public Date getFieldAsDate(String field) {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		Date result = _doc.getFieldAsDate(field);
 		return result;
@@ -212,7 +243,8 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	@Override
 	public boolean isFieldEmpty(String field) {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		return _doc.isFieldEmpty(field);
 	}
@@ -229,7 +261,8 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	@Override
 	public boolean isNew() {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		boolean result = _doc.isNew();
 		return result;
@@ -256,7 +289,8 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	@Override
 	public T delete() {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		_doc.delete();
 		return getThis();
@@ -264,7 +298,8 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	@Override
 	public T save(boolean force) {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		if (force || isModified) {
 			_doc.save();
@@ -282,7 +317,8 @@ public abstract class AbstractDocument <T extends AbstractDocument<T>> implement
 
 	@Override
 	public boolean hasField(String field) {
-		if (!isOpen()) throw new ClosedObjectException("The Document object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
 
 		boolean result = _doc.hasField(field);
 		return result;

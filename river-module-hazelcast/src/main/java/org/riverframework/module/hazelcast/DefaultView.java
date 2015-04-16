@@ -1,7 +1,7 @@
 package org.riverframework.module.hazelcast;
 
 import org.riverframework.module.Document;
-import org.riverframework.module.DocumentCollection;
+import org.riverframework.module.DocumentList;
 import org.riverframework.module.View;
 
 class DefaultView implements org.riverframework.module.View {
@@ -24,26 +24,35 @@ class DefaultView implements org.riverframework.module.View {
 	}
 
 	@Override
-	public DocumentCollection getAllDocuments() {
-		return null;
-	}
-
-	@Override
-	public DocumentCollection getAllDocumentsByKey(Object key) {
-		return null;
-	}
-
-	@Override
 	public View refresh() {
 		return this;
 	}
 
 	@Override
-	public DocumentCollection search(String query) {
+	public void close() {
+	}
+
+	@Override
+	public String getObjectId() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void close() {
+	public DocumentList getAllDocuments() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DocumentList getAllDocumentsByKey(Object key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DocumentList search(String query) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

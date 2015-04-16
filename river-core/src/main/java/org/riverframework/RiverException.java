@@ -15,6 +15,10 @@ public class RiverException extends RuntimeException {
 		super(e);
 	}
 
+	public RiverException(Throwable t) {
+		super(t);
+	}
+
 	public RiverException(String message, Exception e) {
 		super(message, e);
 	}

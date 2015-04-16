@@ -35,10 +35,10 @@ public abstract class AbstractSessionTest {
 		String password = Credentials.getPassword();
 		assertFalse("Password can't be an empty string", password.equals(""));
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 5; i++) {
 			Session session = (Session) context.getSession().getModuleObject();
 
-			assertTrue("Notes Session could not be retrieved at the interation " + i, session.isOpen());
+			assertTrue("The Session could not be retrieved at the interation " + i, session.isOpen());
 			assertFalse("There's a problem with the Session at the iteration " + i + ". I can't retrieve the current user name.",
 					session.getUserName().equals(""));
 

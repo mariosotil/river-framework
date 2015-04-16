@@ -37,7 +37,7 @@ class DefaultView implements org.riverframework.module.View {
 	@Override
 	public DocumentList getAllDocuments() {
 		org.openntf.domino.ViewEntryCollection _col = _view.getAllEntries();
-		DocumentList result = new DefaultListCollection(_col);
+		DocumentList result = new DefaultDocumentList(_col);
 
 		return result;
 	}
@@ -45,7 +45,7 @@ class DefaultView implements org.riverframework.module.View {
 	@Override
 	public DocumentList getAllDocumentsByKey(Object key) {
 		org.openntf.domino.DocumentCollection _col = _view.getAllDocumentsByKey(key, true);
-		DocumentList result = new DefaultListCollection(_col);
+		DocumentList result = new DefaultDocumentList(_col);
 
 		return result;
 	}
@@ -59,7 +59,7 @@ class DefaultView implements org.riverframework.module.View {
 	@Override
 	public DocumentList search(String query) {
 		_view.FTSearch(query);
-		DocumentList result = new DefaultListCollection(_view);
+		DocumentList result = new DefaultDocumentList(_view);
 
 		return result;
 	}

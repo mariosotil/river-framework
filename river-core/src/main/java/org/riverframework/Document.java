@@ -27,7 +27,7 @@ public interface Document extends Base {
 	public boolean compareFieldValue(String field, Object value);
 
 	/**
-	 * Set a field with the indicated value. If the field does not exist, it will create it. 
+	 * Set a field with the indicated value. If the field does not exist, it will create it.
 	 * 
 	 * @param field
 	 *            the field to be set
@@ -38,7 +38,9 @@ public interface Document extends Base {
 	public Document setField(String field, Object value);
 
 	/**
-	 * Returns the values of a field as a Vector object. If the field does not exist or is empty, it will returns an empty Vector.
+	 * Returns the values of a field as a Vector object. If the field does not exist or is empty, it will returns an
+	 * empty Vector.
+	 * 
 	 * @param field
 	 *            the field to be get
 	 * @return the values as a vector
@@ -46,7 +48,9 @@ public interface Document extends Base {
 	public Vector<Object> getField(String field);
 
 	/**
-	 * Returns the value of a field as a String object. If the field is an array, it will returns the first value. If the field does not exist or is empty, it will returns an empty string.
+	 * Returns the value of a field as a String object. If the field is an array, it will returns the first value. If
+	 * the field does not exist or is empty, it will returns an empty string.
+	 * 
 	 * @param field
 	 *            the field to be get
 	 * @return the value as a String
@@ -54,7 +58,9 @@ public interface Document extends Base {
 	public String getFieldAsString(String field);
 
 	/**
-	 * Returns the value of a field as a integer. If the field is an array, it will returns the first value. If the field does not exist or is empty, it will returns 0. 
+	 * Returns the value of a field as an integer. If the field is an array, it will returns the first value. If the
+	 * field does not exist or is empty, it will returns 0.
+	 * 
 	 * @param field
 	 *            the field to be get
 	 * @return the value as an integer.
@@ -62,23 +68,38 @@ public interface Document extends Base {
 	public int getFieldAsInteger(String field);
 
 	/**
-	 * Returns the value of a field as a double. If the field is an array, it will returns the first value. If the field does not exist or is empty, it will returns 0.
+	 * Returns the value of a field as a long. If the field is an array, it will returns the first value. If the field
+	 * does not exist or is empty, it will returns 0.
+	 * 
 	 * @param field
 	 *            the field to be get
-	 * @return the value as a double. 
+	 * @return the value as a long.
+	 */
+	public long getFieldAsLong(String field);
+
+	/**
+	 * Returns the value of a field as a double. If the field is an array, it will returns the first value. If the field
+	 * does not exist or is empty, it will returns 0.
+	 * 
+	 * @param field
+	 *            the field to be get
+	 * @return the value as a double.
 	 */
 	public double getFieldAsDouble(String field);
 
 	/**
-	 * Returns the value of a field as a date. If the field is an array, it will returns the first value. If the field does not exist or is empty, it will returns null.
+	 * Returns the value of a field as a date. If the field is an array, it will returns the first value. If the field
+	 * does not exist or is empty, it will returns null.
+	 * 
 	 * @param field
 	 *            the field to be get
-	 * @return the value as a java.util.Date. 
+	 * @return the value as a java.util.Date.
 	 */
 	public java.util.Date getFieldAsDate(String field);
 
 	/**
-	 * Returns true if the field does not exists or is an empty string, zero or null. 
+	 * Returns true if the field does not exists or is an empty string, zero or null.
+	 * 
 	 * @param field
 	 *            the field to be evaluated
 	 * @return true if the field is empty
@@ -87,6 +108,7 @@ public interface Document extends Base {
 
 	/**
 	 * Returns true is any field of this document was changed since the last save.
+	 * 
 	 * @return true if the Document was modified
 	 */
 	public boolean isModified();
@@ -99,8 +121,9 @@ public interface Document extends Base {
 	public boolean isOpen();
 
 	/**
-	 * Returns true if the Document was recently created and still has not been saved. 
-	 * @return true if is a new document. 
+	 * Returns true if the Document was recently created and still has not been saved.
+	 * 
+	 * @return true if is a new document.
 	 */
 	public boolean isNew();
 
@@ -112,8 +135,10 @@ public interface Document extends Base {
 	public Document delete();
 
 	/**
-	 * Saves the Document asking if it has to force it or do it only if the document was modified 
-	 * @param force how to save
+	 * Saves the Document asking if it has to force it or do it only if the document was modified
+	 * 
+	 * @param force
+	 *            how to save
 	 * @return the same Document, for method chaining
 	 */
 	public Document save(boolean force);
@@ -142,6 +167,7 @@ public interface Document extends Base {
 
 	/**
 	 * Returns all the fields and its a values as a HashMap object.
+	 * 
 	 * @return the fields and their values.
 	 */
 	public Map<String, Vector<Object>> getFields();

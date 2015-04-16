@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import lotus.domino.DateTime;
 import lotus.domino.Item;
 import lotus.domino.NotesException;
 
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 //import org.apache.log4j.Logger;
 import org.riverframework.RiverException;
 import org.riverframework.module.Document;
+import org.riverframework.utils.Converter;
 
 /**
  * Loads an IBM Notes document
@@ -128,20 +130,35 @@ class DefaultDocument implements org.riverframework.module.Document {
 
 	@Override
 	public String getFieldAsString(String field) {
-		String result;
+		String result = null;
 		try {
-			result = _doc.getItemValueString(field);
+			Vector<?> value = _doc.getItemValue(field);
+			result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
-		return result == null ? "" : result;
+
+		return result;
 	}
 
 	@Override
 	public int getFieldAsInteger(String field) {
 		int result = 0;
 		try {
-			result = _doc.getItemValueInteger(field);
+			Vector<?> value = _doc.getItemValue(field);
+			result = value.size() > 0 ? Converter.getAsInteger(value.get(0)) : 0;
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+		return result;
+	}
+
+	@Override
+	public long getFieldAsLong(String field) {
+		long result = 0;
+		try {
+			Vector<?> value = _doc.getItemValue(field);
+			result = value.size() > 0 ? Converter.getAsLong(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -152,7 +169,8 @@ class DefaultDocument implements org.riverframework.module.Document {
 	public double getFieldAsDouble(String field) {
 		double result;
 		try {
-			result = _doc.getItemValueDouble(field);
+			Vector<?> value = _doc.getItemValue(field);
+			result = value.size() > 0 ? Converter.getAsDouble(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -163,10 +181,13 @@ class DefaultDocument implements org.riverframework.module.Document {
 	public Date getFieldAsDate(String field) {
 		Date result;
 		try {
-			result = ((lotus.domino.DateTime) _doc
-					.getItemValueDateTimeArray(field)
-					.elementAt(0))
-					.toJavaDate();
+			Vector<?> value = _doc.getItemValue(field);
+			Object temp = value.size() > 0 ? value.get(0) : null;  
+			if (temp != null && temp.getClass().getName().endsWith("DateTime")) {
+				temp = ((DateTime) temp).toJavaDate();
+			}
+			
+			result = Converter.getAsDate(temp);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}

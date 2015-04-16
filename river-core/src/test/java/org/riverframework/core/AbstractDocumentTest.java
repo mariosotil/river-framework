@@ -173,6 +173,25 @@ public abstract class AbstractDocumentTest {
 	}
 
 	@Test
+	public void testSetAndGetFieldAsLong() {
+		assertTrue("The test database could not be opened.", database.isOpen());
+
+		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+
+		assertTrue("The document could not be created", doc.isOpen());
+		assertFalse("A document was created but it is set as modified", doc.isModified());
+
+		doc.setField("Form", TEST_FORM);
+
+		String testField = DefaultSession.PREFIX + "TestSetField";
+		long testValue = 1000100010L;
+		doc.setField(testField, testValue);
+		long newValue = doc.getFieldAsLong(testField);
+
+		assertTrue("The value retrieved was different to the saved", newValue == testValue);
+	}
+
+	@Test
 	public void testSetAndGetFieldAsDouble() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 

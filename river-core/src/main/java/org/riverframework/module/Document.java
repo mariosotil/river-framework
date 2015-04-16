@@ -24,6 +24,8 @@ public interface Document extends Base {
 
 	public int getFieldAsInteger(String field);
 
+	public long getFieldAsLong(String field);
+
 	public double getFieldAsDouble(String field);
 
 	public Date getFieldAsDate(String field);

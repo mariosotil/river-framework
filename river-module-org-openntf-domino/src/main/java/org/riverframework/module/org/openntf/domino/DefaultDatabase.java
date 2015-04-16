@@ -96,7 +96,7 @@ class DefaultDatabase implements org.riverframework.module.Database {
 
 		_col = _database.getAllDocuments();
 
-		DocumentList col = new DefaultListCollection(_col);
+		DocumentList col = new DefaultDocumentList(_col);
 
 		return col;
 	}
@@ -106,7 +106,7 @@ class DefaultDatabase implements org.riverframework.module.Database {
 		org.openntf.domino.DocumentCollection _col;
 
 		_col = _database.FTSearch(query);
-		DocumentList result = new DefaultListCollection(_col);
+		DocumentList result = new DefaultDocumentList(_col);
 
 		return result;
 	}

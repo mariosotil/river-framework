@@ -7,8 +7,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.openntf.domino.DateTime;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.module.Document;
+import org.riverframework.utils.Converter;
 
 /**
  * Loads an IBM Notes document
@@ -94,28 +97,41 @@ class DefaultDocument implements org.riverframework.module.Document {
 
 	@Override
 	public String getFieldAsString(String field) {
-		String result = _doc.getItemValueString(field);
+		Vector<?> value = _doc.getItemValue(field);
+		String result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
 		return result;
 	}
 
 	@Override
 	public int getFieldAsInteger(String field) {
-		int result = _doc.getItemValueInteger(field);
+		Vector<?> value = _doc.getItemValue(field);
+		Integer result = value.size() > 0 ? Converter.getAsInteger(value.get(0)) : 0;
+		return result;
+	}
+
+	@Override
+	public long getFieldAsLong(String field) {
+		Vector<?> value = _doc.getItemValue(field);
+		Long result = value.size() > 0 ? Converter.getAsLong(value.get(0)) : 0;
 		return result;
 	}
 
 	@Override
 	public double getFieldAsDouble(String field) {
-		double result = _doc.getItemValueDouble(field);
+		Vector<?> value = _doc.getItemValue(field);
+		Double result = value.size() > 0 ? Converter.getAsDouble(value.get(0)) : 0;
 		return result;
 	}
 
 	@Override
 	public Date getFieldAsDate(String field) {
-		Date result = ((org.openntf.domino.DateTime) _doc
-				.getItemValueDateTimeArray(field)
-				.elementAt(0))
-				.toJavaDate();
+		Vector<?> value = _doc.getItemValue(field);
+		Object temp = value.size() > 0 ? value.get(0) : null;  
+		if (temp != null && temp.getClass().getName().endsWith("DateTime")) {
+			temp = ((DateTime) temp).toJavaDate();
+		}
+		
+		Date result = Converter.getAsDate(temp);
 
 		return result;
 	}

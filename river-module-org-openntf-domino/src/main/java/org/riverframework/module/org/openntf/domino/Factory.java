@@ -32,6 +32,6 @@ class Factory {
 			}
 
 		throw new RiverException(
-				"Valid parameters: one lotus.domino.Session, zero Objects or three Strings in this order: server, username and password.");
+				"Valid parameters: (A) one lotus.domino.Session, or (B) three Strings in this order: server, username and password.");
 	}
 }

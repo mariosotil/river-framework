@@ -1,9 +1,15 @@
 package org.riverframework;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import org.riverframework.core.AbstractSession;
 import org.riverframework.core.DefaultSession;
@@ -18,23 +24,26 @@ import org.riverframework.core.DefaultSession;
  *
  */
 public class River {
-	public final static String MODULE_LOTUS_DOMINO = "org.riverframework.module.lotus.domino";
-	public final static String MODULE_ORG_OPENNTF_DOMINO = "org.riverframework.module.org.openntf.domino";
+	public static final String MODULE_LOTUS_DOMINO = "org.riverframework.module.lotus.domino";
+	public static final String MODULE_ORG_OPENNTF_DOMINO = "org.riverframework.module.org.openntf.domino";
+	public static final String MODULE_HAZELCAST = "org.riverframework.module.hazelcast";
+
+	public static final Logger LOG_ROOT = Logger.getLogger("org.riverframework");
+	public static final Logger LOG_CORE = Logger.getLogger("org.riverframework.core");
+	public static final Logger LOG_MODULE = Logger.getLogger("org.riverframework.module");
+	public static final Logger LOG_MODULE_LOTUS_DOMINO = Logger.getLogger("org.riverframework.module.lotus.domino");
+	public static final Logger LOG_MODULE_ORG_OPENNTF_DOMINO = Logger.getLogger("org.riverframework.module.org.openntf.domino");
+	public static final Logger LOG_MODULE_HAZELCAST = Logger.getLogger("org.riverframework.module.hazelcast");
 
 	private final static Map<String, AbstractSession> map = new HashMap<String, AbstractSession>();
 
-	// private final static River INSTANCE = new River();
+	static {
+		setLevel(LOG_ROOT, Level.SEVERE);
+	}
 
 	private River() {
 		// Exists only to defeat instantiation
 	}
-
-	/**
-	 * @return a instance from this class, as a Singleton
-	 */
-	// public static River getInstance() {
-	// return INSTANCE;
-	// }
 
 	/**
 	 * Loads a module that wraps libraries as lotus.domino or org.openntf.domino and creates a core Session
@@ -57,7 +66,15 @@ public class River {
 		// Trying to retrieve the session from the map
 		AbstractSession session = map.get(module);
 
-		if (session == null || !session.isOpen()) {
+		if (session != null && session.isOpen()) {
+			// There is an open session
+			if (parameters.length > 0) {
+				// and the user is trying to open a new one
+				throw new RiverException("There is already an open session for the module " + module +
+						". You must close the current before opening a new one.");
+			}
+			// If there are no parameters, we just return the current opened session
+		} else {
 			// If not exists or is closed, we create it using the factory
 
 			Class<?> clazzFactory = null;
@@ -71,9 +88,15 @@ public class River {
 
 			Method method;
 			try {
-				method = clazzFactory.getDeclaredMethod("createSession", Object[].class);
-				method.setAccessible(true);
-				_session = (org.riverframework.module.Session) method.invoke(null, new Object[] { parameters });
+				if (parameters.length > 0) {
+					// There are parameters. So, we try to create a new one.
+					method = clazzFactory.getDeclaredMethod("createSession", Object[].class);
+					method.setAccessible(true);
+					_session = (org.riverframework.module.Session) method.invoke(null, new Object[] { parameters });
+				} else {
+					// There are no parameters. We create a closed session.
+					_session = null;
+				}
 
 				Constructor<?> constructor = DefaultSession.class.getDeclaredConstructor(org.riverframework.module.Session.class);
 				constructor.setAccessible(true);
@@ -96,17 +119,33 @@ public class River {
 	 *            the package's full name
 	 */
 	public static void closeSession(String module) {
-		AbstractSession session = map.get(module);
+		Session session = map.get(module);
 		if (session != null) {
 			Method method;
 			try {
-				method = AbstractSession.class.getDeclaredMethod("protectedClose");
+				method = session.getClass().getSuperclass().getDeclaredMethod("protectedClose");
 				method.setAccessible(true);
 				method.invoke(session);
+			} catch (InvocationTargetException e) {
+				throw new RiverException(e.getCause().getMessage(), e);
 			} catch (Exception e) {
 				throw new RiverException(e);
 			}
 			map.remove(module);
 		}
 	}
+
+	public static void setLevel(Logger log, Level level) {
+		for (Handler h : log.getHandlers()) {
+			log.removeHandler(h);
+		}
+
+		ConsoleHandler handler = new ConsoleHandler();
+		handler.setFormatter(new SimpleFormatter());
+		handler.setLevel(level);
+		log.addHandler(handler);
+		log.setLevel(level);
+
+	}
+
 }

@@ -141,7 +141,7 @@ public abstract class AbstractViewTest {
 	 */
 
 	@Test
-	public void testGetDocumentCollection() {
+	public void testGetDocumentList() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		// database.getAllDocuments().deleteAll();

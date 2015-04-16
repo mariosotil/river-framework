@@ -1,7 +1,6 @@
 package org.riverframework.core.lotus.domino._local;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import lotus.domino.NotesThread;
 

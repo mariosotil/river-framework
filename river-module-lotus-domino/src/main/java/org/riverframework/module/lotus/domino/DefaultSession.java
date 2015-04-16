@@ -166,12 +166,13 @@ public class DefaultSession implements org.riverframework.module.Session {
 			WeakReference<Vector<lotus.domino.Item>> ref = entry.getValue();
 			if (ref != null) {
 				Vector<lotus.domino.Item> vec = ref.get();
-				for(int i = 0; i < vec.size(); i++) {
-					lotus.domino.Item obj = vec.get(i);
-					recycleObject(obj);
+				if (vec != null) {
+					for(int i = 0; i < vec.size(); i++) {
+						lotus.domino.Item obj = vec.get(i);
+						recycleObject(obj);
+					}
+					vec = null;
 				}
-
-				vec = null;
 				ref = null;
 			}
 		}

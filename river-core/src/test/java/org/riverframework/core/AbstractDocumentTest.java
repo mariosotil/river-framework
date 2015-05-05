@@ -7,7 +7,6 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Vector;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,6 +14,7 @@ import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.Database;
 import org.riverframework.Document;
+import org.riverframework.Field;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
 
@@ -79,9 +79,8 @@ public abstract class AbstractDocumentTest {
 				.setField("FIELD_DOUBLE_WITH_DECIMALS", 100.55)
 				.setField("FIELD_DATE", testDate)
 				.setField("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" })
-				.setField("FIELD_STRING_VECTOR",
-						new java.util.Vector<Object>
-						(Arrays.asList(new String[] { "VAL1", "VAL2" })));
+				.setField("FIELD_OBJECT",
+						new DefaultField(Arrays.asList(new String[] { "VAL1", "VAL2" })));
 
 		assertTrue("The String saved must be equal to the test value",
 				doc.compareFieldValue("FIELD_STRING", "SOME_TEXT"));
@@ -117,11 +116,11 @@ public abstract class AbstractDocumentTest {
 
 		assertTrue(
 				"The Vector saved must be equal to the test value",
-				doc.compareFieldValue("FIELD_STRING_VECTOR",
+				doc.compareFieldValue("FIELD_OBJECT",
 						new String[] { "VAL1", "VAL2" }));
 		assertFalse(
 				"The Vector saved must be different to a random value",
-				doc.compareFieldValue("FIELD_STRING_VECTOR",
+				doc.compareFieldValue("FIELD_OBJECT",
 						new String[] { "VAL1", "VALZZ" }));
 	}
 
@@ -249,7 +248,7 @@ public abstract class AbstractDocumentTest {
 
 		String testField = DefaultSession.PREFIX + "TestSetField";
 		doc.setField(testField, new String[] { "VAL1", "VAL2" });
-		Vector<Object> newValue = doc.getField(testField);
+		Field newValue = doc.getField(testField);
 
 		assertTrue("The Array saved is different to the Array retrieved", newValue.size() == 2
 				&& newValue.get(0).equals("VAL1") && newValue.get(1).equals("VAL2"));
@@ -268,7 +267,7 @@ public abstract class AbstractDocumentTest {
 
 		String testField = DefaultSession.PREFIX + "TestSetField";
 		doc.setField(testField, new String[] { "VAL1", "VAL2" });
-		Vector<Object> newValue = doc.getField(testField);
+		Field newValue = doc.getField(testField);
 
 		assertTrue("The Vector saved is different to the Vector retrieved", newValue.size() == 2
 				&& newValue.get(0).equals("VAL1") && newValue.get(1).equals("VAL2"));
@@ -516,7 +515,7 @@ public abstract class AbstractDocumentTest {
 
 	// Classes to testing the implementations
 	static class SimpleRequest extends AbstractDocument<SimpleRequest> {
-		protected SimpleRequest(Database d, org.riverframework.module.Document _d) {
+		protected SimpleRequest(Database d, org.riverframework.wrapper.Document _d) {
 			super(d, _d);
 		}
 
@@ -538,7 +537,7 @@ public abstract class AbstractDocumentTest {
 
 	static class ComplexDatabase extends AbstractDatabase {
 
-		protected ComplexDatabase(Session s, org.riverframework.module.Database obj) {
+		protected ComplexDatabase(Session s, org.riverframework.wrapper.Database obj) {
 			super(s, obj);
 		}
 	}

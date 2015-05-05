@@ -13,7 +13,7 @@ import org.riverframework.Database;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
 import org.riverframework.Unique;
-import org.riverframework.module.Document;
+import org.riverframework.wrapper.Document;
 
 public abstract class AbstractUniqueTest {
 	protected Session session = null;

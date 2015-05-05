@@ -15,7 +15,7 @@ public interface Database extends Base {
 
 	/**
 	 * *
-	 * Creates a document. The parameters needed will depend on what module is loaded.
+	 * Creates a document. The parameters needed will depend on what wrapper is loaded.
 	 * @param parameters
 	 *            a set of Strings that will let the Database create a Document. 
 	 * @return a new Document
@@ -23,7 +23,7 @@ public interface Database extends Base {
 	public Document createDocument(String... parameters);
 
 	/**
-	 * Returns an existent view. The parameters needed will depend on what module is being used.
+	 * Returns an existent view. The parameters needed will depend on what wrapper is being used.
 	 * @param parameters
 	 *            a set of Strings that will let the Database get an existent View. 
 	 * @return a DefaultView object
@@ -31,7 +31,7 @@ public interface Database extends Base {
 	public View getView(String... parameters);
 
 	/**
-	 * Returns a View object instanced from the 'clazz' parameter. The clazz must inherit from DefaultView. The parameters needed will depend on what module is being used.
+	 * Returns a View object instanced from the 'clazz' parameter. The clazz must inherit from DefaultView. The parameters needed will depend on what wrapper is being used.
 	 * 
 	 * @param clazz
 	 *            a class that inherits from DefaultView and implements the View interface.
@@ -43,7 +43,7 @@ public interface Database extends Base {
 
 	/**
 	 * Creates a Document object instanced from the 'clazz' parameter. The clazz must inherit from
-	 * DefaultDocument. The parameters needed will depend on what module is being used.
+	 * DefaultDocument. The parameters needed will depend on what wrapper is being used.
 	 * 
 	 * @param clazz
 	 *            a class that inherits from DefaultDocument and implements Document.
@@ -54,7 +54,7 @@ public interface Database extends Base {
 	public <U extends Document> U createDocument(Class<U> clazz, String... parameters);
 
 	/**
-	 * Returns an existent Document. The parameters needed will depend on what module is being used.
+	 * Returns an existent Document. The parameters needed will depend on what wrapper is being used.
 	 * 
 	 * @param parameters
 	 *            a set of Strings that will let the Database locate an existent new Document. 
@@ -64,7 +64,7 @@ public interface Database extends Base {
 
 	/**
 	 * Returns a Document object instanced from the 'clazz' parameter. The clazz must inherit from
-	 * DefaultDocument. The parameters needed will depend on what module is being used.
+	 * DefaultDocument. The parameters needed will depend on what wrapper is being used.
 	 * 
 	 * @param clazz
 	 *            a class that inherits from DefaultDocument and implements Document.
@@ -76,7 +76,7 @@ public interface Database extends Base {
 
 	/**
 	 * Returns a Document object instanced from the 'clazz' parameter. The clazz must inherit from
-	 * DefaultDocument. The parameter createIfDoesNotExist lets to create the document if the method fails to found it. The parameters needed will depend on what module is being used.
+	 * DefaultDocument. The parameter createIfDoesNotExist lets to create the document if the method fails to found it. The parameters needed will depend on what wrapper is being used.
 	 * 
 	 * @param clazz
 	 *            a class that inherits from DefaultDocument and implements Document.
@@ -89,36 +89,36 @@ public interface Database extends Base {
 	public <U extends Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters);
 
 	/**
-	 * Creates a Document object instanced from the 'clazz' parameter, using a Module Document. The clazz must inherit from
+	 * Creates a Document object instanced from the 'clazz' parameter, using a wrapper Document. The clazz must inherit from
 	 * DefaultDocument.
 	 * 
 	 * @param clazz
 	 *            a class that inherits from DefaultDocument and implements Document.
 	 * @param doc
-	 *            an object Document from the module loaded in this time.
+	 *            an object Document from the wrapper loaded in this time.
 	 * @return a Document object using the doc provided as parameter.
 	 */
-	public <U extends Document> U getDocument(Class<U> clazz, org.riverframework.module.Document doc);
+	public <U extends Document> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document doc);
 
 	/**
 	 * Creates a Document object. The class is detected from the object doc using the rules write in the
 	 * method detectClass
 	 * 
 	 * @param doc
-	 *            an module Document object
+	 *            an wrapper Document object
 	 * @return a Document object using the doc provided as parameter.
 	 */
-	public Document getDocument(org.riverframework.module.Document doc);
+	public Document getDocument(org.riverframework.wrapper.Document doc);
 
 	/**
 	 * Returns the class that getDocument(doc) must use following arbitrary conditions as some field from
 	 * the doc object.
 	 * 
 	 * @param doc
-	 *            an module Document object
+	 *            an wrapper Document object
 	 * @return the class that must be used to instance it
 	 */
-	public Class<? extends org.riverframework.Document> detectClass(org.riverframework.module.Document doc);
+	public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document doc);
 
 	/**
 	 * Returns all documents from the database as an DocumentList object, that implements List
@@ -129,7 +129,7 @@ public interface Database extends Base {
 
 	/**
 	 * Returns the documents that match the query as a DocumentList object. The style of the query depends on how
-	 * is implemented in the module loaded. For example, in IBM Notes is just something like "Black AND Dog"
+	 * is implemented in the wrapper loaded. For example, in IBM Notes is just something like "Black AND Dog"
 	 * 
 	 * @param query
 	 * @return a DocumentList document
@@ -137,7 +137,7 @@ public interface Database extends Base {
 	public DocumentList search(String query);
 
 	/**
-	 * Refresh the database index. How this index is refreshed will depend on how is implemented in the module
+	 * Refresh the database index. How this index is refreshed will depend on how is implemented in the wrapper
 	 * loaded.
 	 * 
 	 * @return the object itself for method chaining
@@ -154,16 +154,16 @@ public interface Database extends Base {
 	public Counter getCounter(String key);
 
 	/**
-	 * Returns true if the Module Database object was opened. If the Module Database is null or can't be opened, this method will
+	 * Returns true if the wrapper Database object was opened. If the wrapper Database is null or can't be opened, this method will
 	 * returns false.
 	 * 
-	 * @return true if the module Database is opened
+	 * @return true if the wrapper Database is opened
 	 */
 	public boolean isOpen();
 
 	/**
 	 * Returns the server where the database is allocated. The String returned will depend on how is
-	 * implemented the module loaded.
+	 * implemented the wrapper loaded.
 	 * 
 	 * @return the Database server
 	 */
@@ -171,7 +171,7 @@ public interface Database extends Base {
 
 	/**
 	 * Returns the file path where the database is allocated. The String returned will depend on how is
-	 * implemented the module loaded.
+	 * implemented the wrapper loaded.
 	 * 
 	 * @return the Database file path
 	 */
@@ -179,7 +179,7 @@ public interface Database extends Base {
 
 	/**
 	 * Returns the database name. The String returned will depend on how is
-	 * implemented the module loaded.
+	 * implemented the wrapper loaded.
 	 * 
 	 * @return the Database name
 	 */

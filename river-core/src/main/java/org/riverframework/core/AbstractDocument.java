@@ -3,12 +3,12 @@ package org.riverframework.core;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.ClosedObjectException;
 import org.riverframework.Database;
 import org.riverframework.Document;
+import org.riverframework.Field;
 
 /**
  * It is the implementation of the Document interface. It lets you manage its fields.
@@ -20,10 +20,10 @@ import org.riverframework.Document;
  */
 public abstract class AbstractDocument<T extends AbstractDocument<T>> implements org.riverframework.Document {
 	protected Database database = null;
-	protected org.riverframework.module.Document _doc = null;
+	protected org.riverframework.wrapper.Document _doc = null;
 	protected boolean isModified = false;
 
-	protected AbstractDocument(Database d, org.riverframework.module.Document _d) {
+	protected AbstractDocument(Database d, org.riverframework.wrapper.Document _d) {
 		database = d;
 		_doc = _d;
 		isModified = false;
@@ -80,7 +80,7 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 	}
 
 	@Override
-	public Object getModuleObject() {
+	public org.riverframework.wrapper.Document getWrapperObject() {
 		return _doc;
 	}
 
@@ -98,7 +98,7 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 	 *            the second vector
 	 * @return true if the vectors are numeric equals
 	 */
-	protected static boolean numericEquals(Vector<Object> vector1, Vector<Object> vector2) {
+	protected static boolean numericEquals(Field vector1, Field vector2) {
 		if (vector1.size() != vector2.size())
 			return false;
 		if (vector1.isEmpty())
@@ -145,24 +145,24 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public boolean compareFieldValue(String field, Object value) {
 
 		boolean equal = false;
 
-		Vector<Object> oldValues = getField(field);
-		Vector<Object> newValues = null;
+		Field oldValues = getField(field);
+		Field newValues = null;
 
 		if (value instanceof java.util.Vector) {
-			newValues = (Vector<Object>) value;
+			newValues = new DefaultField((java.util.Vector) value);
 		} else if (value instanceof Object[]) {
-			newValues = new Vector<Object>();
+			newValues = new DefaultField();
 			for (Object o : (Object[]) value) {
 				newValues.add(o);
 			}
 		} else {
-			newValues = new Vector<Object>();
+			newValues = new DefaultField();
 			newValues.add(value);
 		}
 
@@ -182,17 +182,17 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 	}
 
 	@Override
-	public Map<String, Vector<Object>> getFields() {
-		Map<String, Vector<Object>> result = _doc.getFields();
+	public Map<String, Field> getFields() {
+		Map<String, Field> result = _doc.getFields();
 		return result;
 	}
 
 	@Override
-	public Vector<Object> getField(String field) {
+	public Field getField(String field) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Document object is closed.");
 
-		Vector<Object> value = _doc.getField(field);
+		Field value = _doc.getField(field);
 		return value;
 	}
 

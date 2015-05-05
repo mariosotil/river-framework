@@ -14,7 +14,7 @@ public class DatabaseTest extends org.riverframework.core.AbstractDatabaseTest {
 		NotesThread.sinitThread();
 				
 		River.setLevel(River.LOG_CORE, Level.FINE);
-		River.setLevel(River.LOG_MODULE, Level.SEVERE);
+		River.setLevel(River.LOG_WRAPPER, Level.SEVERE);
 		
 		River.LOG_CORE.fine("Starting test");
 	}

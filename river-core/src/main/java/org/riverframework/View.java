@@ -8,9 +8,9 @@ public interface View extends Base {
 	public Database getDatabase();
 
 	/**
-	 * Returns true if the module View was opened,is null or can't be opened, this method wi
+	 * Returns true if the wrapper View was opened,is null or can't be opened, this method wi
 	 * 
-	 * @return true if the module Database is opened
+	 * @return true if the wrapper Database is opened
 	 */
 	public boolean isOpen();
 
@@ -46,7 +46,7 @@ public interface View extends Base {
 	public DocumentList getAllDocumentsByKey(Object key);
 
 	/**
-	 * Refresh the view index. This method could be expensive depending on the module used. It must be used with care.
+	 * Refresh the view index. This method could be expensive depending on the wrapper used. It must be used with care.
 	 * 
 	 * @return this View, for method chaining
 	 */
@@ -54,7 +54,7 @@ public interface View extends Base {
 
 	/**
 	 * Searches by the query and returns a DocumentList object with the documents that match. So far, The style of the query will depend on how
-	 * is implemented in the module loaded. For example, in IBM Notes is just something like "Black AND Dog"
+	 * is implemented in the wrapper loaded. For example, in IBM Notes is just something like "Black AND Dog"
 	 * 
 	 * @param query
 	 * @return a DocumentList document

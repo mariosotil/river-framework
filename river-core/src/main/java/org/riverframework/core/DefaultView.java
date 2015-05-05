@@ -9,7 +9,7 @@ import org.riverframework.Database;
  *
  */
 public final class DefaultView extends AbstractView implements org.riverframework.View {
-	protected DefaultView(Database d, org.riverframework.module.View obj) {
+	protected DefaultView(Database d, org.riverframework.wrapper.View obj) {
 		super(d, obj);
 	}
 }

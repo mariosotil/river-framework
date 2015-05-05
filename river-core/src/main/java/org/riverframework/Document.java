@@ -1,7 +1,6 @@
 package org.riverframework;
 
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * This interface exposes the methods for control a document from a NoSQL database.
@@ -45,7 +44,7 @@ public interface Document extends Base {
 	 *            the field to be get
 	 * @return the values as a vector
 	 */
-	public Vector<Object> getField(String field);
+	public Field getField(String field);
 
 	/**
 	 * Returns the value of a field as a String object. If the field is an array, it will returns the first value. If
@@ -114,9 +113,9 @@ public interface Document extends Base {
 	public boolean isModified();
 
 	/**
-	 * Returns false if the Module Document is null or can't be opened.
+	 * Returns false if the wrapper Document is null or can't be opened.
 	 * 
-	 * @return true if the module Database is opened
+	 * @return true if the wrapper Database is opened
 	 */
 	public boolean isOpen();
 
@@ -128,7 +127,7 @@ public interface Document extends Base {
 	public boolean isNew();
 
 	/**
-	 * Makes a hard deletion. Its behavior will depend on how the module loaded is implemented.
+	 * Makes a hard deletion. Its behavior will depend on how the wrapper loaded is implemented.
 	 * 
 	 * @return the same Document, for method chaining
 	 */
@@ -144,14 +143,14 @@ public interface Document extends Base {
 	public Document save(boolean force);
 
 	/**
-	 * Saves the Document. Its behavior will depend on how the module loaded is implemented.
+	 * Saves the Document. Its behavior will depend on how the wrapper loaded is implemented.
 	 * 
 	 * @return the same Document, for method chaining
 	 */
 	public Document save();
 
 	/**
-	 * Requests a Document recalculation. Its behavior will depend on how the module loaded is
+	 * Requests a Document recalculation. Its behavior will depend on how the wrapper loaded is
 	 * implemented.
 	 * 
 	 * @return the same Document, for method chaining
@@ -170,6 +169,6 @@ public interface Document extends Base {
 	 * 
 	 * @return the fields and their values.
 	 */
-	public Map<String, Vector<Object>> getFields();
+	public Map<String, Field> getFields();
 
 }

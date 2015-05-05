@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
-import java.util.Vector;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,6 +13,7 @@ import org.riverframework.Context;
 import org.riverframework.Database;
 import org.riverframework.Document;
 import org.riverframework.DocumentList;
+import org.riverframework.Field;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
 import org.riverframework.Unique;
@@ -93,12 +93,12 @@ public abstract class AbstractDatabaseTest {
 	}
 
 	static class VacationDatabase extends AbstractDatabase {
-		protected VacationDatabase(Session s, org.riverframework.module.Database obj) {
+		protected VacationDatabase(Session s, org.riverframework.wrapper.Database obj) {
 			super(s, obj);
 		}
 
 		@Override
-		public Class<? extends org.riverframework.Document> detectClass(org.riverframework.module.Document _doc) {
+		public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document _doc) {
 			String form = _doc.getFieldAsString("Form").toLowerCase();
 			if (form.equals("fo_vacation_request"))
 				return VacationRequest.class;
@@ -108,7 +108,7 @@ public abstract class AbstractDatabaseTest {
 	}
 
 	static class VacationRequest extends AbstractDocument<VacationRequest> {
-		protected VacationRequest(Database d, org.riverframework.module.Document _d) {
+		protected VacationRequest(Database d, org.riverframework.wrapper.Document _d) {
 			super(d, _d);
 		}
 
@@ -219,7 +219,7 @@ public abstract class AbstractDatabaseTest {
 	}
 
 	static class Person extends AbstractDocument<Person> implements Document, Unique {
-		protected Person(Database d, org.riverframework.module.Document _d) {
+		protected Person(Database d, org.riverframework.wrapper.Document _d) {
 			super(d, _d);
 		}
 
@@ -307,11 +307,11 @@ public abstract class AbstractDatabaseTest {
 		Document p = database.getDocument(Person.class, "Kathy");
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());
 
-		Map<String, Vector<Object>> fields = p.getFields();
+		Map<String, Field> fields = p.getFields();
 
 		assertTrue("It could not possible get the fields from the Kathy's document.", fields.size() > 0);
 
-		Vector<Object> field = fields.get("ca_pe_name");
+		Field field = fields.get("ca_pe_name");
 		String value = field.get(0).toString();
 
 		assertTrue("It could not possible get the field Name from the Kathy's document.", value.equals("Kathy"));

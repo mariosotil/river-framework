@@ -21,9 +21,9 @@ public abstract class AbstractSession implements org.riverframework.Session {
 
 	public static final String PREFIX = "RIVER_";
 
-	private org.riverframework.module.Session _session = null;
+	private org.riverframework.wrapper.Session _session = null;
 
-	protected AbstractSession(org.riverframework.module.Session _s) {
+	protected AbstractSession(org.riverframework.wrapper.Session _s) {
 		// Exists only to defeat instantiation.
 		_session = _s;
 	}
@@ -37,7 +37,7 @@ public abstract class AbstractSession implements org.riverframework.Session {
 	}
 
 	@Override
-	public Object getModuleObject() {
+	public org.riverframework.wrapper.Session getWrapperObject() {
 		return _session;
 	}
 
@@ -59,7 +59,7 @@ public abstract class AbstractSession implements org.riverframework.Session {
 
 		U database = null;
 		Class<U> c = clazz;
-		org.riverframework.module.Database _database = null;
+		org.riverframework.wrapper.Database _database = null;
 
 		if (c == null)
 			c = (Class<U>) DefaultDatabase.class;
@@ -83,7 +83,7 @@ public abstract class AbstractSession implements org.riverframework.Session {
 
 		try {
 			Constructor<?> constructor = c.getDeclaredConstructor(Session.class,
-					org.riverframework.module.Database.class);
+					org.riverframework.wrapper.Database.class);
 			constructor.setAccessible(true);
 			database = c.cast(constructor.newInstance(this, _database));
 		} catch (Exception e) {
@@ -113,8 +113,8 @@ public abstract class AbstractSession implements org.riverframework.Session {
 	@Override
 	public void close() {
 		// This is for prevent that the session be closed but not purged from the River factory class.
-		String module = _session.getClass().getPackage().getName();
-		River.closeSession(module);
+		String wrapper = _session.getClass().getPackage().getName();
+		River.closeSession(wrapper);
 	}
 
 	@Override

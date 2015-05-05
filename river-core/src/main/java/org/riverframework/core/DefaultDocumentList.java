@@ -12,7 +12,7 @@ public final class DefaultDocumentList extends AbstractDocumentList
 implements org.riverframework.DocumentList {
 	private static final long serialVersionUID = -3371532017518314494L;
 
-	protected DefaultDocumentList(Database d, org.riverframework.module.DocumentList _col) {
+	protected DefaultDocumentList(Database d, org.riverframework.wrapper.DocumentList _col) {
 		super (d, _col);
 	}
 }

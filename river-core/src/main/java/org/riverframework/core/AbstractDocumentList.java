@@ -17,9 +17,9 @@ implements org.riverframework.DocumentList {
 	private static final long serialVersionUID = -5032050258891587783L;
 	protected Database database;
 
-	protected AbstractDocumentList(Database d, org.riverframework.module.DocumentList _col) {
+	protected AbstractDocumentList(Database d, org.riverframework.wrapper.DocumentList _col) {
 		database = d;
-		for (org.riverframework.module.Document _doc : _col) {
+		for (org.riverframework.wrapper.Document _doc : _col) {
 			org.riverframework.Document doc = database.getDocument(_doc);
 			this.add(doc);
 		}

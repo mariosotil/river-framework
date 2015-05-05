@@ -19,14 +19,14 @@ public class LotusNotesSessionTest {
 		for (int i = 0; i < 10; i++) {
 			NotesThread.sinitThread();
 			
-			Session session = River.getSession(River.MODULE_LOTUS_DOMINO,
+			Session session = River.getSession(River.LOTUS_DOMINO,
 					(String) null, (String) null, Credentials.getPassword());
 
 			assertTrue("Notes Session could not be retrieved at the iteration " + i, session.isOpen());
 			assertFalse("There's a problem with the Session at the iteration " + i + ". I can't retrieve the current user name.",
 					session.getUserName().equals(""));
 
-			River.closeSession(River.MODULE_LOTUS_DOMINO);
+			River.closeSession(River.LOTUS_DOMINO);
 			
 			NotesThread.stermThread();
 		}
@@ -40,7 +40,7 @@ public class LotusNotesSessionTest {
 		for (int i = 0; i < 10; i++) {
 			NotesThread.sinitThread();
 
-			Session session = River.getSession(River.MODULE_LOTUS_DOMINO,
+			Session session = River.getSession(River.LOTUS_DOMINO,
 					(String) null, (String) null, Credentials.getPassword());
 
 			assertTrue("Notes Session could not be retrieved at the iteration " + i, session.isOpen());

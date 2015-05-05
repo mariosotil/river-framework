@@ -16,29 +16,29 @@ public interface Session extends Base {
 	public static final String FIELD_PREFIX = "RIVER_";
 
 	/**
-	 * Returns a core Database object after open a module Database, using the parameters indicated.
+	 * Returns a core Database object after open a wrapper Database, using the parameters indicated.
 	 * 
 	 * @param parameters
-	 *            the parameters needed to open an existent module Database. How this parameters must to be set will
-	 *            depend on how the module loaded is implemented.
+	 *            the parameters needed to open an existent wrapper Database. How this parameters must to be set will
+	 *            depend on how the wrapper loaded is implemented.
 	 * @return a core Database object
 	 */
 	public <U extends Database> U getDatabase(String... parameters);
 
 	/**
-	 * Returns a core Database object after open a module Database, using the parameters indicated.
+	 * Returns a core Database object after open a wrapper Database, using the parameters indicated.
 	 * 
 	 * @param clazz
 	 *            a class that inherits from DefaultDatabase and implements the core Database interface.
 	 * @param parameters
-	 *            the parameters needed to open an existent module Database. How this parameters must to be set will
-	 *            depend on how the module loaded is implemented.
+	 *            the parameters needed to open an existent wrapper Database. How this parameters must to be set will
+	 *            depend on how the wrapper loaded is implemented.
 	 * @return a core Database object
 	 */
 	public <U extends Database> U getDatabase(Class<U> type, String... parameters);
 
 	/**
-	 * Returns true if the module was loaded and the session opened.
+	 * Returns true if the wrapper was loaded and the session opened.
 	 * 
 	 * @return true if it's opened
 	 */

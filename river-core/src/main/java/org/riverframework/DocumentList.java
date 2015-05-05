@@ -18,7 +18,7 @@ public interface DocumentList extends List<org.riverframework.Document> {
 
 	/**
 	 * Loops around all the documents and call the delete method from each one. It would make a hard
-	 * deletion. Anyway, its behavior will depend on how the module loaded is implemented.
+	 * deletion. Anyway, its behavior will depend on how the wrapper loaded is implemented.
 	 * 
 	 * @return the same DocumentList, for method chaining
 	 */

@@ -16,7 +16,7 @@ import org.riverframework.View;
  *
  */
 public final class DefaultCounter extends AbstractDocument<DefaultCounter> implements Counter, Unique {
-	protected DefaultCounter(Database d, org.riverframework.module.Document _d) {
+	protected DefaultCounter(Database d, org.riverframework.wrapper.Document _d) {
 		super(d, _d);
 	}
 

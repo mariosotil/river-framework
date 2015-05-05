@@ -2,8 +2,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.riverframework</groupId>
-	<artifactId>river-module-lotus-domino</artifactId>
-	<version>0.1.1</version>
+	<artifactId>river-lotus-domino</artifactId>
+	<version>0.2.7-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Workflow Application Framework written in Java, using Lotus Notes as NoSQL database server</description>
 	<url>http://www.riverframework.org</url>
@@ -133,11 +133,6 @@
 	</profiles>
 	<dependencies>
 		<dependency>
-			<groupId>lotus.domino</groupId>
-			<artifactId>lotus.domino</artifactId>
-			<version>9.0.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
@@ -147,11 +142,6 @@
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.riverframework</groupId>
-			<artifactId>river-core</artifactId>
-			<version>0.2.6</version>
 		</dependency>
 	</dependencies>
 </project>

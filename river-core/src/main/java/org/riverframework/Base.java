@@ -8,18 +8,20 @@ package org.riverframework;
  */
 public interface Base {
 	/**
-	 * Returns the id from the object instanced. Its behavior will depend on how the module loaded is implemented.
+	 * Returns the id from the object instanced. Its behavior will depend on how the wrapper loaded is implemented.
 	 * 
 	 * @return its id.
 	 */
 	public String getObjectId();
 
 	/**
-	 * Returns the object created through the module loaded. You should not need to use it.
+	 * Returns the object that wraps the native object. For example, if the wrapper loaded is
+	 * River.LOTUS_DOMINO, and the object is an instance of org.riverframework.core.DefaultDocument,
+	 * getNativeObject() will return an object that implements the org.riverframework.wrapper.Document interface.
 	 * 
-	 * @return the object created from the module
+	 * @return the object used to wrap the native object
 	 */
-	public Object getModuleObject();
+	public Object getWrapperObject();
 
 	/**
 	 * Close the resources, handlers, etc. opened by this instance.

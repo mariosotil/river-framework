@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.riverframework.wrapper.Document;
+import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.DocumentList;
 import org.riverframework.wrapper.hazelcast.DefaultDocument;
 
@@ -21,6 +22,11 @@ class DefaultDocumentList extends ArrayList<Document> implements DocumentList {
 		}
 	}
 
+	@Override
+	public DocumentIterator iterator() {
+		return null;
+	}
+	
 	@Override
 	public DocumentList deleteAll() {
 		for (Document doc : this) {

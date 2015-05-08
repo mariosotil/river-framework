@@ -279,6 +279,8 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 						|| type == Item.TEXT) {
 					Vector<Object> temp = it.getValues();
 					values = temp == null ? new DefaultField() : new DefaultField(temp);
+				} else {
+					values = new DefaultField();
 				}
 
 				if (values.isEmpty()) {

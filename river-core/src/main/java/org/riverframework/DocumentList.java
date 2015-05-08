@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface DocumentList extends List<org.riverframework.Document> {
 	/**
-	 * Returns the database where the documents that are in the collection belong  
+	 * Returns the database where the collection's documents belong  
 	 * @return a Database object
 	 */
 	public Database getDatabase();

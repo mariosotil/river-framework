@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.wrapper.Document;
+import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.DocumentList;
 
 class DefaultDocumentList extends ArrayList<Document> implements DocumentList {
@@ -47,6 +48,11 @@ class DefaultDocumentList extends ArrayList<Document> implements DocumentList {
 		}
 	}
 
+	@Override
+	public DocumentIterator iterator() {
+		return null;
+	}
+	
 	@Override
 	public DocumentList deleteAll() {
 		for (Document doc : this) {

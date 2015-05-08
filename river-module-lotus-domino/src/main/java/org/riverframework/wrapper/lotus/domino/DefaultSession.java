@@ -155,10 +155,7 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 		return userName;
 	}
 
-	@Override
-	public void close() {
-		log.fine("Closing session");
-
+	protected void recycling() {
 		log.fine("Recycling all the items vectors before closing the session");
 		Iterator<Map.Entry<Integer, WeakReference<Vector<lotus.domino.Item>>>> itVec = registeredVectors.entrySet().iterator();
 		while (itVec.hasNext()) {
@@ -166,7 +163,7 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 			WeakReference<Vector<lotus.domino.Item>> ref = entry.getValue();
 			if (ref != null) {
 				Vector<lotus.domino.Item> vec = ref.get();
-				if (vec != null) {
+				if (vec != null) { 
 					for(int i = 0; i < vec.size(); i++) {
 						lotus.domino.Item obj = vec.get(i);
 						recycleObject(obj);
@@ -187,8 +184,15 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 				recycleObject(obj);
 				ref = null;
 			}
-		}
+		}		
+	}
+	
+	@Override
+	public void close() {
+		log.fine("Closing session");
 
+		recycling();
+		
 		log.fine("Recycling the session");
 		recycleObject(__session);
 	}

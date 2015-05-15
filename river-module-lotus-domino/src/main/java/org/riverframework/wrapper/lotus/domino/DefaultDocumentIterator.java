@@ -11,11 +11,11 @@ import org.riverframework.wrapper.DocumentList;
 class DefaultDocumentIterator implements DocumentIterator {
 	private enum Type { COLLECTION, VIEW_ENTRY_COLLECTION, DOCUMENT_LIST }
 
-	private org.riverframework.wrapper.Session session = null;
+	private org.riverframework.wrapper.Session _session = null;
 
 	private lotus.domino.DocumentCollection _col = null;
 	private lotus.domino.ViewEntryCollection _vecol = null;
-	private DocumentList list = null;
+	private DocumentList _list = null;
 
 	private lotus.domino.Document _doc = null;
 	private lotus.domino.ViewEntry _ve = null;
@@ -24,7 +24,7 @@ class DefaultDocumentIterator implements DocumentIterator {
 	private Type type = null; 
 
 	public DefaultDocumentIterator(org.riverframework.wrapper.Session s, lotus.domino.DocumentCollection _col) {
-		session = s;
+		_session = s;
 		type = Type.COLLECTION;
 		this._col = _col;
 		try {
@@ -35,7 +35,7 @@ class DefaultDocumentIterator implements DocumentIterator {
 	}
 
 	public DefaultDocumentIterator(org.riverframework.wrapper.Session s, lotus.domino.View _view) {
-		session = s;
+		_session = s;
 		type = Type.VIEW_ENTRY_COLLECTION;
 		try {
 			this._vecol = _view.getAllEntries();
@@ -46,7 +46,7 @@ class DefaultDocumentIterator implements DocumentIterator {
 	}
 
 	public DefaultDocumentIterator(org.riverframework.wrapper.Session s, lotus.domino.ViewEntryCollection _vecol) {
-		session = s;
+		_session = s;
 		type = Type.VIEW_ENTRY_COLLECTION;
 		this._vecol = _vecol;
 		try {
@@ -57,9 +57,9 @@ class DefaultDocumentIterator implements DocumentIterator {
 	}
 
 	public DefaultDocumentIterator(org.riverframework.wrapper.Session s, DocumentList list) {
-		session = s;
+		_session = s;
 		type = Type.DOCUMENT_LIST;
-		this.list = list;
+		this._list = list;
 
 		listIndex = -1;
 	}
@@ -72,7 +72,7 @@ class DefaultDocumentIterator implements DocumentIterator {
 		case VIEW_ENTRY_COLLECTION:
 			return _ve != null;
 		case DOCUMENT_LIST:
-			return listIndex < list.size() - 1;
+			return listIndex < _list.size() - 1;
 		}
 		
 		
@@ -89,15 +89,15 @@ class DefaultDocumentIterator implements DocumentIterator {
 			case COLLECTION:
 				_current = _doc;
 				_doc = _col.getNextDocument(_doc);
-				doc = new DefaultDocument(session, _current);
+				doc = Factory.createDocument(_session, _current);
 				break;
 			case VIEW_ENTRY_COLLECTION:
 				_current = _ve.getDocument();
 				_ve = _vecol.getNextEntry(_ve);
-				doc = new DefaultDocument(session, _current);
+				doc = Factory.createDocument(_session, _current);
 				break;
 			case DOCUMENT_LIST:
-				doc = list.get(++listIndex);
+				doc = _list.get(++listIndex);
 			}
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -120,6 +120,32 @@ class DefaultDocumentIterator implements DocumentIterator {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+
+	@Override
+	public DocumentList asDocumentList() {
+		DocumentList _list = null;
+		
+		switch (type) {
+		case COLLECTION:
+		case VIEW_ENTRY_COLLECTION:
+			_list = new DefaultDocumentList(_session, this);
+			break;
+		case DOCUMENT_LIST:
+			_list = this._list;
+		}
+		
+		return _list;
+	}
+
+	@Override
+	public DocumentIterator deleteAll() {
+		for (Document doc: this) {
+			doc.delete();
+			doc.close();
+		}
+		
+		return this;
 	}
 
 }

@@ -93,11 +93,11 @@ public abstract class AbstractDatabaseTest {
 		database.refreshSearchIndex();
 
 		col = null;
-		col = database.search("THIS IS IMPOSSIBLE TO FIND");
+		col = database.search("THIS IS IMPOSSIBLE TO FIND").asDocumentList();
 		assertTrue("The search returns values for a query that would returns nothing.", col.isEmpty());
 
 		col = null;
-		col = database.search("THIS_IS_THE_DOC");
+		col = database.search("THIS_IS_THE_DOC").asDocumentList();
 		assertFalse("The search does not returns values for a query that would returns something.", col.isEmpty());
 	}
 
@@ -154,7 +154,7 @@ public abstract class AbstractDatabaseTest {
 				.setField("Time", 27)
 				.save();
 
-		DocumentList col = database.getAllDocuments();
+		DocumentList col = database.getAllDocuments().asDocumentList();
 
 		for (Document doc : col) {
 			assertTrue("It could not possible load the vacation request object from the DocumentList.", doc.isOpen());

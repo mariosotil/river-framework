@@ -121,20 +121,20 @@ public interface Database extends Base {
 	public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document doc);
 
 	/**
-	 * Returns all documents from the database as an DocumentList object, that implements List
+	 * Returns all documents from the database as a DocumentIterator object, that implements List
 	 * 
-	 * @return a DocumentList document
+	 * @return a DocumentIterator document
 	 */
-	public DocumentList getAllDocuments();
+	public DocumentIterator getAllDocuments();
 
 	/**
-	 * Returns the documents that match the query as a DocumentList object. The style of the query depends on how
+	 * Returns the documents that match the query as a DocumentIterator object. The style of the query depends on how
 	 * is implemented in the wrapper loaded. For example, in IBM Notes is just something like "Black AND Dog"
 	 * 
 	 * @param query
-	 * @return a DocumentList document
+	 * @return a DocumentIterator document
 	 */
-	public DocumentList search(String query);
+	public DocumentIterator search(String query);
 
 	/**
 	 * Refresh the database index. How this index is refreshed will depend on how is implemented in the wrapper

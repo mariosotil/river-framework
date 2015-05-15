@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.Database;
 import org.riverframework.Document;
 import org.riverframework.DocumentIterator;
+import org.riverframework.DocumentList;
 
 /**
  * It is a collection of Documents. Uses all the operations from ArrayList and allows only objects that
@@ -39,7 +40,34 @@ public abstract class AbstractDocumentIterator implements DocumentIterator {
 	}
 
 	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DocumentIterator iterator() {
+		return this;
+	}
+
+	@Override
+	public boolean isOpen() {
+		return (_iterator != null);
+	}
+	
+	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+
+	@Override
+	public DocumentIterator deleteAll() {
+		_iterator.deleteAll();
+		return this;
+	}
+
+	@Override
+	public DocumentList asDocumentList() {
+		DocumentList list = new DefaultDocumentList(database, _iterator.asDocumentList());
+		return list;
 	}
 }

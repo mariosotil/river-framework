@@ -2,6 +2,8 @@ package org.riverframework;
 
 import java.util.List;
 
+import org.riverframework.DocumentIterator;
+
 //TODO: evaluate if this class can be simplified with the View class
 /**
  * Exposes the methods for control a collection of documents from a NoSQL database.
@@ -9,7 +11,7 @@ import java.util.List;
  * @author mario.sotil@gmail.com
  *
  */
-public interface DocumentList extends List<org.riverframework.Document> {
+public interface DocumentList extends List<org.riverframework.Document>, Iterable<org.riverframework.Document> {
 	/**
 	 * Returns the database where the collection's documents belong  
 	 * @return a Database object
@@ -23,4 +25,11 @@ public interface DocumentList extends List<org.riverframework.Document> {
 	 * @return the same DocumentList, for method chaining
 	 */
 	public DocumentList deleteAll();
+	
+	/**
+	 * Returns an iterator that delivers Document objects.
+	 * 
+	 * @return an iterator
+	 */
+	public DocumentIterator iterator();
 }

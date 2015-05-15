@@ -54,7 +54,7 @@ public abstract class AbstractDocumentListTest {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		DocumentList col = null;
-		col = database.getAllDocuments().deleteAll();
+		col = database.getAllDocuments().deleteAll().asDocumentList();
 
 		RandomString rs = new RandomString(10);
 
@@ -73,11 +73,11 @@ public abstract class AbstractDocumentListTest {
 		database.refreshSearchIndex();
 
 		col = null;
-		col = database.search("THIS IS IMPOSSIBLE TO FIND");
+		col = database.search("THIS IS IMPOSSIBLE TO FIND").asDocumentList();
 		assertTrue("The search returns values for a query that would returns nothing.", col.size() == 0);
 
 		col = null;
-		col = database.search("THIS_IS_THE_DOC");
+		col = database.search("THIS_IS_THE_DOC").asDocumentList();
 		assertTrue("The search does not returns values for a query that would returns something.", col.size() > 0);
 	}
 
@@ -92,11 +92,11 @@ public abstract class AbstractDocumentListTest {
 				.setField("Form", TEST_FORM)
 				.save();
 
-		DocumentList col = database.getAllDocuments();
+		DocumentList col = database.getAllDocuments().asDocumentList();
 		col.deleteAll();
 
 		col = null;
-		col = database.getAllDocuments();
+		col = database.getAllDocuments().asDocumentList();
 
 		assertTrue("The test database still has documents.", col.size() == 0);
 	}

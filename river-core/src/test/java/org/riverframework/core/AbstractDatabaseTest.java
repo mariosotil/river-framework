@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.Database;
 import org.riverframework.Document;
+import org.riverframework.DocumentIterator;
 import org.riverframework.DocumentList;
 import org.riverframework.Field;
 import org.riverframework.RandomString;
@@ -149,8 +150,7 @@ public abstract class AbstractDatabaseTest {
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentList col = null;
-		col = database.getAllDocuments().deleteAll();
+		DocumentIterator col = database.getAllDocuments().deleteAll();
 
 		RandomString rs = new RandomString(10);
 
@@ -170,11 +170,11 @@ public abstract class AbstractDatabaseTest {
 
 		col = null;
 		col = database.search("THIS IS IMPOSSIBLE TO FIND");
-		assertTrue("The search returns values for a query that would returns nothing.", col.isEmpty());
+		assertTrue("The search returns values for a query that would returns nothing.", !col.hasNext());
 
 		col = null;
 		col = database.search("THIS_IS_THE_DOC");
-		assertFalse("The search does not returns values for a query that would returns something.", col.isEmpty());
+		assertTrue("The search does not returns values for a query that would returns something.", col.hasNext());
 	}
 
 	@Test
@@ -199,7 +199,7 @@ public abstract class AbstractDatabaseTest {
 				.setField("Time", 27)
 				.save();
 
-		DocumentList col = vacationDatabase.getAllDocuments();
+		DocumentList col = vacationDatabase.getAllDocuments().asDocumentList();
 
 		for (Document doc : col) {
 			assertTrue("It could not possible load the vacation request object from the DocumentList.", doc.isOpen());
@@ -257,7 +257,8 @@ public abstract class AbstractDatabaseTest {
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		database.getAllDocuments().deleteAll();
+		DocumentIterator iterator = database.getAllDocuments().deleteAll();
+		assertFalse("The database still has documents.", iterator.hasNext());
 
 		database.createDocument(Person.class)
 				.setId("John")

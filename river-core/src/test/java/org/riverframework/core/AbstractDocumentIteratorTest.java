@@ -1,4 +1,4 @@
-package org.riverframework.wrapper;
+package org.riverframework.core;
 
 import static org.junit.Assert.assertTrue;
 
@@ -8,35 +8,36 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
+import org.riverframework.Database;
+import org.riverframework.Document;
+import org.riverframework.DocumentList;
 import org.riverframework.RandomString;
+import org.riverframework.Session;
+import org.riverframework.DocumentIterator;
 
 public abstract class AbstractDocumentIteratorTest {
-	final String TEST_FORM = "TestForm";
-
 	protected Session session = null;
+	protected Context context = null;
 	protected Database database = null;
 
-	protected Context context = null;
+	final String TEST_FORM = "TestForm";
 
 	@Before
 	public void open() {
 		// Opening the test context in the current package
 		try {
 			if (context == null) {
-				Class<?> clazz = Class.forName(this.getClass().getPackage()
-						.getName()
-						+ ".Context");
-				if (Context.class.isAssignableFrom(clazz)) {
+				String className = this.getClass().getPackage().getName() + ".Context";
+				Class<?> clazz = Class.forName(className);
+				if (org.riverframework.Context.class.isAssignableFrom(clazz)) {
 					Constructor<?> constructor = clazz.getDeclaredConstructor();
 					constructor.setAccessible(true);
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session) context.getSession().getWrapperObject();
-				database = session.getDatabase(context.getTestDatabaseServer(),
-						context.getTestDatabasePath());
+				session = context.getSession();
+				database = session.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
-
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -47,14 +48,15 @@ public abstract class AbstractDocumentIteratorTest {
 	public void close() {
 		context.closeSession();
 	}
-
+	
 	@Test
 	public void testIterator() {
 		assertTrue("The test database could not be instantiated.",
 				database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentList col = database.getAllDocuments().deleteAll().asDocumentList();
+		DocumentList col = null;
+		col = database.getAllDocuments().deleteAll().asDocumentList();
 
 		RandomString rs = new RandomString(10);
 
@@ -66,12 +68,11 @@ public abstract class AbstractDocumentIteratorTest {
 		col = database.getAllDocuments().asDocumentList();
 		DocumentIterator iterator = col.iterator();
 		int j = 0;
-		for (@SuppressWarnings("unused")
-		Document doc : iterator) {
+		for (Document doc : iterator) {
 			j++;
+			doc.close();
 		}
 		assertTrue("The iterator does not returns the expected values.",
 				j == 10);
-
 	}
 }

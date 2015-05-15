@@ -37,8 +37,6 @@ public interface Document extends Base {
 
 	public Map<String, Field> getFields();
 
-	public boolean isOpen();
-
 	public boolean isNew();
 
 	public Document delete();

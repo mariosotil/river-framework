@@ -35,7 +35,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	public DefaultDocument(org.riverframework.wrapper.Session s, lotus.domino.Document d) {
 		__doc = d;
 		session = s;
-		((DefaultSession) session).registerObject(__doc);
+		//((DefaultSession) session).getObject(__doc);
 	}
 
 	@Override
@@ -259,7 +259,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 
 			Vector<lotus.domino.Item> items;
 			items = __doc.getItems();
-			((DefaultSession) session).registerVector(items);
+			//((DefaultSession) session).registerVector(items);
 
 			// logWrapper.debug("getFields: found " + items.size());
 			result = new HashMap<String, Field>(items.size());

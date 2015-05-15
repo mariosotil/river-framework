@@ -1,13 +1,7 @@
 package org.riverframework.wrapper.lotus.domino;
 
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.UUID;
-import java.util.Vector;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import lotus.domino.NotesException;
@@ -15,21 +9,16 @@ import lotus.domino.NotesException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.River;
 import org.riverframework.RiverException;
-import org.riverframework.utils.StringDump;
 import org.riverframework.wrapper.Database;
 
 public class DefaultSession implements org.riverframework.wrapper.Session {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	private lotus.domino.Session __session = null;
-	private Map<Integer, WeakReference<lotus.domino.Base>> registeredObjects = null;
-	private Map<Integer, WeakReference<Vector<lotus.domino.Item>>> registeredVectors = null;
 	private UUID sessionUUID = null;
 
 	public DefaultSession(lotus.domino.Session obj) {
 		__session = obj;
-		registeredObjects = new HashMap<Integer, WeakReference<lotus.domino.Base>>();
-		registeredVectors = new HashMap<Integer, WeakReference<Vector<lotus.domino.Item>>>();
 		sessionUUID = UUID.randomUUID();
 
 		log.fine("ObjectId:" + getObjectId());
@@ -40,55 +29,52 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 		return sessionUUID.toString();
 	}
 
-	public void registerObject(lotus.domino.Base obj) {
-		if (obj != null) {
-			int id = System.identityHashCode(obj);
-			if (registeredObjects.get(id) == null) {
-				if (log.isLoggable(Level.FINEST)) {
-					String objClass = obj.getClass().getName();
-					String objContent = StringDump.dump(obj);
-					log.finest("Registering object: " + objClass + " - " + objContent);
-				}
-
-				registeredObjects.put(id, new WeakReference<lotus.domino.Base>(obj));
-			}
-		}
-	}
-
-	public void registerVector(Vector<lotus.domino.Item> obj) {
-		if (obj != null) {
-			int id = System.identityHashCode(obj);
-			if (registeredVectors.get(id) == null) {
-				if (log.isLoggable(Level.FINEST)) {
-					String objClass = obj.getClass().getName();
-					String objContent = StringDump.dump(obj);
-					log.finest("Registering object: " + objClass + " - " + objContent);
-				}
-
-				registeredVectors.put(id, new WeakReference<Vector<lotus.domino.Item>>(obj));
-			}
-		}
-	}
+//	static synchronized void getObject(Base wrapper) {
+//		if (wrapper != null) {
+//			String id = wrapper.getObjectId();
+//			DominoReference ref = pool.get(id);
+//			if (ref == null) {
+//				if (log.isLoggable(Level.FINEST)) {
+//					lotus.domino.Base nativeObject = (lotus.domino.Base) wrapper.getNativeObject();
+//					log.finest("Registering object: id=" + id +  "wrapper=" + wrapper.getClass().getName() + " (" + wrapper.hashCode() 
+//							+ ") native=" + nativeObject.getClass().getName() + " (" + nativeObject.hashCode() + ")");
+//				}
+//
+//				pool.put(id, new DominoReference(wrapper));
+//			} else {
+//				Base old = wrapper;
+//				wrapper = ref.getWrapperObject();
+//
+//				if (log.isLoggable(Level.FINEST)) {
+//					log.finest("Changing wrapper for the registered one: id=" + id + " wrapper=" + wrapper.getClass().getName() + " (" + wrapper.hashCode() + 
+//							")  Destroying old=" + old.getClass().getName() + " (" + old.hashCode() + ")");
+//				}
+//
+//				old.close();
+//			}
+//		}
+//	}
 
 	/**
 	 * Recycle a Lotus Notes object. If an exception is raised, the method will log it as a WARNING and will let
 	 * continue the execution. 
 	 * @param obj the object to be recycled
 	 */
-	private void recycleObject(lotus.domino.Base obj) {
-		if (obj != null) {			
-			String objClass = obj.getClass().getName();
-			String objContent = StringDump.dump(obj);
-			log.finest("Recycling object: " + objClass + " - " + objContent);
-
-			try{
-				obj.recycle();
-			} catch (NotesException e) {
-				log.log(Level.WARNING, "It was not possible to recycle this object: " + objClass + " - " + objContent, e);
-			} 
-			obj = null;
-		}
-	}
+//	static synchronized void recycleObject(String key) {
+//		DominoReference ref = pool.get(key);
+//		
+//		if (ref != null && ref.getWrapperObject() == null) {
+//			lotus.domino.Base obj = ref.getNativeObject();
+//			try {
+//				obj.recycle();
+//			} catch (NotesException e) {
+//				log.warning("There was a problem recycling the object with id=" + key);
+//			}
+//			obj = null;
+//
+//			pool.remove(key);
+//		}
+//	}
 
 	@Override
 	public lotus.domino.Session getNativeObject() {
@@ -103,7 +89,7 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 	@Override
 	public Database getDatabase(String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
-		
+
 		lotus.domino.Database _database = null;
 
 		if (location.length != 2)
@@ -118,33 +104,51 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 				boolean res = false;
 				_database = __session.getDatabase(null, null);
 				res = _database.openByReplicaID(server, path);
-				if (!res)
-					_database = null;
+				if (!res) _database = null;
 			}
+		} catch (NotesException e) {
+			try {
+				if (_database != null) _database.recycle();
+			} catch (NotesException e1) {
+				// Do nothing
+			} finally {
+				_database = null;
+			}
+		}
 
+		try {
 			if (_database == null || !_database.isOpen()) {
 				log.finer("Trying with a file path");
 				_database = __session.getDatabase(server, path, false);
 			}
+		} catch (NotesException e) {
+			try {
+				if (_database != null) _database.recycle();
+			} catch (NotesException e1) {
+				// Do nothing
+			} finally {
+				_database = null;
+			}
+		}
 
+		try {
 			if (_database != null && !_database.isOpen()) {
 				log.finer("The database could not be opened");
+				_database.recycle();
 				_database = null;
 			}
 		} catch (NotesException e) {
-			recycleObject(_database);
-
 			throw new RiverException(e);
 		}
 
-		Database database = new DefaultDatabase(this, _database);
+		Database database = Factory.createDatabase(this, _database);
 		return database;
 	}
 
 	@Override
 	public String getUserName() {
 		String userName = "";
-		
+
 		try {
 			userName = __session.getUserName();
 		} catch (NotesException e) {
@@ -156,45 +160,24 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 	}
 
 	protected void recycling() {
-		log.fine("Recycling all the items vectors before closing the session");
-		Iterator<Map.Entry<Integer, WeakReference<Vector<lotus.domino.Item>>>> itVec = registeredVectors.entrySet().iterator();
-		while (itVec.hasNext()) {
-			Map.Entry<Integer, WeakReference<Vector<lotus.domino.Item>>> entry = itVec.next();
-			WeakReference<Vector<lotus.domino.Item>> ref = entry.getValue();
-			if (ref != null) {
-				Vector<lotus.domino.Item> vec = ref.get();
-				if (vec != null) { 
-					for(int i = 0; i < vec.size(); i++) {
-						lotus.domino.Item obj = vec.get(i);
-						recycleObject(obj);
-					}
-					vec = null;
-				}
-				ref = null;
-			}
-		}
-
-		log.fine("Recycling all registered objects before closing the session");
-		Iterator<Map.Entry<Integer, WeakReference<lotus.domino.Base>>> itObj = registeredObjects.entrySet().iterator();
-		while (itObj.hasNext()) {
-			Map.Entry<Integer, WeakReference<lotus.domino.Base>> entry = itObj.next();
-			WeakReference<lotus.domino.Base> ref = entry.getValue();
-			if (ref != null) {
-				lotus.domino.Base obj = ref.get();
-				recycleObject(obj);
-				ref = null;
-			}
-		}		
+		Factory.close();
 	}
-	
+
 	@Override
 	public void close() {
 		log.fine("Closing session");
 
 		recycling();
-		
+
+		log.fine("Closing wrapper objects");
+
+
 		log.fine("Recycling the session");
-		recycleObject(__session);
+		try {
+			__session.recycle();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 	}
 
 	@Override

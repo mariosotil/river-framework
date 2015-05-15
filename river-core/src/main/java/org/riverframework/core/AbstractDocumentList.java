@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.Database;
+import org.riverframework.DocumentIterator;
 
 /**
  * It is a collection of Documents. Uses all the operations from ArrayList and
@@ -16,18 +17,26 @@ public abstract class AbstractDocumentList extends
 		ArrayList<org.riverframework.Document> implements
 		org.riverframework.DocumentList {
 	private static final long serialVersionUID = -5032050258891587783L;
-	// private org.riverframework.wrapper.DocumentList _list = null;
+	private org.riverframework.wrapper.DocumentList _list = null;
 	protected Database database;
 
 	protected AbstractDocumentList(Database d,
-			org.riverframework.wrapper.DocumentList _list) {
+			org.riverframework.wrapper.DocumentList _list) {		
 		database = d;
+		this._list = _list;
 		for (org.riverframework.wrapper.Document _doc : _list) {
 			org.riverframework.Document doc = database.getDocument(_doc);
 			this.add(doc);
 		}
 	}
 
+	@Override
+	public DocumentIterator iterator() {
+		DocumentIterator _iterator = new DefaultDocumentIterator(database, _list.iterator());
+		
+		return _iterator;		
+	}
+	
 	@Override
 	public org.riverframework.Database getDatabase() {
 		return database;

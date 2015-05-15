@@ -5,6 +5,7 @@ import lotus.domino.NotesException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
+import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.DocumentList;
 import org.riverframework.wrapper.View;
 
@@ -15,7 +16,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 	public DefaultView(org.riverframework.wrapper.Session s, lotus.domino.View v) {
 		__view = v;
 		session = s;
-		((DefaultSession) session).registerObject(__view);
+		//((DefaultSession) session).getObject(__view);
 	}
 
 	@Override
@@ -51,7 +52,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 			throw new RiverException(e);
 		}
 
-		Document doc = new DefaultDocument(session, _doc);
+		Document doc = Factory.createDocument(session, _doc);
 		return doc;
 	}
 
@@ -69,7 +70,8 @@ class DefaultView implements org.riverframework.wrapper.View {
 			throw new RiverException(e);
 		}
 
-		DocumentList result = new DefaultDocumentList(session, _col);
+		DocumentIterator _iterator = new DefaultDocumentIterator(session, _col);
+		DocumentList result = new DefaultDocumentList(session, _iterator);
 
 		try {
 			_col.recycle();
@@ -79,7 +81,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 
 		return result;
 	}
-
+	
 	@Override
 	public DocumentList getAllDocumentsByKey(Object key) {
 		lotus.domino.DocumentCollection _col;
@@ -89,7 +91,8 @@ class DefaultView implements org.riverframework.wrapper.View {
 			throw new RiverException(e);
 		}
 
-		DocumentList result = new DefaultDocumentList(session, _col);
+		DocumentIterator _iterator = new DefaultDocumentIterator(session, _col);
+		DocumentList result = new DefaultDocumentList(session, _iterator);
 
 		try {
 			_col.recycle();
@@ -117,7 +120,8 @@ class DefaultView implements org.riverframework.wrapper.View {
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
-		DocumentList result = new DefaultDocumentList(session, __view);
+		DocumentIterator _iterator = new DefaultDocumentIterator(session, __view);
+		DocumentList result = new DefaultDocumentList(session, _iterator);
 
 		return result;
 	}

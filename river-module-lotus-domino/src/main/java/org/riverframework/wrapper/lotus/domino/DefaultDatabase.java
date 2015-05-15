@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
-import org.riverframework.wrapper.DocumentList;
+import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
 class DefaultDatabase implements org.riverframework.wrapper.Database {
@@ -16,7 +16,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	protected DefaultDatabase(org.riverframework.wrapper.Session s, lotus.domino.Database obj) {
 		__database = obj;
 		session = s;
-		((DefaultSession) session).registerObject(__database);
+		// ((DefaultSession) session).getObject(__database);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	@Override
 	public String getObjectId() {
 		try {
-			return __database.getReplicaID();
+			return __database.getServer() + "!!" + __database.getFilePath();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -79,7 +79,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			throw new RiverException(e);
 		}
 
-		Document doc = new DefaultDocument(session, _doc);
+		Document doc = Factory.createDocument(session, _doc);
 		return doc;
 	}
 
@@ -96,24 +96,34 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 				if (id.length() == 32) {
 					_doc = __database.getDocumentByUNID(id);
 				}
+			} catch (NotesException e) {
+				// Maybe it was an invalid UNID. We just ignore the exception.
+				try {
+					if (_doc != null) _doc.recycle();
+				} catch (NotesException e1) {
+					// Do nothing
+				} finally {
+					_doc = null;
+				}
+			}
 
+			try {
 				if (_doc == null && id.length() == 8) {
 					_doc = __database.getDocumentByID(id);
 				}
 			} catch (NotesException e) {
+				// Maybe it was an invalid UNID. We just ignore the exception.
 				try {
-					if (_doc != null)
-						_doc.recycle();
+					if (_doc != null) _doc.recycle();
 				} catch (NotesException e1) {
+					// Do nothing
 				} finally {
 					_doc = null;
 				}
-
-				throw new RiverException(e);
 			}
 		}
 
-		Document doc = new DefaultDocument(session, _doc);
+		Document doc = Factory.createDocument(session, _doc);
 		return doc;
 	}
 
@@ -134,12 +144,12 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			throw new RiverException(e);
 		}
 
-		View view = new DefaultView(session, _view);
+		View view = Factory.createView(session, _view);
 		return view;
 	}
 
 	@Override
-	public DocumentList getAllDocuments() {
+	public DocumentIterator getAllDocuments() {
 		lotus.domino.DocumentCollection _col;
 
 		try {
@@ -148,19 +158,22 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			throw new RiverException(e);
 		}
 
-		DocumentList col = new DefaultDocumentList(session, _col);
+		DocumentIterator _iterator = new DefaultDocumentIterator(session, _col);
 
-		try {
-			_col.recycle();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
+		//		2015.05.08: I couldn't recycle this object at this time, because the Iterator 
+		//		will need it. So, I believe that the better approach is to find a better way  
+		//		to manage the objects to be recycled in automatic way. 
+		//		try {
+		//			_col.recycle();
+		//		} catch (NotesException e) {
+		//			throw new RiverException(e);
+		//		}
 
-		return col;
+		return _iterator;
 	}
 
 	@Override
-	public DocumentList search(String query) {
+	public DocumentIterator search(String query) {
 		lotus.domino.DocumentCollection _col;
 
 		try {
@@ -169,14 +182,17 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			throw new RiverException(e);
 		}
 
-		DocumentList result = new DefaultDocumentList(session, _col);
+		DocumentIterator _iterator = new DefaultDocumentIterator(session, _col);
 
-		try {
-			_col.recycle();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
-		return result;
+		//		2015.05.08: I couldn't recycle this object at this time, because the Iterator 
+		//		will need it. So, I believe that the better approach is to find a better way  
+		//		to manage the objects to be recycled in automatic way. 
+		//		try {
+		//			_col.recycle();
+		//		} catch (NotesException e) {
+		//			throw new RiverException(e);
+		//		}
+		return _iterator;
 	}
 
 	@Override

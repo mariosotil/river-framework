@@ -159,18 +159,10 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 		return userName;
 	}
 
-	protected void recycling() {
-		Factory.close();
-	}
-
 	@Override
 	public void close() {
-		log.fine("Closing session");
-
-		recycling();
-
-		log.fine("Closing wrapper objects");
-
+		log.fine("Closing factory");
+		Factory.close();
 
 		log.fine("Recycling the session");
 		try {

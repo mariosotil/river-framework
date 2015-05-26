@@ -14,10 +14,10 @@ import org.riverframework.wrapper.View;
 
 class Factory {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	private static DominoReferenceMap pool = null;
+	private static Pool pool = null;
 
 	static {
-		pool = new DominoReferenceMap();
+		pool = Pool.getInstance();
 	}
 
 	@SuppressWarnings("unused")
@@ -43,23 +43,24 @@ class Factory {
 
 	static Database createDatabase(org.riverframework.wrapper.Session session, lotus.domino.Database __database) {
 		Database _database = new DefaultDatabase(session, __database);
-		pool.getObject(_database);
+		pool.checkObj(_database);
 		return _database;
 	}
 	
 	static Document createDocument(org.riverframework.wrapper.Session session, lotus.domino.Document __doc) {
 		Document _doc = new DefaultDocument(session, __doc);
-		pool.getObject(_doc);
+		pool.checkObj(_doc);
 		return _doc;
 	}
 	
 	static View createView(org.riverframework.wrapper.Session session, lotus.domino.View __view) {
 		View _view = new DefaultView(session, __view);
-		pool.getObject(_view);
+		pool.checkObj(_view);
 		return _view;
 	}
 	
 	static void close() {
+		log.fine("Closing pool");
 		pool.close();
 	}
 }

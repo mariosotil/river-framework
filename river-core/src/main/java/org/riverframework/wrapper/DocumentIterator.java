@@ -2,8 +2,7 @@ package org.riverframework.wrapper;
 
 import java.util.Iterator;
 
-public interface DocumentIterator extends Iterator<Document>,
-		Iterable<Document> {
+public interface DocumentIterator extends Base, Iterator<Document>,	Iterable<Document> {
 	@Override
 	public DocumentIterator iterator();
 

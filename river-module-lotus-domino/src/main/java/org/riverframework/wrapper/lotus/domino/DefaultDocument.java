@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import lotus.domino.DateTime;
 import lotus.domino.Item;
 import lotus.domino.NotesException;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.riverframework.River;
 //import org.apache.log4j.Logger;
 import org.riverframework.RiverException;
 import org.riverframework.core.DefaultField;
@@ -28,14 +30,34 @@ import org.riverframework.Field;
  * @version 0.0.x
  */
 class DefaultDocument implements org.riverframework.wrapper.Document {
-	// static Logger logWrapper = Logger.getLogger(DefaultDocument.class.getName());
+	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session session = null;
 	protected lotus.domino.Document __doc = null;
+	private String objectId = null;
 
-	public DefaultDocument(org.riverframework.wrapper.Session s, lotus.domino.Document d) {
+	protected DefaultDocument(org.riverframework.wrapper.Session s, lotus.domino.Document d) {
 		__doc = d;
 		session = s;
-		//((DefaultSession) session).getObject(__doc);
+		calcObjectId();		
+	}
+
+	private void calcObjectId() {
+		if (__doc != null) {
+			try {
+				lotus.domino.Database __database = __doc.getParentDatabase();
+
+				StringBuilder sb = new StringBuilder();
+				sb.append(__database.getServer());
+				sb.append(River.ID_SEPARATOR);
+				sb.append(__database.getFilePath());
+				sb.append(River.ID_SEPARATOR);
+				sb.append(__doc.getUniversalID());
+
+				objectId = sb.toString();
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}	
+		} 
 	}
 
 	@Override
@@ -85,13 +107,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 
 	@Override
 	public String getObjectId() {
-		String result;
-		try {
-			result = __doc.getUniversalID();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
-		return result;
+		return objectId;
 	}
 
 	@Override
@@ -104,7 +120,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	@Override
 	public Field getField(String field) {
 		Field value = null;
@@ -189,7 +205,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 			if (temp != null && temp.getClass().getName().endsWith("DateTime")) {
 				temp = ((DateTime) temp).toJavaDate();
 			}
-			
+
 			result = Converter.getAsDate(temp);
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -204,13 +220,13 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 
 		try {
 			if (__doc.hasItem(field)) {
-				lotus.domino.Item _item = __doc.getFirstItem(field);
-				if (_item != null) {
-					if (_item.getType() == lotus.domino.Item.RICHTEXT) {
+				lotus.domino.Item __item = __doc.getFirstItem(field);
+				if (__item != null) {
+					if (__item.getType() == lotus.domino.Item.RICHTEXT) {
 						if (!__doc.getEmbeddedObjects().isEmpty()) {
 							for (@SuppressWarnings("unchecked")
 							Iterator<lotus.domino.EmbeddedObject> i = __doc.getEmbeddedObjects()
-									.iterator(); i.hasNext();) {
+							.iterator(); i.hasNext();) {
 								lotus.domino.EmbeddedObject eo = i.next();
 								if (eo.getType() != 0) {
 									result = false;
@@ -220,13 +236,15 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 						}
 					}
 
-					if (result && _item.getText() != "")
+					if (result && __item.getText() != "")
 						result = false;
 
 					try {
-						_item.recycle();
+						__item.recycle();
 					} catch (NotesException e) {
 						throw new RiverException(e);
+					} finally {
+						__item = null;
 					}
 				}
 			}
@@ -257,8 +275,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 			// logWrapper.debug("getFields: " + _doc.getUniversalID());
 			// logWrapper.debug("getFields: loading items");
 
-			Vector<lotus.domino.Item> items;
-			items = __doc.getItems();
+			Vector<lotus.domino.Item> items = __doc.getItems();
 			//((DefaultSession) session).registerVector(items);
 
 			// logWrapper.debug("getFields: found " + items.size());
@@ -282,6 +299,8 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 				} else {
 					values = new DefaultField();
 				}
+
+				it.recycle();
 
 				if (values.isEmpty()) {
 					// logWrapper.debug("getFields: it's empty");
@@ -328,11 +347,12 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 		if (__doc != null) {
 			try {
 				__doc.removePermanently(true);
-				__doc.recycle();
+				//__doc.recycle();
 			} catch (NotesException e) {
 				throw new RiverException(e);
+			} finally {
+				//__doc = null;
 			}
-			__doc = null;
 		}
 
 		return this;
@@ -350,18 +370,23 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 
 	@Override
 	public void close() {
-		try {
-			if (__doc != null)
-				__doc.recycle();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		} finally {
-			__doc = null;
-		}
+//		try {
+//			if (__doc != null)
+//				__doc.recycle();
+//		} catch (NotesException e) {
+//			throw new RiverException(e);
+//		} finally {
+//			__doc = null;
+//		}
 	}
 
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+
+	@Override
+	public void finalize() {
+		log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 }

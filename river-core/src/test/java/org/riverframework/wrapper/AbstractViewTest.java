@@ -146,16 +146,16 @@ public abstract class AbstractViewTest {
 	 */
 
 	@Test
-	public void testGetDocumentList() {
+	public void testGetDocumentIterator() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		// database.getAllDocuments().deleteAll();
 
 		View view = database.getView(TEST_VIEW);
 		view.refresh();
-		DocumentList col = view.getAllDocuments().deleteAll();
+		DocumentIterator col = view.getAllDocuments().deleteAll();
 
-		assertTrue("There is a problem with the database. There are still documents after the delete.", col.size() == 0);
+		assertFalse("There is a problem with the database. There are still documents after the delete.", col.hasNext());
 
 		for (int i = 0; i < 10; i++) {
 			database.createDocument()
@@ -167,7 +167,12 @@ public abstract class AbstractViewTest {
 		view.refresh();
 		col = view.getAllDocuments();
 
-		assertTrue("There is a problem getting documents from the database.", col.size() == 10);
+		int size = 0;
+		while(col.hasNext()) {
+			col.next();
+			size++;
+		}
+		assertTrue("There is a problem getting documents from the database.", size == 10);
 	}
 
 	@Test

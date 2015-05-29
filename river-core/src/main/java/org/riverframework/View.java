@@ -33,17 +33,17 @@ public interface View extends Base {
 	public <U extends Document> U getDocumentByKey(Class<U> clazz, String key);
 
 	/**
-	 * Returns a core DocumentList object with all the documents from the database.
+	 * Returns a core DocumentIterator object with all the documents from the database.
 	 * 
-	 * @return a core DocumentList object
+	 * @return a core DocumentIterator object
 	 */
-	public DocumentList getAllDocuments();
+	public DocumentIterator getAllDocuments();
 
 	/**
-	 * Searches by the key and returns a DocumentList object with all the documents that match. 
-	 * @return a core DocumentList object
+	 * Searches by the key and returns a DocumentIterator object with all the documents that match. 
+	 * @return a core DocumentIterator object
 	 */
-	public DocumentList getAllDocumentsByKey(Object key);
+	public DocumentIterator getAllDocumentsByKey(Object key);
 
 	/**
 	 * Refresh the view index. This method could be expensive depending on the wrapper used. It must be used with care.

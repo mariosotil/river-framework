@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.ClosedObjectException;
 import org.riverframework.Database;
+import org.riverframework.DocumentIterator;
 import org.riverframework.DocumentList;
 import org.riverframework.RiverException;
 import org.riverframework.View;
@@ -83,25 +84,23 @@ public abstract class AbstractView implements org.riverframework.View {
 	}
 
 	@Override
-	public DocumentList getAllDocuments() {
+	public DocumentIterator getAllDocuments() {
 		if (!isOpen())
 			throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.wrapper.DocumentList _col;
-		_col = _view.getAllDocuments();
-		DocumentList result = new DefaultDocumentList(database, _col);
+		org.riverframework.wrapper.DocumentIterator _iterator = _view.getAllDocuments();
+		DocumentIterator result = new DefaultDocumentIterator(database, _iterator);
 
 		return result;
 	}
 
 	@Override
-	public DocumentList getAllDocumentsByKey(Object key) {
+	public DocumentIterator getAllDocumentsByKey(Object key) {
 		if (!isOpen())
 			throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.wrapper.DocumentList _col;
-		_col = _view.getAllDocumentsByKey(key);
-		DocumentList result = new DefaultDocumentList(database, _col);
+		org.riverframework.wrapper.DocumentIterator _iterator = _view.getAllDocumentsByKey(key);
+		DocumentIterator result = new DefaultDocumentIterator(database, _iterator);
 
 		return result;
 	}
@@ -120,8 +119,7 @@ public abstract class AbstractView implements org.riverframework.View {
 		if (!isOpen())
 			throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.wrapper.DocumentList _col;
-		_col = _view.search(query);
+		org.riverframework.wrapper.DocumentList _col = _view.search(query);
 		DocumentList result = new DefaultDocumentList(database, _col);
 		return result;
 	}

@@ -35,6 +35,8 @@ public class River {
 	public static final Logger LOG_WRAPPER_ORG_OPENNTF_DOMINO = Logger.getLogger("org.riverframework.wrapper.org.openntf.domino");
 	public static final Logger LOG_WRAPPER_HAZELCAST = Logger.getLogger("org.riverframework.wrapper.hazelcast");
 
+	public static final String ID_SEPARATOR = "**"; 
+	
 	private final static Map<String, AbstractSession> map = new HashMap<String, AbstractSession>();
 
 	static {
@@ -80,7 +82,7 @@ public class River {
 			Class<?> clazzFactory = null;
 
 			try {
-				clazzFactory = Class.forName(wrapper + ".Factory");
+				clazzFactory = Class.forName(wrapper + ".DefaultFactory");
 			} catch (ClassNotFoundException e1) {
 				throw new RiverException("The wrapper '" + wrapper + "' can not be loaded. If you are using an non-official wrapper, " +
 						"check the wrapper name and its design. Check the CLASSPATH.");
@@ -90,7 +92,7 @@ public class River {
 			try {
 				if (parameters.length > 0) {
 					// There are parameters. So, we try to create a new one.
-					method = clazzFactory.getDeclaredMethod("createSession", Object[].class);
+					method = clazzFactory.getDeclaredMethod("getSession", Object[].class);
 					method.setAccessible(true);
 					_session = (org.riverframework.wrapper.Session) method.invoke(null, new Object[] { parameters });
 				} else {
@@ -102,7 +104,7 @@ public class River {
 				constructor.setAccessible(true);
 				session = (DefaultSession) constructor.newInstance(_session);
 			} catch (Exception e) {
-				throw new RiverException(e);
+				throw new RiverException("There's a problem opening the session. Maybe, you will need to check the parameters.", e);
 			}
 
 			map.put(wrapper, session);

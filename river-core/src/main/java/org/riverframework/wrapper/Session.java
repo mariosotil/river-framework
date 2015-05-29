@@ -5,6 +5,8 @@ public interface Session extends Base {
 
 	public String getUserName();
 
+	public Factory getFactory();
+	
 	@Override
 	public void close();
 }

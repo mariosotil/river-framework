@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.Database;
 import org.riverframework.Document;
+import org.riverframework.DocumentIterator;
 import org.riverframework.DocumentList;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
@@ -158,9 +159,15 @@ public abstract class AbstractViewTest {
 
 		View view = database.getView(DefaultView.class, TEST_VIEW);
 		view.refresh();
-		DocumentList col = view.getAllDocuments();
+		DocumentIterator col = view.getAllDocuments();
 
-		assertTrue("There is a problem getting documents from the database.", col.size() == 10);
+		int size = 0;
+		while(col.hasNext()) {
+			col.next();
+			size++;
+		}
+		
+		assertTrue("There is a problem getting documents from the database.", size == 10);
 	}
 
 	@Test

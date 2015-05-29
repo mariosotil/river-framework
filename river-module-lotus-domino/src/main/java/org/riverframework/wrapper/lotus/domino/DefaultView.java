@@ -1,8 +1,11 @@
 package org.riverframework.wrapper.lotus.domino;
 
+import java.util.logging.Logger;
+
 import lotus.domino.NotesException;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
@@ -10,21 +13,38 @@ import org.riverframework.wrapper.DocumentList;
 import org.riverframework.wrapper.View;
 
 class DefaultView implements org.riverframework.wrapper.View {
-	protected org.riverframework.wrapper.Session session = null;
+	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+	protected org.riverframework.wrapper.Session _session = null;
 	protected lotus.domino.View __view = null;
+	private String objectId = null;
 
-	public DefaultView(org.riverframework.wrapper.Session s, lotus.domino.View v) {
+	protected DefaultView(org.riverframework.wrapper.Session s, lotus.domino.View v) {
 		__view = v;
-		session = s;
-		//((DefaultSession) session).getObject(__view);
+		_session = s;
+		calcObjectId();
 	}
 
 	@Override
 	public String getObjectId() {
-		try {
-			return __view.getName();
-		} catch (NotesException e) {
-			throw new RiverException(e);
+		return objectId;
+	}
+
+	private void calcObjectId() {
+		if (__view != null) {
+			try {
+				lotus.domino.Database __database = __view.getParent();
+
+				StringBuilder sb = new StringBuilder();
+				sb.append(__database.getServer());
+				sb.append(River.ID_SEPARATOR);
+				sb.append(__database.getFilePath());
+				sb.append(River.ID_SEPARATOR);
+				sb.append(__view.getName());
+
+				objectId = sb.toString();
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}	
 		}
 	}
 
@@ -36,23 +56,27 @@ class DefaultView implements org.riverframework.wrapper.View {
 	@SuppressWarnings("unused")
 	@Override
 	public Document getDocumentByKey(String key) {
-		lotus.domino.Document _doc = null;
+		lotus.domino.Document __doc = null;
 
 		try {
-			_doc = __view.getDocumentByKey(key, true);
+			__doc = __view.getDocumentByKey(key, true);
 		} catch (NotesException e) {
-			try {
-				if (_doc != null)
-					_doc.recycle();
-			} catch (NotesException e1) {
-			} finally {
-				_doc = null;
-			}
+//			try {
+//				if (__doc != null) 
+//					__doc.recycle();
+//				
+//			} catch (NotesException e1) {
+//			} finally {
+//				__doc = null;
+//			}
 
 			throw new RiverException(e);
 		}
 
-		Document doc = Factory.createDocument(session, _doc);
+		//Document doc = Factory.createDocument(session, _doc);
+		//Document doc = ((org.riverframework.wrapper.lotus.domino.DefaultSession) _session).getFactory().getDocument(_doc);
+		Document doc = _session.getFactory().getDocument(__doc);
+
 		return doc;
 	}
 
@@ -62,7 +86,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 	}
 
 	@Override
-	public DocumentList getAllDocuments() {
+	public DocumentIterator getAllDocuments() {
 		lotus.domino.ViewEntryCollection _col;
 		try {
 			_col = __view.getAllEntries();
@@ -70,20 +94,20 @@ class DefaultView implements org.riverframework.wrapper.View {
 			throw new RiverException(e);
 		}
 
-		DocumentIterator _iterator = new DefaultDocumentIterator(session, _col);
-		DocumentList result = new DefaultDocumentList(session, _iterator);
+		DocumentIterator result = _session.getFactory().getDocumentIterator(_col);
+		//DocumentList result = new DefaultDocumentList(_session, _iterator);
 
-		try {
-			_col.recycle();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
+//		try {
+//			_col.recycle();
+//		} catch (NotesException e) {
+//			throw new RiverException(e);
+//		}
 
 		return result;
 	}
-	
+
 	@Override
-	public DocumentList getAllDocumentsByKey(Object key) {
+	public DocumentIterator getAllDocumentsByKey(Object key) {
 		lotus.domino.DocumentCollection _col;
 		try {
 			_col = __view.getAllDocumentsByKey(key, true);
@@ -91,14 +115,14 @@ class DefaultView implements org.riverframework.wrapper.View {
 			throw new RiverException(e);
 		}
 
-		DocumentIterator _iterator = new DefaultDocumentIterator(session, _col);
-		DocumentList result = new DefaultDocumentList(session, _iterator);
+		DocumentIterator result = _session.getFactory().getDocumentIterator(_col);
+		//DocumentList result = new DefaultDocumentList(_session, _iterator);
 
-		try {
-			_col.recycle();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
+//		try {
+//			_col.recycle();
+//		} catch (NotesException e) {
+//			throw new RiverException(e);
+//		}
 
 		return result;
 	}
@@ -120,26 +144,32 @@ class DefaultView implements org.riverframework.wrapper.View {
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
-		DocumentIterator _iterator = new DefaultDocumentIterator(session, __view);
-		DocumentList result = new DefaultDocumentList(session, _iterator);
+		DocumentIterator _iterator = _session.getFactory().getDocumentIterator(__view);
+		DocumentList result = new DefaultDocumentList(_session, _iterator);
 
 		return result;
 	}
 
 	@Override
 	public void close() {
-		try {
-			if (__view != null)
-				__view.recycle();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		} finally {
-			__view = null;
-		}
+//		try {
+//			if (__view != null) 
+//				__view.recycle();
+//			
+//		} catch (NotesException e) {
+//			throw new RiverException(e);
+//		} finally {
+//			__view = null;
+//		}
 	}
 
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+	
+	@Override
+	public void finalize() {
+		log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 }

@@ -120,12 +120,12 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 		return this;
 	}
 
-//	@SuppressWarnings("unchecked")
 	@Override
 	public Field getField(String field) {
 		Field value = null;
 
 		try {
+			@SuppressWarnings("unchecked")
 			Vector<Object> temp = __doc.getItemValue(field);
 			value = temp == null ? new DefaultField() : new DefaultField(temp);
 		} catch (NotesException e) {

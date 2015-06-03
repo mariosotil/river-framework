@@ -29,7 +29,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	public lotus.domino.Database getNativeObject() {
 		return __database;
 	}
-
+	
 	@Override
 	public String getObjectId() {
 		return objectId;

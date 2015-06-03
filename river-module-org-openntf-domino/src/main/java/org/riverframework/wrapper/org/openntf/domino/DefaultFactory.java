@@ -4,11 +4,15 @@ import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
 
 import org.riverframework.RiverException;
+import org.riverframework.wrapper.Database;
+import org.riverframework.wrapper.Document;
+import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.Session;
+import org.riverframework.wrapper.View;
 
-class Factory {
+class DefaultFactory implements org.riverframework.wrapper.Factory {
 	@SuppressWarnings("unused")
-	private static Session createSession(Object... parameters) {
+	private static Session getSession(Object... parameters) {
 		if (parameters.length == 1 && parameters[0] instanceof lotus.domino.Session) {
 			return new DefaultSession((org.openntf.domino.Session) org.openntf.domino.utils.Factory
 					.fromLotus((lotus.domino.Session) parameters[0], org.openntf.domino.Session.class, null));
@@ -33,5 +37,29 @@ class Factory {
 
 		throw new RiverException(
 				"Valid parameters: (A) one lotus.domino.Session, or (B) three Strings in this order: server, username and password.");
+	}
+
+	@Override
+	public Database getDatabase(Object obj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Document getDocument(Object obj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public View getView(Object obj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DocumentIterator getDocumentIterator(Object obj) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

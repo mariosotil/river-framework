@@ -24,7 +24,6 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected ConcurrentHashMap<String, WeakReference<Base>> map = null;
 	protected LinkedList<Reference> list = null;
-	//protected ConcurrentHashMap<String, Reference> list = null;
 	protected ReferenceQueue<Base> queue = null;
 	private static DefaultFactory instance = null;
 	protected org.riverframework.wrapper.Session _session = null;
@@ -34,7 +33,6 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 
 		map = new ConcurrentHashMap<String, WeakReference<Base>>();
 		list = new LinkedList<Reference>();
-		//list = new ConcurrentHashMap<String, Reference>();
 		queue = new ReferenceQueue<Base>();
 
 		Thread referenceThread = new Thread() {
@@ -42,7 +40,7 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 			public void run() {
 				while (true) {
 					try {
-						Thread.sleep(2000);
+						//Thread.sleep(500); // <== This line makes the application unstable and crashes the JVM
 						System.gc();
 						Thread.sleep(100);
 						Reference ref = null;
@@ -50,9 +48,9 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 							ref = (Reference) queue.remove(100);
 							if (ref != null) {
 								ref.close();
+								//list.remove(ref); // <== This line makes the application unstable and crashes the JVM						
 							}
 						} while (ref != null);
-						//list.remove(ref.getObjectId()); // <== ò_ó!!!							
 					} catch (Exception ex) {
 						log.warning("Exception at recycling");
 					}
@@ -62,27 +60,8 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 		referenceThread.setName("org.riverframework.wrapper.lotus.domino.Pool.referenceThread");
 		referenceThread.setDaemon(true);
 		referenceThread.start();
-
-		//		Thread gcThread = new Thread() {
-		//			@Override
-		//			public void run() {
-		//				while (true) {
-		//					try {
-		//						Thread.sleep(1000);
-		//					} catch (InterruptedException e) {
-		//						// Do nothing
-		//					}
-		//					System.gc();
-		//				}
-		//			}
-		//		};
-		//		gcThread.setName("org.riverframework.wrapper.lotus.domino.Pool.gcThread");
-		//		gcThread.setDaemon(true);
-		//		gcThread.start();
-
 	}
 
-	// Lazy Initialization (If required then only)
 	public static DefaultFactory getInstance(org.riverframework.wrapper.Session _session) {
 		if (instance == null) {
 			// Thread Safe. Might be costly operation in some case
@@ -137,24 +116,6 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 		//list.put(id, new Reference(wrapper, queue));
 		list.add(new Reference(wrapper, queue));
 	}
-
-	//	<U extends org.riverframework.wrapper.Base> U create(Class<U> clazz, lotus.domino.Base __obj) {
-	//		U _obj = null;
-	//
-	//		try {
-	//			if (__obj != null) {
-	//				Class<? extends lotus.domino.Base> classObj = __obj.getClass();			
-	//				Constructor<?> constructor = clazz.getDeclaredConstructor(org.riverframework.wrapper.Session.class, classObj);
-	//				constructor.setAccessible(true);  //protected DefaultDatabase(org.riverframework.wrapper.Session s, lotus.domino.Database obj) {
-	//				_obj = clazz.cast(constructor.newInstance(_session, __obj));
-	//				checkObj(_obj);
-	//			}
-	//		} catch (Exception e) {
-	//			throw new RiverException(e);
-	//		}
-	//
-	//		return _obj;
-	//	}	
 
 	@SuppressWarnings("unused")
 	private static Session getSession(Object... parameters) {

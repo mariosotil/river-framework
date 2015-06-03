@@ -53,7 +53,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 		return __view;
 	}
 
-	@SuppressWarnings("unused")
+//	@SuppressWarnings("unused")
 	@Override
 	public Document getDocumentByKey(String key) {
 		lotus.domino.Document __doc = null;

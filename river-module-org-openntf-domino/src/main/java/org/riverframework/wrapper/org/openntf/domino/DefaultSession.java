@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
+import org.riverframework.wrapper.Factory;
 
 public class DefaultSession implements org.riverframework.wrapper.Session {
 	private org.openntf.domino.Session _session = null;
@@ -73,5 +74,11 @@ public class DefaultSession implements org.riverframework.wrapper.Session {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+
+	@Override
+	public Factory getFactory() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

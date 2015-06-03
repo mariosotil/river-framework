@@ -39,6 +39,7 @@ public class ConverterTest {
 		cal.set(Calendar.HOUR, 1);
 		cal.set(Calendar.MINUTE, 2);
 		cal.set(Calendar.SECOND, 3);
+		cal.set(Calendar.MILLISECOND, 0);
 		obj = cal.getTime();
 		result = Converter.getAsString(obj);
 		assertTrue("Failed from Date to String", result.equals("Fri Apr 10 13:02:03 BOT 2015"));

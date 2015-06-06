@@ -132,9 +132,6 @@ public class DefaultSession implements Session {
 
 	@Override
 	public void close() {
-		log.fine("Closing factory");
-		getFactory().close();
-
 		log.fine("Recycling the session");
 		try {
 			__session.recycle();
@@ -143,6 +140,10 @@ public class DefaultSession implements Session {
 		} finally {
 			__session = null;
 		}
+
+		log.fine("Closing factory");
+		getFactory().close();
+		log.info("Session closed.");
 	}
 
 	@Override

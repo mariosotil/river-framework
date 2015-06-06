@@ -22,11 +22,12 @@ import org.riverframework.wrapper.View;
 
 public class DefaultFactory implements org.riverframework.wrapper.Factory {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	protected ConcurrentHashMap<String, WeakReference<Base>> map = null;
-	protected LinkedList<Reference> list = null;
-	protected ReferenceQueue<Base> queue = null;
+	protected volatile ConcurrentHashMap<String, WeakReference<Base>> map = null;
+	protected volatile LinkedList<Reference> list = null;
+	protected volatile ReferenceQueue<Base> queue = null;
 	private static DefaultFactory instance = null;
 	protected org.riverframework.wrapper.Session _session = null;
+	private ReferenceCollector rc = null;
 
 	protected DefaultFactory(org.riverframework.wrapper.Session _session) {
 		this._session  = _session;
@@ -34,32 +35,9 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 		map = new ConcurrentHashMap<String, WeakReference<Base>>();
 		list = new LinkedList<Reference>();
 		queue = new ReferenceQueue<Base>();
+		rc = new ReferenceCollector(queue);
 
-		Thread referenceThread = new Thread() {
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						//Thread.sleep(500); // <== This line makes the application unstable and crashes the JVM
-						System.gc();
-						Thread.sleep(100);
-						Reference ref = null;
-						do {
-							ref = (Reference) queue.remove(100);
-							if (ref != null) {
-								ref.close();
-								//list.remove(ref); // <== This line makes the application unstable and crashes the JVM						
-							}
-						} while (ref != null);
-					} catch (Exception ex) {
-						log.warning("Exception at recycling");
-					}
-				}
-			}
-		};
-		referenceThread.setName("org.riverframework.wrapper.lotus.domino.Pool.referenceThread");
-		referenceThread.setDaemon(true);
-		referenceThread.start();
+		rc.start();
 	}
 
 	public static DefaultFactory getInstance(org.riverframework.wrapper.Session _session) {
@@ -74,7 +52,7 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 		return instance;
 	}
 
-	protected void checkObj(Base wrapper) {
+	protected void processWrapper(Base wrapper) {
 		if (wrapper != null && wrapper.isOpen()) {
 			String id = wrapper.getObjectId();
 			WeakReference<Base> ref = map.get(id);
@@ -113,8 +91,9 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 		}
 
 		map.put(id, new WeakReference<Base>(wrapper));
-		//list.put(id, new Reference(wrapper, queue));
-		list.add(new Reference(wrapper, queue));
+		//synchronized (DefaultFactory.class) {
+			list.add(new Reference(wrapper, queue));
+		//}
 	}
 
 	@SuppressWarnings("unused")
@@ -143,7 +122,7 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 		if (!(__obj instanceof lotus.domino.Database)) throw new RiverException("Expected an object lotus.domino.Database");
 
 		Database _database = new DefaultDatabase(_session, (lotus.domino.Database)__obj);
-		checkObj(_database);
+		processWrapper(_database);
 		return _database;		
 	}
 
@@ -152,7 +131,7 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 		if (__obj != null && !(__obj instanceof lotus.domino.Document)) throw new RiverException("Expected an object lotus.domino.Document");
 
 		Document _doc = new DefaultDocument(_session, (lotus.domino.Document) __obj);
-		checkObj(_doc);
+		processWrapper(_doc);
 		return _doc;
 	}
 
@@ -161,7 +140,7 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 		if (__obj != null && !(__obj instanceof lotus.domino.View)) throw new RiverException("Expected an object lotus.domino.View");
 
 		View _view = new DefaultView(_session, (lotus.domino.View) __obj);
-		checkObj(_view);
+		processWrapper(_view);
 		return _view;
 	}
 
@@ -179,7 +158,7 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 
 		if (_it == null) throw new RiverException("Expected an object lotus.domino.DocumentCollection, lotus.domino.ViewEntryCollection or lotus.domino.View");
 
-		checkObj(_it);
+		processWrapper(_it);
 		return _it;
 	}
 
@@ -210,5 +189,8 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 				} 
 			}
 		}
+
+		rc.terminate();
+		log.info("Factory closed.");
 	}
 }

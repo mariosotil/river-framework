@@ -51,7 +51,9 @@ class DefaultDocumentIterator implements DocumentIterator {
 			__vecol = __obj.getAllEntries();
 			__ve = this.__vecol.getFirstEntry();
 			while (__ve != null && __ve.getDocument() == null) {
+				lotus.domino.ViewEntry __old = __ve;
 				__ve = __vecol.getNextEntry(__ve);
+				__old.recycle();
 			} 
 			
 		} catch (NotesException e) {
@@ -69,7 +71,9 @@ class DefaultDocumentIterator implements DocumentIterator {
 		try {
 			__ve = this.__vecol.getFirstEntry();
 			while (__ve != null && __ve.getDocument() == null) {
+				lotus.domino.ViewEntry __old = __ve;
 				__ve = __vecol.getNextEntry(__ve);
+				__old.recycle();
 			} 
 
 		} catch (NotesException e) {
@@ -142,7 +146,9 @@ class DefaultDocumentIterator implements DocumentIterator {
 			case VIEW_ENTRY_COLLECTION:
 				__current = __ve.getDocument();
 				do {
+					lotus.domino.ViewEntry __old = __ve;
 					__ve = __vecol.getNextEntry(__ve);
+					__old.recycle();
 				} while (__ve != null && __ve.getDocument() == null);
 
 				doc = _session.getFactory().getDocument(__current);

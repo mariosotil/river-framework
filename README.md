@@ -8,8 +8,8 @@ This is a Workflow Application Framework in an **EARLY development stage**. So f
 
 ```java
 //Opening a session
-Session session = River.getSession(River.LOTUS_DOMINO, "", "", password");
-Database database = session.getDatabase(DefaultDatabase.class, "", "example.nsf");
+Session session = River.getSession(River.LOTUS_DOMINO, "server", "username", "password");
+Database database = session.getDatabase(DefaultDatabase.class, "server", "example.nsf");
     
 // Creating one person
 Person jd = (Person) database.createDocument(Person.class)
@@ -86,7 +86,7 @@ So far, this framework has the following features:
 
 - Version 0.2.7
   - Auto recycling of IBM Notes objects. So far, I works good in a standalone Java program. I still making tests in XPages.
-  - Temporarily removing the support to the org.openntf.domino library, considering that the auto recycling ins working on the lotus.domino wrapper, and it's necessary to focus efforts in one wrapper at a time. 
+  - Temporarily removing the support to the org.openntf.domino library, considering that the auto recycling is working on the lotus.domino wrapper, and it's necessary to focus efforts in one wrapper at a time. 
 
 ## What I'm working on now?
 

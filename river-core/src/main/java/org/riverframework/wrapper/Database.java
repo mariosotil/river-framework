@@ -24,4 +24,6 @@ public interface Database extends Base {
 	public DocumentIterator search(String query);
 
 	public Database refreshSearchIndex();
+
+	public void remove();
 }

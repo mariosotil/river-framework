@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import org.riverframework.River;
 import org.riverframework.wrapper.Base;
 
-public class ReferenceCollector extends Thread implements Runnable {
+class ReferenceCollector extends Thread implements Runnable {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	protected ReferenceQueue<Base> queue = null;
@@ -29,9 +29,6 @@ public class ReferenceCollector extends Thread implements Runnable {
 		log.info("Reference Collector started.");
 		while (running) {
 			try {
-				//Thread.sleep(500);
-//				System.gc();
-//				Thread.sleep(100);
 				Reference ref = null;
 				do {
 					synchronized(DefaultFactory.class) {
@@ -39,7 +36,7 @@ public class ReferenceCollector extends Thread implements Runnable {
 					}
 					if (ref != null) {
 						ref.close();
-						//list.remove(ref); // <== ò_ó!!!							
+						//list.remove(ref); // <== This line breaks the process ò_ó!!!							
 					}
 				} while (ref != null);
 			} catch (Exception ex) {

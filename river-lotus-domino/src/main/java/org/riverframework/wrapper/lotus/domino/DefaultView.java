@@ -53,7 +53,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 		return __view;
 	}
 
-//	@SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	@Override
 	public Document getDocumentByKey(String key) {
 		lotus.domino.Document __doc = null;
@@ -61,20 +61,18 @@ class DefaultView implements org.riverframework.wrapper.View {
 		try {
 			__doc = __view.getDocumentByKey(key, true);
 		} catch (NotesException e) {
-//			try {
-//				if (__doc != null) 
-//					__doc.recycle();
-//				
-//			} catch (NotesException e1) {
-//			} finally {
-//				__doc = null;
-//			}
+			try {
+				if (__doc != null) 
+					__doc.recycle();				
+			} catch (NotesException e1) {
+				// Do nothing
+			} finally {
+				__doc = null;
+			}
 
 			throw new RiverException(e);
 		}
 
-		//Document doc = Factory.createDocument(session, _doc);
-		//Document doc = ((org.riverframework.wrapper.lotus.domino.DefaultSession) _session).getFactory().getDocument(_doc);
 		Document doc = _session.getFactory().getDocument(__doc);
 
 		return doc;
@@ -95,14 +93,6 @@ class DefaultView implements org.riverframework.wrapper.View {
 		}
 
 		DocumentIterator result = _session.getFactory().getDocumentIterator(_col);
-		//DocumentList result = new DefaultDocumentList(_session, _iterator);
-
-//		try {
-//			_col.recycle();
-//		} catch (NotesException e) {
-//			throw new RiverException(e);
-//		}
-
 		return result;
 	}
 
@@ -116,14 +106,6 @@ class DefaultView implements org.riverframework.wrapper.View {
 		}
 
 		DocumentIterator result = _session.getFactory().getDocumentIterator(_col);
-		//DocumentList result = new DefaultDocumentList(_session, _iterator);
-
-//		try {
-//			_col.recycle();
-//		} catch (NotesException e) {
-//			throw new RiverException(e);
-//		}
-
 		return result;
 	}
 
@@ -152,15 +134,14 @@ class DefaultView implements org.riverframework.wrapper.View {
 
 	@Override
 	public void close() {
-//		try {
-//			if (__view != null) 
-//				__view.recycle();
-//			
-//		} catch (NotesException e) {
-//			throw new RiverException(e);
-//		} finally {
-//			__view = null;
-//		}
+		try {
+			if (__view != null) 
+				__view.recycle();			
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		} finally {
+			__view = null;
+		}
 	}
 
 	@Override

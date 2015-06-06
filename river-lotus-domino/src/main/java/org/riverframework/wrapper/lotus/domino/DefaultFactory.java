@@ -91,9 +91,7 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 		}
 
 		map.put(id, new WeakReference<Base>(wrapper));
-		//synchronized (DefaultFactory.class) {
-			list.add(new Reference(wrapper, queue));
-		//}
+		list.add(new Reference(wrapper, queue));
 	}
 
 	@SuppressWarnings("unused")

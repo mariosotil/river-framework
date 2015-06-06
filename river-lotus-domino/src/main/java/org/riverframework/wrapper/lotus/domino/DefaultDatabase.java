@@ -101,6 +101,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 		return doc;
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public Document getDocument(String... parameters)
 	{
@@ -120,13 +121,13 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 				}
 			} catch (NotesException e) {
 				// Maybe it was an invalid UNID. We just ignore the exception.
-//				try {
-//					XXX if (__doc != null) __doc.recycle();
-//				} catch (NotesException e1) {
-//					Do nothing
-//				} finally {
-//					__doc = null;
-//				}
+				try {
+					if (__doc != null) __doc.recycle();
+				} catch (NotesException e1) {
+					// Do nothing
+				} finally {
+					__doc = null;
+				}
 			}
 
 			try {
@@ -135,18 +136,16 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 				}
 			} catch (NotesException e) {
 				// Maybe it was an invalid UNID. We just ignore the exception.
-//				try {
-//					XXX if (__doc != null) __doc.recycle();
-//				} catch (NotesException e1) {
-//					Do nothing
-//				} finally {
-//					__doc = null;
-//				}
+				try {
+					if (__doc != null) __doc.recycle();
+				} catch (NotesException e1) {
+					// Do nothing
+				} finally {
+					__doc = null;
+				}
 			}
 		}
 
-		//Document doc = Factory.createDocument(_session, _doc);
-		//Document doc = ((org.riverframework.wrapper.lotus.domino.DefaultSession) _session).getFactory().getDocument(_doc);
 		Document doc = _session.getFactory().getDocument(__doc);
 
 		return doc;
@@ -169,8 +168,6 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			throw new RiverException(e);
 		}
 
-		//View view = Factory.createView(_session, _view);
-		//View view = ((org.riverframework.wrapper.lotus.domino.DefaultSession) _session).getFactory().getView(_view);
 		View view = _session.getFactory().getView(_view);
 		return view;
 	}
@@ -186,16 +183,6 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 		}
 
 		DocumentIterator _iterator = _session.getFactory().getDocumentIterator(_col);
-		
-		//		2015.05.08: I couldn't recycle this object at this time, because the Iterator 
-		//		will need it. So, I believe that the better approach is to find a better way  
-		//		to manage the objects to be recycled in automatic way. 
-		//		try {
-		//			_col.recycle();
-		//		} catch (NotesException e) {
-		//			throw new RiverException(e);
-		//		}
-
 		return _iterator;
 	}
 
@@ -210,15 +197,6 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 		}
 
 		DocumentIterator _iterator = _session.getFactory().getDocumentIterator(_col);
-
-		//		2015.05.08: I couldn't recycle this object at this time, because the Iterator 
-		//		will need it. So, I believe that the better approach is to find a better way  
-		//		to manage the objects to be recycled in automatic way. 
-		//		try {
-		//			_col.recycle();
-		//		} catch (NotesException e) {
-		//			throw new RiverException(e);
-		//		}
 		return _iterator;
 	}
 
@@ -233,15 +211,15 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	}
 
 	@Override
-	public void close() {
-//		try {
-//			if (__database != null)
-//				__database.recycle();
-//		} catch (NotesException e) {
-//			throw new RiverException(e);
-//		} finally {
-//			__database = null;
-//		}
+	public void remove() {
+		try {
+			if (__database != null) 
+				__database.remove();			
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+		
+		close();
 	}
 
 	@Override
@@ -252,5 +230,17 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	@Override
 	public void finalize() {
 		log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
+	}
+
+	@Override
+	public void close() {
+		try {
+			if (__database != null) 
+				__database.recycle();			
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		} finally {
+			__database = null;
+		}
 	}
 }

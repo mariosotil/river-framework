@@ -370,14 +370,14 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 
 	@Override
 	public void close() {
-//		try {
-//			if (__doc != null)
-//				__doc.recycle();
-//		} catch (NotesException e) {
-//			throw new RiverException(e);
-//		} finally {
-//			__doc = null;
-//		}
+		try {
+			if (__doc != null) 
+				__doc.recycle();			
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		} finally {
+			__doc = null;
+		}
 	}
 
 	@Override

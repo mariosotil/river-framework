@@ -8,7 +8,7 @@ This is a Workflow Application Framework in an **EARLY development stage**. So f
 
 ```java
 //Opening a session
-Session session = River.getSession(River.MODULE_LOTUS_DOMINO, "password");
+Session session = River.getSession(River.LOTUS_DOMINO, "", "", password");
 Database database = session.getDatabase(DefaultDatabase.class, "", "example.nsf");
     
 // Creating one person
@@ -25,7 +25,7 @@ String id = jd.getId();
 DocumentList col = database.search("Doe");
 System.out.println("Found " + col.size() + " persons.");
 		
-// Finding a John Doe by Id
+// Finding John Doe by Id
 Document p = database.getDocument(Person.class, id);
 if (p.isOpen()) {
   System.out.println("Found " + id);
@@ -38,29 +38,19 @@ session.close();
 
 ## Maven
 
-To load the modules from Maven, you can add these dependencies to your pom.xml file:
+To load the artifacts from Maven, you can add this dependency to your pom.xml file:
 
 - To use it with the original lotus.domino package from IBM Notes
 
 ```xml
 		<dependency>
 			<groupId>org.riverframework</groupId>
-			<artifactId>river-module-lotus-domino</artifactId>
-			<version>0.1.0</version>
+			<artifactId>river-lotus-domino</artifactId>
+			<version>0.2.7</version>
 		</dependency>
 ```
 
-- To use it with the the org.openntf.domino package from OpenNTF
 
-```xml
-		<dependency>
-			<groupId>org.riverframework</groupId>
-			<artifactId>river-module-org-openntf-domino</artifactId>
-			<version>0.1.0</version>
-		</dependency>
-```
-
-Both modules load the last version of the core.
 
 ## Features
 
@@ -84,36 +74,37 @@ So far, this framework has the following features:
   - ~~Rolling back from the `org.openntf.domino` package to `lotus.domino`~~
   - Improvements in the design, wrapping the `lotus.domino` and the `org.openntf.domino` classes with the `org.riverframework.wrapper`classes
   - The package `org.riverframework.core` will control the wrapped classes 
-  - Improvements in the design, making the modules for the wrappers classes be totally separated from the core. So, each module can be loaded on runtime.
+  - Improvements in the design, making that the wrappers classes be totally separated from the core. So, each wrapper can be loaded on runtime.
   - Improvements in DocumentCollection as array
   - Redesign the JUnit tests for testing the wrappers for `lotus.domino` and the `org.openntf.domino`, and testing the core with each wrapper
-  - Improvements in the `org.riverframework.module.lotus.domino` memory management. All the objects are recycled when the session is closed.
+  - Improvements in the `org.riverframework.wrapper.lotus.domino` memory management. All the objects are recycled when the session is closed.
   - Update the Java example
 
 - Version 0.2.6
-  - As the logical separation was done, physically separate the current Framework in three JAR files: the Core, the lotus.domino module and the org.openntf.domino module.
+  - As the logical separation was done, physically separate the current Framework in three JAR files: the Core, the lotus.domino wrapper and the org.openntf.domino wrapper.
   - Publish the JARs in a public Maven repository
+
+- Version 0.2.7
+  - Auto recycling of IBM Notes objects. So far, I works good in a standalone Java program. I still making tests in XPages.
+  - Temporarily removing the support to the org.openntf.domino library, considering that the auto recycling ins working on the lotus.domino wrapper, and it's necessary to focus efforts in one wrapper at a time. 
 
 ## What I'm working on now?
 
-- Version 0.2.6
-  - Creating a module and JUnit tests for a NoSQL in-memory database
-  - Create new Java examples
-
+- Version 0.2.7
+  - Adding more functionality (create and removing databases, views, etc.)
+  - Creating a wrapper and JUnit tests for a NoSQL in-memory database (Hazelcast)
+  - Creating new Java examples
+  
 ## What is in the ToDo list?
 
 There are a lot of features that I will add to this framework:
 
-- Version 0.2.7
-  - Redesign the current class structure inspired in IBM Notes (Session -> Database -> Document, View, DocumentCollection), looking for a more simple approach.
-  - Update the Java example
-  
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs
   - Examples in Java, SSJS, XPages and LotusScript
   
 - Version 0.4
-  - Connection to other NoSQL server: MongoDB
+  - Connection to other NoSQL servers: MongoDB and CouchDB
   
 - Next versions
   - Logging of changes in the fields of a document

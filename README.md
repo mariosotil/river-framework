@@ -85,19 +85,21 @@ So far, this framework has the following features:
   - Publish the JARs in a public Maven repository
 
 - Version 0.2.7
-  - Auto recycling of IBM Notes objects. So far, I works good in a standalone Java program. I still making tests in XPages.
+  - Auto recycling of IBM Notes objects. So far, it works good in a standalone Java program. I still making tests in XPages.
   - Temporarily removing the support to the org.openntf.domino library, considering that the auto recycling is working on the lotus.domino wrapper, and it's necessary to focus efforts in one wrapper at a time. 
 
 ## What I'm working on now?
 
 - Version 0.2.7
   - Adding more functionality (create and removing databases, views, etc.)
-  - Creating a wrapper and JUnit tests for a NoSQL in-memory database (Hazelcast)
   - Creating new Java examples
   
 ## What is in the ToDo list?
 
 There are a lot of features that I will add to this framework:
+
+- Version 0.2.8
+  - Creating a wrapper and JUnit tests for a NoSQL in-memory database (Hazelcast)
 
 - Version 0.3
   - Relation between documents (1..\*, \*..\*) using graphs

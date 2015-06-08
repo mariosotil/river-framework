@@ -347,11 +347,11 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 		if (__doc != null) {
 			try {
 				__doc.removePermanently(true);
-				//__doc.recycle();
+				__doc.recycle();
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			} finally {
-				//__doc = null;
+				__doc = null;
 			}
 		}
 

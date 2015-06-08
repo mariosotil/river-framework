@@ -49,7 +49,7 @@ public abstract class AbstractSessionTest {
 	}
 
 	@Test
-	public void testCreateRemoveDatabase() {
+	public void testCreateAndDeleteDatabase() {
 		Session _session = (Session) context.getSession().getWrapperObject();
 		assertTrue("The Session could not be opened.", _session.isOpen());
 
@@ -57,7 +57,7 @@ public abstract class AbstractSessionTest {
 		Database _db = _session.createDatabase(context.getTestDatabaseServer(), "test_river_" + sdf.format(new Date()) + ".nsf");
 		assertTrue("The Database could not be created.", _db.isOpen());
 
-		_db.remove();
+		_db.delete();
 		assertFalse("The Database could not be removed.", _db.isOpen());
 
 		context.closeSession();

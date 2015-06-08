@@ -9,91 +9,118 @@ package org.riverframework;
 public interface Database extends Base {
 	/**
 	 * Returns the Session that instanced the database
-	 * @return a Session object. 
+	 * 
+	 * @return a Session object.
 	 */
 	public Session getSession();
 
 	/**
-	 * *
-	 * Creates a document. The parameters needed will depend on what wrapper is loaded.
+	 * * Creates a document. The parameters needed will depend on what wrapper
+	 * is loaded.
+	 * 
 	 * @param parameters
-	 *            a set of Strings that will let the Database create a Document. 
+	 *            a set of Strings that will let the Database create a Document.
 	 * @return a new Document
 	 */
 	public Document createDocument(String... parameters);
 
 	/**
-	 * Returns an existent view. The parameters needed will depend on what wrapper is being used.
+	 * Returns an existent view. The parameters needed will depend on what
+	 * wrapper is being used.
+	 * 
 	 * @param parameters
-	 *            a set of Strings that will let the Database get an existent View. 
+	 *            a set of Strings that will let the Database get an existent
+	 *            View.
 	 * @return a DefaultView object
 	 */
 	public View getView(String... parameters);
 
 	/**
-	 * Returns a View object instanced from the 'clazz' parameter. The clazz must inherit from DefaultView. The parameters needed will depend on what wrapper is being used.
+	 * Returns a View object instanced from the 'clazz' parameter. The clazz
+	 * must inherit from DefaultView. The parameters needed will depend on what
+	 * wrapper is being used.
 	 * 
 	 * @param clazz
-	 *            a class that inherits from DefaultView and implements the View interface.
+	 *            a class that inherits from DefaultView and implements the View
+	 *            interface.
 	 * @param parameters
-	 *            a set of Strings that will let the Database get an existent View. 
+	 *            a set of Strings that will let the Database get an existent
+	 *            View.
 	 * @return a 'clazz' object
 	 */
 	public <U extends View> U getView(Class<U> clazz, String... parameters);
 
 	/**
-	 * Creates a Document object instanced from the 'clazz' parameter. The clazz must inherit from
-	 * DefaultDocument. The parameters needed will depend on what wrapper is being used.
+	 * Creates a Document object instanced from the 'clazz' parameter. The clazz
+	 * must inherit from DefaultDocument. The parameters needed will depend on
+	 * what wrapper is being used.
 	 * 
 	 * @param clazz
-	 *            a class that inherits from DefaultDocument and implements Document.
+	 *            a class that inherits from DefaultDocument and implements
+	 *            Document.
 	 * @param parameters
-	 *            a set of Strings that will let the Database creates a new Document. 
+	 *            a set of Strings that will let the Database creates a new
+	 *            Document.
 	 * @return a 'clazz' object
 	 */
 	public <U extends Document> U createDocument(Class<U> clazz, String... parameters);
 
 	/**
-	 * Returns an existent Document. The parameters needed will depend on what wrapper is being used.
+	 * Returns an existent Document. The parameters needed will depend on what
+	 * wrapper is being used.
 	 * 
 	 * @param parameters
-	 *            a set of Strings that will let the Database locate an existent new Document. 
-	 * @return the Document found. If no document is found, the method returns a closed Document object
+	 *            a set of Strings that will let the Database locate an existent
+	 *            new Document.
+	 * @return the Document found. If no document is found, the method returns a
+	 *         closed Document object
 	 */
 	public Document getDocument(String... parameters);
 
 	/**
-	 * Returns a Document object instanced from the 'clazz' parameter. The clazz must inherit from
-	 * DefaultDocument. The parameters needed will depend on what wrapper is being used.
+	 * Returns a Document object instanced from the 'clazz' parameter. The clazz
+	 * must inherit from DefaultDocument. The parameters needed will depend on
+	 * what wrapper is being used.
 	 * 
 	 * @param clazz
-	 *            a class that inherits from DefaultDocument and implements Document.
+	 *            a class that inherits from DefaultDocument and implements
+	 *            Document.
 	 * @param parameters
-	 *            a set of Strings that will let the Database locate an existent new Document. 
-	 * @return the Document found. If no document is found, the method returns a closed Document object
+	 *            a set of Strings that will let the Database locate an existent
+	 *            new Document.
+	 * @return the Document found. If no document is found, the method returns a
+	 *         closed Document object
 	 */
 	public <U extends Document> U getDocument(Class<U> clazz, String... parameters);
 
 	/**
-	 * Returns a Document object instanced from the 'clazz' parameter. The clazz must inherit from
-	 * DefaultDocument. The parameter createIfDoesNotExist lets to create the document if the method fails to found it. The parameters needed will depend on what wrapper is being used.
+	 * Returns a Document object instanced from the 'clazz' parameter. The clazz
+	 * must inherit from DefaultDocument. The parameter createIfDoesNotExist
+	 * lets to create the document if the method fails to found it. The
+	 * parameters needed will depend on what wrapper is being used.
 	 * 
 	 * @param clazz
-	 *            a class that inherits from DefaultDocument and implements Document.
+	 *            a class that inherits from DefaultDocument and implements
+	 *            Document.
 	 * @param createIfDoesNotExist
-	 *            if it's true and no document is found, the method returns a new document instanced from 'clazz'
+	 *            if it's true and no document is found, the method returns a
+	 *            new document instanced from 'clazz'
 	 * @param parameters
-	 *            a set of Strings that will let the Database locate an existent new Document. 
-	 * @return the Document found. If no document is found, and createIfDoesNotExist is false, the method returns a closed Document object
+	 *            a set of Strings that will let the Database locate an existent
+	 *            new Document.
+	 * @return the Document found. If no document is found, and
+	 *         createIfDoesNotExist is false, the method returns a closed
+	 *         Document object
 	 */
 	public <U extends Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters);
 
 	/**
-	 * Creates a Document object instanced from the 'clazz' parameter, using a wrapper Document. The clazz must inherit from
-	 * DefaultDocument.
+	 * Creates a Document object instanced from the 'clazz' parameter, using a
+	 * wrapper Document. The clazz must inherit from DefaultDocument.
 	 * 
 	 * @param clazz
-	 *            a class that inherits from DefaultDocument and implements Document.
+	 *            a class that inherits from DefaultDocument and implements
+	 *            Document.
 	 * @param doc
 	 *            an object Document from the wrapper loaded in this time.
 	 * @return a Document object using the doc provided as parameter.
@@ -101,8 +128,8 @@ public interface Database extends Base {
 	public <U extends Document> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document doc);
 
 	/**
-	 * Creates a Document object. The class is detected from the object doc using the rules write in the
-	 * method detectClass
+	 * Creates a Document object. The class is detected from the object doc
+	 * using the rules write in the method detectClass
 	 * 
 	 * @param doc
 	 *            an wrapper Document object
@@ -111,8 +138,8 @@ public interface Database extends Base {
 	public Document getDocument(org.riverframework.wrapper.Document doc);
 
 	/**
-	 * Returns the class that getDocument(doc) must use following arbitrary conditions as some field from
-	 * the doc object.
+	 * Returns the class that getDocument(doc) must use following arbitrary
+	 * conditions as some field from the doc object.
 	 * 
 	 * @param doc
 	 *            an wrapper Document object
@@ -121,15 +148,23 @@ public interface Database extends Base {
 	public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document doc);
 
 	/**
-	 * Returns all documents from the database as a DocumentIterator object, that implements List
+	 * Returns all documents from the database as a DocumentIterator object,
+	 * that implements List
 	 * 
 	 * @return a DocumentIterator document
 	 */
 	public DocumentIterator getAllDocuments();
 
 	/**
-	 * Returns the documents that match the query as a DocumentIterator object. The style of the query depends on how
-	 * is implemented in the wrapper loaded. For example, in IBM Notes is just something like "Black AND Dog"
+	 * Deletes the current database. The function isOpen will return false after
+	 * call it.
+	 */
+	public void delete();
+
+	/**
+	 * Returns the documents that match the query as a DocumentIterator object.
+	 * The style of the query depends on how is implemented in the wrapper
+	 * loaded. For example, in IBM Notes is just something like "Black AND Dog"
 	 * 
 	 * @param query
 	 * @return a DocumentIterator document
@@ -137,15 +172,16 @@ public interface Database extends Base {
 	public DocumentIterator search(String query);
 
 	/**
-	 * Refresh the database index. How this index is refreshed will depend on how is implemented in the wrapper
-	 * loaded.
+	 * Refresh the database index. How this index is refreshed will depend on
+	 * how is implemented in the wrapper loaded.
 	 * 
 	 * @return the object itself for method chaining
 	 */
 	public Database refreshSearchIndex();
 
 	/**
-	 * Returns an Counter object to be used to generate autoincremental ids, for be used for implement the Unique interface.
+	 * Returns an Counter object to be used to generate autoincremental ids, for
+	 * be used for implement the Unique interface.
 	 * 
 	 * @param key
 	 *            the key for the counter
@@ -154,24 +190,24 @@ public interface Database extends Base {
 	public Counter getCounter(String key);
 
 	/**
-	 * Returns true if the wrapper Database object was opened. If the wrapper Database is null or can't be opened, this method will
-	 * returns false.
+	 * Returns true if the wrapper Database object was opened. If the wrapper
+	 * Database is null or can't be opened, this method will returns false.
 	 * 
 	 * @return true if the wrapper Database is opened
 	 */
 	public boolean isOpen();
 
 	/**
-	 * Returns the server where the database is allocated. The String returned will depend on how is
-	 * implemented the wrapper loaded.
+	 * Returns the server where the database is allocated. The String returned
+	 * will depend on how is implemented the wrapper loaded.
 	 * 
 	 * @return the Database server
 	 */
 	public String getServer();
 
 	/**
-	 * Returns the file path where the database is allocated. The String returned will depend on how is
-	 * implemented the wrapper loaded.
+	 * Returns the file path where the database is allocated. The String
+	 * returned will depend on how is implemented the wrapper loaded.
 	 * 
 	 * @return the Database file path
 	 */

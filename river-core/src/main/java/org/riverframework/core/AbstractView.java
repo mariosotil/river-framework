@@ -11,8 +11,8 @@ import org.riverframework.RiverException;
 import org.riverframework.View;
 
 /**
- * Implements the View interface. Groups the Documents using an internal index and allows
- * access to them searching by key or just getting all the documents.
+ * Implements the View interface. Groups the Documents using an internal index
+ * and allows access to them searching by key or just getting all the documents.
  * 
  * @author mario.sotil@gmail.com
  *
@@ -112,6 +112,14 @@ public abstract class AbstractView implements org.riverframework.View {
 
 		_view.refresh();
 		return this;
+	}
+
+	@Override
+	public void delete() {
+		if (!isOpen())
+			throw new ClosedObjectException("The View object is closed.");
+
+		_view.delete();
 	}
 
 	@Override

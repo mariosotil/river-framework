@@ -120,6 +120,20 @@ class DefaultView implements org.riverframework.wrapper.View {
 	}
 
 	@Override
+	public void delete() {
+		if (__view != null) {
+			try {
+				__view.remove();
+				__view.recycle();
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			} finally {
+				__view = null;
+			}
+		}
+	}
+
+	@Override
 	public DocumentList search(String query) {
 		try {
 			__view.FTSearch(query);
@@ -148,7 +162,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
-	
+
 	@Override
 	public void finalize() {
 		log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");

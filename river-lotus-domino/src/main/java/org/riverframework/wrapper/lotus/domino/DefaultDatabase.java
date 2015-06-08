@@ -152,24 +152,57 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	}
 
 	@Override
+	public View createView(String... parameters) {
+		lotus.domino.View __view = null;
+		String name = null;
+		
+		try {
+			if (parameters.length == 1) {
+				name = parameters[0];
+				__view = __database.createView(name);
+			} else if (parameters.length == 2) {
+				name = parameters[0];
+				String selectionFormula = parameters[1];
+				__view = __database.createView(name, selectionFormula);
+			} else {
+				throw new RiverException("It was expected these parameters: name (required) and selection formula (optional).");
+			}			
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+
+		if (name != null && !name.equals("") && __view != null) {
+			try {
+				__view.recycle();
+				__view = null;
+			} catch (Exception e) {
+				throw new RiverException(e);
+			}
+		}
+		
+		View _view = getView(name);
+		return _view;
+	}
+	
+	@Override
 	public View getView(String... parameters) {
-		lotus.domino.View _view = null;
+		lotus.domino.View __view = null;
 
 		try {
 			if (parameters.length > 0) {
 				String id = parameters[0];
-				_view = __database.getView(id);
+				__view = __database.getView(id);
 			}
 
-			if (_view != null)
-				_view.setAutoUpdate(false);
+			if (__view != null)
+				__view.setAutoUpdate(false);
 
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
 
-		View view = _session.getFactory().getView(_view);
-		return view;
+		View _view = _session.getFactory().getView(__view);
+		return _view;
 	}
 
 	@Override
@@ -211,7 +244,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	}
 
 	@Override
-	public void remove() {
+	public void delete() {
 		try {
 			if (__database != null) 
 				__database.remove();			

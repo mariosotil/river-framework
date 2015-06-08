@@ -13,9 +13,9 @@ import org.riverframework.Session;
 import org.riverframework.Unique;
 
 /**
- * It is the implementation for the interface Database. This class uses the Database wrapper loaded
- * at the Session creation. The Database lets you manage Documents, Counters, Views, and the Document's
- * searching.
+ * It is the implementation for the interface Database. This class uses the
+ * Database wrapper loaded at the Session creation. The Database lets you manage
+ * Documents, Counters, Views, and the Document's searching.
  * 
  * @author mario.sotil@gmail.com
  *
@@ -126,9 +126,7 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist,
-			String... parameters)
-	{
+	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Database object is closed.");
 
@@ -160,8 +158,8 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 				org.riverframework.wrapper.View indexView = _database.getView(indexName);
 
 				if (indexView == null || !indexView.isOpen())
-					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but the index view "
-							+ indexName + " does not exist.");
+					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but the index view " + indexName
+							+ " does not exist.");
 
 				indexView.refresh(); // TODO: this is EXPENSIVE!!
 				_doc = indexView.getDocumentByKey(id);
@@ -170,8 +168,7 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 			if ((_doc == null || !_doc.isOpen()) && createIfDoesNotExist) {
 				// Creating a new document
 				if (clazz == null)
-					throw new RiverException(
-							"It's not possible create the document when the class parameter is null.");
+					throw new RiverException("It's not possible create the document when the class parameter is null.");
 
 				doc = createDocument(clazz, parameters);
 
@@ -277,6 +274,14 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 		DocumentIterator result = new DefaultDocumentIterator(this, _iterator);
 
 		return result;
+	}
+
+	@Override
+	public void delete() {
+		if (!isOpen())
+			throw new ClosedObjectException("The Database object is closed.");
+
+		_database.delete();
 	}
 
 	@Override

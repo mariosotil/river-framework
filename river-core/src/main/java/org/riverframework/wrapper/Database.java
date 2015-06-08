@@ -17,6 +17,8 @@ public interface Database extends Base {
 
 	public Document getDocument(String... parameters);
 
+	public View createView(String... parameters);
+
 	public View getView(String... parameters);
 
 	public DocumentIterator getAllDocuments();
@@ -25,5 +27,5 @@ public interface Database extends Base {
 
 	public Database refreshSearchIndex();
 
-	public void remove();
+	public void delete();
 }

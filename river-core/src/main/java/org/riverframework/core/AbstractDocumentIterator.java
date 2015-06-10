@@ -1,14 +1,13 @@
 package org.riverframework.core;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.riverframework.ClosedObjectException;
 import org.riverframework.Database;
 import org.riverframework.Document;
 import org.riverframework.DocumentIterator;
-import org.riverframework.DocumentList;
 
 /**
- * It is a collection of Documents. Uses all the operations from ArrayList and allows only objects that
- * implements the Document interface. 
+ * It is a collection of Documents. Uses all the operations from ArrayList and
+ * allows only objects that implements the Document interface.
  * 
  * @author mario.sotil@gmail.com
  *
@@ -30,7 +29,7 @@ public abstract class AbstractDocumentIterator implements DocumentIterator {
 	@Override
 	public Document next() {
 		org.riverframework.wrapper.Document _doc = _iterator.next();
-		org.riverframework.Document doc = database.getDocument(_doc); 
+		org.riverframework.Document doc = database.getDocument(_doc);
 		return doc;
 	}
 
@@ -53,10 +52,24 @@ public abstract class AbstractDocumentIterator implements DocumentIterator {
 	public boolean isOpen() {
 		return (_iterator != null);
 	}
-	
+
+	@Override
+	public String getObjectId() {
+		if (!isOpen())
+			throw new ClosedObjectException("The Document object is closed.");
+
+		String result = _iterator.getObjectId();
+		return result;
+	}
+
+	@Override
+	public org.riverframework.wrapper.DocumentIterator getWrapperObject() {
+		return _iterator;
+	}
+
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		return getClass().getName() + "(" + getWrapperObject().toString() + ")";
 	}
 
 	@Override
@@ -66,8 +79,7 @@ public abstract class AbstractDocumentIterator implements DocumentIterator {
 	}
 
 	@Override
-	public DocumentList asDocumentList() {
-		DocumentList list = new DefaultDocumentList(database, _iterator.asDocumentList());
-		return list;
+	public void close() {
+		_iterator.close();
 	}
 }

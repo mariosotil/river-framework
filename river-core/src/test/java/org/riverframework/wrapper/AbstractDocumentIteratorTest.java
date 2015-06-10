@@ -1,5 +1,6 @@
 package org.riverframework.wrapper;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
@@ -54,7 +55,7 @@ public abstract class AbstractDocumentIteratorTest {
 				database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentList col = database.getAllDocuments().deleteAll().asDocumentList();
+		DocumentIterator col = database.getAllDocuments().deleteAll();
 
 		RandomString rs = new RandomString(10);
 
@@ -63,7 +64,7 @@ public abstract class AbstractDocumentIteratorTest {
 					.setField("Value", rs.nextString()).save();
 		}
 
-		col = database.getAllDocuments().asDocumentList();
+		col = database.getAllDocuments();
 		DocumentIterator iterator = col.iterator();
 		int j = 0;
 		for (@SuppressWarnings("unused")
@@ -73,5 +74,24 @@ public abstract class AbstractDocumentIteratorTest {
 		assertTrue("The iterator does not returns the expected values.",
 				j == 10);
 
+	}
+	
+	@Test
+	public void testDeleteAll() {
+		assertTrue("The test database could not be opened.", database.isOpen());
+
+		// Creating at least one document
+		@SuppressWarnings("unused")
+		Document doc = database.createDocument()
+				.setField("Form", TEST_FORM)
+				.save();
+
+		DocumentIterator col = database.getAllDocuments();
+		col.deleteAll();
+
+		col = null;
+		col = database.getAllDocuments();
+
+		assertFalse("The test database still has documents.", col.hasNext());
 	}
 }

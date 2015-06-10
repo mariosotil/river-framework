@@ -2,11 +2,9 @@ package org.riverframework.core;
 
 import java.lang.reflect.Constructor;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.ClosedObjectException;
 import org.riverframework.Database;
 import org.riverframework.DocumentIterator;
-import org.riverframework.DocumentList;
 import org.riverframework.RiverException;
 import org.riverframework.View;
 
@@ -20,7 +18,6 @@ import org.riverframework.View;
 public abstract class AbstractView implements org.riverframework.View {
 	protected Database database = null;
 	protected org.riverframework.wrapper.View _view = null;
-	protected org.riverframework.wrapper.Document _doc = null;
 
 	protected AbstractView(Database d, org.riverframework.wrapper.View obj) {
 		database = d;
@@ -123,23 +120,22 @@ public abstract class AbstractView implements org.riverframework.View {
 	}
 
 	@Override
-	public org.riverframework.DocumentList search(String query) {
+	public org.riverframework.DocumentIterator search(String query) {
 		if (!isOpen())
 			throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.wrapper.DocumentList _col = _view.search(query);
-		DocumentList result = new DefaultDocumentList(database, _col);
+		org.riverframework.wrapper.DocumentIterator _it = _view.search(query);
+		DocumentIterator result = new DefaultDocumentIterator(database, _it);
 		return result;
 	}
 
 	@Override
 	public void close() {
-		_doc.close();
 		_view.close();
 	}
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		return getClass().getName() + "(" + getWrapperObject().toString() + ")";
 	}
 }

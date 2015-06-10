@@ -4,6 +4,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
@@ -64,24 +66,26 @@ public abstract class AbstractSessionTest {
 
 		context.closeSession();
 	}
+	
+	@Test
+	public void testCreateAndRemoveDatabase() {
+		Session session = context.getSession();
 
-	// 2015.03.25 - This feature does not work in the version 4.0 of Openntf Domino API
-	// @Test
-	// public void testOpeningByReplicaID() {
-	// Session session = DefaultSession.getInstance().open(Credentials.getPassword());
-	//
-	// assertTrue("Notes Session could not be retrieved", session.isOpen());
-	//
-	// Database rDatabase = session.getDatabase(DefaultDatabase.class, context.getServer(), "04257CAC0065BE0C");
-	//
-	// assertTrue("Remote database could not be opened", rDatabase.isOpen());
-	// assertTrue("Remote database's path is not equal to the requested.",
-	// rDatabase.getFilePath().equals(context.getRemoteDatabase()));
-	// assertTrue("Remote database's server is not equal to the requested.",
-	// rDatabase.getServer().equals(context.getServer()));
-	//
-	// DefaultSession.getInstance().close();
-	// }
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		String name = "DB_" + sdf.format(new Date()) + ".nsf";
+		Database db = session.createDatabase(context.getTestDatabaseServer(), name);
+		assertTrue("There was a problem creating a new database.", db != null && db.isOpen());
+		
+		db.delete();
+		
+		assertFalse("There was a problem deleting the new database.", db.isOpen());
+		
+		db = session.getDatabase(context.getTestDatabaseServer(), name);
+		
+		assertFalse("The last database created was not deleted.", db.isOpen());
+		
+		context.closeSession();
+	}
 
 	@After
 	public void close() {

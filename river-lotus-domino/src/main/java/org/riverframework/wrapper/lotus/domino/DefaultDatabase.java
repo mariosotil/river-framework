@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import lotus.domino.NotesException;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+//import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
@@ -22,7 +22,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	protected DefaultDatabase(org.riverframework.wrapper.Session _s, lotus.domino.Database __obj) {
 		__database = __obj;
 		_session = _s;
-		calcObjectId();		
+		objectId = calcObjectId(__database);		
 	}
 
 	@Override
@@ -35,7 +35,9 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 		return objectId;
 	}
 
-	private void calcObjectId() {
+	public static String calcObjectId(lotus.domino.Database __database) {
+		String objectId = "";
+		
 		if (__database != null) {
 			try {
 				StringBuilder sb = new StringBuilder();
@@ -47,7 +49,9 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			}
-		}	
+		} 
+		
+		return objectId;
 	}
 
 	@Override
@@ -257,7 +261,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		return getClass().getName() + "(" + objectId + ")";
 	}
 
 	@Override
@@ -267,6 +271,8 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 
 	@Override
 	public void close() {
+		log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
+		
 		try {
 			if (__database != null) 
 				__database.recycle();			

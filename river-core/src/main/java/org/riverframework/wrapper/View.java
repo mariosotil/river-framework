@@ -9,7 +9,7 @@ public interface View extends Base {
 
 	public View refresh();
 
-	public DocumentList search(String query);
+	public DocumentIterator search(String query);
 
 	public void delete();
 }

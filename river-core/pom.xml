@@ -148,17 +148,6 @@
 			<version>0.5.4</version>
 		</dependency>
 		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<version>3.3.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.3.2</version>
-		</dependency>
-		<dependency>
 			<groupId>org.riverframework</groupId>
 			<artifactId>river-utils</artifactId>
 			<version>0.1.0</version>

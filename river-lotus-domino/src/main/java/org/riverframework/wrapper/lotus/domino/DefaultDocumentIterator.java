@@ -1,30 +1,26 @@
 package org.riverframework.wrapper.lotus.domino;
 
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import lotus.domino.NotesException;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
-import org.riverframework.wrapper.DocumentList;
 
 class DefaultDocumentIterator implements DocumentIterator {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	private enum Type { COLLECTION, VIEW_ENTRY_COLLECTION, DOCUMENT_LIST }
+	private enum Type { COLLECTION, VIEW_ENTRY_COLLECTION } 
 
 	private org.riverframework.wrapper.Session _session = null;
 
 	private lotus.domino.DocumentCollection __col = null;
 	private lotus.domino.ViewEntryCollection __vecol = null;
-	private DocumentList _list = null;
 
+	private Document _doc = null;
 	private lotus.domino.Document __doc = null;
 	private lotus.domino.ViewEntry __ve = null;
-	private int listIndex = -1;
 
 	private Type type = null;	
 	private String objectId = null;
@@ -35,12 +31,14 @@ class DefaultDocumentIterator implements DocumentIterator {
 		__col = __obj;
 
 		try {
-			this.__doc = this.__col.getFirstDocument();
+			__doc = __col.getFirstDocument();
+			
+			updateCurrentDocumentFromDocument();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
 
-		calcObjectId();
+		objectId = calcObjectId(__col);
 	}
 
 	protected DefaultDocumentIterator(org.riverframework.wrapper.Session s, lotus.domino.View __obj) {
@@ -49,18 +47,14 @@ class DefaultDocumentIterator implements DocumentIterator {
 
 		try {
 			__vecol = __obj.getAllEntries();
-			__ve = this.__vecol.getFirstEntry();
-			while (__ve != null && __ve.getDocument() == null) {
-				lotus.domino.ViewEntry __old = __ve;
-				__ve = __vecol.getNextEntry(__ve);
-				__old.recycle();
-			} 
-			
+			__ve = __vecol.getFirstEntry();
+
+			updateCurrentDocumentFromViewEntry();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
 
-		calcObjectId();
+		objectId = calcObjectId(__vecol);
 	}
 
 	protected DefaultDocumentIterator(org.riverframework.wrapper.Session s, lotus.domino.ViewEntryCollection __obj) {
@@ -69,46 +63,46 @@ class DefaultDocumentIterator implements DocumentIterator {
 		__vecol = __obj;
 
 		try {
-			__ve = this.__vecol.getFirstEntry();
+			__ve = __vecol.getFirstEntry();
+			
+			updateCurrentDocumentFromViewEntry();
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+
+		objectId = calcObjectId(__vecol);
+	}
+
+	private void updateCurrentDocumentFromDocument() {
+		_doc = __doc == null ? null : _session.getFactory().getDocument(__doc);
+	}
+
+	private void updateCurrentDocumentFromViewEntry() {
+		try {
 			while (__ve != null && __ve.getDocument() == null) {
 				lotus.domino.ViewEntry __old = __ve;
 				__ve = __vecol.getNextEntry(__ve);
 				__old.recycle();
 			} 
 
+			__doc = __ve == null ? null : __ve.getDocument();
+			_doc = __doc == null ? null : _session.getFactory().getDocument(__doc);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
-
-		calcObjectId();
 	}
 
-	public DefaultDocumentIterator(org.riverframework.wrapper.Session s, DocumentList list) {
-		_session = s;
-		type = Type.DOCUMENT_LIST;
-		this._list = list;
 
-		listIndex = -1;
 
-		calcObjectId();
-	}
+	public static String calcObjectId(Object __object) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(__object.getClass().getName());
+		sb.append(River.ID_SEPARATOR);
+		sb.append(__object.hashCode());
 
-	private void calcObjectId() {		
-		switch(type) {
-		case COLLECTION:
-			objectId = String.valueOf(__col.hashCode());
-			break;
-		case VIEW_ENTRY_COLLECTION:
-			objectId = String.valueOf(__vecol.hashCode());
-			break;
-		case DOCUMENT_LIST:
-			objectId = "DocumentList";
-			break;
-		default:
-			return;
-		}
+		String objectId = sb.toString();
 
-		objectId += River.ID_SEPARATOR + UUID.randomUUID().toString();
+		return objectId;
 	}
 
 	@Override
@@ -118,50 +112,34 @@ class DefaultDocumentIterator implements DocumentIterator {
 
 	@Override
 	public boolean hasNext() {
-		switch(type) {
-		case COLLECTION:
-			return __doc != null;
-		case VIEW_ENTRY_COLLECTION:
-			return __ve != null;
-		case DOCUMENT_LIST:
-			return listIndex < _list.size() - 1;
-		}
-		return false;
+		return _doc != null;
 	}
 
 	@Override
 	public Document next() {
-		lotus.domino.Document __current = null;
-		Document doc = null;
+		Document _current = null;
 
 		try {
 			switch(type) {
 			case COLLECTION:
-				__current = __doc;
+				_current = _doc;
 				__doc = __col.getNextDocument(__doc);
-
-				doc = _session.getFactory().getDocument(__current);
-				break;
 				
+				updateCurrentDocumentFromDocument();
+				break;
+
 			case VIEW_ENTRY_COLLECTION:
-				__current = __ve.getDocument();
-				do {
-					lotus.domino.ViewEntry __old = __ve;
-					__ve = __vecol.getNextEntry(__ve);
-					__old.recycle();
-				} while (__ve != null && __ve.getDocument() == null);
-
-				doc = _session.getFactory().getDocument(__current);
-				break;
+				_current = _doc;
+				__ve = __vecol.getNextEntry(__ve);
 				
-			case DOCUMENT_LIST:
-				doc = _list.get(++listIndex);
+				updateCurrentDocumentFromViewEntry();
+				break;
 			}
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
 
-		return doc;
+		return _current;
 	}
 
 	@Override
@@ -173,27 +151,6 @@ class DefaultDocumentIterator implements DocumentIterator {
 	public void remove() {
 		throw new UnsupportedOperationException();
 
-	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
-
-	@Override
-	public DocumentList asDocumentList() {
-		DocumentList _list = null;
-
-		switch (type) {
-		case COLLECTION:
-		case VIEW_ENTRY_COLLECTION:
-			_list = new DefaultDocumentList(_session, this);
-			break;
-		case DOCUMENT_LIST:
-			_list = this._list;
-		}
-
-		return _list;
 	}
 
 	@Override
@@ -212,8 +169,6 @@ class DefaultDocumentIterator implements DocumentIterator {
 			return __col;
 		case VIEW_ENTRY_COLLECTION:
 			return __ve;
-		case DOCUMENT_LIST:
-			return null;
 		}
 
 		return null;
@@ -226,8 +181,6 @@ class DefaultDocumentIterator implements DocumentIterator {
 			return __col != null;
 		case VIEW_ENTRY_COLLECTION:
 			return __ve != null;
-		case DOCUMENT_LIST:
-			return _list != null;
 		}
 
 		return false;
@@ -235,7 +188,30 @@ class DefaultDocumentIterator implements DocumentIterator {
 
 	@Override
 	public void close() {
+		log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
 
+		try {
+			if (__col != null) 
+				__col.recycle();			
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		} finally {
+			__col = null;
+		}
+
+		try {
+			if (__vecol != null) 
+				__vecol.recycle();			
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		} finally {
+			__vecol = null;
+		}
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName() + "(" + objectId + ")";
 	}
 
 	@Override

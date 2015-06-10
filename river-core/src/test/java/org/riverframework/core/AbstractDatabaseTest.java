@@ -4,6 +4,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import org.junit.After;
@@ -13,7 +15,6 @@ import org.riverframework.Context;
 import org.riverframework.Database;
 import org.riverframework.Document;
 import org.riverframework.DocumentIterator;
-import org.riverframework.DocumentList;
 import org.riverframework.Field;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
@@ -84,14 +85,61 @@ public abstract class AbstractDatabaseTest {
 	// }
 
 	@Test
-	public void testGetView() {
+	public void testCreateAndGetView() {
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		View view = database.getView(DefaultView.class, TEST_VIEW);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		String name = "VIEW_" + sdf.format(new Date());
+		String form = "FORM_" + sdf.format(new Date());
+		View view = database.createView(name, "SELECT Form = \"" + form + "\"");
 
-		assertTrue("There is a problem getting the view created in the test database.", view.isOpen());
+		assertTrue("There is a problem creating the view in the test database.", view.isOpen());
+
+		view.close();
+		view = null;
+
+		int i = 0;
+		for (i = 0; i < 10; i++) {
+			database.createDocument().setField("Form", form).setField("Value", i).save();
+		}
+
+		view = database.getView(name);
+		assertTrue("There is a problem opening the last view created in the test database.", view.isOpen());
+
+		DocumentIterator it = view.getAllDocuments();
+
+		i = 0;
+		while (it.hasNext()) {
+			i++;
+			it.next();
+		}
+		assertTrue("There is a problem with the documents indexed in the last view.", i == 10);
+
+		it = view.getAllDocuments();
+
+		i = 0;
+		while (it.hasNext()) {
+			i++;
+			Document doc = it.next();
+			doc.delete();
+		}
+
+		view.refresh();
+		i = 0;
+		it = view.getAllDocuments();
+		while (it.hasNext()) {
+			i++;
+			it.next();
+		}
+
+		assertTrue("There is a problem with the last documents created when we try to delete them.", i == 0);
+
+		view.delete();
+
+		assertFalse("There is a problem deleting the last view created.", view.isOpen());
 	}
+
 
 	static class VacationDatabase extends AbstractDatabase {
 		protected VacationDatabase(Session s, org.riverframework.wrapper.Database obj) {
@@ -199,16 +247,7 @@ public abstract class AbstractDatabaseTest {
 				.setField("Time", 27)
 				.save();
 
-		DocumentList col = vacationDatabase.getAllDocuments().asDocumentList();
-
-		for (Document doc : col) {
-			assertTrue("It could not possible load the vacation request object from the DocumentList.", doc.isOpen());
-		}
-
-		for (int i = 0; i < col.size(); i++) {
-			Document v = col.get(i);
-			assertTrue("It could not possible load the vacation request object from the DocumentList.", v.isOpen());
-		}
+		DocumentIterator col = vacationDatabase.getAllDocuments();
 
 		for (Document doc : col) {
 			assertTrue("It could not possible load the vacation request object from the DocumentList.", doc.isOpen());

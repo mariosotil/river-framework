@@ -12,7 +12,7 @@ import lotus.domino.DateTime;
 import lotus.domino.Item;
 import lotus.domino.NotesException;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+//import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.River;
 //import org.apache.log4j.Logger;
 import org.riverframework.RiverException;
@@ -38,10 +38,12 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	protected DefaultDocument(org.riverframework.wrapper.Session s, lotus.domino.Document d) {
 		__doc = d;
 		session = s;
-		calcObjectId();		
+		objectId = calcObjectId(__doc);		
 	}
 
-	private void calcObjectId() {
+	public static String calcObjectId(lotus.domino.Document __doc) {
+		String objectId = "";
+		
 		if (__doc != null) {
 			try {
 				lotus.domino.Database __database = __doc.getParentDatabase();
@@ -57,7 +59,9 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			}	
-		} 
+		}
+		
+		return objectId;
 	}
 
 	@Override
@@ -281,9 +285,9 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 			// logWrapper.debug("getFields: found " + items.size());
 			result = new HashMap<String, Field>(items.size());
 
-			for (lotus.domino.Item it : items) {
-				String name = it.getName();
-				int type = it.getType();
+			for (lotus.domino.Item __item : items) {
+				String name = __item.getName();
+				int type = __item.getType();
 				// logWrapper.debug("getFields: item=" + name + ", type=" + type);
 
 				Field values = null;
@@ -294,13 +298,13 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 						|| type == Item.READERS
 						|| type == Item.RICHTEXT
 						|| type == Item.TEXT) {
-					Vector<Object> temp = it.getValues();
+					Vector<Object> temp = __item.getValues();
 					values = temp == null ? new DefaultField() : new DefaultField(temp);
 				} else {
 					values = new DefaultField();
 				}
 
-				it.recycle();
+				__item.recycle();
 
 				if (values.isEmpty()) {
 					// logWrapper.debug("getFields: it's empty");
@@ -370,6 +374,8 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 
 	@Override
 	public void close() {
+		log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
+
 		try {
 			if (__doc != null) 
 				__doc.recycle();			
@@ -382,7 +388,8 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		// return ToStringBuilder.reflectionToString(this);
+		return getClass().getName() + "(" + objectId + ")";
 	}
 
 	@Override

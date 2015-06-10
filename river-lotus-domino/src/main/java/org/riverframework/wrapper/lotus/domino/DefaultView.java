@@ -4,12 +4,10 @@ import java.util.logging.Logger;
 
 import lotus.domino.NotesException;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
-import org.riverframework.wrapper.DocumentList;
 import org.riverframework.wrapper.View;
 
 class DefaultView implements org.riverframework.wrapper.View {
@@ -21,7 +19,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 	protected DefaultView(org.riverframework.wrapper.Session s, lotus.domino.View v) {
 		__view = v;
 		_session = s;
-		calcObjectId();
+		objectId = calcObjectId(__view);
 	}
 
 	@Override
@@ -29,7 +27,9 @@ class DefaultView implements org.riverframework.wrapper.View {
 		return objectId;
 	}
 
-	private void calcObjectId() {
+	public static String calcObjectId(lotus.domino.View __view) {
+		String objectId = "";
+
 		if (__view != null) {
 			try {
 				lotus.domino.Database __database = __view.getParent();
@@ -40,12 +40,16 @@ class DefaultView implements org.riverframework.wrapper.View {
 				sb.append(__database.getFilePath());
 				sb.append(River.ID_SEPARATOR);
 				sb.append(__view.getName());
+//				sb.append(River.ID_SEPARATOR);
+//				sb.append(__view.hashCode());
 
 				objectId = sb.toString();
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			}	
 		}
+
+		return objectId;
 	}
 
 	@Override
@@ -134,16 +138,19 @@ class DefaultView implements org.riverframework.wrapper.View {
 	}
 
 	@Override
-	public DocumentList search(String query) {
+	public DocumentIterator search(String query) {
+		lotus.domino.View __temp = null;
+		
 		try {
-			__view.FTSearch(query);
+			__temp = __view.getParent().getView(__view.getName());			
+			__temp.FTSearch(query);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
-		DocumentIterator _iterator = _session.getFactory().getDocumentIterator(__view);
-		DocumentList result = new DefaultDocumentList(_session, _iterator);
-
-		return result;
+		
+		DocumentIterator _iterator = _session.getFactory().getDocumentIterator(__temp);
+		
+		return _iterator;
 	}
 
 	@Override
@@ -160,7 +167,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		return getClass().getName() + "(" + objectId + ")";
 	}
 
 	@Override

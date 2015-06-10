@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+//import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -117,7 +118,7 @@ public abstract class AbstractDatabaseTest {
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentList col = null;
+		DocumentIterator col = null;
 
 		database.getAllDocuments().deleteAll();
 		RandomString rs = new RandomString(10);
@@ -131,12 +132,12 @@ public abstract class AbstractDatabaseTest {
 		database.refreshSearchIndex();
 
 		col = null;
-		col = database.search("THIS IS IMPOSSIBLE TO FIND").asDocumentList();
-		assertTrue("The search returns values for a query that would returns nothing.", col.isEmpty());
+		col = database.search("THIS IS IMPOSSIBLE TO FIND");
+		assertFalse("The search returns values for a query that would returns nothing.", col.hasNext());
 
 		col = null;
-		col = database.search("THIS_IS_THE_DOC").asDocumentList();
-		assertFalse("The search does not returns values for a query that would returns something.", col.isEmpty());
+		col = database.search("THIS_IS_THE_DOC");
+		assertTrue("The search does not returns values for a query that would returns something.", col.hasNext());
 	}
 
 	@Test
@@ -171,19 +172,10 @@ public abstract class AbstractDatabaseTest {
 
 		database.createDocument().setField("Requester", "Michael").setField("Time", 27).save();
 
-		DocumentList col = database.getAllDocuments().asDocumentList();
+		DocumentIterator col = database.getAllDocuments();
 
 		for (Document doc : col) {
 			assertTrue("It could not possible load the vacation request object from the DocumentList.", doc.isOpen());
-		}
-
-		for (int i = 0; i < col.size(); i++) {
-			Document v = col.get(i);
-			assertTrue("It could not possible load the Document object from the DocumentList.", v.isOpen());
-		}
-
-		for (Document doc : col) {
-			assertTrue("It could not possible load the Document object from the DocumentList.", doc.isOpen());
 		}
 	}
 }

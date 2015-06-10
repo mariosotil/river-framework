@@ -16,6 +16,23 @@ public interface Session extends Base {
 	public static final String FIELD_PREFIX = "RIVER_";
 
 	/**
+	 * Creates a new database.  
+	 * 
+	 * @param parameters Depends on what wrapper is being used.
+	 * @return a DefaultDatabase object.
+	 */
+	public <U extends Database> U createDatabase(String... location);
+	
+	/**
+	 * Creates a new database.
+	 * 
+	 * @param type The class that implements org.riverframework.Database
+	 * @param parameters Depends on what wrapper is being used.
+	 * @return an object from the class selected in the parameter 'type'
+	 */
+	public <U extends Database> U createDatabase(Class<U> type, String... location);
+	
+	/**
 	 * Returns a core Database object after open a wrapper Database, using the parameters indicated.
 	 * 
 	 * @param parameters
@@ -23,7 +40,7 @@ public interface Session extends Base {
 	 *            depend on how the wrapper loaded is implemented.
 	 * @return a core Database object
 	 */
-	public <U extends Database> U getDatabase(String... parameters);
+	public <U extends Database> U getDatabase(String... location);
 
 	/**
 	 * Returns a core Database object after open a wrapper Database, using the parameters indicated.
@@ -35,7 +52,7 @@ public interface Session extends Base {
 	 *            depend on how the wrapper loaded is implemented.
 	 * @return a core Database object
 	 */
-	public <U extends Database> U getDatabase(Class<U> type, String... parameters);
+	public <U extends Database> U getDatabase(Class<U> type, String... location);
 
 	/**
 	 * Returns true if the wrapper was loaded and the session opened.

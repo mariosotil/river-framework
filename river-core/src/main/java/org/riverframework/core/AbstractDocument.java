@@ -4,19 +4,20 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.ClosedObjectException;
 import org.riverframework.Database;
 import org.riverframework.Document;
 import org.riverframework.Field;
 
 /**
- * It is the implementation of the Document interface. It lets you manage its fields.
+ * It is the implementation of the Document interface. It lets you manage its
+ * fields.
  * 
  * @author mario.sotil@gmail.com
  *
  * @param <T>
- *            The class that inherits from AbstractDocument. It's used to make possible the method chaining.
+ *            The class that inherits from AbstractDocument. It's used to make
+ *            possible the method chaining.
  */
 public abstract class AbstractDocument<T extends AbstractDocument<T>> implements org.riverframework.Document {
 	protected Database database = null;
@@ -37,7 +38,8 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 	protected abstract T getThis();
 
 	/**
-	 * Changes the "modified" flag. This method has to be used only if necessary.
+	 * Changes the "modified" flag. This method has to be used only if
+	 * necessary.
 	 * 
 	 * @param m
 	 *            the new state
@@ -49,7 +51,8 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 	}
 
 	/**
-	 * Allows to define the tasks that has to be made just after a Document is created into a Database.
+	 * Allows to define the tasks that has to be made just after a Document is
+	 * created into a Database.
 	 * 
 	 * @return this object
 	 */
@@ -90,7 +93,8 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 	}
 
 	/**
-	 * Compares two vectors and determines if they are numeric equals, independent of its type.
+	 * Compares two vectors and determines if they are numeric equals,
+	 * independent of its type.
 	 * 
 	 * @param vector1
 	 *            the first vector
@@ -122,16 +126,17 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 	}
 
 	/**
-	 * Verifies if the new value is different from the field's old value. It's useful, for example, in NoSQL databases
-	 * that
-	 * replicates data between servers. This verification prevents to mark a field as modified and to be replicated
-	 * needlessly.
+	 * Verifies if the new value is different from the field's old value. It's
+	 * useful, for example, in NoSQL databases that replicates data between
+	 * servers. This verification prevents to mark a field as modified and to be
+	 * replicated needlessly.
 	 * 
 	 * @param field
 	 *            the field that we are checking before to be modified
 	 * @param value
 	 *            the new value
-	 * @return true if the new and the old values are different and the value was changed.
+	 * @return true if the new and the old values are different and the value
+	 *         was changed.
 	 */
 	protected boolean setFieldIfNecessary(String field, Object value) {
 		if (!isOpen())
@@ -336,6 +341,6 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		return getClass().getName() + "(" + getWrapperObject().toString() + ")";
 	}
 }

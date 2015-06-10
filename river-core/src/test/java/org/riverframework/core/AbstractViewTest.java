@@ -12,7 +12,6 @@ import org.riverframework.Context;
 import org.riverframework.Database;
 import org.riverframework.Document;
 import org.riverframework.DocumentIterator;
-import org.riverframework.DocumentList;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
 import org.riverframework.View;
@@ -185,12 +184,16 @@ public abstract class AbstractViewTest {
 
 		database.refreshSearchIndex();
 
-		DocumentList col = database
+		DocumentIterator col = database
 				.getView(DefaultView.class, TEST_VIEW)
 				.search("I_AM_THE_4");
 
-		assertTrue("There is a problem finding documents from the database.", col.size() == 1);
+		assertTrue("There is a problem finding documents from the database.", col.hasNext());
+
+		Document doc = col.next();
+		
+		assertFalse("There is a problem finding documents from the database.", col.hasNext());
 		assertTrue("There is a problem finding documents from the database.",
-				col.get(0).getFieldAsString("Text").equals("I_AM_THE_4"));
+				doc.getFieldAsString("Text").equals("I_AM_THE_4"));
 	}
 }

@@ -25,6 +25,30 @@ public interface Database extends Base {
 	public Document createDocument(String... parameters);
 
 	/**
+	 * Creates a DefaultView object. The parameters needed will depend on what
+	 * wrapper is being used.
+	 * 
+	 * @param parameters
+	 *            a set of Strings that will let the Database creates a new View.
+	 * @return a DefaultView object
+	 */
+	public View createView(String... parameters);
+
+	/**
+	 * Creates a View object instanced from the 'clazz' parameter. The clazz
+	 * must inherit from DefaultView. The parameters needed will depend on what
+	 * wrapper is being used.
+	 * 
+	 * @param clazz
+	 *            a class that inherits from DefaultView and implements the View
+	 *            interface.
+	 * @param parameters
+	 *            a set of Strings that will let the Database creates a new View 
+	 * @return a 'clazz' object
+	 */
+	public <U extends View> U createView(Class<U> clazz, String... parameters);
+	
+	/**
 	 * Returns an existent view. The parameters needed will depend on what
 	 * wrapper is being used.
 	 * 

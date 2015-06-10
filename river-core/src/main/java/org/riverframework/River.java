@@ -147,7 +147,6 @@ public class River {
 		handler.setLevel(level);
 		log.addHandler(handler);
 		log.setLevel(level);
-
 	}
 
 }

@@ -2,9 +2,7 @@ package org.riverframework.core;
 
 import java.lang.reflect.Constructor;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.ClosedObjectException;
-import org.riverframework.Database;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.Session;
@@ -16,9 +14,6 @@ import org.riverframework.Session;
  *
  */
 public abstract class AbstractSession implements org.riverframework.Session {
-	// public static final boolean USE_POOL = true;
-	// public static final boolean DO_NOT_USE_POOL = false;
-
 	public static final String PREFIX = "RIVER_";
 
 	private org.riverframework.wrapper.Session _session = null;
@@ -47,8 +42,40 @@ public abstract class AbstractSession implements org.riverframework.Session {
 	}
 
 	@Override
-	public <U extends Database> U getDatabase(String... parameters) {
-		return getDatabase(null, parameters);
+	public <U extends org.riverframework.Database> U createDatabase(String... location) {
+		return createDatabase(null, location);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <U extends org.riverframework.Database> U createDatabase(Class<U> clazz, String... location) {
+		if (!isOpen())
+			throw new ClosedObjectException("The Session object is closed.");
+
+		org.riverframework.wrapper.Database _database = _session.createDatabase(location);
+		U database = null;
+		Class<U> c = clazz;
+
+		if (c == null)
+			c = (Class<U>) DefaultDatabase.class;
+
+		if (!AbstractDatabase.class.isAssignableFrom(c))
+			throw new RiverException("The clazz parameter must inherit from DefaultDatabase.");
+
+		try {
+			Constructor<?> constructor = c.getDeclaredConstructor(Session.class, org.riverframework.wrapper.Database.class);
+			constructor.setAccessible(true);
+			database = c.cast(constructor.newInstance(this, _database));
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
+		return database;
+	}
+
+	@Override
+	public <U extends org.riverframework.Database> U getDatabase(String... location) {
+		return getDatabase(null, location);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -64,17 +91,11 @@ public abstract class AbstractSession implements org.riverframework.Session {
 		if (c == null)
 			c = (Class<U>) DefaultDatabase.class;
 
-		if (!AbstractDatabase.class.isAssignableFrom(clazz))
+		if (!AbstractDatabase.class.isAssignableFrom(c))
 			throw new RiverException("The clazz parameter must inherit from DefaultDatabase.");
 
-		if (location.length != 2)
-			throw new RiverException("It is expected two parameters: server and path, or server and replicaID");
-
-		String server = location[0];
-		String path = location[1];
-
 		if (_database == null || !_database.isOpen()) {
-			_database = _session.getDatabase(server, path);
+			_database = _session.getDatabase(location);
 		}
 
 		if (_database != null && !_database.isOpen()) {
@@ -82,8 +103,7 @@ public abstract class AbstractSession implements org.riverframework.Session {
 		}
 
 		try {
-			Constructor<?> constructor = c.getDeclaredConstructor(Session.class,
-					org.riverframework.wrapper.Database.class);
+			Constructor<?> constructor = c.getDeclaredConstructor(Session.class, org.riverframework.wrapper.Database.class);
 			constructor.setAccessible(true);
 			database = c.cast(constructor.newInstance(this, _database));
 		} catch (Exception e) {
@@ -102,9 +122,10 @@ public abstract class AbstractSession implements org.riverframework.Session {
 	}
 
 	/**
-	 * It's the really responsible to close the session. It's called by the close() method. It's hide from the
-	 * real world as a protected method, because it never has to be called alone. Only the River factory class can call
-	 * it.
+	 * It's the really responsible to close the session. It's called by the
+	 * close() method. It's hide from the real world as a protected method,
+	 * because it never has to be called alone. Only the River factory class can
+	 * call it.
 	 */
 	protected void protectedClose() {
 		_session.close();
@@ -112,13 +133,14 @@ public abstract class AbstractSession implements org.riverframework.Session {
 
 	@Override
 	public void close() {
-		// This is for prevent that the session be closed but not purged from the River factory class.
+		// This is for prevent that the session be closed but not purged from
+		// the River factory class.
 		String wrapper = _session.getClass().getPackage().getName();
 		River.closeSession(wrapper);
 	}
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		return getClass().getName() + "(" + getWrapperObject().toString() + ")";
 	}
 }

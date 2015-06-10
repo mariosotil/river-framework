@@ -1,6 +1,5 @@
 package org.riverframework.core;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.Counter;
 import org.riverframework.Database;
 import org.riverframework.Document;
@@ -10,7 +9,8 @@ import org.riverframework.Unique;
 import org.riverframework.View;
 
 /**
- * It is used to manage counters into the Database. This counters can be used to create unique Ids.
+ * It is used to manage counters into the Database. This counters can be used to
+ * create unique Ids.
  * 
  * @author mario.sotil@gmail.com
  *
@@ -33,8 +33,7 @@ public final class DefaultCounter extends AbstractDocument<DefaultCounter> imple
 
 	@Override
 	protected DefaultCounter afterCreate() {
-		setField("Form", FORM_NAME)
-				.setField(FIELD_COUNT, 0);
+		setField("Form", FORM_NAME).setField(FIELD_COUNT, 0);
 
 		return this;
 	}
@@ -69,11 +68,6 @@ public final class DefaultCounter extends AbstractDocument<DefaultCounter> imple
 		setField(FIELD_COUNT, n).save();
 
 		return n;
-	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
 	}
 
 	@Override

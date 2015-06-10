@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
+import java.util.Iterator;
 
 import org.junit.After;
 import org.junit.Before;
@@ -127,9 +128,9 @@ public abstract class AbstractViewTest {
 
 		database.refreshSearchIndex();
 
-		DocumentList col = database.getView(TEST_VIEW).search("I_AM_THE_4");
-
-		assertTrue("There is a problem finding documents from the database.", col.size() == 1);
-		assertTrue("There is a problem finding documents from the database.", col.get(0).getFieldAsString("Text").equals("I_AM_THE_4"));
+		Iterator<Document> col = database.getView(TEST_VIEW).search("I_AM_THE_4");
+		Document doc = col.next();
+		assertFalse("There is a problem finding documents from the database.", col.hasNext());
+		assertTrue("There is a problem finding documents from the database.", doc.getFieldAsString("Text").equals("I_AM_THE_4"));
 	}
 }

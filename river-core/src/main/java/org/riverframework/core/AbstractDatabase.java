@@ -3,7 +3,6 @@ package org.riverframework.core;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.ClosedObjectException;
 import org.riverframework.Counter;
 import org.riverframework.Database;
@@ -234,6 +233,37 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 	}
 
 	@Override
+	public org.riverframework.View createView(String... parameters) {
+		return createView(DefaultView.class, parameters);
+	}
+
+	@Override
+	public <U extends org.riverframework.View> U createView(Class<U> clazz, String... parameters) {
+		if (!isOpen())
+			throw new ClosedObjectException("The Database object is closed.");
+
+		U view = null;
+		org.riverframework.wrapper.View _view = null;
+
+		if (clazz == null)
+			throw new RiverException("The clazz parameter can not be null.");
+
+		_view = _database.createView(parameters);
+
+		if (AbstractView.class.isAssignableFrom(clazz)) {
+			try {
+				Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.View.class);
+				constructor.setAccessible(true);
+				view = clazz.cast(constructor.newInstance(this, _view));
+			} catch (Exception e) {
+				throw new RiverException(e);
+			}
+		}
+
+		return view;
+	}
+
+	@Override
 	public org.riverframework.View getView(String... parameters) {
 		return getView(DefaultView.class, parameters);
 	}
@@ -318,6 +348,6 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		return getClass().getName() + "(" + getWrapperObject().toString() + ")";
 	}
 }

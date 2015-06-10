@@ -19,24 +19,24 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.Session;
 import org.riverframework.wrapper.View;
+import java.lang.ref.Reference;
 
 public class DefaultFactory implements org.riverframework.wrapper.Factory {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	protected volatile ConcurrentHashMap<String, WeakReference<Base>> map = null;
-	protected volatile LinkedList<Reference> list = null;
+	protected volatile ConcurrentHashMap<String, WeakReference<Base>> cache = null;
+	protected volatile LinkedList<Reference<? extends Base>> list = null;
 	protected volatile ReferenceQueue<Base> queue = null;
 	private static DefaultFactory instance = null;
 	protected org.riverframework.wrapper.Session _session = null;
-	private ReferenceCollector rc = null;
+	private NativeReferenceCollector rc = null;
 
 	protected DefaultFactory(org.riverframework.wrapper.Session _session) {
 		this._session  = _session;
 
-		map = new ConcurrentHashMap<String, WeakReference<Base>>();
-		list = new LinkedList<Reference>();
+		cache = new ConcurrentHashMap<String, WeakReference<Base>>();
+		list = new LinkedList<Reference<? extends Base>>();
 		queue = new ReferenceQueue<Base>();
-		rc = new ReferenceCollector(queue);
-
+		rc = new NativeReferenceCollector(queue, list);
 		rc.start();
 	}
 
@@ -52,46 +52,69 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 		return instance;
 	}
 
-	protected void processWrapper(Base wrapper) {
-		if (wrapper != null && wrapper.isOpen()) {
-			String id = wrapper.getObjectId();
-			WeakReference<Base> ref = map.get(id);
+	private void addToCache(String id, Base _wrapper) {
+		if (log.isLoggable(Level.FINEST)) {
+			Object __obj = _wrapper.getNativeObject();
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append("Registering: id=");
+			sb.append(id);
+			sb.append(" wrapper=");
+			sb.append(_wrapper.getClass().getName());
+			sb.append(" (");
+			sb.append(_wrapper.hashCode());
+			sb.append(") native=");
+			sb.append(__obj.getClass().getName());
+			sb.append(" (");
+			sb.append(__obj.hashCode());
+			sb.append(")");
+			
+			log.finest(sb.toString());
+		}
 
-			if (ref == null) {
-				// It's a new object
-				add(id, wrapper);
+		cache.put(id, new WeakReference<Base>(_wrapper));
+		list.add(new NativeReference(_wrapper, queue));
+	}
+
+	protected Base retrieveFromCache(String id) {
+		Base _wrapper = null;
+		WeakReference<Base> ref = cache.get(id);
+
+		if (ref != null) {
+			//It's already registered
+			_wrapper = ref.get();
+
+			if (_wrapper == null) {
+				// Removing the id from the cache
+				cache.remove(id);
+			} else if(_wrapper.getNativeObject() == null) {
+				// Removing the id from the cache, and freeing the weak reference
+				cache.remove(id);
+				ref.clear();
+				_wrapper = null;
 			} else {
-				//It's already registered
-				Base registered = ref.get();
-
-				if (registered == null) {
-					// Replace the null value for the new wrapper
-					add(id, wrapper);
-				} else {
-					// Preserve the pooled wrapper and replace the 'wrapper' parameter
-					Base toOblivion = wrapper;
-					wrapper = registered;
-
-					if (log.isLoggable(Level.FINEST)) {
-						log.finest("Changing wrapper for the registered one: id=" + id + " wrapper=" + wrapper.getClass().getName() + " ("
-								+ wrapper.hashCode() + ")  Destroying old=" + toOblivion.getClass().getName() + " (" + toOblivion.hashCode() + ")");
-					}
-
-					toOblivion = null;
+				if (log.isLoggable(Level.FINEST)) {
+					Object __obj = _wrapper.getNativeObject();
+					
+					StringBuilder sb = new StringBuilder();
+					sb.append("Retrieved from cache: id=");
+					sb.append(id);
+					sb.append(" wrapper=");
+					sb.append(_wrapper.getClass().getName());
+					sb.append(" (");
+					sb.append(_wrapper.hashCode());
+					sb.append(") native=");
+					sb.append(__obj.getClass().getName());
+					sb.append(" (");
+					sb.append(__obj.hashCode());
+					sb.append(")");
+					
+					log.finest(sb.toString());
 				}
 			}
 		}
-	}
 
-	private void add(String id, Base wrapper) {
-		if (log.isLoggable(Level.FINEST)) {
-			Object nativeObject = wrapper.getNativeObject();
-			log.finest("Registering: id=" + id + " wrapper=" + wrapper.getClass().getName() + " (" + wrapper.hashCode()
-					+ ") native=" + nativeObject.getClass().getName() + " (" + nativeObject.hashCode() + ")");
-		}
-
-		map.put(id, new WeakReference<Base>(wrapper));
-		list.add(new Reference(wrapper, queue));
+		return _wrapper;
 	}
 
 	@SuppressWarnings("unused")
@@ -117,53 +140,79 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 
 	@Override
 	public Database getDatabase(Object __obj) {
-		if (!(__obj instanceof lotus.domino.Database)) throw new RiverException("Expected an object lotus.domino.Database");
+		if (__obj != null && !(__obj instanceof lotus.domino.Database)) throw new RiverException("Expected an object lotus.domino.Database");
 
-		Database _database = new DefaultDatabase(_session, (lotus.domino.Database)__obj);
-		processWrapper(_database);
-		return _database;		
+		String id = DefaultDatabase.calcObjectId((lotus.domino.Database) __obj);
+
+		Database _wrapper = (Database) retrieveFromCache(id);
+		if (_wrapper == null) {
+			_wrapper = new DefaultDatabase(_session, (lotus.domino.Database)__obj);
+			addToCache(id, _wrapper);
+		}
+
+		return _wrapper;		
 	}
 
 	@Override
 	public Document getDocument(Object __obj) {
 		if (__obj != null && !(__obj instanceof lotus.domino.Document)) throw new RiverException("Expected an object lotus.domino.Document");
 
-		Document _doc = new DefaultDocument(_session, (lotus.domino.Document) __obj);
-		processWrapper(_doc);
-		return _doc;
+		String id = DefaultDocument.calcObjectId((lotus.domino.Document) __obj);
+
+		Document _wrapper = (Document) retrieveFromCache(id);
+		if (_wrapper == null) {
+			_wrapper = new DefaultDocument(_session, (lotus.domino.Document) __obj);
+			addToCache(id, _wrapper);
+		}
+
+		return _wrapper;
 	}
 
 	@Override
 	public View getView(Object __obj) {
 		if (__obj != null && !(__obj instanceof lotus.domino.View)) throw new RiverException("Expected an object lotus.domino.View");
 
-		View _view = new DefaultView(_session, (lotus.domino.View) __obj);
-		processWrapper(_view);
-		return _view;
+		String id = DefaultView.calcObjectId((lotus.domino.View) __obj);
+
+		View _wrapper = (View) retrieveFromCache(id);
+		if (_wrapper == null) {
+			_wrapper = new DefaultView(_session, (lotus.domino.View) __obj);
+			addToCache(id, _wrapper);
+		}
+
+		return _wrapper;
 	}
 
 	@Override
 	public DocumentIterator getDocumentIterator(Object __obj) {
-		DocumentIterator _it = null;
+		if (__obj != null && !(__obj instanceof lotus.domino.DocumentCollection || __obj instanceof lotus.domino.ViewEntryCollection || __obj instanceof lotus.domino.View)) 
+			throw new RiverException("Expected an object lotus.domino.DocumentCollection, ViewEntryCollection or View.");
 
-		if (__obj == null || __obj instanceof lotus.domino.DocumentCollection) { 
-			_it = new DefaultDocumentIterator(_session, (lotus.domino.DocumentCollection) __obj);
-		} else if (__obj == null || __obj instanceof lotus.domino.ViewEntryCollection) { 
-			_it = new DefaultDocumentIterator(_session, (lotus.domino.ViewEntryCollection) __obj);
-		} else if (__obj == null || __obj instanceof lotus.domino.View) { 
-			_it = new DefaultDocumentIterator(_session, (lotus.domino.View) __obj);
-		} 
+		String id = DefaultDocumentIterator.calcObjectId(__obj);
 
-		if (_it == null) throw new RiverException("Expected an object lotus.domino.DocumentCollection, lotus.domino.ViewEntryCollection or lotus.domino.View");
+		DocumentIterator _wrapper = (DocumentIterator) retrieveFromCache(id);
 
-		processWrapper(_it);
-		return _it;
+		if (_wrapper == null) {
+			if ( __obj instanceof lotus.domino.DocumentCollection) { 
+				_wrapper = new DefaultDocumentIterator(_session, (lotus.domino.DocumentCollection) __obj);
+			} else if (__obj instanceof lotus.domino.ViewEntryCollection) { 
+				_wrapper = new DefaultDocumentIterator(_session, (lotus.domino.ViewEntryCollection) __obj);
+			} else if (__obj instanceof lotus.domino.View) { 
+				_wrapper = new DefaultDocumentIterator(_session, (lotus.domino.View) __obj);
+			} else {
+				throw new RiverException("Expected an object lotus.domino.DocumentCollection, ViewEntryCollection or View.");
+			}
+			
+			addToCache(id, _wrapper);
+		}
+
+		return _wrapper;
 	}
 
 	void close() {
-		Set<String> keys = map.keySet();
+		Set<String> keys = cache.keySet();
 		for(String key : keys) {
-			WeakReference<Base> ref = map.get(key);
+			WeakReference<Base> ref = cache.get(key);
 			if (ref != null) {
 				Base wrapper = ref.get();
 
@@ -189,6 +238,15 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 		}
 
 		rc.terminate();
+		log.fine("Cleaning the last objects in the phantom reference list: " + list.size());
+		list.clear();
+		log.fine("Cleaning the last objects in the cache: " + cache.size());
+		cache.clear();
 		log.info("Factory closed.");
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName();
 	}
 }

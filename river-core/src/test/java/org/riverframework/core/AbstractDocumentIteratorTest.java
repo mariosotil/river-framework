@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.Database;
 import org.riverframework.Document;
-import org.riverframework.DocumentList;
 import org.riverframework.RandomString;
 import org.riverframework.Session;
 import org.riverframework.DocumentIterator;
@@ -55,8 +54,8 @@ public abstract class AbstractDocumentIteratorTest {
 				database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentList col = null;
-		col = database.getAllDocuments().deleteAll().asDocumentList();
+		DocumentIterator col = null;
+		col = database.getAllDocuments().deleteAll();
 
 		RandomString rs = new RandomString(10);
 
@@ -65,14 +64,11 @@ public abstract class AbstractDocumentIteratorTest {
 					.setField("Value", rs.nextString()).save();
 		}
 
-		col = database.getAllDocuments().asDocumentList();
-		DocumentIterator iterator = col.iterator();
+		col = database.getAllDocuments();
 		int j = 0;
-		for (Document doc : iterator) {
+		for (@SuppressWarnings("unused") Document doc : col) {
 			j++;
-			doc.close();
 		}
-		assertTrue("The iterator does not returns the expected values.",
-				j == 10);
+		assertTrue("The iterator does not returns the expected values.", j == 10);
 	}
 }

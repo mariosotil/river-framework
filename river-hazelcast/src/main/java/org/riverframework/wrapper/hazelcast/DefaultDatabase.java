@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
+import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.DocumentList;
 import org.riverframework.wrapper.View;
 
@@ -112,5 +113,29 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 
 	@Override
 	public void close() {
+	}
+
+	@Override
+	public View createView(String... parameters) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DocumentIterator getAllDocuments() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DocumentIterator search(String query) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void delete() {
+		// TODO Auto-generated method stub
+		
 	}
 }

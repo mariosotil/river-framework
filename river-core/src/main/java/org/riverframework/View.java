@@ -70,11 +70,11 @@ public interface View extends Base {
 	/**
 	 * Searches by the query and returns a DocumentList object with the
 	 * documents that match. So far, The style of the query will depend on how
-	 * is implemented in the wrapper loaded. For example, in IBM Notes is just
-	 * something like "Black AND Dog"
+	 * is implemented in the wrapper loaded. For example, with the lotus.domino 
+	 * wrapper, it will be something like "Black AND Dog"
 	 * 
 	 * @param query
-	 * @return a DocumentList document
+	 * @return a DocumentIterator document
 	 */
-	public DocumentList search(String query);
+	public DocumentIterator search(String query);
 }

@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import lotus.domino.NotesException;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+//import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
@@ -179,7 +179,8 @@ public class DefaultSession implements Session {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		//return ToStringBuilder.reflectionToString(this);
+		return getClass().getName() + "(" + objectId + ")";
 	}
 
 	@Override

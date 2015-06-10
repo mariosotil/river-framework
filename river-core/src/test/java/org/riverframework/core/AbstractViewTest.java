@@ -60,13 +60,11 @@ public abstract class AbstractViewTest {
 
 		assertTrue("The test view could not be created in the test database.", view.isOpen());
 
-		Document doc = database.createDocument(DefaultDocument.class)
-				.setField("Form", TEST_FORM);
+		Document doc = database.createDocument(DefaultDocument.class).setField("Form", TEST_FORM);
 
 		String key = rs.nextString();
 
-		doc.setField("TestKeyColumn1", key)
-				.save();
+		doc.setField("TestKeyColumn1", key).save();
 		view.refresh();
 
 		doc = null;
@@ -78,29 +76,27 @@ public abstract class AbstractViewTest {
 		assertFalse("It was found an unexistent document in the view.", doc.isOpen());
 
 		/*
-		 * This code doesn't works because the created view does not works
-		 * as expected. It's necessary to open the Designer and update the
-		 * view to get it works.
+		 * This code doesn't works because the created view does not works as
+		 * expected. It's necessary to open the Designer and update the view to
+		 * get it works.
 		 * 
-		 * String viewName = rs.nextString();
-		 * String formName = rs.nextString();
+		 * String viewName = rs.nextString(); String formName = rs.nextString();
 		 * org.riverframework.View rView = rDatabase.getView(viewName);
-		 * if(!rView.isOpen()) {
-		 * rView = rDatabase.createView(viewName, "Form =\"" + formName + "\"");
-		 * }
+		 * if(!rView.isOpen()) { rView = rDatabase.createView(viewName,
+		 * "Form =\"" + formName + "\""); }
 		 * 
-		 * assertTrue("The test view could not be created in the test database.", rView.isOpen());
+		 * assertTrue("The test view could not be created in the test database.",
+		 * rView.isOpen());
 		 * 
-		 * String title = rs.nextString();
-		 * String field = rs.nextString();
-		 * String formula = "@GetField({" + field + "})";
-		 * String key = rs.nextString();
+		 * String title = rs.nextString(); String field = rs.nextString();
+		 * String formula = "@GetField({" + field + "})"; String key =
+		 * rs.nextString();
 		 * 
 		 * rView.addColumn(0).modifyColumn(0, title, formula, true).refresh();
-		 * org.riverframework.Document rDoc = rDatabase.createDocument(formName);
+		 * org.riverframework.Document rDoc =
+		 * rDatabase.createDocument(formName);
 		 * 
-		 * rDoc.setField(field, key);
-		 * rDoc.save();
+		 * rDoc.setField(field, key); rDoc.save();
 		 */
 	}
 
@@ -119,41 +115,14 @@ public abstract class AbstractViewTest {
 		assertFalse("An unexistant view could be found in the test database.", view.isOpen());
 	}
 
-	/*
-	 * @Test
-	 * public void testModifyColumn() {
-	 * assertTrue("The test database could not be opened.", rDatabase.isOpen());
-	 * 
-	 * RandomString rs = new RandomString(10);
-	 * org.riverframework.View rView = rDatabase.createView(rs.nextString(), "Select @All");
-	 * 
-	 * assertTrue("The test view could not be created in the test database.", rView.isOpen());
-	 * 
-	 * String title = rs.nextString();
-	 * String formula = rs.nextString();
-	 * 
-	 * rView.modifyColumn(0, title, formula, true);
-	 * 
-	 * assertTrue("Could not be modified the title in the first column of the test view.",
-	 * title.equals(rView.getColumnTitle(0)));
-	 * assertTrue("Could not be modified the formula in the first column of the test view.",
-	 * formula.equals(rView.getColumnFormula(0)));
-	 * assertTrue("Could not be modified if it is sorted in the first column of the test view.",
-	 * rView.isColumnSorted(0));
-	 * }
-	 */
-
 	@Test
-	public void testGetDocumentList() {
+	public void testGetDocumentIterator() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		database.getAllDocuments().deleteAll();
 
-		for (int i = 0; i < 10; i++) {
-			database.createDocument(DefaultDocument.class)
-					.setField("Form", TEST_FORM)
-					.setField("Counter", i)
-					.save();
+		for (int i = 0; i < 100; i++) {
+			database.createDocument(DefaultDocument.class).setField("Form", TEST_FORM).setField("Counter", i).save();
 		}
 
 		View view = database.getView(DefaultView.class, TEST_VIEW);
@@ -161,12 +130,12 @@ public abstract class AbstractViewTest {
 		DocumentIterator col = view.getAllDocuments();
 
 		int size = 0;
-		while(col.hasNext()) {
+		while (col.hasNext()) {
 			col.next();
 			size++;
 		}
-		
-		assertTrue("There is a problem getting documents from the database.", size == 10);
+
+		assertTrue("There is a problem getting documents from the database.", size == 100);
 	}
 
 	@Test
@@ -176,24 +145,18 @@ public abstract class AbstractViewTest {
 		database.getAllDocuments().deleteAll();
 
 		for (int i = 0; i < 10; i++) {
-			database.createDocument(DefaultDocument.class)
-					.setField("Form", TEST_FORM)
-					.setField("Text", "I_AM_THE_" + i)
-					.save();
+			database.createDocument(DefaultDocument.class).setField("Form", TEST_FORM).setField("Text", "I_AM_THE_" + i).save();
 		}
 
 		database.refreshSearchIndex();
 
-		DocumentIterator col = database
-				.getView(DefaultView.class, TEST_VIEW)
-				.search("I_AM_THE_4");
+		DocumentIterator col = database.getView(DefaultView.class, TEST_VIEW).search("I_AM_THE_4");
 
 		assertTrue("There is a problem finding documents from the database.", col.hasNext());
 
 		Document doc = col.next();
-		
+
 		assertFalse("There is a problem finding documents from the database.", col.hasNext());
-		assertTrue("There is a problem finding documents from the database.",
-				doc.getFieldAsString("Text").equals("I_AM_THE_4"));
+		assertTrue("There is a problem finding documents from the database.", doc.getFieldAsString("Text").equals("I_AM_THE_4"));
 	}
 }

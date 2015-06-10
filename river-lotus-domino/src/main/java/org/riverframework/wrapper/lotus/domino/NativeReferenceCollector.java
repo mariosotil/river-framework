@@ -32,9 +32,6 @@ class NativeReferenceCollector extends Thread implements Runnable {
 	public void run() {
 		log.info("Reference Collector started.");
 
-//		LinkedList<Reference<? extends Base>> deathRow = new LinkedList<Reference<? extends Base>>();
-//		Reference<? extends Base> prisoner = null;
-
 		while (running) {
 			try {
 				Reference<? extends Base> ref = null;
@@ -43,26 +40,12 @@ class NativeReferenceCollector extends Thread implements Runnable {
 				NativeReference nat = ((org.riverframework.wrapper.lotus.domino.NativeReference) ref);
 				String id = nat.getObjectId();
 				log.finest("Removed Id=" + id);
-				// nat.cleanUp();
-
-//				log.finest("In the death row Id=" + id);
-//				deathRow.add(ref);
-//				if (deathRow.size() > 1) {
-//					prisoner = deathRow.removeFirst();
-//					NativeReference nat2 = ((org.riverframework.wrapper.lotus.domino.NativeReference) prisoner);
-//					String id2 = nat2.getObjectId();
-//					log.finest("Executing Id=" + id2);
-//					list.remove(prisoner);
-//					log.finest("Recycling Id=" + id2);
-//					nat2.cleanUp();
-//					log.finest("Round finished XXX");
-//				}
+				nat.cleanUp();
 			} catch (Exception ex) {
 				log.log(Level.WARNING, "Exception at recycling", ex);
 			}
 		}
 
-		//deathRow.clear();
 		list.clear();
 		log.info("Reference Collector closed.");
 	}

@@ -92,9 +92,7 @@ class DefaultDocumentIterator implements DocumentIterator {
 		}
 	}
 
-
-
-	public static String calcObjectId(Object __object) {
+	private static String internalCalcObjectId(Object __object) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(__object.getClass().getName());
 		sb.append(River.ID_SEPARATOR);
@@ -103,6 +101,18 @@ class DefaultDocumentIterator implements DocumentIterator {
 		String objectId = sb.toString();
 
 		return objectId;
+	}
+	
+	public static String calcObjectId(lotus.domino.DocumentCollection __object) {
+		return internalCalcObjectId(__object);
+	}
+
+	public static String calcObjectId(lotus.domino.ViewEntryCollection __object) {
+		return internalCalcObjectId(__object);
+	}
+
+	public static String calcObjectId(lotus.domino.View __object) {
+		return internalCalcObjectId(__object);
 	}
 
 	@Override

@@ -71,11 +71,14 @@ public abstract class AbstractDatabaseTest {
 	// public void testCreateAndGetGraph() {
 	// assertTrue("The test database could not be opened.", rDatabase.isOpen());
 	//
-	// org.riverframework.development.Relation rRelation = rDatabase.createRelation(TEST_GRAPH);
+	// org.riverframework.development.Relation rRelation =
+	// rDatabase.createRelation(TEST_GRAPH);
 	//
-	// assertTrue("There is a problem creating a new graph in the test database.", rRelation.isOpen());
+	// assertTrue("There is a problem creating a new graph in the test database.",
+	// rRelation.isOpen());
 	//
-	// String universalId = rRelation.save(org.riverframework.Document.FORCE_SAVE).getUniversalId();
+	// String universalId =
+	// rRelation.save(org.riverframework.Document.FORCE_SAVE).getUniversalId();
 	// rRelation = null;
 	//
 	// rRelation = rDatabase.getRelation(universalId);
@@ -140,7 +143,6 @@ public abstract class AbstractDatabaseTest {
 		assertFalse("There is a problem deleting the last view created.", view.isOpen());
 	}
 
-
 	static class VacationDatabase extends AbstractDatabase {
 		protected VacationDatabase(Session s, org.riverframework.wrapper.Database obj) {
 			super(s, obj);
@@ -181,11 +183,7 @@ public abstract class AbstractDatabaseTest {
 
 		assertTrue("There is a problem creating a new VacationRequest in the test database.", doc.isOpen());
 
-		String universalId = doc
-				.setField("TEST_FIELD", "YES")
-				.setField("Form", "TestForm")
-				.save()
-				.getObjectId();
+		String universalId = doc.setField("TEST_FIELD", "YES").setField("Form", "TestForm").save().getObjectId();
 
 		doc = null;
 		doc = vacationDatabase.getDocument(VacationRequest.class, universalId);
@@ -203,16 +201,10 @@ public abstract class AbstractDatabaseTest {
 		RandomString rs = new RandomString(10);
 
 		for (int i = 0; i < 10; i++) {
-			database.createDocument(DefaultDocument.class)
-					.setField("Form", TEST_FORM)
-					.setField("Value", rs.nextString())
-					.save();
+			database.createDocument(DefaultDocument.class).setField("Form", TEST_FORM).setField("Value", rs.nextString()).save();
 		}
 
-		database.createDocument(DefaultDocument.class)
-				.setField("Form", TEST_FORM)
-				.setField("Value", "THIS_IS_THE_DOC")
-				.save();
+		database.createDocument(DefaultDocument.class).setField("Form", TEST_FORM).setField("Value", "THIS_IS_THE_DOC").save();
 
 		database.refreshSearchIndex();
 
@@ -232,28 +224,18 @@ public abstract class AbstractDatabaseTest {
 
 		vacationDatabase.getAllDocuments().deleteAll();
 
-		vacationDatabase.createDocument(VacationRequest.class)
-				.setField("Requester", "John")
-				.setField("Time", 30)
-				.save();
+		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "John").setField("Time", 30).save();
 
-		vacationDatabase.createDocument(VacationRequest.class)
-				.setField("Requester", "Kathy")
-				.setField("Time", 25)
-				.save();
+		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "Kathy").setField("Time", 25).save();
 
-		vacationDatabase.createDocument(VacationRequest.class)
-				.setField("Requester", "Michael")
-				.setField("Time", 27)
-				.save();
+		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "Michael").setField("Time", 27).save();
 
 		DocumentIterator col = vacationDatabase.getAllDocuments();
 
 		for (Document doc : col) {
 			assertTrue("It could not possible load the vacation request object from the DocumentList.", doc.isOpen());
 			assertTrue("The vacation request object from the DocumentList is an instance from " + doc.getClass().getName()
-					+ ", and not from VacationRequest.",
-					doc.getClass().getSimpleName().contains("VacationRequest"));
+					+ ", and not from VacationRequest.", doc.getClass().getSimpleName().contains("VacationRequest"));
 		}
 	}
 
@@ -299,25 +281,21 @@ public abstract class AbstractDatabaseTest {
 		DocumentIterator iterator = database.getAllDocuments().deleteAll();
 		assertFalse("The database still has documents.", iterator.hasNext());
 
-		database.createDocument(Person.class)
-				.setId("John")
-				.setField("Form", "fo_ap_people")
-				.setField("Age", 30)
-				.save();
+		database.createDocument(Person.class).setId("John").setField("Form", "fo_ap_people").setField("Age", 30).save();
 
-		database.createDocument(Person.class)
-				.setId("Kathy")
-				.setField("Form", "fo_ap_people")
-				.setField("Age", 25)
-				.save();
+		database.createDocument(Person.class).setId("Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save();
 
-		database.createDocument(Person.class)
-				.setId("Jake")
-				.setField("Form", "fo_ap_people")
-				.setField("Age", 27)
-				.save();
+		database.createDocument(Person.class).setId("Jake").setField("Form", "fo_ap_people").setField("Age", 27).save();
 
-		Document p = database.getDocument(Person.class, "Kathy");
+		Document p = database.getDocument(Person.class, "Jake");
+		assertTrue("It could not possible load the person object for Jake.", p.isOpen());
+		assertTrue("It could not possible get the Jake's age.", p.getFieldAsInteger("Age") == 27);
+
+		p = database.getDocument(Person.class, "John");
+		assertTrue("It could not possible load the person object for John.", p.isOpen());
+		assertTrue("It could not possible get the John's age.", p.getFieldAsInteger("Age") == 30);
+
+		p = database.getDocument(Person.class, "Kathy");
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());
 		assertTrue("It could not possible get the Kathy's age.", p.getFieldAsInteger("Age") == 25);
 
@@ -338,11 +316,7 @@ public abstract class AbstractDatabaseTest {
 
 		database.getAllDocuments().deleteAll();
 
-		database.createDocument(Person.class)
-				.setId("Kathy")
-				.setField("Form", "fo_ap_people")
-				.setField("Age", 25)
-				.save();
+		database.createDocument(Person.class).setId("Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save().close();
 
 		Document p = database.getDocument(Person.class, "Kathy");
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());

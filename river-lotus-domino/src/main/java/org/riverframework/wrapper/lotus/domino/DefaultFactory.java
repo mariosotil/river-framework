@@ -19,7 +19,10 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.Session;
 import org.riverframework.wrapper.View;
+
 import java.lang.ref.Reference;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 public class DefaultFactory implements org.riverframework.wrapper.Factory {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
@@ -55,7 +58,7 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 	private void addToCache(String id, Base _wrapper) {
 		if (log.isLoggable(Level.FINEST)) {
 			Object __obj = _wrapper.getNativeObject();
-			
+
 			StringBuilder sb = new StringBuilder();
 			sb.append("Registering: id=");
 			sb.append(id);
@@ -68,7 +71,7 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 			sb.append(" (");
 			sb.append(__obj.hashCode());
 			sb.append(")");
-			
+
 			log.finest(sb.toString());
 		}
 
@@ -95,7 +98,7 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 			} else {
 				if (log.isLoggable(Level.FINEST)) {
 					Object __obj = _wrapper.getNativeObject();
-					
+
 					StringBuilder sb = new StringBuilder();
 					sb.append("Retrieved from cache: id=");
 					sb.append(id);
@@ -108,7 +111,7 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 					sb.append(" (");
 					sb.append(__obj.hashCode());
 					sb.append(")");
-					
+
 					log.finest(sb.toString());
 				}
 			}
@@ -138,75 +141,72 @@ public class DefaultFactory implements org.riverframework.wrapper.Factory {
 				"Valid parameters: (A) one lotus.domino.Session or (B) three Strings in this order: server, username and password.");
 	}
 
-	@Override
-	public Database getDatabase(Object __obj) {
-		if (__obj != null && !(__obj instanceof lotus.domino.Database)) throw new RiverException("Expected an object lotus.domino.Database");
+	@SuppressWarnings("unchecked")
+	public <U extends Base> U getWrapper(Class<U> outputClass, Class<? extends lotus.domino.Base> inputClass, Object __obj) {
+		U _wrapper = null;
 
-		String id = DefaultDatabase.calcObjectId((lotus.domino.Database) __obj);
+		try {
+			Method methodCalcObjectId = outputClass.getDeclaredMethod("calcObjectId", inputClass);
 
-		Database _wrapper = (Database) retrieveFromCache(id);
-		if (_wrapper == null) {
-			_wrapper = new DefaultDatabase(_session, (lotus.domino.Database)__obj);
-			addToCache(id, _wrapper);
+			if (__obj != null) {				
+				if (!(inputClass.isAssignableFrom(__obj.getClass()))) 
+					throw new RiverException("Expected an object " + inputClass.getName());
+				
+				String id = (String) methodCalcObjectId.invoke(null, __obj);
+				_wrapper = (U) retrieveFromCache(id);
+			}
+
+			if (_wrapper == null) {
+				Constructor<?> constructor = outputClass
+						.getDeclaredConstructor(org.riverframework.wrapper.Session.class, inputClass);
+				constructor.setAccessible(true);
+				_wrapper = outputClass.cast(constructor.newInstance(_session, __obj));
+			}
+
+			if (__obj != null) {				
+				String id = (String) methodCalcObjectId.invoke(null, __obj);
+				addToCache(id, _wrapper);
+			}
+		} catch (Exception e) {
+			throw new RiverException(e);
 		}
 
 		return _wrapper;		
 	}
 
 	@Override
+	public Database getDatabase(Object __obj) {
+		return getWrapper(DefaultDatabase.class, lotus.domino.Database.class, __obj);
+	}
+
+	@Override
 	public Document getDocument(Object __obj) {
-		if (__obj != null && !(__obj instanceof lotus.domino.Document)) throw new RiverException("Expected an object lotus.domino.Document");
-
-		String id = DefaultDocument.calcObjectId((lotus.domino.Document) __obj);
-
-		Document _wrapper = (Document) retrieveFromCache(id);
-		if (_wrapper == null) {
-			_wrapper = new DefaultDocument(_session, (lotus.domino.Document) __obj);
-			addToCache(id, _wrapper);
-		}
-
-		return _wrapper;
+		return getWrapper(DefaultDocument.class, lotus.domino.Document.class, __obj);
 	}
 
 	@Override
 	public View getView(Object __obj) {
-		if (__obj != null && !(__obj instanceof lotus.domino.View)) throw new RiverException("Expected an object lotus.domino.View");
-
-		String id = DefaultView.calcObjectId((lotus.domino.View) __obj);
-
-		View _wrapper = (View) retrieveFromCache(id);
-		if (_wrapper == null) {
-			_wrapper = new DefaultView(_session, (lotus.domino.View) __obj);
-			addToCache(id, _wrapper);
-		}
-
-		return _wrapper;
+		return getWrapper(DefaultView.class, lotus.domino.View.class, __obj);
 	}
 
 	@Override
 	public DocumentIterator getDocumentIterator(Object __obj) {
-		if (__obj != null && !(__obj instanceof lotus.domino.DocumentCollection || __obj instanceof lotus.domino.ViewEntryCollection || __obj instanceof lotus.domino.View)) 
-			throw new RiverException("Expected an object lotus.domino.DocumentCollection, ViewEntryCollection or View.");
+		DocumentIterator _iterator = null;
 
-		String id = DefaultDocumentIterator.calcObjectId(__obj);
+		if(__obj instanceof lotus.domino.DocumentCollection) {
+			_iterator = getWrapper(DefaultDocumentIterator.class, lotus.domino.DocumentCollection.class, __obj);
 
-		DocumentIterator _wrapper = (DocumentIterator) retrieveFromCache(id);
+		} else if(__obj instanceof lotus.domino.ViewEntryCollection) {
+			_iterator = getWrapper(DefaultDocumentIterator.class, lotus.domino.ViewEntryCollection.class, __obj);
 
-		if (_wrapper == null) {
-			if ( __obj instanceof lotus.domino.DocumentCollection) { 
-				_wrapper = new DefaultDocumentIterator(_session, (lotus.domino.DocumentCollection) __obj);
-			} else if (__obj instanceof lotus.domino.ViewEntryCollection) { 
-				_wrapper = new DefaultDocumentIterator(_session, (lotus.domino.ViewEntryCollection) __obj);
-			} else if (__obj instanceof lotus.domino.View) { 
-				_wrapper = new DefaultDocumentIterator(_session, (lotus.domino.View) __obj);
-			} else {
-				throw new RiverException("Expected an object lotus.domino.DocumentCollection, ViewEntryCollection or View.");
-			}
-			
-			addToCache(id, _wrapper);
+		} else if(__obj instanceof lotus.domino.View) {
+			_iterator = getWrapper(DefaultDocumentIterator.class, lotus.domino.View.class, __obj);
+
+		} else {
+			throw new RiverException("Expected an object lotus.domino.View, DocumentCollection, or ViewEntryCollection.");
 		}
 
-		return _wrapper;
+		return _iterator;
 	}
 
 	void close() {

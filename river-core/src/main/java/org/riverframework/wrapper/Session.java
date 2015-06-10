@@ -7,6 +7,7 @@ public interface Session extends Base {
 
 	public String getUserName();
 
+	@SuppressWarnings("rawtypes")
 	public Factory getFactory();
 
 	@Override

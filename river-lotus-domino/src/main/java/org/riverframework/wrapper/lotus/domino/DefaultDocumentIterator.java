@@ -73,10 +73,12 @@ class DefaultDocumentIterator implements DocumentIterator {
 		objectId = calcObjectId(__vecol);
 	}
 
-	private void updateCurrentDocumentFromDocument() {
+	@SuppressWarnings("unchecked")
+	private void updateCurrentDocumentFromDocument() {		
 		_doc = __doc == null ? null : _session.getFactory().getDocument(__doc);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void updateCurrentDocumentFromViewEntry() {
 		try {
 			while (__ve != null && __ve.getDocument() == null) {

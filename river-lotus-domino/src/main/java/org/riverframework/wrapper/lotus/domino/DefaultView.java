@@ -77,6 +77,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 			throw new RiverException(e);
 		}
 
+		@SuppressWarnings("unchecked")
 		Document doc = _session.getFactory().getDocument(__doc);
 
 		return doc;
@@ -96,6 +97,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 			throw new RiverException(e);
 		}
 
+		@SuppressWarnings("unchecked")
 		DocumentIterator result = _session.getFactory().getDocumentIterator(_col);
 		return result;
 	}
@@ -109,6 +111,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 			throw new RiverException(e);
 		}
 
+		@SuppressWarnings("unchecked")
 		DocumentIterator result = _session.getFactory().getDocumentIterator(_col);
 		return result;
 	}
@@ -148,6 +151,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 			throw new RiverException(e);
 		}
 		
+		@SuppressWarnings("unchecked")
 		DocumentIterator _iterator = _session.getFactory().getDocumentIterator(__temp);
 		
 		return _iterator;

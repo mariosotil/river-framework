@@ -15,7 +15,7 @@ class NativeReferenceCollector extends Thread implements Runnable {
 	protected ReferenceQueue<Base> queue = null;
 	protected LinkedList<Reference<? extends Base>> list = null;
 	private volatile boolean running = true;
-
+	
 	public NativeReferenceCollector(ReferenceQueue<Base> queue, LinkedList<Reference<? extends Base>> list) {
 		this.queue = queue;
 		this.list = list;
@@ -34,8 +34,7 @@ class NativeReferenceCollector extends Thread implements Runnable {
 
 		while (running) {
 			try {
-				Reference<? extends Base> ref = null;
-				ref = queue.remove();
+				Reference<? extends Base> ref = queue.remove();
 				list.remove(ref);
 				NativeReference nat = ((org.riverframework.wrapper.lotus.domino.NativeReference) ref);
 				String id = nat.getObjectId();

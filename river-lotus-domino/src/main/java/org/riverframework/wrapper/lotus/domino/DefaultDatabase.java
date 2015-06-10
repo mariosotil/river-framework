@@ -5,6 +5,8 @@ import java.util.regex.Pattern;
 
 import lotus.domino.NotesException;
 
+
+
 //import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.River;
 import org.riverframework.RiverException;
@@ -100,7 +102,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			throw new RiverException(e);
 		}
 
-		//Document doc = Factory.createDocument(session, __doc);
+		@SuppressWarnings("unchecked")
 		Document doc = _session.getFactory().getDocument(__doc);
 		return doc;
 	}
@@ -150,6 +152,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		Document doc = _session.getFactory().getDocument(__doc);
 
 		return doc;
@@ -205,6 +208,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			throw new RiverException(e);
 		}
 
+		@SuppressWarnings("unchecked")
 		View _view = _session.getFactory().getView(__view);
 		return _view;
 	}
@@ -219,6 +223,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			throw new RiverException(e);
 		}
 
+		@SuppressWarnings("unchecked")
 		DocumentIterator _iterator = _session.getFactory().getDocumentIterator(_col);
 		return _iterator;
 	}
@@ -233,6 +238,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			throw new RiverException(e);
 		}
 
+		@SuppressWarnings("unchecked")
 		DocumentIterator _iterator = _session.getFactory().getDocumentIterator(_col);
 		return _iterator;
 	}

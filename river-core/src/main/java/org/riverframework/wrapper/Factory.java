@@ -1,12 +1,13 @@
 package org.riverframework.wrapper;
 
+public interface Factory<T> {
+	public Database getDatabase(T obj);
 
-public interface Factory {
-	public Database getDatabase(Object obj);
+	public Document getDocument(T obj);
 
-	public Document getDocument(Object obj);
+	public View getView(T obj);
 
-	public View getView(Object obj);
+	public DocumentIterator getDocumentIterator(T obj);
 
-	public DocumentIterator getDocumentIterator(Object obj);
+	public void close();
 }

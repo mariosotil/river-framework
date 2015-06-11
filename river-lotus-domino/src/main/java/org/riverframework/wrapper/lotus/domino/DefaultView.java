@@ -11,9 +11,9 @@ import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
 class DefaultView implements org.riverframework.wrapper.View {
-	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session _session = null;
-	protected lotus.domino.View __view = null;
+	protected volatile lotus.domino.View __view = null;
 	private String objectId = null;
 
 	protected DefaultView(org.riverframework.wrapper.Session s, lotus.domino.View v) {
@@ -176,6 +176,6 @@ class DefaultView implements org.riverframework.wrapper.View {
 
 	@Override
 	public void finalize() {
-		log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
+		// log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 }

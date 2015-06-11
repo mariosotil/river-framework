@@ -6,11 +6,13 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
+import org.riverframework.River;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
@@ -21,6 +23,8 @@ public abstract class AbstractNativeReferenceCollectorTest {
 	final String TEST_FORM = "TestForm";
 	final String TEST_VIEW = "TestView";
 	final String TEST_GRAPH = "TestGraph";
+
+	private final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	protected Context context = null;
 	protected Session session = null;
@@ -51,6 +55,7 @@ public abstract class AbstractNativeReferenceCollectorTest {
 
 	@Test
 	public void testStress() {
+		final int SIZE = 2000;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
 		Database database = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
@@ -68,10 +73,16 @@ public abstract class AbstractNativeReferenceCollectorTest {
 		view = null;
 
 		int i = 0;
-		for (i = 0; i < 10; i++) {
-			database.createDocument().setField("Form", form).setField("Value", i).save();
+		for (i = 0; i < SIZE; i++) {
+			database.createDocument()
+					.setField("Form", form)
+					.setField("Value", i)
+					.save();
 		}
-
+		
+		session.getFactory().logStatus();
+		log.info("Step 1!");
+		
 		view = database.getView(name);
 		assertTrue("There is a problem opening the last view created in the test database.", view.isOpen());
 
@@ -82,15 +93,18 @@ public abstract class AbstractNativeReferenceCollectorTest {
 			i++;
 			it.next();
 		}
-		assertTrue("There is a problem with the documents indexed in the last view.", i == 10);
+		assertTrue("There is a problem with the documents indexed in the last view.", i == SIZE);
 
+		session.getFactory().logStatus();
+		log.info("Step 2!");
+		
 		it = view.getAllDocuments();
 
 		i = 0;
 		while (it.hasNext()) {
 			i++;
-			Document doc = it.next();
-			doc.delete();
+			Document doc2 = it.next();
+			doc2.delete();
 		}
 
 		view.refresh();
@@ -102,9 +116,12 @@ public abstract class AbstractNativeReferenceCollectorTest {
 		}
 		assertTrue("There is a problem with the last documents created when we try to delete them.", i == 0);
 
+		session.getFactory().logStatus();
+		log.info("Step 3!");
+
 		view.delete();
 		assertFalse("There is a problem deleting the last view created.", view.isOpen());
-		
+
 		database.delete();		
 		assertFalse("There is a problem deleting the last database created.", database.isOpen());
 	}

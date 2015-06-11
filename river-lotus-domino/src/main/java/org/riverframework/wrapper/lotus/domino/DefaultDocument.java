@@ -32,7 +32,7 @@ import org.riverframework.Field;
 class DefaultDocument implements org.riverframework.wrapper.Document {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session session = null;
-	protected lotus.domino.Document __doc = null;
+	protected volatile lotus.domino.Document __doc = null;
 	private String objectId = null;
 
 	protected DefaultDocument(org.riverframework.wrapper.Session s, lotus.domino.Document d) {
@@ -388,12 +388,11 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 
 	@Override
 	public String toString() {
-		// return ToStringBuilder.reflectionToString(this);
 		return getClass().getName() + "(" + objectId + ")";
 	}
 
 	@Override
 	public void finalize() {
-		log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
+		// log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 }

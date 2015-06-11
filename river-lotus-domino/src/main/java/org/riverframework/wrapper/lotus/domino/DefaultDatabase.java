@@ -18,7 +18,7 @@ import org.riverframework.wrapper.View;
 class DefaultDatabase implements org.riverframework.wrapper.Database {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session _session = null;
-	protected lotus.domino.Database __database = null;
+	protected volatile lotus.domino.Database __database = null;
 	private String objectId = null;
 
 	protected DefaultDatabase(org.riverframework.wrapper.Session _s, lotus.domino.Database __obj) {
@@ -272,7 +272,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 
 	@Override
 	public void finalize() {
-		log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
+		// log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 
 	@Override

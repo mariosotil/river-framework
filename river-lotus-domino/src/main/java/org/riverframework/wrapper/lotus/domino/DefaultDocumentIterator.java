@@ -15,12 +15,12 @@ class DefaultDocumentIterator implements DocumentIterator {
 
 	private org.riverframework.wrapper.Session _session = null;
 
-	private lotus.domino.DocumentCollection __col = null;
-	private lotus.domino.ViewEntryCollection __vecol = null;
+	private volatile lotus.domino.DocumentCollection __col = null;
+	private volatile lotus.domino.ViewEntryCollection __vecol = null;
 
 	private Document _doc = null;
-	private lotus.domino.Document __doc = null;
-	private lotus.domino.ViewEntry __ve = null;
+	private volatile lotus.domino.Document __doc = null;
+	private volatile lotus.domino.ViewEntry __ve = null;
 
 	private Type type = null;	
 	private String objectId = null;
@@ -228,6 +228,6 @@ class DefaultDocumentIterator implements DocumentIterator {
 
 	@Override
 	public void finalize() {
-		log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
+		// log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 }

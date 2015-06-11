@@ -16,7 +16,7 @@ public class DefaultSession implements Session {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	private final DefaultFactory factory = DefaultFactory.getInstance(this);
 
-	private lotus.domino.Session __session = null;
+	private volatile lotus.domino.Session __session = null;
 	private String objectId = null;
 
 	protected DefaultSession(lotus.domino.Session obj) {
@@ -72,6 +72,8 @@ public class DefaultSession implements Session {
 			else {
 				_database = getFactory().getDatabase(null);
 			}
+			
+			dir.recycle();			
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -185,6 +187,6 @@ public class DefaultSession implements Session {
 
 	@Override
 	public void finalize() {
-		log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
+		// log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 }

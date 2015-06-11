@@ -6,7 +6,7 @@ package org.riverframework.wrapper;
  * @author mario.sotil@gmail.com
  *
  */
-public interface Base {
+public interface Base<N> {
 	/**
 	 * Returns the object wrapped by the wrapper class. Considering that a
 	 * wrapper wraps a library that it would be used to access natively to the
@@ -16,7 +16,7 @@ public interface Base {
 	 * 
 	 * @return the object wrapped
 	 */
-	public Object getNativeObject();
+	public N getNativeObject();
 
 	/**
 	 * Returns an id that identifies the object wrapped. It will depend on the

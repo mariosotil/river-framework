@@ -1,31 +1,24 @@
 package org.riverframework.wrapper.lotus.domino;
 
-import java.util.LinkedList;
-
 import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
 
 import org.riverframework.RiverException;
-import org.riverframework.wrapper.Base;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
+import org.riverframework.wrapper.NativeReference;
+import org.riverframework.wrapper.NativeReferenceCollector;
 import org.riverframework.wrapper.Session;
 import org.riverframework.wrapper.View;
 
-import java.lang.ref.Reference;
-
 public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<lotus.domino.Base> {
-	private static DefaultFactory instance = null;
-	protected volatile LinkedList<Reference<? extends Base>> list = null;
-	private NativeReferenceCollector rc = null;
 
-	protected DefaultFactory(org.riverframework.wrapper.Session _session) {
-		super(_session);
-		
-		list = new LinkedList<Reference<? extends Base>>();
-		rc = new NativeReferenceCollector(queue, list);
-		rc.start();
+	private static DefaultFactory instance = null;
+
+	protected DefaultFactory(Session _session, Class<? extends NativeReference<lotus.domino.Base>> nativeReferenceClass,
+			Class<? extends NativeReferenceCollector> nativeReferenceCollectorClass) {
+		super(_session, nativeReferenceClass, nativeReferenceCollectorClass);
 	}
 
 	public static DefaultFactory getInstance(org.riverframework.wrapper.Session _session) {
@@ -33,16 +26,11 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			// Thread Safe. Might be costly operation in some case
 			synchronized (DefaultFactory.class) {
 				if (instance == null) {
-					instance = new DefaultFactory(_session);
+					instance = new DefaultFactory(_session, DefaultNativeReference.class, DefaultNativeReferenceCollector.class);
 				}
 			}
 		}
 		return instance;
-	}
-
-	protected void addToCache(String id, Base _wrapper) {
-		super.addToCache(id, _wrapper);
-		list.add(new NativeReference(_wrapper, queue));
 	}
 
 	@SuppressWarnings("unused")
@@ -66,11 +54,13 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 				"Valid parameters: (A) one lotus.domino.Session or (B) three Strings in this order: server, username and password.");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Database getDatabase(lotus.domino.Base __obj) {
 		return getWrapper(DefaultDatabase.class, lotus.domino.Database.class, __obj);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Document getDocument(lotus.domino.Base __obj) {
 		if(__obj != null && !(__obj instanceof lotus.domino.Document)) 
@@ -84,7 +74,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 				__obj = null;
 			} 
 		} catch (Exception e) {
-			throw new RiverException("There was a problem creating the document wrapper.");
+			throw new RiverException("There was a problem creating the document wrapper for a deleted document.");
 		}
 
 		_doc = getWrapper(DefaultDocument.class, lotus.domino.Document.class, __obj);
@@ -92,11 +82,13 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 		return _doc;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public View getView(lotus.domino.Base __obj) {
 		return getWrapper(DefaultView.class, lotus.domino.View.class, __obj);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public DocumentIterator getDocumentIterator(lotus.domino.Base __obj) {
 		DocumentIterator _iterator = null;
@@ -115,19 +107,5 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 		}
 
 		return _iterator;
-	}
-
-	@Override
-	public void close() {
-		rc.terminate();
-		log.fine("Cleaning the last objects in the phantom reference list: " + list.size());
-		list.clear();
-
-		super.close();
-	}
-
-	@Override
-	public String toString() {
-		return getClass().getName();
 	}
 }

@@ -6,32 +6,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.riverframework.River;
+import org.riverframework.wrapper.AbstractNativeReference;
 import org.riverframework.wrapper.Base;
-import java.lang.ref.PhantomReference;
 
-class NativeReference extends PhantomReference<Base> {
+class DefaultNativeReference extends AbstractNativeReference<lotus.domino.Base> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
-	protected Object __native = null;
-	protected String id = null;
-
-	public NativeReference(Base wrapper, ReferenceQueue<? super Base> queue) {
-		super(wrapper, queue);
-
-		id = wrapper.getObjectId();
-		__native = wrapper.getNativeObject();
+	public DefaultNativeReference(Base<lotus.domino.Base> referent,
+			ReferenceQueue<Base<lotus.domino.Base>> q) { 
+		super(referent, q);
 	}
 
-	public String getObjectId() {
-		return id;
-	}
-
-	synchronized public void cleanUp() {
+	@Override
+	public void close() {  
 		if (__native != null) {
 			Class<?> clazz = __native.getClass();
-			String wrapperClass = clazz.getName();
-			//int hc = __native.
-
+			String nativeClass = clazz.getName();
+			String hc = String.valueOf(__native.hashCode());
 			try {
 				Method method = clazz.getMethod("recycle");
 				method.invoke(__native);
@@ -41,7 +32,7 @@ class NativeReference extends PhantomReference<Base> {
 				__native = null;
 			}
 
-			log.finest("Recycled: id=" + id + " wrapper=" + wrapperClass); //+ " (" + hc + ")");
+			log.finest("Recycled: id=" + id + " native=" + nativeClass + " (" + hc + ")"); 
 		}
 	}
 }

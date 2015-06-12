@@ -15,6 +15,16 @@ public interface Document extends Base {
 	public Database getDatabase();
 
 	/**
+	 * Returns the object that wraps the native object. For example, if the wrapper loaded is
+	 * River.LOTUS_DOMINO, and the object is an instance of org.riverframework.core.DefaultDocument,
+	 * getNativeObject() will return an object that implements the org.riverframework.wrapper.Document interface.
+	 * 
+	 * @return the object used to wrap the native object
+	 */
+	@Override
+	public org.riverframework.wrapper.Document<?> getWrapperObject();
+	
+	/**
 	 * Compares a field from the Document with some value. If they are equal, it returns true
 	 * 
 	 * @param field

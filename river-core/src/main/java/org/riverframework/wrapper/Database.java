@@ -6,26 +6,26 @@ package org.riverframework.wrapper;
  * @author mario.sotil@gmail.com
  *
  */
-public interface Database extends Base {
+public interface Database<N> extends Base<N> {
 	public String getServer();
 
 	public String getFilePath();
 
 	public String getName();
 
-	public Document createDocument(String... parameters);
+	public Document<N> createDocument(String... parameters);
 
-	public Document getDocument(String... parameters);
+	public Document<N> getDocument(String... parameters);
 
-	public View createView(String... parameters);
+	public View<N> createView(String... parameters);
 
-	public View getView(String... parameters);
+	public View<N> getView(String... parameters);
 
-	public DocumentIterator getAllDocuments();
+	public DocumentIterator<N> getAllDocuments();
 
-	public DocumentIterator search(String query);
+	public DocumentIterator<N> search(String query);
 
-	public Database refreshSearchIndex();
+	public Database<N> refreshSearchIndex();
 
 	public void delete();
 }

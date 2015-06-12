@@ -63,7 +63,7 @@ public class River {
 	 */
 	public static Session getSession(String wrapper, Object... parameters) {
 		// This will be the session loaded depending the selected wrapper
-		org.riverframework.wrapper.Session _session = null;
+		org.riverframework.wrapper.Session<?> _session = null;
 
 		// Trying to retrieve the session from the map
 		AbstractSession session = map.get(wrapper);
@@ -87,22 +87,30 @@ public class River {
 				throw new RiverException("The wrapper '" + wrapper + "' can not be loaded. If you are using an non-official wrapper, " +
 						"check the wrapper name and its design. Check the CLASSPATH.");
 			}
-
-			Method method;
+			
 			try {
+				Method method = clazzFactory.getDeclaredMethod("getInstance");
+				method.setAccessible(true);
+				org.riverframework.wrapper.Factory<?> _factory = (org.riverframework.wrapper.Factory<?>) method.invoke(null);
+
+				if (_factory == null)
+					throw new RiverException("The factory could not be loaded.");
+
 				if (parameters.length > 0) {
 					// There are parameters. So, we try to create a new one.
-					method = clazzFactory.getDeclaredMethod("getSession", Object[].class);
-					method.setAccessible(true);
-					_session = (org.riverframework.wrapper.Session) method.invoke(null, new Object[] { parameters });
+//					method = clazzFactory.getDeclaredMethod("getSession", Object[].class);
+//					method.setAccessible(true);
+//					_session = (org.riverframework.wrapper.Session<?>) method.invoke(_factory, new Object[] { parameters });
+					_session = (org.riverframework.wrapper.Session<?>) _factory.getSession(parameters);
 				} else {
 					// There are no parameters. We create a closed session.
 					_session = null;
 				}
-
+				
 				Constructor<?> constructor = DefaultSession.class.getDeclaredConstructor(org.riverframework.wrapper.Session.class);
 				constructor.setAccessible(true);
 				session = (DefaultSession) constructor.newInstance(_session);
+				
 			} catch (Exception e) {
 				throw new RiverException("There's a problem opening the session. Maybe, you will need to check the parameters.", e);
 			}

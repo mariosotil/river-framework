@@ -27,8 +27,9 @@ public abstract class AbstractNativeReferenceCollectorTest {
 	private final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	protected Context context = null;
-	protected Session session = null;
+	protected Session<lotus.domino.Base> _session = null;
 
+	@SuppressWarnings("unchecked")
 	@Before
 	public void open() {
 		// Opening the test context in the current package
@@ -41,7 +42,7 @@ public abstract class AbstractNativeReferenceCollectorTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session) context.getSession().getWrapperObject();
+				_session = (Session<lotus.domino.Base>) context.getSession().getWrapperObject();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -55,17 +56,18 @@ public abstract class AbstractNativeReferenceCollectorTest {
 
 	@Test
 	public void testStress() {
-		final int SIZE = 2000;
+		final int SIZE = 2500;
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-		Database database = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
+		Database<lotus.domino.Base> database = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
 
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		String name = "VIEW_" + sdf.format(new Date());
 		String form = "FORM_" + sdf.format(new Date());
-		View view = database.createView(name, "SELECT Form = \"" + form + "\"");
+		View<lotus.domino.Base> view = database.createView(name, "SELECT Form = \"" + form + "\"");
 
 		assertTrue("There is a problem creating the view in the test database.", view.isOpen());
 
@@ -73,20 +75,21 @@ public abstract class AbstractNativeReferenceCollectorTest {
 		view = null;
 
 		int i = 0;
+		
 		for (i = 0; i < SIZE; i++) {
-			database.createDocument()
-					.setField("Form", form)
-					.setField("Value", i)
-					.save();
+				database.createDocument()
+				.setField("Form", form)
+				.setField("Value", i)
+				.save();
 		}
-		
-		session.getFactory().logStatus();
+
+		_session.getFactory().logStatus();
 		log.info("Step 1!");
-		
+
 		view = database.getView(name);
 		assertTrue("There is a problem opening the last view created in the test database.", view.isOpen());
 
-		DocumentIterator it = view.getAllDocuments();
+		DocumentIterator<lotus.domino.Base> it = view.getAllDocuments();
 
 		i = 0;
 		while (it.hasNext()) {
@@ -95,17 +98,19 @@ public abstract class AbstractNativeReferenceCollectorTest {
 		}
 		assertTrue("There is a problem with the documents indexed in the last view.", i == SIZE);
 
-		session.getFactory().logStatus();
+		_session.getFactory().logStatus();
 		log.info("Step 2!");
-		
+
 		it = view.getAllDocuments();
 
 		i = 0;
 		while (it.hasNext()) {
 			i++;
-			Document doc2 = it.next();
+			Document<lotus.domino.Base> doc2 = it.next();
 			doc2.delete();
 		}
+
+		log.info("Step 3!");
 
 		view.refresh();
 		i = 0;
@@ -114,10 +119,11 @@ public abstract class AbstractNativeReferenceCollectorTest {
 			i++;
 			it.next();
 		}
+		_session.getFactory().logStatus();
+		log.info("Step 4!");
+
 		assertTrue("There is a problem with the last documents created when we try to delete them.", i == 0);
 
-		session.getFactory().logStatus();
-		log.info("Step 3!");
 
 		view.delete();
 		assertFalse("There is a problem deleting the last view created.", view.isOpen());

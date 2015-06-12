@@ -7,7 +7,7 @@ package org.riverframework.core;
  *
  */
 public final class DefaultDatabase extends AbstractDatabase implements org.riverframework.Database {
-	protected DefaultDatabase(org.riverframework.Session s, org.riverframework.wrapper.Database _db) {
+	protected DefaultDatabase(org.riverframework.Session s, org.riverframework.wrapper.Database<?> _db) {
 		super(s, _db);
 	}
 

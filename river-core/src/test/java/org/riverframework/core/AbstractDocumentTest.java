@@ -515,7 +515,7 @@ public abstract class AbstractDocumentTest {
 
 	// Classes to testing the implementations
 	static class SimpleRequest extends AbstractDocument<SimpleRequest> {
-		protected SimpleRequest(Database d, org.riverframework.wrapper.Document _d) {
+		protected SimpleRequest(Database d, org.riverframework.wrapper.Document<?> _d) {
 			super(d, _d);
 		}
 
@@ -537,7 +537,7 @@ public abstract class AbstractDocumentTest {
 
 	static class ComplexDatabase extends AbstractDatabase {
 
-		protected ComplexDatabase(Session s, org.riverframework.wrapper.Database obj) {
+		protected ComplexDatabase(Session s, org.riverframework.wrapper.Database<?> obj) {
 			super(s, obj);
 		}
 	}

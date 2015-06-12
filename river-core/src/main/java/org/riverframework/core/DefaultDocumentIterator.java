@@ -10,7 +10,7 @@ import org.riverframework.Database;
  */
 public final class DefaultDocumentIterator extends AbstractDocumentIterator 
 implements org.riverframework.DocumentIterator {
-	protected DefaultDocumentIterator(Database d, org.riverframework.wrapper.DocumentIterator _iterator) {
+	protected DefaultDocumentIterator(Database d, org.riverframework.wrapper.DocumentIterator<?> _iterator) {
 		super (d, _iterator);
 	}
 }

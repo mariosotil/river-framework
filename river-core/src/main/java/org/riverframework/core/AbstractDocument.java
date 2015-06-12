@@ -21,10 +21,10 @@ import org.riverframework.Field;
  */
 public abstract class AbstractDocument<T extends AbstractDocument<T>> implements org.riverframework.Document {
 	protected Database database = null;
-	protected org.riverframework.wrapper.Document _doc = null;
+	protected org.riverframework.wrapper.Document<?> _doc = null;
 	protected boolean isModified = false;
 
-	protected AbstractDocument(Database d, org.riverframework.wrapper.Document _d) {
+	protected AbstractDocument(Database d, org.riverframework.wrapper.Document<?> _d) {
 		database = d;
 		_doc = _d;
 		isModified = false;
@@ -83,7 +83,7 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 	}
 
 	@Override
-	public org.riverframework.wrapper.Document getWrapperObject() {
+	public org.riverframework.wrapper.Document<?> getWrapperObject() {
 		return _doc;
 	}
 

@@ -38,7 +38,7 @@ public abstract class AbstractSessionTest {
 		assertFalse("Password can't be an empty string", password.equals(""));
 
 		for (int i = 0; i < 5; i++) {
-			Session _session = (Session) context.getSession().getWrapperObject();
+			Session<?> _session = (Session<?>) context.getSession().getWrapperObject();
 
 			assertTrue("The Session could not be opened at the interation " + i, _session.isOpen());
 			assertFalse("There's a problem with the Session at the iteration " + i + ". I can't retrieve the current user name.", _session
@@ -50,11 +50,11 @@ public abstract class AbstractSessionTest {
 
 	@Test
 	public void testCreateAndDeleteDatabase() {
-		Session _session = (Session) context.getSession().getWrapperObject();
+		Session<?> _session = (Session<?>) context.getSession().getWrapperObject();
 		assertTrue("The Session could not be opened.", _session.isOpen());
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		Database _db = _session.createDatabase(context.getTestDatabaseServer(), "test_river_" + sdf.format(new Date()) + ".nsf");
+		Database<?> _db = _session.createDatabase(context.getTestDatabaseServer(), "test_river_" + sdf.format(new Date()) + ".nsf");
 		assertTrue("The Database could not be created.", _db.isOpen());
 
 		_db.delete();

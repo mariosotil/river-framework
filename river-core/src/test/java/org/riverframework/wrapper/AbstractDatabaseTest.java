@@ -19,8 +19,8 @@ public abstract class AbstractDatabaseTest {
 	final String TEST_VIEW = "TestView";
 	final String TEST_GRAPH = "TestGraph";
 
-	protected Session session = null;
-	protected Database database = null;
+	protected Session<?> session = null;
+	protected Database<?> database = null;
 
 	protected Context context = null;
 
@@ -36,7 +36,7 @@ public abstract class AbstractDatabaseTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session) context.getSession().getWrapperObject();
+				session = (Session<?>) context.getSession().getWrapperObject();
 				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 			}
@@ -65,7 +65,7 @@ public abstract class AbstractDatabaseTest {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 		String name = "VIEW_" + sdf.format(new Date());
 		String form = "FORM_" + sdf.format(new Date());
-		View view = database.createView(name, "SELECT Form = \"" + form + "\"");
+		View<?> view = database.createView(name, "SELECT Form = \"" + form + "\"");
 
 		assertTrue("There is a problem creating the view in the test database.", view.isOpen());
 
@@ -80,7 +80,7 @@ public abstract class AbstractDatabaseTest {
 		view = database.getView(name);
 		assertTrue("There is a problem opening the last view created in the test database.", view.isOpen());
 
-		DocumentIterator it = view.getAllDocuments();
+		DocumentIterator<?> it = view.getAllDocuments();
 
 		i = 0;
 		while (it.hasNext()) {
@@ -94,7 +94,7 @@ public abstract class AbstractDatabaseTest {
 		i = 0;
 		while (it.hasNext()) {
 			i++;
-			Document doc = it.next();
+			Document<?> doc = it.next();
 			doc.delete();
 		}
 
@@ -118,7 +118,7 @@ public abstract class AbstractDatabaseTest {
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentIterator col = null;
+		DocumentIterator<?> col = null;
 
 		database.getAllDocuments().deleteAll();
 		RandomString rs = new RandomString(10);
@@ -151,7 +151,7 @@ public abstract class AbstractDatabaseTest {
 
 		database.createDocument().setField("Id", "Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save();
 
-		Document doc = database.createDocument().setField("Id", "Jake").setField("Form", "fo_ap_people").setField("Age", 27).save();
+		Document<?> doc = database.createDocument().setField("Id", "Jake").setField("Form", "fo_ap_people").setField("Age", 27).save();
 
 		String unid = doc.getObjectId();
 		doc = null;
@@ -172,9 +172,9 @@ public abstract class AbstractDatabaseTest {
 
 		database.createDocument().setField("Requester", "Michael").setField("Time", 27).save();
 
-		DocumentIterator col = database.getAllDocuments();
+		DocumentIterator<?> col = database.getAllDocuments();
 
-		for (Document doc : col) {
+		for (Document<?> doc : col) {
 			assertTrue("It could not possible load the vacation request object from the DocumentList.", doc.isOpen());
 		}
 	}

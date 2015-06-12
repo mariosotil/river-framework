@@ -14,9 +14,9 @@ import org.riverframework.DocumentIterator;
  */
 public abstract class AbstractDocumentIterator implements DocumentIterator {
 	protected Database database;
-	protected org.riverframework.wrapper.DocumentIterator _iterator;
+	protected org.riverframework.wrapper.DocumentIterator<?> _iterator;
 
-	protected AbstractDocumentIterator(Database d, org.riverframework.wrapper.DocumentIterator _iterator) {
+	protected AbstractDocumentIterator(Database d, org.riverframework.wrapper.DocumentIterator<?> _iterator) {
 		this.database = d;
 		this._iterator = _iterator;
 	}
@@ -28,7 +28,7 @@ public abstract class AbstractDocumentIterator implements DocumentIterator {
 
 	@Override
 	public Document next() {
-		org.riverframework.wrapper.Document _doc = _iterator.next();
+		org.riverframework.wrapper.Document<?> _doc = _iterator.next();
 		org.riverframework.Document doc = database.getDocument(_doc);
 		return doc;
 	}
@@ -63,7 +63,7 @@ public abstract class AbstractDocumentIterator implements DocumentIterator {
 	}
 
 	@Override
-	public org.riverframework.wrapper.DocumentIterator getWrapperObject() {
+	public org.riverframework.wrapper.DocumentIterator<?> getWrapperObject() {
 		return _iterator;
 	}
 

@@ -15,13 +15,13 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultDatabase implements org.riverframework.wrapper.Database {
+class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domino.Base> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	protected org.riverframework.wrapper.Session _session = null;
+	protected org.riverframework.wrapper.Session<?> _session = null;
 	protected volatile lotus.domino.Database __database = null;
 	private String objectId = null;
 
-	protected DefaultDatabase(org.riverframework.wrapper.Session _s, lotus.domino.Database __obj) {
+	protected DefaultDatabase(org.riverframework.wrapper.Session<?> _s, lotus.domino.Database __obj) {
 		__database = __obj;
 		_session = _s;
 		objectId = calcObjectId(__database);		
@@ -93,7 +93,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	}
 
 	@Override
-	public Document createDocument(String... parameters) {
+	public Document<lotus.domino.Base> createDocument(String... parameters) {
 		lotus.domino.Document __doc = null;
 
 		try {
@@ -103,13 +103,13 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 		}
 
 		@SuppressWarnings("unchecked")
-		Document doc = _session.getFactory().getDocument(__doc);
+		Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
 		return doc;
 	}
 
 	@SuppressWarnings("unused")
 	@Override
-	public Document getDocument(String... parameters)
+	public Document<lotus.domino.Base> getDocument(String... parameters)
 	{
 		lotus.domino.Document __doc = null;
 
@@ -153,13 +153,13 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 		}
 
 		@SuppressWarnings("unchecked")
-		Document doc = _session.getFactory().getDocument(__doc);
+		Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
 
 		return doc;
 	}
 
 	@Override
-	public View createView(String... parameters) {
+	public View<lotus.domino.Base> createView(String... parameters) {
 		lotus.domino.View __view = null;
 		String name = null;
 		
@@ -187,12 +187,12 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 			}
 		}
 		
-		View _view = getView(name);
+		View<lotus.domino.Base> _view = getView(name);
 		return _view;
 	}
 	
 	@Override
-	public View getView(String... parameters) {
+	public View<lotus.domino.Base> getView(String... parameters) {
 		lotus.domino.View __view = null;
 
 		try {
@@ -209,12 +209,12 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 		}
 
 		@SuppressWarnings("unchecked")
-		View _view = _session.getFactory().getView(__view);
+		View<lotus.domino.Base> _view = _session.getFactory().getView(__view);
 		return _view;
 	}
 
 	@Override
-	public DocumentIterator getAllDocuments() {
+	public DocumentIterator<lotus.domino.Base> getAllDocuments() {
 		lotus.domino.DocumentCollection _col;
 
 		try {
@@ -224,12 +224,12 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator _iterator = _session.getFactory().getDocumentIterator(_col);
+		DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(_col);
 		return _iterator;
 	}
 
 	@Override
-	public DocumentIterator search(String query) {
+	public DocumentIterator<lotus.domino.Base> search(String query) {
 		lotus.domino.DocumentCollection _col;
 
 		try {
@@ -239,12 +239,12 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator _iterator = _session.getFactory().getDocumentIterator(_col);
+		DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(_col);
 		return _iterator;
 	}
 
 	@Override
-	public Database refreshSearchIndex() {
+	public Database<lotus.domino.Base> refreshSearchIndex() {
 		try {
 			__database.updateFTIndex(false);
 		} catch (NotesException e) {
@@ -268,11 +268,6 @@ class DefaultDatabase implements org.riverframework.wrapper.Database {
 	@Override
 	public String toString() {
 		return getClass().getName() + "(" + objectId + ")";
-	}
-
-	@Override
-	public void finalize() {
-		// log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 
 	@Override

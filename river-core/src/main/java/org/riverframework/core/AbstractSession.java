@@ -16,9 +16,9 @@ import org.riverframework.Session;
 public abstract class AbstractSession implements org.riverframework.Session {
 	public static final String PREFIX = "RIVER_";
 
-	private org.riverframework.wrapper.Session _session = null;
+	private org.riverframework.wrapper.Session<?> _session = null;
 
-	protected AbstractSession(org.riverframework.wrapper.Session _s) {
+	protected AbstractSession(org.riverframework.wrapper.Session<?> _s) {
 		// Exists only to defeat instantiation.
 		_session = _s;
 	}
@@ -32,7 +32,7 @@ public abstract class AbstractSession implements org.riverframework.Session {
 	}
 
 	@Override
-	public org.riverframework.wrapper.Session getWrapperObject() {
+	public org.riverframework.wrapper.Session<?> getWrapperObject() {
 		return _session;
 	}
 
@@ -52,7 +52,7 @@ public abstract class AbstractSession implements org.riverframework.Session {
 		if (!isOpen())
 			throw new ClosedObjectException("The Session object is closed.");
 
-		org.riverframework.wrapper.Database _database = _session.createDatabase(location);
+		org.riverframework.wrapper.Database<?> _database = _session.createDatabase(location);
 		U database = null;
 		Class<U> c = clazz;
 
@@ -86,7 +86,7 @@ public abstract class AbstractSession implements org.riverframework.Session {
 
 		U database = null;
 		Class<U> c = clazz;
-		org.riverframework.wrapper.Database _database = null;
+		org.riverframework.wrapper.Database<?> _database = null;
 
 		if (c == null)
 			c = (Class<U>) DefaultDatabase.class;

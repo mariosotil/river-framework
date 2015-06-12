@@ -7,7 +7,7 @@ package org.riverframework.core;
  *
  */
 public final class DefaultSession extends AbstractSession implements org.riverframework.Session {
-	protected DefaultSession(org.riverframework.wrapper.Session _s) {
+	protected DefaultSession(org.riverframework.wrapper.Session<?> _s) {
 		// Exists only to defeat instantiation.
 		super(_s);
 	}

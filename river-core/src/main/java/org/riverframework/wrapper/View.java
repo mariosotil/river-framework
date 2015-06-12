@@ -1,15 +1,15 @@
 package org.riverframework.wrapper;
 
-public interface View extends Base {
-	public Document getDocumentByKey(String key);
+public interface View<N> extends Base<N> {
+	public Document<N> getDocumentByKey(String key);
 
-	public DocumentIterator getAllDocuments();
+	public DocumentIterator<N> getAllDocuments();
 
-	public DocumentIterator getAllDocumentsByKey(Object key);
+	public DocumentIterator<N> getAllDocumentsByKey(Object key);
 
-	public View refresh();
+	public View<N> refresh();
 
-	public DocumentIterator search(String query);
+	public DocumentIterator<N> search(String query);
 
 	public void delete();
 }

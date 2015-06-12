@@ -15,6 +15,16 @@ public interface Database extends Base {
 	public Session getSession();
 
 	/**
+	 * Returns the object that wraps the native object. For example, if the wrapper loaded is
+	 * River.LOTUS_DOMINO, and the object is an instance of org.riverframework.core.DefaultDocument,
+	 * getNativeObject() will return an object that implements the org.riverframework.wrapper.Document interface.
+	 * 
+	 * @return the object used to wrap the native object
+	 */
+	@Override
+	public org.riverframework.wrapper.Database<?> getWrapperObject();
+	
+	/**
 	 * * Creates a document. The parameters needed will depend on what wrapper
 	 * is loaded.
 	 * 
@@ -149,7 +159,7 @@ public interface Database extends Base {
 	 *            an object Document from the wrapper loaded in this time.
 	 * @return a Document object using the doc provided as parameter.
 	 */
-	public <U extends Document> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document doc);
+	public <U extends Document> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document<?> doc);
 
 	/**
 	 * Creates a Document object. The class is detected from the object doc
@@ -159,7 +169,7 @@ public interface Database extends Base {
 	 *            an wrapper Document object
 	 * @return a Document object using the doc provided as parameter.
 	 */
-	public Document getDocument(org.riverframework.wrapper.Document doc);
+	public Document getDocument(org.riverframework.wrapper.Document<?> doc);
 
 	/**
 	 * Returns the class that getDocument(doc) must use following arbitrary
@@ -169,7 +179,7 @@ public interface Database extends Base {
 	 *            an wrapper Document object
 	 * @return the class that must be used to instance it
 	 */
-	public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document doc);
+	public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document<?> doc);
 
 	/**
 	 * Returns all documents from the database as a DocumentIterator object,

@@ -16,6 +16,16 @@ public interface Session extends Base {
 	public static final String FIELD_PREFIX = "RIVER_";
 
 	/**
+	 * Returns the object that wraps the native object. For example, if the wrapper loaded is
+	 * River.LOTUS_DOMINO, and the object is an instance of org.riverframework.core.DefaultDocument,
+	 * getNativeObject() will return an object that implements the org.riverframework.wrapper.Document interface.
+	 * 
+	 * @return the object used to wrap the native object
+	 */
+	@Override
+	public org.riverframework.wrapper.Session<?> getWrapperObject();
+	
+	/**
 	 * Creates a new database.  
 	 * 
 	 * @param parameters Depends on what wrapper is being used.

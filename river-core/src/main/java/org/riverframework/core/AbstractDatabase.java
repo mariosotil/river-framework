@@ -22,9 +22,9 @@ import org.riverframework.Unique;
 public abstract class AbstractDatabase implements org.riverframework.Database {
 	public static final String METHOD_GETINDEXNAME = "getIndexName";
 	protected Session session = null;
-	protected org.riverframework.wrapper.Database _database = null;
+	protected org.riverframework.wrapper.Database<?> _database = null;
 
-	protected AbstractDatabase(org.riverframework.Session s, org.riverframework.wrapper.Database _db) {
+	protected AbstractDatabase(org.riverframework.Session s, org.riverframework.wrapper.Database<?> _db) {
 		session = s;
 		_database = _db;
 	}
@@ -37,7 +37,7 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 	}
 
 	@Override
-	public org.riverframework.wrapper.Database getWrapperObject() {
+	public org.riverframework.wrapper.Database<?> getWrapperObject() {
 		return _database;
 	}
 
@@ -83,7 +83,7 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 			throw new ClosedObjectException("The Database object is closed.");
 
 		U doc = null;
-		org.riverframework.wrapper.Document _doc = null;
+		org.riverframework.wrapper.Document<?> _doc = null;
 
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
@@ -101,7 +101,7 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 		}
 
 		if (doc == null) {
-			doc = clazz.cast(getDocument(clazz, (org.riverframework.wrapper.Document) null));
+			doc = clazz.cast(getDocument(clazz, (org.riverframework.wrapper.Document<?>) null));
 		} else {
 			if (doc instanceof AbstractDocument && doc.isOpen()) {
 				AbstractDocument<?> temp = (AbstractDocument<?>) doc;
@@ -130,7 +130,7 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 			throw new ClosedObjectException("The Database object is closed.");
 
 		U doc = null;
-		org.riverframework.wrapper.Document _doc = null;
+		org.riverframework.wrapper.Document<?> _doc = null;
 
 		if (parameters.length > 0) {
 			String id = parameters[0];
@@ -154,7 +154,7 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but its method "
 							+ METHOD_GETINDEXNAME + " returns an empty string.");
 
-				org.riverframework.wrapper.View indexView = _database.getView(indexName);
+				org.riverframework.wrapper.View<?> indexView = _database.getView(indexName);
 
 				if (indexView == null || !indexView.isOpen())
 					throw new RiverException("The class " + clazz.getSimpleName() + " implements Unique but the index view " + indexName
@@ -198,20 +198,20 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 	}
 
 	@Override
-	public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document doc) {
+	public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document<?> doc) {
 		Class<? extends org.riverframework.Document> clazz = null;
 
 		return clazz;
 	}
 
 	@Override
-	public org.riverframework.Document getDocument(org.riverframework.wrapper.Document doc) {
+	public org.riverframework.Document getDocument(org.riverframework.wrapper.Document<?> doc) {
 		return getDocument(null, doc);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document _doc) {
+	public <U extends org.riverframework.Document> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document<?> _doc) {
 		U doc = null;
 		Class<? extends org.riverframework.Document> c = clazz;
 
@@ -243,7 +243,7 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 			throw new ClosedObjectException("The Database object is closed.");
 
 		U view = null;
-		org.riverframework.wrapper.View _view = null;
+		org.riverframework.wrapper.View<?> _view = null;
 
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
@@ -274,7 +274,7 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 			throw new ClosedObjectException("The Database object is closed.");
 
 		U view = null;
-		org.riverframework.wrapper.View _view = null;
+		org.riverframework.wrapper.View<?> _view = null;
 		String id = parameters[0];
 
 		if (clazz == null)
@@ -300,7 +300,7 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 		if (!isOpen())
 			throw new ClosedObjectException("The Database object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator _iterator = _database.getAllDocuments();
+		org.riverframework.wrapper.DocumentIterator<?> _iterator = _database.getAllDocuments();
 		DocumentIterator result = new DefaultDocumentIterator(this, _iterator);
 
 		return result;
@@ -319,7 +319,7 @@ public abstract class AbstractDatabase implements org.riverframework.Database {
 		if (!isOpen())
 			throw new ClosedObjectException("The Database object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator _iterator = _database.search(query);
+		org.riverframework.wrapper.DocumentIterator<?> _iterator = _database.search(query);
 		DocumentIterator result = new DefaultDocumentIterator(this, _iterator);
 
 		return result;

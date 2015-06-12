@@ -17,9 +17,9 @@ import org.riverframework.View;
  */
 public abstract class AbstractView implements org.riverframework.View {
 	protected Database database = null;
-	protected org.riverframework.wrapper.View _view = null;
+	protected org.riverframework.wrapper.View<?> _view = null;
 
-	protected AbstractView(Database d, org.riverframework.wrapper.View obj) {
+	protected AbstractView(Database d, org.riverframework.wrapper.View<?> obj) {
 		database = d;
 		_view = obj;
 	}
@@ -32,7 +32,7 @@ public abstract class AbstractView implements org.riverframework.View {
 	}
 
 	@Override
-	public org.riverframework.wrapper.View getWrapperObject() {
+	public org.riverframework.wrapper.View<?> getWrapperObject() {
 		return _view;
 	}
 
@@ -52,7 +52,7 @@ public abstract class AbstractView implements org.riverframework.View {
 			throw new ClosedObjectException("The View object is closed.");
 
 		U doc = null;
-		org.riverframework.wrapper.Document _doc = null;
+		org.riverframework.wrapper.Document<?> _doc = null;
 
 		if (clazz == null)
 			throw new RiverException("The clazz parameter can not be null.");
@@ -85,7 +85,7 @@ public abstract class AbstractView implements org.riverframework.View {
 		if (!isOpen())
 			throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator _iterator = _view.getAllDocuments();
+		org.riverframework.wrapper.DocumentIterator<?> _iterator = _view.getAllDocuments();
 		DocumentIterator result = new DefaultDocumentIterator(database, _iterator);
 
 		return result;
@@ -96,7 +96,7 @@ public abstract class AbstractView implements org.riverframework.View {
 		if (!isOpen())
 			throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator _iterator = _view.getAllDocumentsByKey(key);
+		org.riverframework.wrapper.DocumentIterator<?> _iterator = _view.getAllDocumentsByKey(key);
 		DocumentIterator result = new DefaultDocumentIterator(database, _iterator);
 
 		return result;
@@ -124,7 +124,7 @@ public abstract class AbstractView implements org.riverframework.View {
 		if (!isOpen())
 			throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator _it = _view.search(query);
+		org.riverframework.wrapper.DocumentIterator<?> _it = _view.search(query);
 		DocumentIterator result = new DefaultDocumentIterator(database, _it);
 		return result;
 	}

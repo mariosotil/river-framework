@@ -14,8 +14,8 @@ import org.riverframework.RandomString;
 public abstract class AbstractDocumentIteratorTest {
 	final String TEST_FORM = "TestForm";
 
-	protected Session session = null;
-	protected Database database = null;
+	protected Session<?> session = null;
+	protected Database<?> database = null;
 
 	protected Context context = null;
 
@@ -33,7 +33,7 @@ public abstract class AbstractDocumentIteratorTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session) context.getSession().getWrapperObject();
+				session = (Session<?>) context.getSession().getWrapperObject();
 				database = session.getDatabase(context.getTestDatabaseServer(),
 						context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
@@ -55,7 +55,7 @@ public abstract class AbstractDocumentIteratorTest {
 				database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentIterator col = database.getAllDocuments().deleteAll();
+		DocumentIterator<?> col = database.getAllDocuments().deleteAll();
 
 		RandomString rs = new RandomString(10);
 
@@ -65,10 +65,10 @@ public abstract class AbstractDocumentIteratorTest {
 		}
 
 		col = database.getAllDocuments();
-		DocumentIterator iterator = col.iterator();
+		DocumentIterator<?> iterator = col.iterator();
 		int j = 0;
 		for (@SuppressWarnings("unused")
-		Document doc : iterator) {
+		Document<?> doc : iterator) {
 			j++;
 		}
 		assertTrue("The iterator does not returns the expected values.",
@@ -82,11 +82,11 @@ public abstract class AbstractDocumentIteratorTest {
 
 		// Creating at least one document
 		@SuppressWarnings("unused")
-		Document doc = database.createDocument()
+		Document<?> doc = database.createDocument()
 				.setField("Form", TEST_FORM)
 				.save();
 
-		DocumentIterator col = database.getAllDocuments();
+		DocumentIterator<?> col = database.getAllDocuments();
 		col.deleteAll();
 
 		col = null;

@@ -17,8 +17,8 @@ import org.riverframework.Field;
 import org.riverframework.RandomString;
 
 public abstract class AbstractDocumentTest {
-	protected Session session = null;
-	protected Database database = null;
+	protected Session<?> session = null;
+	protected Database<?> database = null;
 
 	final String TEST_FORM = "TestForm";
 
@@ -36,7 +36,7 @@ public abstract class AbstractDocumentTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session) context.getSession().getWrapperObject();
+				session = (Session<?>) context.getSession().getWrapperObject();
 				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 			}
@@ -56,7 +56,7 @@ public abstract class AbstractDocumentTest {
 
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument();
+		Document<?> doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 
@@ -81,7 +81,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsInteger() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument();
+		Document<?> doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 
@@ -99,7 +99,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsLong() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument();
+		Document<?> doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 
@@ -117,7 +117,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsDouble() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument();
+		Document<?> doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 
@@ -136,7 +136,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsDate() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument();
+		Document<?> doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 
@@ -162,7 +162,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsArrayString() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument();
+		Document<?> doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 
@@ -180,7 +180,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsVector() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument();
+		Document<?> doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 
@@ -198,7 +198,7 @@ public abstract class AbstractDocumentTest {
 	public void testGetIsFieldEmpty() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument();
+		Document<?> doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 
@@ -214,7 +214,7 @@ public abstract class AbstractDocumentTest {
 	public void testIsOpen() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.getDocument();
+		Document<?> doc = database.getDocument();
 
 		assertFalse("The document is not being detected as NOT open.", doc.isOpen());
 
@@ -228,7 +228,7 @@ public abstract class AbstractDocumentTest {
 	public void testIsNew() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument();
+		Document<?> doc = database.createDocument();
 
 		assertTrue("The document is new and is not detected like that.", doc.isNew());
 	}
@@ -237,7 +237,7 @@ public abstract class AbstractDocumentTest {
 	public void testGetUniversalId() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument();
+		Document<?> doc = database.createDocument();
 		String uniqueId = doc.getObjectId();
 
 		assertFalse("It could not be retrieved de document's unique id.", uniqueId.equals(""));
@@ -248,7 +248,7 @@ public abstract class AbstractDocumentTest {
 
 		RandomString rs = new RandomString(10);
 		String uniqueId = "";
-		Document doc = database.createDocument();
+		Document<?> doc = database.createDocument();
 
 		doc.setField("Form", TEST_FORM);
 		uniqueId = doc.getObjectId();
@@ -286,7 +286,7 @@ public abstract class AbstractDocumentTest {
 	public void testRecalc() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument().setField("Form", TEST_FORM);
+		Document<?> doc = database.createDocument().setField("Form", TEST_FORM);
 		doc.setField("CALCULATED_FROM_FORM", "TEMPORAL_DATA");
 
 		String calculated = doc.getFieldAsString("CALCULATED_FROM_FORM");
@@ -310,7 +310,7 @@ public abstract class AbstractDocumentTest {
 
 		Date date1 = cal1.getTime();
 
-		Document doc = database.createDocument()
+		Document<?> doc = database.createDocument()
 				.setField("Form", TEST_FORM)
 				.setField("String", "HI!")
 				.setField("Date", date1)
@@ -355,7 +355,7 @@ public abstract class AbstractDocumentTest {
 
 			Date date2 = cal1.getTime();
 
-			Document doc = database.createDocument()
+			Document<?> doc = database.createDocument()
 					.setField("Form", TEST_FORM)
 					.setField("Date1", date1)
 					.setField("Number1", 30)

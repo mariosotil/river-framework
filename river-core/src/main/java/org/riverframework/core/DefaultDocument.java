@@ -9,7 +9,7 @@ import org.riverframework.Database;
  *
  */
 public final class DefaultDocument extends AbstractDocument<DefaultDocument> implements org.riverframework.Document {
-	protected DefaultDocument(Database d, org.riverframework.wrapper.Document _d) {
+	protected DefaultDocument(Database d, org.riverframework.wrapper.Document<?> _d) {
 		super(d, _d);
 	}
 

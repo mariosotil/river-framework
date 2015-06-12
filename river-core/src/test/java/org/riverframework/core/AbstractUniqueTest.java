@@ -48,7 +48,7 @@ public abstract class AbstractUniqueTest {
 	}
 
 	static class NoUniqueDocument extends AbstractDocument<NoUniqueDocument> {
-		protected NoUniqueDocument(Database d, Document _d) {
+		protected NoUniqueDocument(Database d, Document<?> _d) {
 			super(d, _d);
 		}
 
@@ -68,7 +68,7 @@ public abstract class AbstractUniqueTest {
 	}
 
 	static class UniqueDocument extends AbstractDocument<UniqueDocument> implements Unique {
-		protected UniqueDocument(Database d, Document _d) {
+		protected UniqueDocument(Database d, Document<?> _d) {
 			super(d, _d);
 		}
 

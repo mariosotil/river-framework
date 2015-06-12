@@ -1,7 +1,5 @@
 package org.riverframework.wrapper.lotus.domino;
 
-import java.util.logging.Logger;
-
 import lotus.domino.NotesException;
 
 import org.riverframework.River;
@@ -10,13 +8,13 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultView implements org.riverframework.wrapper.View {
+class DefaultView implements org.riverframework.wrapper.View<lotus.domino.Base> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	protected org.riverframework.wrapper.Session _session = null;
+	protected org.riverframework.wrapper.Session<lotus.domino.Base> _session = null;
 	protected volatile lotus.domino.View __view = null;
 	private String objectId = null;
 
-	protected DefaultView(org.riverframework.wrapper.Session s, lotus.domino.View v) {
+	protected DefaultView(org.riverframework.wrapper.Session<lotus.domino.Base> s, lotus.domino.View v) {
 		__view = v;
 		_session = s;
 		objectId = calcObjectId(__view);
@@ -40,8 +38,6 @@ class DefaultView implements org.riverframework.wrapper.View {
 				sb.append(__database.getFilePath());
 				sb.append(River.ID_SEPARATOR);
 				sb.append(__view.getName());
-//				sb.append(River.ID_SEPARATOR);
-//				sb.append(__view.hashCode());
 
 				objectId = sb.toString();
 			} catch (NotesException e) {
@@ -59,7 +55,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 
 	@SuppressWarnings("unused")
 	@Override
-	public Document getDocumentByKey(String key) {
+	public Document<lotus.domino.Base> getDocumentByKey(String key) {
 		lotus.domino.Document __doc = null;
 
 		try {
@@ -78,7 +74,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 		}
 
 		@SuppressWarnings("unchecked")
-		Document doc = _session.getFactory().getDocument(__doc);
+		Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
 
 		return doc;
 	}
@@ -89,7 +85,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 	}
 
 	@Override
-	public DocumentIterator getAllDocuments() {
+	public DocumentIterator<lotus.domino.Base> getAllDocuments() {
 		lotus.domino.ViewEntryCollection _col;
 		try {
 			_col = __view.getAllEntries();
@@ -98,12 +94,12 @@ class DefaultView implements org.riverframework.wrapper.View {
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator result = _session.getFactory().getDocumentIterator(_col);
+		DocumentIterator<lotus.domino.Base> result = _session.getFactory().getDocumentIterator(_col);
 		return result;
 	}
 
 	@Override
-	public DocumentIterator getAllDocumentsByKey(Object key) {
+	public DocumentIterator<lotus.domino.Base> getAllDocumentsByKey(Object key) {
 		lotus.domino.DocumentCollection _col;
 		try {
 			_col = __view.getAllDocumentsByKey(key, true);
@@ -112,12 +108,12 @@ class DefaultView implements org.riverframework.wrapper.View {
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator result = _session.getFactory().getDocumentIterator(_col);
+		DocumentIterator<lotus.domino.Base> result = _session.getFactory().getDocumentIterator(_col);
 		return result;
 	}
 
 	@Override
-	public View refresh() {
+	public View<lotus.domino.Base> refresh() {
 		try {
 			__view.refresh();
 		} catch (NotesException e) {
@@ -141,7 +137,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 	}
 
 	@Override
-	public DocumentIterator search(String query) {
+	public DocumentIterator<lotus.domino.Base> search(String query) {
 		lotus.domino.View __temp = null;
 		
 		try {
@@ -152,7 +148,7 @@ class DefaultView implements org.riverframework.wrapper.View {
 		}
 		
 		@SuppressWarnings("unchecked")
-		DocumentIterator _iterator = _session.getFactory().getDocumentIterator(__temp);
+		DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(__temp);
 		
 		return _iterator;
 	}
@@ -172,10 +168,5 @@ class DefaultView implements org.riverframework.wrapper.View {
 	@Override
 	public String toString() {
 		return getClass().getName() + "(" + objectId + ")";
-	}
-
-	@Override
-	public void finalize() {
-		// log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 }

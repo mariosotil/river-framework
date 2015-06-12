@@ -1,31 +1,52 @@
 package org.riverframework.wrapper.lotus.domino;
 
 import java.util.Arrays;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import lotus.domino.NotesException;
 
-//import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Session;
 
-public class DefaultSession implements Session {
+public class DefaultSession implements Session<lotus.domino.Base> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	private final DefaultFactory factory = DefaultFactory.getInstance(this);
+	private final DefaultFactory factory = DefaultFactory.getInstance();
 
 	private volatile lotus.domino.Session __session = null;
 	private String objectId = null;
 
-	protected DefaultSession(lotus.domino.Session obj) {
+	protected DefaultSession(org.riverframework.wrapper.Session<lotus.domino.Base> dummy, lotus.domino.Session obj) {
 		__session = obj;
-		objectId = UUID.randomUUID().toString();
+		objectId = calcObjectId(__session);
 
 		log.fine("ObjectId:" + getObjectId());
 	}
 
+	public static String calcObjectId(lotus.domino.Session  __session) {
+		String objectId = "";
+		
+		if (__session != null) {
+			try {
+
+				StringBuilder sb = new StringBuilder();
+				sb.append(__session.getServerName());
+				sb.append(River.ID_SEPARATOR);
+				sb.append(__session.getUserName());
+				sb.append(River.ID_SEPARATOR);
+				sb.append(__session.hashCode());
+
+				objectId = sb.toString();
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}	
+		}
+		
+		return objectId;
+	}
+	
 	public DefaultFactory getFactory() {
 		return factory;
 	}
@@ -46,10 +67,10 @@ public class DefaultSession implements Session {
 	}
 
 	@Override
-	public Database createDatabase (String... location) {
+	public Database<lotus.domino.Base> createDatabase (String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
-		Database _database = null;
+		Database<lotus.domino.Base> _database = null;
 		lotus.domino.Database __database = null;
 
 		if (location.length != 2)
@@ -82,7 +103,7 @@ public class DefaultSession implements Session {
 	}
 
 	@Override
-	public Database getDatabase(String... location) {
+	public Database<lotus.domino.Base> getDatabase(String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
 		lotus.domino.Database __database = null;
@@ -144,7 +165,7 @@ public class DefaultSession implements Session {
 			throw new RiverException(e);
 		}
 
-		Database database = getFactory().getDatabase(__database);
+		Database<lotus.domino.Base> database = getFactory().getDatabase(__database);
 		return database;
 	}
 
@@ -183,10 +204,5 @@ public class DefaultSession implements Session {
 	public String toString() {
 		//return ToStringBuilder.reflectionToString(this);
 		return getClass().getName() + "(" + objectId + ")";
-	}
-
-	@Override
-	public void finalize() {
-		// log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 }

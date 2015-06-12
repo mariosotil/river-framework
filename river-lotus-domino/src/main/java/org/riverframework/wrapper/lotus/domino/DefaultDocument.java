@@ -29,21 +29,21 @@ import org.riverframework.Field;
  * @author mario.sotil@gmail.com
  * @version 0.0.x
  */
-class DefaultDocument implements org.riverframework.wrapper.Document {
+class DefaultDocument implements org.riverframework.wrapper.Document<lotus.domino.Base> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	protected org.riverframework.wrapper.Session session = null;
+	protected org.riverframework.wrapper.Session<lotus.domino.Base> session = null;
 	protected volatile lotus.domino.Document __doc = null;
 	private String objectId = null;
 
-	protected DefaultDocument(org.riverframework.wrapper.Session s, lotus.domino.Document d) {
+	protected DefaultDocument(org.riverframework.wrapper.Session<lotus.domino.Base> s, lotus.domino.Document d) {
 		__doc = d;
 		session = s;
-		objectId = calcObjectId(__doc);		
+		objectId = calcObjectId(__doc);
 	}
 
 	public static String calcObjectId(lotus.domino.Document __doc) {
 		String objectId = "";
-		
+
 		if (__doc != null) {
 			try {
 				lotus.domino.Database __database = __doc.getParentDatabase();
@@ -60,7 +60,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 				throw new RiverException(e);
 			}	
 		}
-		
+
 		return objectId;
 	}
 
@@ -91,7 +91,9 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 				lotus.domino.Session _session;
 				lotus.domino.DateTime _date;
 				try {
-					_session = __doc.getParentDatabase().getParent();
+					synchronized(__doc) {
+						_session = __doc.getParentDatabase().getParent();
+					}
 					_date = _session.createDateTime((java.util.Date) temp.get(i));
 				} catch (NotesException e) {
 					throw new RiverException(e);
@@ -115,9 +117,11 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	}
 
 	@Override
-	public Document recalc() {
+	public Document<lotus.domino.Base> recalc() {
 		try {
-			__doc.computeWithForm(true, false);
+			synchronized(__doc) {
+				__doc.computeWithForm(true, false);
+			}
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -129,8 +133,8 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 		Field value = null;
 
 		try {
-			@SuppressWarnings("unchecked")
-			Vector<Object> temp = __doc.getItemValue(field);
+			Vector<?> temp = null;
+			temp = __doc.getItemValue(field);
 			value = temp == null ? new DefaultField() : new DefaultField(temp);
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -155,7 +159,8 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	public String getFieldAsString(String field) {
 		String result = null;
 		try {
-			Vector<?> value = __doc.getItemValue(field);
+			Vector<?> value = null;
+			value = __doc.getItemValue(field);
 			result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -168,7 +173,10 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	public int getFieldAsInteger(String field) {
 		int result = 0;
 		try {
-			Vector<?> value = __doc.getItemValue(field);
+			Vector<?> value = null;
+			synchronized(__doc) {
+				value = __doc.getItemValue(field);
+			}
 			result = value.size() > 0 ? Converter.getAsInteger(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -180,7 +188,8 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	public long getFieldAsLong(String field) {
 		long result = 0;
 		try {
-			Vector<?> value = __doc.getItemValue(field);
+			Vector<?> value = null;
+			value = __doc.getItemValue(field);
 			result = value.size() > 0 ? Converter.getAsLong(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -192,7 +201,8 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	public double getFieldAsDouble(String field) {
 		double result;
 		try {
-			Vector<?> value = __doc.getItemValue(field);
+			Vector<?> value = null;
+			value = __doc.getItemValue(field);
 			result = value.size() > 0 ? Converter.getAsDouble(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -204,7 +214,8 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	public Date getFieldAsDate(String field) {
 		Date result;
 		try {
-			Vector<?> value = __doc.getItemValue(field);
+			Vector<?> value = null;
+			value = __doc.getItemValue(field);
 			Object temp = value.size() > 0 ? value.get(0) : null;  
 			if (temp != null && temp.getClass().getName().endsWith("DateTime")) {
 				temp = ((DateTime) temp).toJavaDate();
@@ -263,7 +274,9 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	public boolean hasField(String field) {
 		boolean result;
 		try {
-			result = __doc.hasItem(field);
+			synchronized(__doc) {
+				result = __doc.hasItem(field);
+			}
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -279,7 +292,10 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 			// logWrapper.debug("getFields: " + _doc.getUniversalID());
 			// logWrapper.debug("getFields: loading items");
 
-			Vector<lotus.domino.Item> items = __doc.getItems();
+			Vector<lotus.domino.Item> items = null;
+			synchronized(__doc) {
+				items = __doc.getItems();
+			}
 			//((DefaultSession) session).registerVector(items);
 
 			// logWrapper.debug("getFields: found " + items.size());
@@ -347,11 +363,11 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	}
 
 	@Override
-	public Document delete() {
+	public Document<lotus.domino.Base> delete() {
 		if (__doc != null) {
 			try {
 				__doc.removePermanently(true);
-				__doc.recycle();
+				//__doc.recycle();
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			} finally {
@@ -363,7 +379,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 	}
 
 	@Override
-	public Document save() {
+	public Document<lotus.domino.Base> save() {
 		try {
 			__doc.save(true, false);
 		} catch (NotesException e) {
@@ -384,15 +400,10 @@ class DefaultDocument implements org.riverframework.wrapper.Document {
 		} finally {
 			__doc = null;
 		}
-	}
+	}	
 
 	@Override
 	public String toString() {
 		return getClass().getName() + "(" + objectId + ")";
-	}
-
-	@Override
-	public void finalize() {
-		// log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 }

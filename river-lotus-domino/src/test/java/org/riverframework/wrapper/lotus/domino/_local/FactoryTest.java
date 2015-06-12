@@ -13,15 +13,16 @@ public class FactoryTest {
 	public static void main(String[] args) {
 		NotesThread.sinitThread();
 
-		Session session = (Session) River.getSession(River.LOTUS_DOMINO,
+		@SuppressWarnings("unchecked")
+		Session<lotus.domino.Base> session = (Session<lotus.domino.Base>) River.getSession(River.LOTUS_DOMINO,
 				(String) null, (String) null, Credentials.getPassword()).getWrapperObject();
-		Database database = session.getDatabase("", "massive.nsf");
+		Database<lotus.domino.Base> database = session.getDatabase("", "massive.nsf");
 
-		DocumentIterator it = database.getAllDocuments();
+		DocumentIterator<lotus.domino.Base> it = database.getAllDocuments();
 		int i = 0;
 		
 		while(it.hasNext()) {
-			Document doc = it.next();
+			Document<lotus.domino.Base> doc = it.next();
 			String counter = doc.getFieldAsString("counter");
 			if (++i % 250 == 0) {
 				System.out.println("=" + counter);

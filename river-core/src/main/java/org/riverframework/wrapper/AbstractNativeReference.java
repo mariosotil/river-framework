@@ -1,9 +1,9 @@
 package org.riverframework.wrapper;
 
-import java.lang.ref.PhantomReference;
+import java.lang.ref.WeakReference;
 import java.lang.ref.ReferenceQueue;
 
-public abstract class AbstractNativeReference<N> extends PhantomReference<Base<N>> implements NativeReference<N> {
+public abstract class AbstractNativeReference<N> extends WeakReference<Base<N>> implements NativeReference<N> {
 
 	protected volatile N __native = null;
 	protected String id = null;

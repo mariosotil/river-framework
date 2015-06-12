@@ -9,23 +9,23 @@ import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 
-class DefaultDocumentIterator implements DocumentIterator {
+class DefaultDocumentIterator implements DocumentIterator<lotus.domino.Base> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	private enum Type { COLLECTION, VIEW_ENTRY_COLLECTION } 
 
-	private org.riverframework.wrapper.Session _session = null;
+	private org.riverframework.wrapper.Session<lotus.domino.Base> _session = null;
 
 	private volatile lotus.domino.DocumentCollection __col = null;
 	private volatile lotus.domino.ViewEntryCollection __vecol = null;
 
-	private Document _doc = null;
+	private Document<lotus.domino.Base> _doc = null;
 	private volatile lotus.domino.Document __doc = null;
 	private volatile lotus.domino.ViewEntry __ve = null;
 
 	private Type type = null;	
 	private String objectId = null;
 
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session s, lotus.domino.DocumentCollection __obj) {
+	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Base> s, lotus.domino.DocumentCollection __obj) {
 		type = Type.COLLECTION;
 		_session = s;
 		__col = __obj;
@@ -41,7 +41,7 @@ class DefaultDocumentIterator implements DocumentIterator {
 		objectId = calcObjectId(__col);
 	}
 
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session s, lotus.domino.View __obj) {
+	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Base> s, lotus.domino.View __obj) {
 		type = Type.VIEW_ENTRY_COLLECTION;
 		_session = s;		
 
@@ -57,7 +57,7 @@ class DefaultDocumentIterator implements DocumentIterator {
 		objectId = calcObjectId(__vecol);
 	}
 
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session s, lotus.domino.ViewEntryCollection __obj) {
+	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Base> s, lotus.domino.ViewEntryCollection __obj) {
 		type = Type.VIEW_ENTRY_COLLECTION;		
 		_session = s;		
 		__vecol = __obj;
@@ -128,8 +128,8 @@ class DefaultDocumentIterator implements DocumentIterator {
 	}
 
 	@Override
-	public Document next() {
-		Document _current = null;
+	public Document<lotus.domino.Base> next() {
+		Document<lotus.domino.Base> _current = null;
 
 		try {
 			switch(type) {
@@ -155,7 +155,7 @@ class DefaultDocumentIterator implements DocumentIterator {
 	}
 
 	@Override
-	public DocumentIterator iterator() {
+	public DocumentIterator<lotus.domino.Base> iterator() {
 		return this;
 	}
 
@@ -166,8 +166,8 @@ class DefaultDocumentIterator implements DocumentIterator {
 	}
 
 	@Override
-	public DocumentIterator deleteAll() {
-		for (Document doc: this) {
+	public DocumentIterator<lotus.domino.Base> deleteAll() {
+		for (Document<lotus.domino.Base> doc: this) {
 			doc.delete();
 		}
 
@@ -175,7 +175,7 @@ class DefaultDocumentIterator implements DocumentIterator {
 	}
 
 	@Override
-	public Object getNativeObject() {
+	public lotus.domino.Base getNativeObject() {
 		switch(type) {
 		case COLLECTION:
 			return __col;
@@ -224,10 +224,5 @@ class DefaultDocumentIterator implements DocumentIterator {
 	@Override
 	public String toString() {
 		return getClass().getName() + "(" + objectId + ")";
-	}
-
-	@Override
-	public void finalize() {
-		// log.finest("Finalized: id=" + objectId + " (" + this.hashCode() + ")");
 	}
 }

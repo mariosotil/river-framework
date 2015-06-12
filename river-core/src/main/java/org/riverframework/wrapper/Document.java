@@ -14,10 +14,10 @@ import org.riverframework.Field;
  * @version 0.0.x
  */
 
-public interface Document extends Base {
-	public Document setField(String field, Object value);
+public interface Document<N> extends Base<N> {
+	public Document<N> setField(String field, Object value);
 
-	public Document recalc();
+	public Document<N> recalc();
 
 	public Field getField(String field);
 
@@ -39,7 +39,7 @@ public interface Document extends Base {
 
 	public boolean isNew();
 
-	public Document delete();
+	public Document<N> delete();
 
-	public Document save();
+	public Document<N> save();
 }

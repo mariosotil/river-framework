@@ -144,12 +144,12 @@ public abstract class AbstractDatabaseTest {
 	}
 
 	static class VacationDatabase extends AbstractDatabase {
-		protected VacationDatabase(Session s, org.riverframework.wrapper.Database obj) {
+		protected VacationDatabase(Session s, org.riverframework.wrapper.Database<?> obj) {
 			super(s, obj);
 		}
 
 		@Override
-		public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document _doc) {
+		public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document<?> _doc) {
 			String form = _doc.getFieldAsString("Form").toLowerCase();
 			if (form.equals("fo_vacation_request"))
 				return VacationRequest.class;
@@ -159,7 +159,7 @@ public abstract class AbstractDatabaseTest {
 	}
 
 	static class VacationRequest extends AbstractDocument<VacationRequest> {
-		protected VacationRequest(Database d, org.riverframework.wrapper.Document _d) {
+		protected VacationRequest(Database d, org.riverframework.wrapper.Document<?> _d) {
 			super(d, _d);
 		}
 
@@ -240,7 +240,7 @@ public abstract class AbstractDatabaseTest {
 	}
 
 	static class Person extends AbstractDocument<Person> implements Document, Unique {
-		protected Person(Database d, org.riverframework.wrapper.Document _d) {
+		protected Person(Database d, org.riverframework.wrapper.Document<?> _d) {
 			super(d, _d);
 		}
 

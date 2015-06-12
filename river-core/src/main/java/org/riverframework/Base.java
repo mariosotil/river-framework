@@ -21,7 +21,7 @@ public interface Base {
 	 * 
 	 * @return the object used to wrap the native object
 	 */
-	public Object getWrapperObject();
+	public org.riverframework.wrapper.Base<?> getWrapperObject();
 
 	/**
 	 * Close the resources, handlers, etc. opened by this instance.

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
-import java.util.Iterator;
 
 import org.junit.After;
 import org.junit.Before;
@@ -16,8 +15,8 @@ public abstract class AbstractViewTest {
 	final String TEST_FORM = "TestForm";
 	final String TEST_VIEW = "TestView";
 
-	protected Session session = null;
-	protected Database database = null;
+	protected Session<?> session = null;
+	protected Database<?> database = null;
 
 	protected Context context = null;
 
@@ -34,7 +33,7 @@ public abstract class AbstractViewTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session) context.getSession().getWrapperObject();
+				session = (Session<?>) context.getSession().getWrapperObject();
 				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 
@@ -54,11 +53,11 @@ public abstract class AbstractViewTest {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		RandomString rs = new RandomString(10);
-		View rView = database.getView(TEST_VIEW);
+		View<?> rView = database.getView(TEST_VIEW);
 
 		assertTrue("The test view could not be created in the test database.", rView.isOpen());
 
-		Document doc = database.createDocument().setField("Form", TEST_FORM);
+		Document<?> doc = database.createDocument().setField("Form", TEST_FORM);
 
 		String key = rs.nextString();
 
@@ -79,7 +78,7 @@ public abstract class AbstractViewTest {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		// RandomString rs = new RandomString(10);
-		View view = database.getView(TEST_VIEW);
+		View<?> view = database.getView(TEST_VIEW);
 
 		assertTrue("The test view could not be found in the test database.", view.isOpen());
 
@@ -95,9 +94,9 @@ public abstract class AbstractViewTest {
 
 		// database.getAllDocuments().deleteAll();
 
-		View view = database.getView(TEST_VIEW);
+		View<?> view = database.getView(TEST_VIEW);
 		view.refresh();
-		DocumentIterator col = view.getAllDocuments().deleteAll();
+		DocumentIterator<?> col = view.getAllDocuments().deleteAll();
 
 		assertFalse("There is a problem with the database. There are still documents after the delete.", col.hasNext());
 
@@ -128,8 +127,8 @@ public abstract class AbstractViewTest {
 
 		database.refreshSearchIndex();
 
-		Iterator<Document> col = database.getView(TEST_VIEW).search("I_AM_THE_4");
-		Document doc = col.next();
+		DocumentIterator<?> col = database.getView(TEST_VIEW).search("I_AM_THE_4");
+		Document<?> doc = col.next();
 		assertFalse("There is a problem finding documents from the database.", col.hasNext());
 		assertTrue("There is a problem finding documents from the database.", doc.getFieldAsString("Text").equals("I_AM_THE_4"));
 	}

@@ -32,7 +32,7 @@ class DefaultDocumentIterator implements DocumentIterator<lotus.domino.Base> {
 
 		try {
 			__doc = __col.getFirstDocument();
-			
+
 			updateCurrentDocumentFromDocument();
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -64,7 +64,7 @@ class DefaultDocumentIterator implements DocumentIterator<lotus.domino.Base> {
 
 		try {
 			__ve = __vecol.getFirstEntry();
-			
+
 			updateCurrentDocumentFromViewEntry();
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -75,22 +75,28 @@ class DefaultDocumentIterator implements DocumentIterator<lotus.domino.Base> {
 
 	@SuppressWarnings("unchecked")
 	private void updateCurrentDocumentFromDocument() {		
-		_doc = __doc == null ? null : _session.getFactory().getDocument(__doc);
+		synchronized (_session){
+			_doc = __doc == null ? null : _session.getFactory().getDocument(__doc);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private void updateCurrentDocumentFromViewEntry() {
-		try {
-			while (__ve != null && __ve.getDocument() == null) {
-				lotus.domino.ViewEntry __old = __ve;
-				__ve = __vecol.getNextEntry(__ve);
-				__old.recycle();
-			} 
+		synchronized (_session){
+			try {
+				while (__ve != null && (__ve.getDocument() == null || __ve.getDocument().isDeleted())) {
+					lotus.domino.ViewEntry __old = __ve;
+					__ve = __vecol.getNextEntry(__ve);
+					// CHECKING __old.recycle();
+				} 
 
-			__doc = __ve == null ? null : __ve.getDocument();
-			_doc = __doc == null ? null : _session.getFactory().getDocument(__doc);
-		} catch (NotesException e) {
-			throw new RiverException(e);
+				log.finest("__ve (" + (__ve == null ? "<null>" :__ve.getDocument().hashCode()) + ")");
+
+				__doc = __ve == null ? null : __ve.getDocument();
+				_doc = __doc == null ? null : _session.getFactory().getDocument(__doc);
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
 		}
 	}
 
@@ -104,7 +110,7 @@ class DefaultDocumentIterator implements DocumentIterator<lotus.domino.Base> {
 
 		return objectId;
 	}
-	
+
 	public static String calcObjectId(lotus.domino.DocumentCollection __object) {
 		return internalCalcObjectId(__object);
 	}
@@ -134,16 +140,18 @@ class DefaultDocumentIterator implements DocumentIterator<lotus.domino.Base> {
 		try {
 			switch(type) {
 			case COLLECTION:
-				_current = _doc;
-				__doc = __col.getNextDocument(__doc);
-				
+				synchronized (_session){
+					_current = _doc;
+					__doc = __col.getNextDocument(__doc);
+				}
 				updateCurrentDocumentFromDocument();
 				break;
 
 			case VIEW_ENTRY_COLLECTION:
-				_current = _doc;
-				__ve = __vecol.getNextEntry(__ve);
-				
+				synchronized (_session){
+					_current = _doc;
+					__ve = __vecol.getNextEntry(__ve);
+				}
 				updateCurrentDocumentFromViewEntry();
 				break;
 			}
@@ -203,19 +211,17 @@ class DefaultDocumentIterator implements DocumentIterator<lotus.domino.Base> {
 		log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
 
 		try {
-			if (__col != null) 
-				__col.recycle();			
-		} catch (NotesException e) {
-			throw new RiverException(e);
+			// CHECKING if (__col != null) __col.recycle();			
+			// CHECKING } catch (NotesException e) {
+			// CHECKING throw new RiverException(e);
 		} finally {
 			__col = null;
 		}
 
 		try {
-			if (__vecol != null) 
-				__vecol.recycle();			
-		} catch (NotesException e) {
-			throw new RiverException(e);
+			// CHECKING if (__vecol != null) __vecol.recycle();			
+			// CHECKING } catch (NotesException e) {
+			// CHECKING throw new RiverException(e);
 		} finally {
 			__vecol = null;
 		}

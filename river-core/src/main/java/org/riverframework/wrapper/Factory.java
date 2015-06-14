@@ -13,5 +13,7 @@ public interface Factory<N> {
 
 	public void close();
 
-	void logStatus();
+	public void cleanUp();
+	
+	public void logStatus();
 }

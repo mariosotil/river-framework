@@ -20,14 +20,16 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 
 	protected DefaultSession(org.riverframework.wrapper.Session<lotus.domino.Base> dummy, lotus.domino.Session obj) {
 		__session = obj;
-		objectId = calcObjectId(__session);
+		synchronized (this){
+			objectId = calcObjectId(__session);
+		}
 
 		log.fine("ObjectId:" + getObjectId());
 	}
 
 	public static String calcObjectId(lotus.domino.Session  __session) {
 		String objectId = "";
-		
+
 		if (__session != null) {
 			try {
 
@@ -43,10 +45,10 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 				throw new RiverException(e);
 			}	
 		}
-		
+
 		return objectId;
 	}
-	
+
 	public DefaultFactory getFactory() {
 		return factory;
 	}
@@ -85,16 +87,18 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 				if (fn.equalsIgnoreCase(location[1])) found = true;
 				db = dir.getNextDatabase(); 
 			}
-			
-			if (!found) {
-				__database = dir.createDatabase(location[1]);
-				_database = getFactory().getDatabase(__database);
+
+			synchronized (this){
+				if (!found) {
+					__database = dir.createDatabase(location[1]);
+					_database = getFactory().getDatabase(__database);
+				}
+				else {
+					_database = getFactory().getDatabase(null);
+				}
 			}
-			else {
-				_database = getFactory().getDatabase(null);
-			}
-			
-			dir.recycle();			
+
+			// CHECKING dir.recycle();			
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -106,67 +110,66 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 	public Database<lotus.domino.Base> getDatabase(String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
-		lotus.domino.Database __database = null;
+		synchronized (this){
+			lotus.domino.Database __database = null;
 
-		if (location.length != 2)
-			throw new RiverException("It is expected two parameters: server and path, or server and replicaID");
+			if (location.length != 2)
+				throw new RiverException("It is expected two parameters: server and path, or server and replicaID");
 
-		String server = location[0];
-		String path = location[1];
+			String server = location[0];
+			String path = location[1];
 
-		try {
-			if (path.length() == 16) {
-				log.finer("Trying with a replica ID");
-				boolean res = false;
-				__database = __session.getDatabase(null, null);
-				res = __database.openByReplicaID(server, path);
-				if (!res) __database = null;
-			}
-		} catch (NotesException e) {
 			try {
-				if (__database != null) 
-					__database.recycle();
-			} catch (NotesException e1) {
-				// Do nothing
-			} finally {
-				__database = null;
-			}
-		}
-
-		try {
-			if (__database == null || !__database.isOpen()) {
-				log.finer("Trying with a file path");
-				__database = __session.getDatabase(server, path, false);
-			}
-		} catch (NotesException e) {
-			try {
-				if (__database != null) { 
-					__database.recycle();
+				if (path.length() == 16) {
+					log.finer("Trying with a replica ID");
+					boolean res = false;
+					__database = __session.getDatabase(null, null);
+					res = __database.openByReplicaID(server, path);
+					if (!res) __database = null;
 				}
-			} catch (NotesException e1) {
-				// Do nothing
-			} finally {
-				__database = null;
-			}
-		}
-
-		try {
-			if (__database != null && !__database.isOpen()) {
-				log.finer("The database could not be opened");
+			} catch (NotesException e) {
 				try {
-					__database.recycle();
-				} catch (NotesException e) {
-					throw new RiverException(e);
-				} finally {	
+					// CHECKING if (__database != null) __database.recycle();
+					// CHECKING } catch (NotesException e1) {
+					// Do nothing
+				} finally {
 					__database = null;
 				}
 			}
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
 
-		Database<lotus.domino.Base> database = getFactory().getDatabase(__database);
-		return database;
+			try {
+				if (__database == null || !__database.isOpen()) {
+					log.finer("Trying with a file path");
+					__database = __session.getDatabase(server, path, false);
+				}
+			} catch (NotesException e) {
+				try {
+					// CHECKING 	if (__database != null) __database.recycle();
+					// CHECKING } catch (NotesException e1) {
+					// Do nothing
+				} finally {
+					__database = null;
+				}
+			}
+
+			try {
+				if (__database != null && !__database.isOpen()) {
+					log.finer("The database could not be opened");
+					try {
+						// CHECKING 	__database.recycle();
+						// CHECKING } catch (NotesException e) {
+						// CHECKING throw new RiverException(e);
+					} finally {	
+						__database = null;
+					}
+				}
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
+
+			Database<lotus.domino.Base> database = getFactory().getDatabase(__database);
+			return database;
+		}
 	}
 
 	@Override
@@ -202,7 +205,6 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 
 	@Override
 	public String toString() {
-		//return ToStringBuilder.reflectionToString(this);
 		return getClass().getName() + "(" + objectId + ")";
 	}
 }

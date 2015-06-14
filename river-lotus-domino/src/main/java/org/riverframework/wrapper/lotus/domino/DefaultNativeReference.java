@@ -20,30 +20,6 @@ class DefaultNativeReference extends AbstractNativeReference<lotus.domino.Base> 
 		super(referent, q);
 	}
 
-	//	private String getFields(Object obj) {
-	//		Class<?> objClass = obj.getClass();
-	//		StringBuilder sb = new StringBuilder();
-	//
-	//		while(!objClass.getSimpleName().equals("Object")) {
-	//			try {
-	//				Field[] fields = objClass.getDeclaredFields();
-	//				for(Field field : fields) {
-	//					//if(! field.isEnumConstant()) {
-	//					String name = field.getName();
-	//					field.setAccessible(true);
-	//					Object value = field.get(obj);
-	//
-	//					sb.append(name + ": " + (value == null ? "[null]" : value.toString()) + "\n");
-	//					//}
-	//				}
-	//			} catch (Exception e) {
-	//				throw new RiverException(e);
-	//			}
-	//			objClass = objClass.getSuperclass();
-	//		}
-	//		return sb.toString();
-	//	}
-
 	private Object getFieldValue(Object __obj, String name) {
 		Class<?> clazz = __obj.getClass();
 		Field field = null;
@@ -79,23 +55,18 @@ class DefaultNativeReference extends AbstractNativeReference<lotus.domino.Base> 
 			Object wr = ((Reference<?>) getFieldValue(__native, "weakObject"));
 			long cpp = (Long) getFieldValue(wr, "cpp_object");
 
-			if (cpp == 0) 
-				log.finest("It's a trap!: id=" + id + " native=" + nativeClass + " (" + hc + ")");
-			
-			else {
-				try {
-					Method method = clazz.getMethod("recycle");
-					method.invoke(__native);
-					
-				} catch (Exception e) {
-					log.log(Level.WARNING, "Exception while recycling object " + id, e);
-					
-				} finally {
-					__native = null;
-				}
-				
-				log.finest("Recycled: id=" + id + " native=" + nativeClass + " cpp=" + cpp + " (" + hc + ")");
+			try {
+				Method method = clazz.getMethod("recycle");
+				method.invoke(__native);
+
+			} catch (Exception e) {
+				log.log(Level.WARNING, "Exception while recycling object " + id, e);
+
+			} finally {
+				__native = null;
 			}
+
+			log.finest("Recycled: id=" + id + " native=" + nativeClass + " cpp=" + cpp + " (" + hc + ")");
 		}
 	}
 }

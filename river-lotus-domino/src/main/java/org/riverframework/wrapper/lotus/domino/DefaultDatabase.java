@@ -5,9 +5,6 @@ import java.util.regex.Pattern;
 
 import lotus.domino.NotesException;
 
-
-
-//import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
@@ -24,14 +21,16 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 	protected DefaultDatabase(org.riverframework.wrapper.Session<?> _s, lotus.domino.Database __obj) {
 		__database = __obj;
 		_session = _s;
-		objectId = calcObjectId(__database);		
+		synchronized (_session){
+			objectId = calcObjectId(__database);
+		}
 	}
 
 	@Override
 	public lotus.domino.Database getNativeObject() {
 		return __database;
 	}
-	
+
 	@Override
 	public String getObjectId() {
 		return objectId;
@@ -39,7 +38,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 
 	public static String calcObjectId(lotus.domino.Database __database) {
 		String objectId = "";
-		
+
 		if (__database != null) {
 			try {
 				StringBuilder sb = new StringBuilder();
@@ -52,7 +51,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 				throw new RiverException(e);
 			}
 		} 
-		
+
 		return objectId;
 	}
 
@@ -94,75 +93,80 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 
 	@Override
 	public Document<lotus.domino.Base> createDocument(String... parameters) {
-		lotus.domino.Document __doc = null;
+		synchronized (_session){
+			lotus.domino.Document __doc = null;
 
-		try {
-			__doc = __database.createDocument();
-		} catch (NotesException e) {
-			throw new RiverException(e);
+			try {
+				__doc = __database.createDocument();
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
+
+			@SuppressWarnings("unchecked")
+			Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
+
+			return doc;
 		}
-
-		@SuppressWarnings("unchecked")
-		Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
-		return doc;
 	}
 
 	@SuppressWarnings("unused")
 	@Override
 	public Document<lotus.domino.Base> getDocument(String... parameters)
 	{
-		lotus.domino.Document __doc = null;
+		synchronized (_session){
+			lotus.domino.Document __doc = null;
 
-		if (parameters.length > 0) {
-			String id = parameters[0];
+			if (parameters.length > 0) {
+				String id = parameters[0];
 
-			String[] temp = id.split(Pattern.quote(River.ID_SEPARATOR));
-			if (temp.length == 3) {
-				id = temp[2];
-			}
-
-			try {
-				if (id.length() == 32) {
-					__doc = __database.getDocumentByUNID(id);
+				String[] temp = id.split(Pattern.quote(River.ID_SEPARATOR));
+				if (temp.length == 3) {
+					id = temp[2];
 				}
-			} catch (NotesException e) {
-				// Maybe it was an invalid UNID. We just ignore the exception.
+
 				try {
-					if (__doc != null) __doc.recycle();
-				} catch (NotesException e1) {
-					// Do nothing
-				} finally {
-					__doc = null;
+					if (id.length() == 32) {
+						__doc = __database.getDocumentByUNID(id);
+					}
+				} catch (NotesException e) {
+					// Maybe it was an invalid UNID. We just ignore the exception.
+					try {
+						// CHECKING if (__doc != null) __doc.recycle();
+						// CHECKING } catch (NotesException e1) {
+						// Do nothing
+					} finally {
+						__doc = null;
+					}
+				}
+
+				try {
+					if (__doc == null && id.length() == 8) {
+						__doc = __database.getDocumentByID(id);
+					}
+				} catch (NotesException e) {
+					// Maybe it was an invalid UNID. We just ignore the exception.
+					try {
+						// CHECKING if (__doc != null) __doc.recycle();
+						// CHECKING } catch (NotesException e1) {
+						// Do nothing
+					} finally {
+						__doc = null;
+					}
 				}
 			}
 
-			try {
-				if (__doc == null && id.length() == 8) {
-					__doc = __database.getDocumentByID(id);
-				}
-			} catch (NotesException e) {
-				// Maybe it was an invalid UNID. We just ignore the exception.
-				try {
-					if (__doc != null) __doc.recycle();
-				} catch (NotesException e1) {
-					// Do nothing
-				} finally {
-					__doc = null;
-				}
-			}
+			@SuppressWarnings("unchecked")
+			Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
+
+			return doc;
 		}
-
-		@SuppressWarnings("unchecked")
-		Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
-
-		return doc;
 	}
 
 	@Override
 	public View<lotus.domino.Base> createView(String... parameters) {
 		lotus.domino.View __view = null;
 		String name = null;
-		
+
 		try {
 			if (parameters.length == 1) {
 				name = parameters[0];
@@ -180,67 +184,73 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 
 		if (name != null && !name.equals("") && __view != null) {
 			try {
-				__view.recycle();
+				// CHECKING __view.recycle();
 				__view = null;
 			} catch (Exception e) {
 				throw new RiverException(e);
 			}
 		}
-		
+
 		View<lotus.domino.Base> _view = getView(name);
 		return _view;
 	}
-	
+
 	@Override
 	public View<lotus.domino.Base> getView(String... parameters) {
-		lotus.domino.View __view = null;
+		synchronized (_session){
+			lotus.domino.View __view = null;
 
-		try {
-			if (parameters.length > 0) {
-				String id = parameters[0];
-				__view = __database.getView(id);
+			try {
+				if (parameters.length > 0) {
+					String id = parameters[0];
+					__view = __database.getView(id);
+				}
+
+				if (__view != null)
+					__view.setAutoUpdate(false);
+
+			} catch (NotesException e) {
+				throw new RiverException(e);
 			}
 
-			if (__view != null)
-				__view.setAutoUpdate(false);
-
-		} catch (NotesException e) {
-			throw new RiverException(e);
+			@SuppressWarnings("unchecked")
+			View<lotus.domino.Base> _view = _session.getFactory().getView(__view);
+			return _view;
 		}
-
-		@SuppressWarnings("unchecked")
-		View<lotus.domino.Base> _view = _session.getFactory().getView(__view);
-		return _view;
 	}
 
 	@Override
 	public DocumentIterator<lotus.domino.Base> getAllDocuments() {
-		lotus.domino.DocumentCollection _col;
+		synchronized (_session){
+			lotus.domino.DocumentCollection _col;
 
-		try {
-			_col = __database.getAllDocuments();
-		} catch (NotesException e) {
-			throw new RiverException(e);
+			try {
+				_col = __database.getAllDocuments();
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
+
+			@SuppressWarnings("unchecked")
+			DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(_col);
+			return _iterator;
 		}
-
-		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(_col);
-		return _iterator;
 	}
 
 	@Override
 	public DocumentIterator<lotus.domino.Base> search(String query) {
-		lotus.domino.DocumentCollection _col;
+		synchronized (_session){
+			lotus.domino.DocumentCollection _col;
 
-		try {
-			_col = __database.FTSearch(query);
-		} catch (NotesException e) {
-			throw new RiverException(e);
+			try {
+				_col = __database.FTSearch(query);
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
+
+			@SuppressWarnings("unchecked")
+			DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(_col);
+			return _iterator;
 		}
-
-		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(_col);
-		return _iterator;
 	}
 
 	@Override
@@ -261,7 +271,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
-		
+
 		close();
 	}
 
@@ -273,12 +283,11 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 	@Override
 	public void close() {
 		log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
-		
+
 		try {
-			if (__database != null) 
-				__database.recycle();			
-		} catch (NotesException e) {
-			throw new RiverException(e);
+			// CHECKING if (__database != null) __database.recycle();			
+			// CHECKING } catch (NotesException e) {
+			// CHECKING throw new RiverException(e);
 		} finally {
 			__database = null;
 		}

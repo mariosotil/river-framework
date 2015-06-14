@@ -1,14 +1,18 @@
 package org.riverframework.wrapper.lotus.domino;
 
+import java.lang.ref.Reference;
+import java.lang.reflect.Field;
+import java.util.logging.Level;
+
 import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
 
 import org.riverframework.RiverException;
+import org.riverframework.wrapper.Base;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.NativeReference;
-import org.riverframework.wrapper.NativeReferenceCollector;
 import org.riverframework.wrapper.Session;
 import org.riverframework.wrapper.View;
 
@@ -16,9 +20,8 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 
 	private static DefaultFactory instance = null;
 
-	protected DefaultFactory(Class<? extends NativeReference<lotus.domino.Base>> nativeReferenceClass,
-			Class<? extends NativeReferenceCollector> nativeReferenceCollectorClass) {
-		super(nativeReferenceClass, nativeReferenceCollectorClass);
+	protected DefaultFactory(Class<? extends NativeReference<lotus.domino.Base>> nativeReferenceClass) {
+		super(nativeReferenceClass);
 	}
 
 	public static DefaultFactory getInstance() {
@@ -26,13 +29,50 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			// Thread Safe. Might be costly operation in some case
 			synchronized (DefaultFactory.class) {
 				if (instance == null) {
-					instance = new DefaultFactory(DefaultNativeReference.class, DefaultNativeReferenceCollector.class);
+					instance = new DefaultFactory(DefaultNativeReference.class);
 				}
 			}
 		}
 		return instance;
 	}
+	
+	private Object getFieldValue(Object __obj, String name) {
+		Class<?> clazz = __obj.getClass();
+		Field field = null;
+		Object result = null;
 
+		try {
+			while(!clazz.getSimpleName().equals("Object") && field == null) {
+				try {
+					field = clazz.getDeclaredField(name);
+				} catch (NoSuchFieldException e) {
+					// Do nothing
+				}
+				clazz = clazz.getSuperclass();
+			}
+
+			if (field != null) {
+				field.setAccessible(true);				
+				result = field.get(__obj);
+			}
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+		
+		return result;
+	}
+
+	@Override
+	protected boolean isValidNativeObject(lotus.domino.Base __native) {
+		if (__native == null) return false;
+		
+		Object isDeleted = getFieldValue(__native, "isdeleted");  
+		
+		boolean isValid = isDeleted == null || !(Boolean) isDeleted;
+
+		return isValid;
+	}
+	
 	public Session<lotus.domino.Base> getSession(Object... parameters) {
 		lotus.domino.Session __obj = null;
 		
@@ -95,5 +135,43 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 		}
 
 		return _iterator;
+	}
+	
+	@Override
+	public void cleanUp() {
+		log.finest("Starting clean up");
+
+		Reference<? extends Base<lotus.domino.Base>> ref = null; 
+		while ((ref = queue.poll()) != null) {
+			synchronized (_session){							
+				NativeReference<lotus.domino.Base> nat = nativeReferenceClass.cast(ref);
+				lotus.domino.Base __native = nat.getNativeObject();
+				String id = nat.getObjectId();
+
+				if(__native.getClass().isAssignableFrom(lotus.domino.local.Document.class)) {				
+					if (log.isLoggable(Level.FINEST)) {
+						StringBuilder sb = new StringBuilder();
+						sb.append("Recycling: id=");
+						sb.append(id);
+						sb.append(" native=");
+						sb.append(__native == null ? "<null>" : __native.getClass().getName());
+						sb.append(" (");
+						sb.append(__native == null ? "<null>" : __native.hashCode());
+						sb.append(")");
+
+						log.finest(sb.toString());
+					}
+
+					try {
+						weakWrapperMap.remove(id);
+						nat.close();
+					} catch (Exception ex) {
+						log.log(Level.WARNING, "Exception at recycling", ex);
+					}
+				}
+			}
+		}
+
+		log.finest("Finished clean up");
 	}
 }

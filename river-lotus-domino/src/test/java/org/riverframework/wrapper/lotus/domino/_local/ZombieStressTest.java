@@ -10,14 +10,17 @@ import java.util.logging.Logger;
 
 import org.riverframework.River;
 
-public class NativeReferenceCollectorTest extends org.riverframework.wrapper.lotus.domino.AbstractNativeReferenceCollectorTest {
+public class ZombieStressTest extends org.riverframework.wrapper.lotus.domino.AbstractZombieStressTest {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	
 	@BeforeClass
 	public static void before() {
 		NotesThread.sinitThread();
 
-		River.setLevel(log, Level.FINEST);
+		River.setLevel(log, Level.FINE);
+		
+		maxDocumentsForStressTest = 60000;
+		
 		log.setUseParentHandlers(false);
 		log.fine("Starting test");
 	}

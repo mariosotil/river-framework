@@ -19,7 +19,7 @@ import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.Session;
 import org.riverframework.wrapper.View;
 
-public abstract class AbstractNativeReferenceCollectorTest {
+public abstract class AbstractZombieStressTest {
 	final String TEST_FORM = "TestForm";
 	final String TEST_VIEW = "TestView";
 	final String TEST_GRAPH = "TestGraph";
@@ -28,6 +28,8 @@ public abstract class AbstractNativeReferenceCollectorTest {
 
 	protected Context context = null;
 	protected Session<lotus.domino.Base> _session = null;
+
+	protected static long maxDocumentsForStressTest = 1000;
 
 	@SuppressWarnings("unchecked")
 	@Before
@@ -56,8 +58,6 @@ public abstract class AbstractNativeReferenceCollectorTest {
 
 	@Test
 	public void testStress() {
-		final int SIZE = 2500;
-		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
 		Database<lotus.domino.Base> database = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
@@ -75,12 +75,17 @@ public abstract class AbstractNativeReferenceCollectorTest {
 		view = null;
 
 		int i = 0;
-		
-		for (i = 0; i < SIZE; i++) {
-				database.createDocument()
-				.setField("Form", form)
-				.setField("Value", i)
-				.save();
+
+		for (i = 1; i < maxDocumentsForStressTest; i++) {
+			database.createDocument()
+			.setField("Form", form)
+			.setField("Value", i)
+			.save();
+
+			if(i % 500 == 0) { 
+				log.fine("Processed=" + i);
+				_session.getFactory().logStatus();
+			}
 		}
 
 		_session.getFactory().logStatus();
@@ -92,11 +97,14 @@ public abstract class AbstractNativeReferenceCollectorTest {
 		DocumentIterator<lotus.domino.Base> it = view.getAllDocuments();
 
 		i = 0;
-		while (it.hasNext()) {
+		for (@SuppressWarnings("unused") org.riverframework.wrapper.Document<lotus.domino.Base> doc: it) {
 			i++;
-			it.next();
+			if(i % 500 == 0) { 
+				log.fine("Processed=" + i);
+				_session.getFactory().logStatus();
+			}
 		}
-		assertTrue("There is a problem with the documents indexed in the last view.", i == SIZE);
+		assertTrue("There is a problem with the documents indexed in the last view.", i == maxDocumentsForStressTest);
 
 		_session.getFactory().logStatus();
 		log.info("Step 2!");
@@ -108,6 +116,10 @@ public abstract class AbstractNativeReferenceCollectorTest {
 			i++;
 			Document<lotus.domino.Base> doc2 = it.next();
 			doc2.delete();
+			if(i % 500 == 0) { 
+				log.fine("Processed=" + i);
+				_session.getFactory().logStatus();
+			}
 		}
 
 		log.info("Step 3!");
@@ -118,6 +130,7 @@ public abstract class AbstractNativeReferenceCollectorTest {
 		while (it.hasNext()) {
 			i++;
 			it.next();
+			if(i % 500 == 0) log.fine("Processed=" + i);
 		}
 		_session.getFactory().logStatus();
 		log.info("Step 4!");

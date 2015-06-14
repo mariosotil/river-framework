@@ -1,9 +1,9 @@
 package org.riverframework.wrapper;
 
+import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -15,55 +15,39 @@ import org.riverframework.RiverException;
 public abstract class AbstractFactory<N> implements org.riverframework.wrapper.Factory<N> {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
+	protected volatile org.riverframework.wrapper.Session<N> _session = null;
 	protected Class<? extends NativeReference<N>> nativeReferenceClass = null;
-	protected Class<? extends NativeReferenceCollector> nativeReferenceCollectorClass = null;
-
 	protected volatile ConcurrentHashMap<String, NativeReference<N>> weakWrapperMap = null;
 	protected volatile ReferenceQueue<Base<N>> queue = null;
 
-	protected volatile org.riverframework.wrapper.Session<N> _session = null;
 
-	protected NativeReferenceCollector rc = null;
-
-	protected AbstractFactory(Class<? extends NativeReference<N>> nativeReferenceClass,
-			Class<? extends NativeReferenceCollector> nativeReferenceCollectorClass) {
+	protected AbstractFactory(Class<? extends NativeReference<N>> nativeReferenceClass) {
 		this.nativeReferenceClass = nativeReferenceClass;
-		this.nativeReferenceCollectorClass = nativeReferenceCollectorClass;
 
 		weakWrapperMap = new ConcurrentHashMap<String, NativeReference<N>>();
 		queue = new ReferenceQueue<Base<N>>();
+	}
+
+	@Override
+	public void logStatus() {
+		//TODO: ??
+	}
+
+	private <U extends Base<N>> U createWrapper(Class<U> outputClass, Class<? extends N> inputClass, Object __obj) {
+		U _wrapper = null;
 
 		try {
-			Constructor<?> constructor = nativeReferenceCollectorClass.getDeclaredConstructor(Class.class, ConcurrentHashMap.class,
-					ReferenceQueue.class);
+			Constructor<?> constructor = outputClass.getDeclaredConstructor(org.riverframework.wrapper.Session.class, inputClass);
 			constructor.setAccessible(true);
-			rc = nativeReferenceCollectorClass.cast(constructor.newInstance(nativeReferenceClass, weakWrapperMap, queue));
-			((Thread) rc).start();
+			_wrapper = outputClass.cast(constructor.newInstance(_session, __obj));
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
+
+		return _wrapper;
 	}
 
-	protected void addToCache(String id, Base<N> _wrapper) {
-		if (log.isLoggable(Level.FINEST)) {
-			Object __obj = _wrapper.getNativeObject();
-
-			StringBuilder sb = new StringBuilder();
-			sb.append("Registering: id=");
-			sb.append(id);
-			sb.append(" wrapper=");
-			sb.append(_wrapper.getClass().getName());
-			sb.append(" (");
-			sb.append(_wrapper.hashCode());
-			sb.append(") native=");
-			sb.append(__obj.getClass().getName());
-			sb.append(" (");
-			sb.append(__obj.hashCode());
-			sb.append(")");
-
-			log.finest(sb.toString());
-		}
-
+	private void createReference(String id, Base<N> _wrapper) {
 		try {
 			Constructor<?> constructor = nativeReferenceClass.getDeclaredConstructor(Base.class, ReferenceQueue.class);
 			constructor.setAccessible(true);
@@ -72,94 +56,98 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
-
 	}
 
-	protected Base<N> retrieveFromCache(String id) {
-		Base<N> _wrapper = null;
-
-		@SuppressWarnings("unchecked")
-		WeakReference<Base<N>> ref = (WeakReference<Base<N>>) weakWrapperMap.get(id);
-
-		if (ref != null) {
-			// It's already registered
-			log.finest("Already registered. id=" + id);
-			_wrapper = ref.get();
-
-			if (_wrapper == null) {
-				// Removing the id from the cache
-				log.finest("Wrapper is null. id=" + id);
-				weakWrapperMap.remove(id);
-			} else if (_wrapper.getNativeObject() == null) {
-				// Removing the id from the cache, and freeing the weak and
-				// phantom references
-				log.finest("Native object is null. id=" + id);
-				weakWrapperMap.remove(id);
-				_wrapper = null;
-			} else {
-				if (log.isLoggable(Level.FINEST)) {
-					Object __obj = _wrapper.getNativeObject();
-
-					StringBuilder sb = new StringBuilder();
-					sb.append("Retrieved from cache: id=");
-					sb.append(id);
-					sb.append(" wrapper=");
-					sb.append(_wrapper.getClass().getName());
-					sb.append(" (");
-					sb.append(_wrapper.hashCode());
-					sb.append(") native=");
-					sb.append(__obj.getClass().getName());
-					sb.append(" (");
-					sb.append(__obj.hashCode());
-					sb.append(")");
-
-					log.finest(sb.toString());
-				}
-			}
-		} else {
-			log.finest("Not registered. id=" + id);
-		}
-
-		return _wrapper;
+	private String calcIdFromNativeObject(Class<? extends Base<N>> outputClass, Class<? extends N> inputClass, Object __obj) {
+		String id = null; 
+		try {
+			Method methodCalcObjectId = outputClass.getDeclaredMethod("calcObjectId", inputClass);
+			methodCalcObjectId.setAccessible(true);
+			id = (String) methodCalcObjectId.invoke(null, __obj);
+		} catch (Exception e) {			
+			throw new RiverException(e);
+		} 
+		return id;		
 	}
 
-	@Override
-	public void logStatus() {
-		log.finest("cache=" + weakWrapperMap.size());
-		rc.logStatus();
+	protected boolean isValidNativeObject(N __native) {
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <U extends Base<N>> U getWrapper(Class<U> outputClass, Class<? extends N> inputClass, Object __obj) {
 		U _wrapper = null;
+		String actionTaken = null;
 
 		try {
-			String id = null;
+			cleanUp();
 
-			if (__obj != null) {
-				if (!(inputClass.isAssignableFrom(__obj.getClass())))
-					throw new RiverException("Expected an object " + inputClass.getName());
+			if (__obj == null) {
+				// Null object pattern
+				actionTaken = "Created a null object";
+				_wrapper = createWrapper(outputClass, inputClass, null);
+			} else {
+				// Looking for the object in the cache
+				String id = calcIdFromNativeObject(outputClass, inputClass, __obj);
+				NativeReference<N> ref = nativeReferenceClass.cast(weakWrapperMap.get(id));
 
-				Method methodCalcObjectId = outputClass.getDeclaredMethod("calcObjectId", inputClass);
-				methodCalcObjectId.setAccessible(true);
-				id = (String) methodCalcObjectId.invoke(null, __obj);
-				_wrapper = (U) retrieveFromCache(id);
+				if (ref == null) {
+					// It's no registered in the cache
+					actionTaken = "No registered. Creating the wrapper for the object";
+					_wrapper = createWrapper(outputClass, inputClass, __obj);
+					createReference(id, _wrapper);
+				} else {
+					// It's registered in the cache
+					N __native = ref.getNativeObject();
+					_wrapper = (U) ((WeakReference<Base<N>>) ref).get();
+
+					if (isValidNativeObject(__native)) {
+						// There's a valid native object
+
+						if (_wrapper == null) {
+							// There's no wrapper. We create a new one with the old native object
+							actionTaken = "Registered. Creating a wrapper for registered native object";
+							_wrapper = createWrapper(outputClass, inputClass, __native);
+							createReference(id, _wrapper);							
+						} else {
+							// There's a wrapper. We do nothing
+							actionTaken = "Registered. Retrieving the wrapper and its native object from the cache";
+						}
+					} else {
+						// There's no a valid native object
+
+						if (_wrapper == null) {
+							// There's no wrapper. We create a new one with the new native object
+							actionTaken = "Registered. Creating the wrapper for the object";
+							_wrapper = createWrapper(outputClass, inputClass, __obj);
+							createReference(id, _wrapper);
+						} else {
+							// There's a wrapper
+							actionTaken = "Registered. Replacing the object in an existent wrapper";
+							_wrapper = createWrapper(outputClass, inputClass, __obj);
+							createReference(id, _wrapper);
+						}
+					}
+				}		
 			}
 
-			if (_wrapper == null) {
-				Constructor<?> constructor = outputClass.getDeclaredConstructor(org.riverframework.wrapper.Session.class, inputClass);
-				constructor.setAccessible(true);
-				try {
-					_wrapper = outputClass.cast(constructor.newInstance(_session, __obj));
-				} catch (InvocationTargetException e) {
-					throw new RiverException(e);
-				}
+			if (log.isLoggable(Level.FINEST)) {
+				StringBuilder sb = new StringBuilder();
+				sb.append(actionTaken);
+				sb.append(". id=");
+				sb.append(_wrapper.getObjectId());
+				sb.append(" wrapper=");
+				sb.append(_wrapper.getClass().getName());
+				sb.append(" (");
+				sb.append(_wrapper.hashCode());
+				sb.append(") native=");
+				sb.append(__obj.getClass().getName());
+				sb.append(" (");
+				sb.append(__obj.hashCode());
+				sb.append(")");
 
-				if (_wrapper.getNativeObject() != null) {
-					addToCache(id, _wrapper);
-				}
+				log.finest(sb.toString());
 			}
-
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
@@ -168,11 +156,12 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 	}
 
 	@Override
+	public void cleanUp() {
+
+	}
+
+	@Override
 	public void close() {
-		log.fine("Asking to the native reference collector for terminate");
-		rc.terminate();
-		// while (((Thread) rc).isAlive()) {
-		// }
 		log.fine("Cleaning the last objects in the cache: " + weakWrapperMap.size());
 		weakWrapperMap.clear();
 		log.info("Factory closed.");

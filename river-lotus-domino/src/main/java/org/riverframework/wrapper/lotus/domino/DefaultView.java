@@ -17,7 +17,9 @@ class DefaultView implements org.riverframework.wrapper.View<lotus.domino.Base> 
 	protected DefaultView(org.riverframework.wrapper.Session<lotus.domino.Base> s, lotus.domino.View v) {
 		__view = v;
 		_session = s;
-		objectId = calcObjectId(__view);
+		synchronized (_session){
+			objectId = calcObjectId(__view);
+		}		
 	}
 
 	@Override
@@ -56,27 +58,28 @@ class DefaultView implements org.riverframework.wrapper.View<lotus.domino.Base> 
 	@SuppressWarnings("unused")
 	@Override
 	public Document<lotus.domino.Base> getDocumentByKey(String key) {
-		lotus.domino.Document __doc = null;
+		synchronized (_session){
+			lotus.domino.Document __doc = null;
 
-		try {
-			__doc = __view.getDocumentByKey(key, true);
-		} catch (NotesException e) {
 			try {
-				if (__doc != null) 
-					__doc.recycle();				
-			} catch (NotesException e1) {
-				// Do nothing
-			} finally {
-				__doc = null;
+				__doc = __view.getDocumentByKey(key, true);
+			} catch (NotesException e) {
+				try {
+					// CHECKING if (__doc != null) __doc.recycle();				
+					// CHECKING } catch (NotesException e1) {
+					// Do nothing
+				} finally {
+					__doc = null;
+				}
+
+				throw new RiverException(e);
 			}
 
-			throw new RiverException(e);
+			@SuppressWarnings("unchecked")
+			Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
+
+			return doc;
 		}
-
-		@SuppressWarnings("unchecked")
-		Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
-
-		return doc;
 	}
 
 	@Override
@@ -86,80 +89,89 @@ class DefaultView implements org.riverframework.wrapper.View<lotus.domino.Base> 
 
 	@Override
 	public DocumentIterator<lotus.domino.Base> getAllDocuments() {
-		lotus.domino.ViewEntryCollection _col;
-		try {
-			_col = __view.getAllEntries();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
+		synchronized (_session){
+			lotus.domino.ViewEntryCollection _col;
+			try {
+				_col = __view.getAllEntries();
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
 
-		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base> result = _session.getFactory().getDocumentIterator(_col);
-		return result;
+			@SuppressWarnings("unchecked")
+			DocumentIterator<lotus.domino.Base> result = _session.getFactory().getDocumentIterator(_col);
+			return result;
+		}
 	}
 
 	@Override
 	public DocumentIterator<lotus.domino.Base> getAllDocumentsByKey(Object key) {
-		lotus.domino.DocumentCollection _col;
-		try {
-			_col = __view.getAllDocumentsByKey(key, true);
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
+		synchronized (_session){
+			lotus.domino.DocumentCollection _col;
+			try {
+				_col = __view.getAllDocumentsByKey(key, true);
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
 
-		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base> result = _session.getFactory().getDocumentIterator(_col);
-		return result;
+			@SuppressWarnings("unchecked")
+			DocumentIterator<lotus.domino.Base> result = _session.getFactory().getDocumentIterator(_col);
+			return result;
+		}
 	}
 
 	@Override
 	public View<lotus.domino.Base> refresh() {
-		try {
-			__view.refresh();
-		} catch (NotesException e) {
-			throw new RiverException(e);
+		synchronized (_session){
+			try {
+				__view.refresh();
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
 		}
 		return this;
 	}
 
 	@Override
 	public void delete() {
-		if (__view != null) {
-			try {
-				__view.remove();
-				__view.recycle();
-			} catch (NotesException e) {
-				throw new RiverException(e);
-			} finally {
-				__view = null;
+		synchronized (_session){
+			if (__view != null) {
+				try {
+					__view.remove();
+					// CHECKING __view.recycle();
+				} catch (NotesException e) {
+					throw new RiverException(e);
+				} finally {
+					__view = null;
+				}
 			}
 		}
 	}
 
 	@Override
 	public DocumentIterator<lotus.domino.Base> search(String query) {
-		lotus.domino.View __temp = null;
-		
-		try {
-			__temp = __view.getParent().getView(__view.getName());			
-			__temp.FTSearch(query);
-		} catch (NotesException e) {
-			throw new RiverException(e);
+		synchronized (_session){
+			lotus.domino.View __temp = null;
+
+			try {
+				__temp = __view.getParent().getView(__view.getName());			
+				__temp.FTSearch(query);
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
+
+			@SuppressWarnings("unchecked")
+			DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(__temp);
+
+			return _iterator;
 		}
-		
-		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(__temp);
-		
-		return _iterator;
 	}
 
 	@Override
 	public void close() {
 		try {
-			if (__view != null) 
-				__view.recycle();			
-		} catch (NotesException e) {
-			throw new RiverException(e);
+			// CHECKING if (__view != null) __view.recycle();			
+			// CHECKING } catch (NotesException e) {
+			// CHECKING throw new RiverException(e);
 		} finally {
 			__view = null;
 		}

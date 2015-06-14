@@ -37,6 +37,7 @@ public class River {
 
 	public static final String ID_SEPARATOR = "**"; 
 	
+	public static Object lock = new Object();
 	private final static Map<String, AbstractSession> map = new HashMap<String, AbstractSession>();
 
 	static {

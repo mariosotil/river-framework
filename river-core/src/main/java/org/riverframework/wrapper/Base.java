@@ -37,5 +37,5 @@ public interface Base<N> {
 	/**
 	 * Closes the resources, handles, etc.&nbsp;opened by this object.
 	 */
-	public void close();
+	public void close();	
 }

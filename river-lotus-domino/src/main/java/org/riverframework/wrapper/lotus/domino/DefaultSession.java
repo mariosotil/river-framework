@@ -1,17 +1,17 @@
 package org.riverframework.wrapper.lotus.domino;
 
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import lotus.domino.NotesException;
-
 
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Session;
 
-public class DefaultSession implements Session<lotus.domino.Base> {
+public class DefaultSession extends DefaultBase implements Session<lotus.domino.Base> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	private final DefaultFactory factory = DefaultFactory.getInstance();
 
@@ -65,7 +65,7 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 
 	@Override
 	public boolean isOpen() {
-		return (__session != null);
+		return (__session != null && !isRecycled(__session));
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 				}
 			}
 
-			// CHECKING dir.recycle();			
+			// CHECKING dir.recycle(); 	// To recycle or not to recycle... That is the question.
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -129,9 +129,9 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 				}
 			} catch (NotesException e) {
 				try {
-					// CHECKING if (__database != null) __database.recycle();
-					// CHECKING } catch (NotesException e1) {
-					// Do nothing
+					// if (__database != null) __database.recycle();
+				} catch (Exception e1) {
+					log.log(Level.WARNING, "Exception while getting the database at " + server + "!!" + path, e1);
 				} finally {
 					__database = null;
 				}
@@ -142,11 +142,11 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 					log.finer("Trying with a file path");
 					__database = __session.getDatabase(server, path, false);
 				}
-			} catch (NotesException e) {
+			} catch (NotesException e1) {
 				try {
-					// CHECKING 	if (__database != null) __database.recycle();
-					// CHECKING } catch (NotesException e1) {
-					// Do nothing
+					// if (__database != null) __database.recycle();
+				} catch (Exception e) {
+					log.log(Level.WARNING, "Exception while getting the database at " + server + "!!" + path, e1);
 				} finally {
 					__database = null;
 				}
@@ -156,9 +156,9 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 				if (__database != null && !__database.isOpen()) {
 					log.finer("The database could not be opened");
 					try {
-						// CHECKING 	__database.recycle();
-						// CHECKING } catch (NotesException e) {
-						// CHECKING throw new RiverException(e);
+						// __database.recycle();
+					} catch (Exception e) {
+						throw new RiverException(e);
 					} finally {	
 						__database = null;
 					}
@@ -188,6 +188,9 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 
 	@Override
 	public void close() {
+		log.fine("Closing factory");
+		getFactory().close();
+
 		log.fine("Recycling the session");
 		try {
 			__session.recycle();
@@ -196,9 +199,6 @@ public class DefaultSession implements Session<lotus.domino.Base> {
 		} finally {
 			__session = null;
 		}
-
-		log.fine("Closing factory");
-		getFactory().close();
 
 		log.info("Session closed.");
 	}

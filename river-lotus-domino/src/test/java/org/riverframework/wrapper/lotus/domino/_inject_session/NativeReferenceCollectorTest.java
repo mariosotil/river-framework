@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 import org.riverframework.River;
 
-public class NativeReferenceCollectorTest extends org.riverframework.wrapper.lotus.domino.AbstractZombieStressTest {
+public class NativeReferenceCollectorTest extends org.riverframework.wrapper.lotus.domino.AbstractStressTest {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	
 	@BeforeClass

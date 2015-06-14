@@ -1,5 +1,6 @@
 package org.riverframework.wrapper.lotus.domino;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -12,7 +13,7 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domino.Base> {
+class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.Database<lotus.domino.Base> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<?> _session = null;
 	protected volatile lotus.domino.Database __database = null;
@@ -39,7 +40,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 	public static String calcObjectId(lotus.domino.Database __database) {
 		String objectId = "";
 
-		if (__database != null) {
+		if (__database != null && !isRecycled(__database)) {
 			try {
 				StringBuilder sb = new StringBuilder();
 				sb.append(__database.getServer());
@@ -85,7 +86,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 	@Override
 	public boolean isOpen() {
 		try {
-			return (__database != null && __database.isOpen());
+			return (__database != null && !isRecycled(__database) && __database.isOpen());
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -109,7 +110,6 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 		}
 	}
 
-	@SuppressWarnings("unused")
 	@Override
 	public Document<lotus.domino.Base> getDocument(String... parameters)
 	{
@@ -128,30 +128,32 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 					if (id.length() == 32) {
 						__doc = __database.getDocumentByUNID(id);
 					}
-				} catch (NotesException e) {
+				} catch (Exception e) {
 					// Maybe it was an invalid UNID. We just ignore the exception.
-					try {
-						// CHECKING if (__doc != null) __doc.recycle();
-						// CHECKING } catch (NotesException e1) {
-						// Do nothing
-					} finally {
-						__doc = null;
-					}
+//					try {
+//						if (__doc != null) __doc.recycle();
+//					} catch (NotesException e1) {
+//						log.log(Level.WARNING, "Exception while getting the object " + id, e);
+//
+//					} finally {
+//						__doc = null;
+//					}
 				}
 
 				try {
 					if (__doc == null && id.length() == 8) {
 						__doc = __database.getDocumentByID(id);
 					}
-				} catch (NotesException e) {
+				} catch (Exception e) {
 					// Maybe it was an invalid UNID. We just ignore the exception.
-					try {
-						// CHECKING if (__doc != null) __doc.recycle();
-						// CHECKING } catch (NotesException e1) {
-						// Do nothing
-					} finally {
-						__doc = null;
-					}
+//					try {
+//						 if (__doc != null) __doc.recycle();
+//					} catch (NotesException e1) {
+//						 log.log(Level.WARNING, "Exception while getting the object " + id, e);
+//
+//					} finally {
+//						__doc = null;
+//					}
 				}
 			}
 
@@ -184,7 +186,7 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 
 		if (name != null && !name.equals("") && __view != null) {
 			try {
-				// CHECKING __view.recycle();
+				// __view.recycle(); <== Never do that! Let the server do it
 				__view = null;
 			} catch (Exception e) {
 				throw new RiverException(e);
@@ -282,14 +284,16 @@ class DefaultDatabase implements org.riverframework.wrapper.Database<lotus.domin
 
 	@Override
 	public void close() {
-		log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
-
-		try {
-			// CHECKING if (__database != null) __database.recycle();			
-			// CHECKING } catch (NotesException e) {
-			// CHECKING throw new RiverException(e);
-		} finally {
-			__database = null;
-		}
+		// Don't recycle or close it. Let the server do that.
+//		log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
+//
+//		try {
+//			if (__database != null) 
+//				__database.recycle();			
+//		} catch (Exception e) {
+//			throw new RiverException(e);
+//		} finally {
+//			__database = null;
+//		}
 	}
 }

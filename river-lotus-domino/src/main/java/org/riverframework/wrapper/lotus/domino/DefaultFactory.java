@@ -12,7 +12,7 @@ import org.riverframework.wrapper.Base;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
-import org.riverframework.wrapper.NativeReference;
+import org.riverframework.wrapper.AbstractNativeReference;
 import org.riverframework.wrapper.Session;
 import org.riverframework.wrapper.View;
 
@@ -20,7 +20,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 
 	private static DefaultFactory instance = null;
 
-	protected DefaultFactory(Class<? extends NativeReference<lotus.domino.Base>> nativeReferenceClass) {
+	protected DefaultFactory(Class<? extends AbstractNativeReference<lotus.domino.Base>> nativeReferenceClass) {
 		super(nativeReferenceClass);
 	}
 
@@ -144,7 +144,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 		Reference<? extends Base<lotus.domino.Base>> ref = null; 
 		while ((ref = queue.poll()) != null) {
 			synchronized (_session){							
-				NativeReference<lotus.domino.Base> nat = nativeReferenceClass.cast(ref);
+				AbstractNativeReference<lotus.domino.Base> nat = nativeReferenceClass.cast(ref);
 				lotus.domino.Base __native = nat.getNativeObject();
 				String id = nat.getObjectId();
 

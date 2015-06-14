@@ -19,7 +19,7 @@ import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.Session;
 import org.riverframework.wrapper.View;
 
-public abstract class AbstractZombieStressTest {
+public abstract class AbstractStressTest {
 	final String TEST_FORM = "TestForm";
 	final String TEST_VIEW = "TestView";
 	final String TEST_GRAPH = "TestGraph";
@@ -74,9 +74,9 @@ public abstract class AbstractZombieStressTest {
 		view.close();
 		view = null;
 
-		int i = 0;
+		int i;
 
-		for (i = 1; i < maxDocumentsForStressTest; i++) {
+		for (i = 0; i < maxDocumentsForStressTest; i++) {
 			database.createDocument()
 			.setField("Form", form)
 			.setField("Value", i)

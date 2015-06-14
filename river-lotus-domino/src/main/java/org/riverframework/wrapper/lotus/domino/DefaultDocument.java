@@ -27,7 +27,7 @@ import org.riverframework.wrapper.Document;
  * @author mario.sotil@gmail.com
  * @version 0.0.x
  */
-class DefaultDocument implements org.riverframework.wrapper.Document<lotus.domino.Base> {
+class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.Document<lotus.domino.Base> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<lotus.domino.Base> _session = null;
 	protected volatile lotus.domino.Document __doc = null;
@@ -43,7 +43,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document<lotus.domin
 
 	public static String calcObjectId(lotus.domino.Document __doc) {
 		String objectId = "";
-		if (__doc != null) {
+		if (__doc != null && !isRecycled(__doc)) {
 			try {
 				lotus.domino.Database __database = __doc.getParentDatabase();
 
@@ -266,9 +266,9 @@ class DefaultDocument implements org.riverframework.wrapper.Document<lotus.domin
 							result = false;
 
 						try {
-							// CHECKING __item.recycle();
-							// CHECKING } catch (NotesException e) {
-							// CHECKING throw new RiverException(e);
+							// __item.recycle(); <== Very bad idea? 
+						} catch (Exception e) {
+							throw new RiverException(e);
 						} finally {
 							__item = null;
 						}
@@ -332,7 +332,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document<lotus.domin
 					values = new DefaultField();
 				}
 
-				// CHECKING __item.recycle();
+				// __item.recycle(); <== Very bad idea? 
 
 				if (values.isEmpty()) {
 					// logWrapper.debug("getFields: it's empty");
@@ -360,7 +360,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document<lotus.domin
 
 	@Override
 	public boolean isOpen() {		
-		return __doc != null;
+		return (__doc != null && !isRecycled(__doc));
 	}
 
 	@Override
@@ -382,7 +382,7 @@ class DefaultDocument implements org.riverframework.wrapper.Document<lotus.domin
 			if (__doc != null) {
 				try {
 					__doc.removePermanently(true);
-					//__doc.recycle(); <== Very bad idea ò_ó
+					//__doc.recycle(); <== Very bad idea? 
 				} catch (NotesException e) {
 					throw new RiverException(e);
 				} finally {
@@ -408,17 +408,19 @@ class DefaultDocument implements org.riverframework.wrapper.Document<lotus.domin
 
 	@Override
 	public void close() {
-		log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
+		// Don't recycle or close it. Let the server do that.
 
-		synchronized (_session){
-			try {
-				// CHECKING if (__doc != null) __doc.recycle();			
-				// CHECKING } catch (NotesException e) {
-				// CHECKING throw new RiverException(e);
-			} finally {
-				__doc = null;
-			}
-		}
+//		log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
+
+//		synchronized (_session){
+//			try {
+//				if (__doc != null) 	__doc.recycle();			 <== Very bad idea? 
+//			} catch (NotesException e) {
+//				throw new RiverException(e);
+//			} finally {
+//				__doc = null;
+//			}
+//		}
 	}	
 
 	@Override

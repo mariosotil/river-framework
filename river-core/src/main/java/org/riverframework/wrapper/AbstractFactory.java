@@ -1,6 +1,5 @@
 package org.riverframework.wrapper;
 
-import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -16,21 +15,20 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	protected volatile org.riverframework.wrapper.Session<N> _session = null;
-	protected Class<? extends NativeReference<N>> nativeReferenceClass = null;
-	protected volatile ConcurrentHashMap<String, NativeReference<N>> weakWrapperMap = null;
+	protected Class<? extends AbstractNativeReference<N>> nativeReferenceClass = null;
+	protected volatile ConcurrentHashMap<String, AbstractNativeReference<N>> weakWrapperMap = null;
 	protected volatile ReferenceQueue<Base<N>> queue = null;
 
-
-	protected AbstractFactory(Class<? extends NativeReference<N>> nativeReferenceClass) {
+	protected AbstractFactory(Class<? extends AbstractNativeReference<N>> nativeReferenceClass) {
 		this.nativeReferenceClass = nativeReferenceClass;
 
-		weakWrapperMap = new ConcurrentHashMap<String, NativeReference<N>>();
+		weakWrapperMap = new ConcurrentHashMap<String, AbstractNativeReference<N>>();
 		queue = new ReferenceQueue<Base<N>>();
 	}
 
 	@Override
 	public void logStatus() {
-		//TODO: ??
+		// TODO: ??
 	}
 
 	private <U extends Base<N>> U createWrapper(Class<U> outputClass, Class<? extends N> inputClass, Object __obj) {
@@ -51,7 +49,7 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 		try {
 			Constructor<?> constructor = nativeReferenceClass.getDeclaredConstructor(Base.class, ReferenceQueue.class);
 			constructor.setAccessible(true);
-			NativeReference<N> ref = nativeReferenceClass.cast(constructor.newInstance(_wrapper, queue));
+			AbstractNativeReference<N> ref = nativeReferenceClass.cast(constructor.newInstance(_wrapper, queue));
 			weakWrapperMap.put(id, ref);
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -59,15 +57,15 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 	}
 
 	private String calcIdFromNativeObject(Class<? extends Base<N>> outputClass, Class<? extends N> inputClass, Object __obj) {
-		String id = null; 
+		String id = null;
 		try {
 			Method methodCalcObjectId = outputClass.getDeclaredMethod("calcObjectId", inputClass);
 			methodCalcObjectId.setAccessible(true);
 			id = (String) methodCalcObjectId.invoke(null, __obj);
-		} catch (Exception e) {			
+		} catch (Exception e) {
 			throw new RiverException(e);
-		} 
-		return id;		
+		}
+		return id;
 	}
 
 	protected boolean isValidNativeObject(N __native) {
@@ -89,7 +87,7 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 			} else {
 				// Looking for the object in the cache
 				String id = calcIdFromNativeObject(outputClass, inputClass, __obj);
-				NativeReference<N> ref = nativeReferenceClass.cast(weakWrapperMap.get(id));
+				AbstractNativeReference<N> ref = nativeReferenceClass.cast(weakWrapperMap.get(id));
 
 				if (ref == null) {
 					// It's no registered in the cache
@@ -105,10 +103,11 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 						// There's a valid native object
 
 						if (_wrapper == null) {
-							// There's no wrapper. We create a new one with the old native object
+							// There's no wrapper. We create a new one with the
+							// old native object
 							actionTaken = "Registered. Creating a wrapper for registered native object";
 							_wrapper = createWrapper(outputClass, inputClass, __native);
-							createReference(id, _wrapper);							
+							createReference(id, _wrapper);
 						} else {
 							// There's a wrapper. We do nothing
 							actionTaken = "Registered. Retrieving the wrapper and its native object from the cache";
@@ -117,7 +116,8 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 						// There's no a valid native object
 
 						if (_wrapper == null) {
-							// There's no wrapper. We create a new one with the new native object
+							// There's no wrapper. We create a new one with the
+							// new native object
 							actionTaken = "Registered. Creating the wrapper for the object";
 							_wrapper = createWrapper(outputClass, inputClass, __obj);
 							createReference(id, _wrapper);
@@ -128,7 +128,7 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 							createReference(id, _wrapper);
 						}
 					}
-				}		
+				}
 			}
 
 			if (log.isLoggable(Level.FINEST)) {

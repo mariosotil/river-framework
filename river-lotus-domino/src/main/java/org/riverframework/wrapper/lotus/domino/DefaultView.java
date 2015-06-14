@@ -1,5 +1,8 @@
 package org.riverframework.wrapper.lotus.domino;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import lotus.domino.NotesException;
 
 import org.riverframework.River;
@@ -8,8 +11,8 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultView implements org.riverframework.wrapper.View<lotus.domino.Base> {
-	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+class DefaultView extends DefaultBase implements org.riverframework.wrapper.View<lotus.domino.Base> {
+	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<lotus.domino.Base> _session = null;
 	protected volatile lotus.domino.View __view = null;
 	private String objectId = null;
@@ -30,7 +33,7 @@ class DefaultView implements org.riverframework.wrapper.View<lotus.domino.Base> 
 	public static String calcObjectId(lotus.domino.View __view) {
 		String objectId = "";
 
-		if (__view != null) {
+		if (__view != null && !isRecycled(__view)) {
 			try {
 				lotus.domino.Database __database = __view.getParent();
 
@@ -64,13 +67,13 @@ class DefaultView implements org.riverframework.wrapper.View<lotus.domino.Base> 
 			try {
 				__doc = __view.getDocumentByKey(key, true);
 			} catch (NotesException e) {
-				try {
-					// CHECKING if (__doc != null) __doc.recycle();				
-					// CHECKING } catch (NotesException e1) {
-					// Do nothing
-				} finally {
-					__doc = null;
-				}
+//				try {
+//					if (__doc != null) __doc.recycle();				<== Very bad idea? 
+//				} catch (Exception e1) {
+//					log.log(Level.WARNING, "Exception while getting the document woth the key " + key, e1);
+//				} finally {
+//					__doc = null;
+//				}
 
 				throw new RiverException(e);
 			}
@@ -84,7 +87,7 @@ class DefaultView implements org.riverframework.wrapper.View<lotus.domino.Base> 
 
 	@Override
 	public boolean isOpen() {
-		return __view != null;
+		return __view != null && !isRecycled(__view);
 	}
 
 	@Override
@@ -137,7 +140,7 @@ class DefaultView implements org.riverframework.wrapper.View<lotus.domino.Base> 
 			if (__view != null) {
 				try {
 					__view.remove();
-					// CHECKING __view.recycle();
+					// __view.recycle();  <== Let the server to recycle
 				} catch (NotesException e) {
 					throw new RiverException(e);
 				} finally {
@@ -168,13 +171,7 @@ class DefaultView implements org.riverframework.wrapper.View<lotus.domino.Base> 
 
 	@Override
 	public void close() {
-		try {
-			// CHECKING if (__view != null) __view.recycle();			
-			// CHECKING } catch (NotesException e) {
-			// CHECKING throw new RiverException(e);
-		} finally {
-			__view = null;
-		}
+		// Don't recycle or close it. Let the server do that.
 	}
 
 	@Override

@@ -1,9 +1,9 @@
 package org.riverframework.wrapper;
 
-import java.lang.ref.WeakReference;
 import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 
-public abstract class AbstractNativeReference<N> extends WeakReference<Base<N>> implements NativeReference<N> {
+public abstract class AbstractNativeReference<N> extends WeakReference<Base<N>> {
 
 	protected volatile N __native = null;
 	protected String id = null;
@@ -15,23 +15,13 @@ public abstract class AbstractNativeReference<N> extends WeakReference<Base<N>> 
 		id = referent.getObjectId();
 	}
 
-	@Override
 	public final N getNativeObject() {
 		return __native;
 	}
 
-	@Override
 	public final String getObjectId() {
 		return id;
 	}
 
-	@Override
-	public final boolean isOpen() {
-		return __native != null;
-	}
-
-	@Override
-	public void close() {
-
-	}
+	abstract public void close();
 }

@@ -10,21 +10,21 @@ import java.util.logging.Logger;
 
 import org.riverframework.River;
 
-public class ZombieStressTest extends org.riverframework.wrapper.lotus.domino.AbstractZombieStressTest {
+public class StressTest extends org.riverframework.wrapper.lotus.domino.AbstractStressTest {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	
+
 	@BeforeClass
 	public static void before() {
 		NotesThread.sinitThread();
 
-		River.setLevel(log, Level.FINE);
-		
-		maxDocumentsForStressTest = 60000;
-		
+		River.setLevel(log, Level.FINEST);
+
+		maxDocumentsForStressTest = 1000;
+
 		log.setUseParentHandlers(false);
 		log.fine("Starting test");
 	}
-
+	
 	@AfterClass
 	public static void after() {		
 		log.fine("Test done");

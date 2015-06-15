@@ -49,7 +49,7 @@ To load the artifacts from Maven, you can add this dependency to your pom.xml fi
 
 So far, this framework has the following features: 
 
-- Is designed to provide a unique interface to connect to NoSQL databases 
+- Designed to provide a unique interface to connect to NoSQL databases 
 - Simplifies the writting of code 
 - Controls five basic elements:
   - The session
@@ -74,14 +74,16 @@ About the wrapper for IBM Notes:
   - Experimenting with the IBM Notes auto recycling
   - Finishing the wrapper and JUnit tests for a NoSQL in-memory database (Hazelcast)
   - Creating new Java examples
+
   
 ## What is in the ToDo list?
 
 There are a lot of features that I will add to this framework:
 
-- Support to relations between documents using graphs
+- Support to relations between documents using graphs, 1..\* or \*..\*
 - Connections to Mongo, CouchDB, Node4J, Hazelcast, etc. 
-- Support tothe development workflow applications: states, responsibles, security, emails, etc.
+- Support to workflow applications development
+
 
 ## Why am I creating this Framework?
 

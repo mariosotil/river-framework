@@ -1,7 +1,7 @@
 package org.riverframework.wrapper.lotus.domino;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+// import java.util.logging.Level;
+// import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import lotus.domino.NotesException;
@@ -14,7 +14,7 @@ import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
 class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.Database<lotus.domino.Base> {
-	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<?> _session = null;
 	protected volatile lotus.domino.Database __database = null;
 	private String objectId = null;

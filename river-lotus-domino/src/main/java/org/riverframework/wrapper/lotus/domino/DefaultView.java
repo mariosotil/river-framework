@@ -1,7 +1,7 @@
 package org.riverframework.wrapper.lotus.domino;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+// import java.util.logging.Level;
+// import java.util.logging.Logger;
 
 import lotus.domino.NotesException;
 
@@ -12,7 +12,7 @@ import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
 class DefaultView extends DefaultBase implements org.riverframework.wrapper.View<lotus.domino.Base> {
-	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<lotus.domino.Base> _session = null;
 	protected volatile lotus.domino.View __view = null;
 	private String objectId = null;
@@ -58,7 +58,6 @@ class DefaultView extends DefaultBase implements org.riverframework.wrapper.View
 		return __view;
 	}
 
-	@SuppressWarnings("unused")
 	@Override
 	public Document<lotus.domino.Base> getDocumentByKey(String key) {
 		synchronized (_session){

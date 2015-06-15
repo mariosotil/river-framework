@@ -16,10 +16,13 @@ import java.util.TreeMap;
  * 
  * https://github.com/bryanwagner/string-dump/blob/master/src/main/java/com/bryanww/util/StringDump.java
  * 
+ * Used only for testing.
+ * 
  * @author  Bryan Wagner
  * @since   2013-08-24
  * @version 2013-08-24
  */
+
 public class StringDump {
 	
 	/**

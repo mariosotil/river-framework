@@ -8,11 +8,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import lotus.domino.NotesException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.River;
+import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
@@ -20,10 +23,6 @@ import org.riverframework.wrapper.Session;
 import org.riverframework.wrapper.View;
 
 public abstract class AbstractStressTest {
-	final String TEST_FORM = "TestForm";
-	final String TEST_VIEW = "TestView";
-	final String TEST_GRAPH = "TestGraph";
-
 	private final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	protected Context context = null;
@@ -57,7 +56,100 @@ public abstract class AbstractStressTest {
 	}
 
 	@Test
-	public void testStress() {
+	public void testStress1() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+
+		String suffixDb = sdf.format(new Date()) + ".nsf";
+		Database<lotus.domino.Base> db1 = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
+		assertTrue("The test database could not be instantiated.", db1 != null);
+		assertTrue("The test database could not be opened.", db1.isOpen());
+
+		Database<lotus.domino.Base> db2 = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
+		assertTrue("The test database could not be instantiated.", db2 != null);
+		assertTrue("The test database could not be opened.", db2.isOpen());
+
+		String name = "VIEW_" + sdf.format(new Date());
+		String form = "FORM_" + sdf.format(new Date());
+
+		View<lotus.domino.Base> view1 = db1.createView(name, "SELECT Form = \"" + form + "\"");
+		assertTrue("There is a problem creating the view in the test database.", view1.isOpen());
+
+		View<lotus.domino.Base> view2 = db2.createView(name, "SELECT Form = \"" + form + "\"");
+		assertTrue("There is a problem creating the view in the test database.", view2.isOpen());
+				
+		db1 = _session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
+		db2 = _session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
+		
+		int i;
+		final int MODULE = 100;
+		
+		for (i = 0; i < (maxDocumentsForStressTest); i++) {
+			db1.createDocument()
+			.setField("Form", form)
+			.setField("Value", i % MODULE)
+			.save();
+
+			if(i % 500 == 0) { 
+				log.fine("Processed=" + i);
+				_session.getFactory().logStatus();
+			}
+		}
+
+		for (i = 0; i < maxDocumentsForStressTest; i++) {
+			db2.createDocument()
+			.setField("Form", form)			
+			.setField("Value", i % MODULE)
+			.save();
+
+			if(i % 500 == 0) { 
+				log.fine("Processed=" + i);
+				_session.getFactory().logStatus();
+			}
+		}
+
+		log.fine("Updating FT indexes");
+		try {
+			((lotus.domino.Database) db1.getNativeObject()).updateFTIndex(true);
+			((lotus.domino.Database) db2.getNativeObject()).updateFTIndex(true);
+			
+			Thread.sleep(2000);
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+		
+		log.fine("Stressing");
+		
+		i = 0;
+		for(Document<lotus.domino.Base> doc1: db1.getAllDocuments()) {
+			int value = doc1.getFieldAsInteger("Value");
+			DocumentIterator<lotus.domino.Base> it = db2.search("FIELD Value=" + value + "");
+			for(Document<lotus.domino.Base> doc2: it) {
+				log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value + " on " + doc2.getObjectId());
+			}
+			
+			if(i++ % 100 == 0) { 
+				log.fine("Processed=" + i);
+				_session.getFactory().logStatus();
+			}
+		}
+		
+		log.fine("Done");
+
+//		view1.delete();
+//		assertFalse("There is a problem deleting the last view created.", view1.isOpen());
+//
+//		view2.delete();
+//		assertFalse("There is a problem deleting the last view created.", view1.isOpen());
+//
+//		db1.delete();		
+//		assertFalse("There is a problem deleting the last database created.", db1.isOpen());
+//
+//		db2.delete();		
+//		assertFalse("There is a problem deleting the last database created.", db1.isOpen());
+	}
+
+	@Test
+	public void testStress2() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
 		Database<lotus.domino.Base> database = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
@@ -144,4 +236,5 @@ public abstract class AbstractStressTest {
 		database.delete();		
 		assertFalse("There is a problem deleting the last database created.", database.isOpen());
 	}
+	
 }

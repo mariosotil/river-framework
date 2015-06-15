@@ -9,11 +9,13 @@ import java.util.Map;
 
 /**
  * Provides converters from any type to String, Integer, Double and Date. If the converter can not make the conversion
- * it returns "", 0, 0, and null, respectively.
+ * it returns "", 0, 0, and null, respectively. This class is useful in org.riverframework.wrapper.* because makes simple
+ * to recover data in Java format.
  *
  * @author mario.sotil@gmail.com
  *
  */
+
 public class Converter {
 	private static final Calendar calendar = Calendar.getInstance();
 	

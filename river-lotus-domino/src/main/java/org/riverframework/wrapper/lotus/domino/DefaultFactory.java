@@ -1,7 +1,6 @@
 package org.riverframework.wrapper.lotus.domino;
 
 import java.lang.ref.Reference;
-import java.lang.reflect.Field;
 import java.util.logging.Level;
 
 import lotus.domino.NotesException;
@@ -34,43 +33,6 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			}
 		}
 		return instance;
-	}
-	
-	private Object getFieldValue(Object __obj, String name) {
-		Class<?> clazz = __obj.getClass();
-		Field field = null;
-		Object result = null;
-
-		try {
-			while(!clazz.getSimpleName().equals("Object") && field == null) {
-				try {
-					field = clazz.getDeclaredField(name);
-				} catch (NoSuchFieldException e) {
-					// Do nothing
-				}
-				clazz = clazz.getSuperclass();
-			}
-
-			if (field != null) {
-				field.setAccessible(true);				
-				result = field.get(__obj);
-			}
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-		
-		return result;
-	}
-
-	@Override
-	protected boolean isValidNativeObject(lotus.domino.Base __native) {
-		if (__native == null) return false;
-		
-		Object isDeleted = getFieldValue(__native, "isdeleted");  
-		
-		boolean isValid = isDeleted == null || !(Boolean) isDeleted;
-
-		return isValid;
 	}
 	
 	public Session<lotus.domino.Base> getSession(Object... parameters) {
@@ -139,7 +101,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 	
 	@Override
 	public void cleanUp() {
-		log.finest("Starting clean up");
+		// log.finest("Starting clean up");
 
 		Reference<? extends Base<lotus.domino.Base>> ref = null; 
 		while ((ref = queue.poll()) != null) {
@@ -148,7 +110,8 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 				lotus.domino.Base __native = nat.getNativeObject();
 				String id = nat.getObjectId();
 
-				if(__native.getClass().isAssignableFrom(lotus.domino.local.Document.class)) {				
+				if(__native instanceof lotus.domino.local.Document || 
+						__native instanceof lotus.domino.cso.Document) {				
 					if (log.isLoggable(Level.FINEST)) {
 						StringBuilder sb = new StringBuilder();
 						sb.append("Recycling: id=");
@@ -172,6 +135,6 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			}
 		}
 
-		log.finest("Finished clean up");
+		// log.finest("Finished clean up");
 	}
 }

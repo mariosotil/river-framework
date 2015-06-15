@@ -1,6 +1,5 @@
 package org.riverframework.wrapper.lotus.domino;
 
-import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
 import lotus.domino.NotesException;
@@ -80,13 +79,6 @@ class DefaultDocumentIterator extends DefaultBase implements DocumentIterator<lo
 		}
 	}
 
-	//	@SuppressWarnings("unchecked")
-	//	private void updateCurrentDocumentFromDocument() {		
-	//		synchronized (_session){
-	//			_doc = __doc == null ? null : _session.getFactory().getDocument(__doc);
-	//		}
-	//	}
-
 	private boolean isViewEntryValid(lotus.domino.ViewEntry __ve){
 		if(__ve == null) return true;
 
@@ -106,7 +98,6 @@ class DefaultDocumentIterator extends DefaultBase implements DocumentIterator<lo
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	private void updateCurrentDocumentFromViewEntry() {
 		synchronized (_session){
 			try {
@@ -184,6 +175,7 @@ class DefaultDocumentIterator extends DefaultBase implements DocumentIterator<lo
 				throw new RiverException(e);
 			}
 
+			@SuppressWarnings("unchecked")
 			Document<lotus.domino.Base> _doc = _session.getFactory().getDocument(__current);
 			return _doc;
 		}

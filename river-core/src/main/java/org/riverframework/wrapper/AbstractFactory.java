@@ -19,11 +19,20 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 	protected volatile ConcurrentHashMap<String, AbstractNativeReference<N>> weakWrapperMap = null;
 	protected volatile ReferenceQueue<Base<N>> queue = null;
 
+	private Constructor<?> constructorNativeReference = null;
+
 	protected AbstractFactory(Class<? extends AbstractNativeReference<N>> nativeReferenceClass) {
 		this.nativeReferenceClass = nativeReferenceClass;
 
 		weakWrapperMap = new ConcurrentHashMap<String, AbstractNativeReference<N>>();
 		queue = new ReferenceQueue<Base<N>>();
+
+		try {
+			constructorNativeReference = nativeReferenceClass.getDeclaredConstructor(Base.class, ReferenceQueue.class);
+			constructorNativeReference.setAccessible(true);
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
 	}
 
 	@Override
@@ -35,6 +44,7 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 		U _wrapper = null;
 
 		try {
+			// TODO: create a Constructor objects cache
 			Constructor<?> constructor = outputClass.getDeclaredConstructor(org.riverframework.wrapper.Session.class, inputClass);
 			constructor.setAccessible(true);
 			_wrapper = outputClass.cast(constructor.newInstance(_session, __obj));
@@ -47,9 +57,7 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 
 	private void createReference(String id, Base<N> _wrapper) {
 		try {
-			Constructor<?> constructor = nativeReferenceClass.getDeclaredConstructor(Base.class, ReferenceQueue.class);
-			constructor.setAccessible(true);
-			AbstractNativeReference<N> ref = nativeReferenceClass.cast(constructor.newInstance(_wrapper, queue));
+			AbstractNativeReference<N> ref = nativeReferenceClass.cast(constructorNativeReference.newInstance(_wrapper, queue));
 			weakWrapperMap.put(id, ref);
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -141,9 +149,9 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 				sb.append(" (");
 				sb.append(_wrapper.hashCode());
 				sb.append(") native=");
-				sb.append(__obj.getClass().getName());
+				sb.append(__obj == null ? "<null>" : __obj.getClass().getName());
 				sb.append(" (");
-				sb.append(__obj.hashCode());
+				sb.append(__obj == null ? "" : __obj.hashCode());
 				sb.append(")");
 
 				log.finest(sb.toString());

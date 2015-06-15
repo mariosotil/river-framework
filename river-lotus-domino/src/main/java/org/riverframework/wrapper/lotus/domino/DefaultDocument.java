@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Logger;
+// import java.util.logging.Logger;
 
 import lotus.domino.DateTime;
 import lotus.domino.Item;
@@ -28,7 +28,7 @@ import org.riverframework.wrapper.Document;
  * @version 0.0.x
  */
 class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.Document<lotus.domino.Base> {
-	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<lotus.domino.Base> _session = null;
 	protected volatile lotus.domino.Document __doc = null;
 	private String objectId = null;
@@ -410,17 +410,17 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	public void close() {
 		// Don't recycle or close it. Let the server do that.
 
-//		log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
+		// log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
 
-//		synchronized (_session){
-//			try {
-//				if (__doc != null) 	__doc.recycle();			 <== Very bad idea? 
-//			} catch (NotesException e) {
-//				throw new RiverException(e);
-//			} finally {
-//				__doc = null;
-//			}
-//		}
+		synchronized (_session){
+			try {
+				if (__doc != null) 	__doc.recycle();			// <== Very bad idea? 
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			} finally {
+				__doc = null;
+			}
+		}
 	}	
 
 	@Override

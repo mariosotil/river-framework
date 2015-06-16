@@ -32,17 +32,29 @@ session.close();
 
 ## Maven
 
-To load the artifacts from Maven, you can add this dependency to your pom.xml file:
+To load the artifacts from Maven, you can add these dependencies to your pom.xml file:
 
-- To use it with the original lotus.domino package from IBM Notes
+- To use the original lotus.domino package from IBM Notes
 
 ```xml
 		<dependency>
 			<groupId>org.riverframework</groupId>
 			<artifactId>river-lotus-domino</artifactId>
-			<version>0.2.7</version>
+			<version>0.2.8</version>
 		</dependency>
 ```
+
+- To use the org.openntf.domino package from OpenNTF
+
+```
+    <dependency>
+      <groupId>org.riverframework</groupId>
+      <artifactId>river-org-openntf-domino</artifactId>
+      <version>0.2.8</version>
+    </dependency>
+```
+
+In both cases, you have to add to your classpath the Notes.jar, and only in the last one, the org.openntf.domino.jar library.
 
 
 ## Features
@@ -67,10 +79,17 @@ About the wrapper for IBM Notes:
 - Good to develop standalone Java or XPages programs 
 - So far, it does not supports RichText items
 
+
+About the wrapper for OpenNTF Domino:
+
+- Takes advantage of this great library
+- The auto recycling is managed by OpenNTF Domino
+- Provides a good reference to measure the performance ot the IBM Notes wrapper
+
   
 ## What I'm working on now?
 
-- Version 0.2.8
+- Version 0.2.9
   - Experimenting with the IBM Notes auto recycling
   - Finishing the wrapper and JUnit tests for a NoSQL in-memory database (Hazelcast)
   - Creating new Java examples
@@ -124,6 +143,10 @@ I expected that this work be useful for you. I'll be looking forward for your id
 ## Version change log
 
 So far, this framework has the following features: 
+
+- Version 0.2.8
+  - Fixes and improvements
+  - Adding again the support to the org.openntf.domino library
 
 - Version 0.2.7
   - Auto recycling of IBM Notes objects. So far, it works good with a standalone Java program. I still making tests in XPages.

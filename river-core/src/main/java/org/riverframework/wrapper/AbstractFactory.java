@@ -76,9 +76,7 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 		return id;
 	}
 
-	protected boolean isValidNativeObject(N __native) {
-		return true;
-	}
+	protected abstract boolean isValidNativeObject(N __native);
 
 	@SuppressWarnings("unchecked")
 	public <U extends Base<N>> U getWrapper(Class<U> outputClass, Class<? extends N> inputClass, Object __obj) {
@@ -117,8 +115,16 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 							_wrapper = createWrapper(outputClass, inputClass, __native);
 							createReference(id, _wrapper);
 						} else {
-							// There's a wrapper. We do nothing
-							actionTaken = "Registered. Retrieving the wrapper and its native object from the cache";
+							// There's a wrapper
+							if (isValidNativeObject(_wrapper.getNativeObject())) {
+								// with a valid native object
+								actionTaken = "Registered. Retrieving the wrapper and its native object from the cache";
+							} else {
+								// with an invalid native object.
+								actionTaken = "Registered but closed. Creating the wrapper with the registered native object from the cache";
+								_wrapper = createWrapper(outputClass, inputClass, __native);
+								createReference(id, _wrapper);
+							}
 						}
 					} else {
 						// There's no a valid native object

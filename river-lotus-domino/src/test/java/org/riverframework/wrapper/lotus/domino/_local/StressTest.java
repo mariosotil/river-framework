@@ -19,7 +19,7 @@ public class StressTest extends org.riverframework.wrapper.lotus.domino.Abstract
 
 		River.setLevel(log, Level.FINE);
 
-		maxDocumentsForStressTest = 10000;
+		maxDocumentsForStressTest = 1000;
 
 		log.setUseParentHandlers(false);
 		log.fine("Starting test");

@@ -35,6 +35,11 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 		return instance;
 	}
 	
+	@Override
+	protected boolean isValidNativeObject(lotus.domino.Base __native) {
+		return __native != null && !DefaultBase.isRecycled(__native);
+	}
+	
 	public Session<lotus.domino.Base> getSession(Object... parameters) {
 		lotus.domino.Session __obj = null;
 		

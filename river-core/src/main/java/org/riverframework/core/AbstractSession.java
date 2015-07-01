@@ -2,7 +2,6 @@ package org.riverframework.core;
 
 import java.lang.reflect.Constructor;
 
-import org.riverframework.ClosedObjectException;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.Session;
@@ -25,8 +24,8 @@ public abstract class AbstractSession implements org.riverframework.Session {
 
 	@Override
 	public String getObjectId() {
-		if (!isOpen())
-			throw new ClosedObjectException("The Session object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The Session object is closed.");
 
 		return _session.getObjectId();
 	}
@@ -49,8 +48,8 @@ public abstract class AbstractSession implements org.riverframework.Session {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U extends org.riverframework.Database> U createDatabase(Class<U> clazz, String... location) {
-		if (!isOpen())
-			throw new ClosedObjectException("The Session object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The Session object is closed.");
 
 		org.riverframework.wrapper.Database<?> _database = _session.createDatabase(location);
 		U database = null;
@@ -81,8 +80,8 @@ public abstract class AbstractSession implements org.riverframework.Session {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <U extends org.riverframework.Database> U getDatabase(Class<U> clazz, String... location) {
-		if (!isOpen())
-			throw new ClosedObjectException("The Session object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The Session object is closed.");
 
 		U database = null;
 		Class<U> c = clazz;
@@ -115,8 +114,8 @@ public abstract class AbstractSession implements org.riverframework.Session {
 
 	@Override
 	public String getUserName() {
-		if (!isOpen())
-			throw new ClosedObjectException("The Session object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The Session object is closed.");
 
 		return _session.getUserName();
 	}

@@ -8,12 +8,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import lotus.domino.NotesException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.River;
 import org.riverframework.RiverException;
+import org.riverframework.core.Credentials;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
@@ -55,6 +58,118 @@ public abstract class AbstractStressTest {
 
 	@Test
 	public void testStress1() {
+		long timeTest01Round01 = 0;
+		long timeTest01Round02 = 0;
+		long timeTest02Round01 = 0;
+		long timeTest02Round02 = 0;
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		
+		String suffixDb = sdf.format(new Date()) + ".nsf";
+		
+		String form = "FORM_" + sdf.format(new Date());
+		
+		long start = 0;
+		long end = 0;
+		
+		final int MODULE = 100;
+		int i = 0;
+		
+		try {
+			lotus.domino.Session __session = lotus.domino.NotesFactory.createSession((String) null, (String) null, Credentials.getPassword());
+			lotus.domino.DbDirectory dir = __session.getDbDirectory(context.getTestDatabaseServer());
+			lotus.domino.Database __database = dir.createDatabase("TEST_DB_1_" + suffixDb);
+			
+			start = System.nanoTime();
+			for (i = 0; i < (maxDocumentsForStressTest); i++) {
+				lotus.domino.Document __doc = __database.createDocument();
+				__doc.replaceItemValue("Form", form);
+				__doc.replaceItemValue("Value", i % MODULE);
+				__doc.save(true, false);
+				__doc.recycle();
+				
+				if(i % 500 == 0) { 
+					log.fine("Processed=" + i);
+				}
+			}
+			
+			end = System.nanoTime();
+			timeTest01Round01 = (end - start) / 1000000;			
+
+			
+			lotus.domino.DocumentCollection __col = __database.getAllDocuments();
+			start = System.nanoTime();
+			
+			i = 0;
+			lotus.domino.Document __doc = __col.getFirstDocument();
+			while(__doc != null) {
+				
+				if(i % 500 == 0) { 
+					log.fine("Processed=" + i);
+				}
+				
+				lotus.domino.Document __old = __doc;
+				__doc = __col.getNextDocument(__doc);
+				
+				__old.recycle();
+				i++;
+			}
+			
+			end = System.nanoTime();
+			timeTest02Round01 = (end - start) / 1000000;			
+						
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		} 
+		
+		
+		Database<lotus.domino.Base> _database = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
+
+		start = System.nanoTime();
+		for (i = 0; i < (maxDocumentsForStressTest); i++) {
+			_database.createDocument()
+			.setField("Form", form)
+			.setField("Value", i % MODULE)
+			.save();
+
+			if(i % 500 == 0) { 
+				log.fine("Processed=" + i);
+			}
+		}
+		end = System.nanoTime();
+		timeTest01Round02 = (end - start) / 1000000;			
+
+		DocumentIterator<lotus.domino.Base> _iterator = _database.getAllDocuments();
+		
+		i = 0;
+		start = System.nanoTime();
+		for (@SuppressWarnings("unused") Document<lotus.domino.Base> _doc: _iterator) {
+			if(i % 500 == 0) { 
+				log.fine("Processed=" + i);
+			}
+			i++;
+		}
+		end = System.nanoTime();
+		timeTest02Round02 = (end - start) / 1000000;			
+		
+		double diffTest01 = (((double) timeTest01Round02) / timeTest01Round01 - 1) * 100;
+		final double thresholdTest01 = 25;
+
+		double diffTest02 = (((double) timeTest02Round02) / timeTest02Round01 - 1) * 100;
+		final double thresholdTest02 = 900;
+
+		String logTest01 = "Test01: The framework makes a time of " + timeTest01Round02 + "ms versus " +  timeTest01Round01 + "ms.";
+		String logTest02 = "Test02: The framework makes a time of " + timeTest02Round02 + "ms versus " +  timeTest02Round01 + "ms.";
+				
+		log.fine(logTest01);
+		log.fine(logTest02);
+		
+		assertTrue(logTest01 + " That is over the " + thresholdTest01 + "% allowed.", diffTest01 <= thresholdTest01 );
+		assertTrue(logTest02 + " That is over the " + thresholdTest02 + "% allowed.", diffTest02 <= thresholdTest02 );
+	}
+
+	@Test
+	public void testStress2() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
 		String suffixDb = sdf.format(new Date()) + ".nsf";
@@ -74,13 +189,13 @@ public abstract class AbstractStressTest {
 
 		View<lotus.domino.Base> view2 = db2.createView(name, "SELECT Form = \"" + form + "\"");
 		assertTrue("There is a problem creating the view in the test database.", view2.isOpen());
-
+				
 		db1 = _session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
 		db2 = _session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
-
+		
 		int i;
 		final int MODULE = 100;
-
+		
 		for (i = 0; i < (maxDocumentsForStressTest); i++) {
 			db1.createDocument()
 			.setField("Form", form)
@@ -109,14 +224,14 @@ public abstract class AbstractStressTest {
 		try {
 			((lotus.domino.Database) db1.getNativeObject()).updateFTIndex(true);
 			((lotus.domino.Database) db2.getNativeObject()).updateFTIndex(true);
-
+			
 			Thread.sleep(2000);
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
-
+		
 		log.fine("Stressing");
-
+		
 		i = 0;
 		for(Document<lotus.domino.Base> doc1: db1.getAllDocuments()) {
 			int value = doc1.getFieldAsInteger("Value");
@@ -124,30 +239,31 @@ public abstract class AbstractStressTest {
 			for(Document<lotus.domino.Base> doc2: it) {
 				log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value + " on " + doc2.getObjectId());
 			}
-
-			if(i++ % 100 == 0) { 
+			
+			if(i % 100 == 0) { 
 				log.fine("Processed=" + i);
 				_session.getFactory().logStatus();
 			}
+			i++;			
 		}
-
+		
 		log.fine("Done");
-
-		//		view1.delete();
-		//		assertFalse("There is a problem deleting the last view created.", view1.isOpen());
-		//
-		//		view2.delete();
-		//		assertFalse("There is a problem deleting the last view created.", view1.isOpen());
-		//
-		//		db1.delete();		
-		//		assertFalse("There is a problem deleting the last database created.", db1.isOpen());
-		//
-		//		db2.delete();		
-		//		assertFalse("There is a problem deleting the last database created.", db1.isOpen());
+//
+//		view1.delete();
+//		assertFalse("There is a problem deleting the last view created.", view1.isOpen());
+//
+//		view2.delete();
+//		assertFalse("There is a problem deleting the last view created.", view1.isOpen());
+//
+//		db1.delete();		
+//		assertFalse("There is a problem deleting the last database created.", db1.isOpen());
+//
+//		db2.delete();		
+//		assertFalse("There is a problem deleting the last database created.", db1.isOpen());
 	}
 
 	@Test
-	public void testStress2() {
+	public void testStress3() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
 		Database<lotus.domino.Base> database = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
@@ -234,85 +350,5 @@ public abstract class AbstractStressTest {
 		database.delete();		
 		assertFalse("There is a problem deleting the last database created.", database.isOpen());
 	}
-
-	@Test
-	public void testStress3() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-
-		Database<lotus.domino.Base> database = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
-
-		assertTrue("The test database could not be instantiated.", database != null);
-		assertTrue("The test database could not be opened.", database.isOpen());
-
-		String name = "VIEW_" + sdf.format(new Date());
-		String form = "FORM_" + sdf.format(new Date());
-		View<lotus.domino.Base> view = database.createView(name, "SELECT Form = \"" + form + "\"");
-
-		assertTrue("There is a problem creating the view in the test database.", view.isOpen());
-
-		view.close();
-		view = null;
-
-		int i;
-		final int rounds = 10;
-
-		for (i = 0; i < maxDocumentsForStressTest; i++) {
-			database.createDocument()
-			.setField("Form", form)
-			.setField("Value", i)
-			.save();
-
-			if(i % 500 == 0) { 
-				log.fine("Processed=" + i);
-				_session.getFactory().logStatus();
-			}
-		}
-
-		_session.getFactory().logStatus();
-		log.info("Step 1!");
-
-		System.gc();
-
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			throw new RiverException(e);
-		}
-
-		view = database.getView(name);
-		assertTrue("There is a problem opening the last view created in the test database.", view.isOpen());
-
-
-		for(int j = 0; j < rounds; j++) {
-			DocumentIterator<lotus.domino.Base> it = view.getAllDocuments();
-			StringBuilder sb = new StringBuilder();
-			
-			i = 0;
-			for (org.riverframework.wrapper.Document<lotus.domino.Base> doc: it) {
-				i++;
-				
-				String value = doc.getFieldAsString("Value");
-				sb.append(value);
-
-				if(i % 500 == 0) { 
-					log.fine("Processed=" + i);
-					_session.getFactory().logStatus();
-				}
-			}
-			
-			String result = sb.toString();
-			log.finer("Round=" + j + " value=" + result);
-			assertTrue("There is a problem with the round " + j + ".", result.length() > 0);
-		}
-		
-
-		_session.getFactory().logStatus();
-		log.info("Step 2!");
-
-		view.delete();
-		assertFalse("There is a problem deleting the last view created.", view.isOpen());
-
-		database.delete();		
-		assertFalse("There is a problem deleting the last database created.", database.isOpen());
-	}
+	
 }

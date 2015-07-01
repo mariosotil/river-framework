@@ -2,7 +2,6 @@ package org.riverframework.core;
 
 import java.lang.reflect.Constructor;
 
-import org.riverframework.ClosedObjectException;
 import org.riverframework.Database;
 import org.riverframework.DocumentIterator;
 import org.riverframework.RiverException;
@@ -26,8 +25,8 @@ public abstract class AbstractView implements org.riverframework.View {
 
 	@Override
 	public String getObjectId() {
-		if (!isOpen())
-			throw new ClosedObjectException("The View object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The View object is closed.");
 		return _view.getObjectId();
 	}
 
@@ -48,8 +47,8 @@ public abstract class AbstractView implements org.riverframework.View {
 
 	@Override
 	public <U extends org.riverframework.Document> U getDocumentByKey(Class<U> clazz, String key) {
-		if (!isOpen())
-			throw new ClosedObjectException("The View object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The View object is closed.");
 
 		U doc = null;
 		org.riverframework.wrapper.Document<?> _doc = null;
@@ -82,8 +81,8 @@ public abstract class AbstractView implements org.riverframework.View {
 
 	@Override
 	public DocumentIterator getAllDocuments() {
-		if (!isOpen())
-			throw new ClosedObjectException("The View object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The View object is closed.");
 
 		org.riverframework.wrapper.DocumentIterator<?> _iterator = _view.getAllDocuments();
 		DocumentIterator result = new DefaultDocumentIterator(database, _iterator);
@@ -93,8 +92,8 @@ public abstract class AbstractView implements org.riverframework.View {
 
 	@Override
 	public DocumentIterator getAllDocumentsByKey(Object key) {
-		if (!isOpen())
-			throw new ClosedObjectException("The View object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The View object is closed.");
 
 		org.riverframework.wrapper.DocumentIterator<?> _iterator = _view.getAllDocumentsByKey(key);
 		DocumentIterator result = new DefaultDocumentIterator(database, _iterator);
@@ -104,8 +103,8 @@ public abstract class AbstractView implements org.riverframework.View {
 
 	@Override
 	public View refresh() {
-		if (!isOpen())
-			throw new ClosedObjectException("The View object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The View object is closed.");
 
 		_view.refresh();
 		return this;
@@ -113,16 +112,16 @@ public abstract class AbstractView implements org.riverframework.View {
 
 	@Override
 	public void delete() {
-		if (!isOpen())
-			throw new ClosedObjectException("The View object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The View object is closed.");
 
 		_view.delete();
 	}
 
 	@Override
 	public org.riverframework.DocumentIterator search(String query) {
-		if (!isOpen())
-			throw new ClosedObjectException("The View object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The View object is closed.");
 
 		org.riverframework.wrapper.DocumentIterator<?> _it = _view.search(query);
 		DocumentIterator result = new DefaultDocumentIterator(database, _it);

@@ -1,7 +1,6 @@
 package org.riverframework.wrapper.lotus.domino;
 
 import java.lang.ref.ReferenceQueue;
-import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,14 +19,14 @@ class DefaultNativeReference extends AbstractNativeReference<lotus.domino.Base> 
 	@Override
 	public void close() {  
 		if (__native != null) {
-			Class<?> clazz = __native.getClass();
-			String nativeClass = clazz.getName();
-			String hc = String.valueOf(__native.hashCode());
+//			Class<?> clazz = __native.getClass();
+//			String nativeClass = clazz.getName();
+//			String hc = String.valueOf(__native.hashCode());
 
 			try {
-				Method method = clazz.getMethod("recycle");
-				method.invoke(__native);
-
+//				Method method = clazz.getMethod("recycle");
+//				method.invoke(__native);
+				__native.recycle();
 			} catch (Exception e) {
 				log.log(Level.WARNING, "Exception while recycling object " + id, e);
 
@@ -35,7 +34,7 @@ class DefaultNativeReference extends AbstractNativeReference<lotus.domino.Base> 
 				__native = null;
 			}
 
-			log.finest("Recycled: id=" + id + " native=" + nativeClass + " (" + hc + ")"); // " cpp=" + cpp + 
+			log.finest("Recycled: id=" + id); // + " native=" + nativeClass + " (" + hc + ")" 
 		}
 	}
 }

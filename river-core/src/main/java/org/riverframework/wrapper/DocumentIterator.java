@@ -6,7 +6,5 @@ public interface DocumentIterator<N> extends Base<N>, Iterator<Document<N>>,	Ite
 	@Override
 	public DocumentIterator<N> iterator();
 
-//	public DocumentList asDocumentList();
-	
 	public DocumentIterator<N> deleteAll();
 }

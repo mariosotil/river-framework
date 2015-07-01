@@ -1,4 +1,4 @@
-package org.riverframework.wrapper.lotus.domino._local;
+package org.riverframework.core.lotus.domino._local;
 
 import lotus.domino.NotesThread;
 
@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 import org.riverframework.River;
 
-public class StressTest extends org.riverframework.wrapper.lotus.domino.AbstractStressTest {
+public class StressTest extends org.riverframework.core.lotus.domino.AbstractStressTest {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	@BeforeClass
@@ -19,7 +19,7 @@ public class StressTest extends org.riverframework.wrapper.lotus.domino.Abstract
 
 		River.setLevel(log, Level.FINE);
 
-		maxDocumentsForStressTest = 10000;
+		maxDocumentsForStressTest = 100;
 
 		log.setUseParentHandlers(false);
 		log.fine("Starting test");

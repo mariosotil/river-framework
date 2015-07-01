@@ -20,9 +20,9 @@ public class DefaultSession extends DefaultBase implements Session<lotus.domino.
 
 	protected DefaultSession(org.riverframework.wrapper.Session<lotus.domino.Base> dummy, lotus.domino.Session obj) {
 		__session = obj;
-		synchronized (this){
+		// synchronized (this){
 			objectId = calcObjectId(__session);
-		}
+			// }
 
 		log.fine("ObjectId:" + getObjectId());
 	}
@@ -33,7 +33,7 @@ public class DefaultSession extends DefaultBase implements Session<lotus.domino.
 		if (__session != null) {
 			try {
 
-				StringBuilder sb = new StringBuilder();
+				StringBuilder sb = new StringBuilder(1024);
 				sb.append(__session.getServerName());
 				sb.append(River.ID_SEPARATOR);
 				sb.append(__session.getUserName());
@@ -65,7 +65,7 @@ public class DefaultSession extends DefaultBase implements Session<lotus.domino.
 
 	@Override
 	public boolean isOpen() {
-		return (__session != null && !isRecycled(__session));
+		return (__session != null && !isRecycled(__session)); 
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class DefaultSession extends DefaultBase implements Session<lotus.domino.
 				db = dir.getNextDatabase(); 
 			}
 
-			synchronized (this){
+			// synchronized (this){
 				if (!found) {
 					__database = dir.createDatabase(location[1]);
 					_database = getFactory().getDatabase(__database);
@@ -96,7 +96,7 @@ public class DefaultSession extends DefaultBase implements Session<lotus.domino.
 				else {
 					_database = getFactory().getDatabase(null);
 				}
-			}
+				// }
 
 			// CHECKING dir.recycle(); 	// To recycle or not to recycle... That is the question.
 		} catch (NotesException e) {
@@ -110,7 +110,7 @@ public class DefaultSession extends DefaultBase implements Session<lotus.domino.
 	public Database<lotus.domino.Base> getDatabase(String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
-		synchronized (this){
+		// synchronized (this){
 			lotus.domino.Database __database = null;
 
 			if (location.length != 2)
@@ -169,7 +169,7 @@ public class DefaultSession extends DefaultBase implements Session<lotus.domino.
 
 			Database<lotus.domino.Base> database = getFactory().getDatabase(__database);
 			return database;
-		}
+			// }
 	}
 
 	@Override
@@ -186,7 +186,7 @@ public class DefaultSession extends DefaultBase implements Session<lotus.domino.
 		return userName;
 	}
 
-	@Override
+	@Override	
 	public void close() {
 		log.fine("Closing factory");
 		getFactory().close();

@@ -34,33 +34,33 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 		}
 		return instance;
 	}
-	
+
 	@Override
 	protected boolean isValidNativeObject(lotus.domino.Base __native) {
-		return __native != null && !DefaultBase.isRecycled(__native);
+		return __native != null; // && !DefaultBase.isRecycled(__native);
 	}
-	
+
 	public Session<lotus.domino.Base> getSession(Object... parameters) {
 		lotus.domino.Session __obj = null;
-		
+
 		if (parameters.length == 1 && parameters[0] instanceof lotus.domino.Session) {
 			log.finer("Creating a session with one lotus.domino.Session parameter");
-			
+
 			__obj = (lotus.domino.Session) parameters[0];
-			
+
 			_session = getWrapper(DefaultSession.class, lotus.domino.Session.class, __obj); 
 			return _session; 
 		}
 
 		if (parameters.length == 3 && parameters[2] instanceof String) {
 			log.finer("Creating a session with three parameters: server, username, password");
-			
+
 			try {
 				__obj = NotesFactory.createSession((String) parameters[0], (String) parameters[1], (String) parameters[2]); 
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			}
-			
+
 			_session = getWrapper(DefaultSession.class, lotus.domino.Session.class, __obj);
 			return _session; 
 		}
@@ -103,20 +103,30 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 
 		return _iterator;
 	}
-	
+
 	@Override
 	public void cleanUp() {
-		// log.finest("Starting clean up");
+		Reference<? extends Base<lotus.domino.Base>> ref = null;
 
-		Reference<? extends Base<lotus.domino.Base>> ref = null; 
+		boolean cleaning = false;
+		long start = 0;
+
+		if (_session == null) return;
+
 		while ((ref = queue.poll()) != null) {
+			if (!cleaning) {
+				start = System.nanoTime();
+				cleaning = true;
+			}
+
 			synchronized (_session){							
 				AbstractNativeReference<lotus.domino.Base> nat = nativeReferenceClass.cast(ref);
 				lotus.domino.Base __native = nat.getNativeObject();
-				String id = nat.getObjectId();
 
 				if(__native instanceof lotus.domino.local.Document || 
 						__native instanceof lotus.domino.cso.Document) {				
+					String id = nat.getObjectId();
+
 					if (log.isLoggable(Level.FINEST)) {
 						StringBuilder sb = new StringBuilder();
 						sb.append("Recycling: id=");
@@ -140,6 +150,10 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			}
 		}
 
-		// log.finest("Finished clean up");
+		if (cleaning) {
+			long end = System.nanoTime(); 
+			log.finest("Finished clean up. Elapsed time=" + ((end - start)/1000000) + "ms");
+			cleaning = false;
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package org.riverframework;
 
+
 /**
  * Exposes the methods for control a NoSQL database.
  * 
@@ -15,15 +16,16 @@ public interface Database extends Base {
 	public Session getSession();
 
 	/**
-	 * Returns the object that wraps the native object. For example, if the wrapper loaded is
-	 * River.LOTUS_DOMINO, and the object is an instance of org.riverframework.core.DefaultDocument,
-	 * getNativeObject() will return an object that implements the org.riverframework.wrapper.Document interface.
+	 * Returns the object that wraps the native object. For example, if the
+	 * wrapper loaded is River.LOTUS_DOMINO, and the object is an instance of
+	 * org.riverframework.core.DefaultDocument, getNativeObject() will return an
+	 * object that implements the org.riverframework.wrapper.Document interface.
 	 * 
 	 * @return the object used to wrap the native object
 	 */
 	@Override
 	public org.riverframework.wrapper.Database<?> getWrapperObject();
-	
+
 	/**
 	 * * Creates a document. The parameters needed will depend on what wrapper
 	 * is loaded.
@@ -39,7 +41,8 @@ public interface Database extends Base {
 	 * wrapper is being used.
 	 * 
 	 * @param parameters
-	 *            a set of Strings that will let the Database creates a new View.
+	 *            a set of Strings that will let the Database creates a new
+	 *            View.
 	 * @return a DefaultView object
 	 */
 	public View createView(String... parameters);
@@ -53,11 +56,11 @@ public interface Database extends Base {
 	 *            a class that inherits from DefaultView and implements the View
 	 *            interface.
 	 * @param parameters
-	 *            a set of Strings that will let the Database creates a new View 
+	 *            a set of Strings that will let the Database creates a new View
 	 * @return a 'clazz' object
 	 */
 	public <U extends View> U createView(Class<U> clazz, String... parameters);
-	
+
 	/**
 	 * Returns an existent view. The parameters needed will depend on what
 	 * wrapper is being used.
@@ -179,7 +182,7 @@ public interface Database extends Base {
 	 *            an wrapper Document object
 	 * @return the class that must be used to instance it
 	 */
-	public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document<?> doc);
+	public Class<? extends org.riverframework.Document> getDocumentClass(org.riverframework.wrapper.Document<?> doc);
 
 	/**
 	 * Returns all documents from the database as a DocumentIterator object,

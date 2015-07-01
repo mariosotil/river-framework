@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Vector;
 // import java.util.logging.Logger;
 
+
 import lotus.domino.DateTime;
 import lotus.domino.Item;
 import lotus.domino.NotesException;
@@ -36,18 +37,18 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	protected DefaultDocument(org.riverframework.wrapper.Session<lotus.domino.Base> s, lotus.domino.Document d) {
 		__doc = d;
 		_session = s;
-		synchronized(_session) {
-			objectId = calcObjectId(__doc);
-		}
+		// synchronized(_session) {
+		objectId = calcObjectId(__doc);
+		// }
 	}
 
-	public static String calcObjectId(lotus.domino.Document __doc) {
+	public String calcObjectId(lotus.domino.Document __doc) {
 		String objectId = "";
 		if (__doc != null && !isRecycled(__doc)) {
 			try {
 				lotus.domino.Database __database = __doc.getParentDatabase();
 
-				StringBuilder sb = new StringBuilder();
+				StringBuilder sb = new StringBuilder(1024);
 				sb.append(__database.getServer());
 				sb.append(River.ID_SEPARATOR);
 				sb.append(__database.getFilePath());
@@ -65,9 +66,9 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 
 	@Override
 	public lotus.domino.Document getNativeObject() {
-		synchronized (_session){
-			return __doc;
-		}
+		// synchronized (_session){
+		return __doc;
+		// }
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -102,9 +103,9 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 		}
 
 		try {
-			synchronized (_session){
-				__doc.replaceItemValue(field, temp);
-			}
+			// synchronized (_session){
+			__doc.replaceItemValue(field, temp);
+			// }
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -120,9 +121,9 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	@Override
 	public Document<lotus.domino.Base> recalc() {
 		try {
-			synchronized (_session){
-				__doc.computeWithForm(true, false);
-			}
+			// synchronized (_session){
+			__doc.computeWithForm(true, false);
+			// }
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -135,9 +136,9 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 
 		try {
 			Vector<?> temp = null;
-			synchronized (_session){
-				temp = __doc.getItemValue(field);
-			}
+			// synchronized (_session){
+			temp = __doc.getItemValue(field);
+			// }
 			value = temp == null ? new DefaultField() : new DefaultField(temp);
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -163,9 +164,9 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 		String result = null;
 		try {
 			Vector<?> value = null;
-			synchronized (_session){
-				value = __doc.getItemValue(field);
-			}
+			// synchronized (_session){
+			value = __doc.getItemValue(field);  // We must not use getItemValueString(field) because it does not converts from the other types to string 
+			// }
 			result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -179,9 +180,9 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 		int result = 0;
 		try {
 			Vector<?> value = null;
-			synchronized (_session){
-				value = __doc.getItemValue(field);
-			}
+			// synchronized (_session){
+			value = __doc.getItemValue(field);
+			// }
 			result = value.size() > 0 ? Converter.getAsInteger(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -194,9 +195,9 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 		long result = 0;
 		try {
 			Vector<?> value = null;
-			synchronized (_session){
-				value = __doc.getItemValue(field);
-			}
+			// synchronized (_session){
+			value = __doc.getItemValue(field);
+			// }
 			result = value.size() > 0 ? Converter.getAsLong(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -209,9 +210,9 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 		double result;
 		try {
 			Vector<?> value = null;
-			synchronized (_session){
-				value = __doc.getItemValue(field);
-			}
+			// synchronized (_session){
+			value = __doc.getItemValue(field);
+			// }
 			result = value.size() > 0 ? Converter.getAsDouble(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -224,9 +225,9 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 		Date result;
 		try {
 			Vector<?> value = null;
-			synchronized (_session){
-				value = __doc.getItemValue(field);
-			}
+			// synchronized (_session){
+			value = __doc.getItemValue(field);
+			// }
 			Object temp = value.size() > 0 ? value.get(0) : null;  
 			if (temp != null && temp.getClass().getName().endsWith("DateTime")) {
 				temp = ((DateTime) temp).toJavaDate();
@@ -243,52 +244,52 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	@Override
 	public boolean isFieldEmpty(String field) {
 		boolean result = true;
-		synchronized (_session){
-			try {
-				if (__doc.hasItem(field)) {
-					lotus.domino.Item __item = __doc.getFirstItem(field);
-					if (__item != null) {
-						if (__item.getType() == lotus.domino.Item.RICHTEXT) {
-							if (!__doc.getEmbeddedObjects().isEmpty()) {
-								for (@SuppressWarnings("unchecked")
-								Iterator<lotus.domino.EmbeddedObject> i = __doc.getEmbeddedObjects()
-								.iterator(); i.hasNext();) {
-									lotus.domino.EmbeddedObject eo = i.next();
-									if (eo.getType() != 0) {
-										result = false;
-										break;
-									}
+		// synchronized (_session){
+		try {
+			if (__doc.hasItem(field)) {
+				lotus.domino.Item __item = __doc.getFirstItem(field);
+				if (__item != null) {
+					if (__item.getType() == lotus.domino.Item.RICHTEXT) {
+						if (!__doc.getEmbeddedObjects().isEmpty()) {
+							for (@SuppressWarnings("unchecked")
+							Iterator<lotus.domino.EmbeddedObject> i = __doc.getEmbeddedObjects()
+							.iterator(); i.hasNext();) {
+								lotus.domino.EmbeddedObject eo = i.next();
+								if (eo.getType() != 0) {
+									result = false;
+									break;
 								}
 							}
 						}
+					}
 
-						if (result && __item.getText() != "")
-							result = false;
+					if (result && __item.getText() != "")
+						result = false;
 
-						try {
-							// __item.recycle(); <== Very bad idea? 
-						} catch (Exception e) {
-							throw new RiverException(e);
-						} finally {
-							__item = null;
-						}
+					try {
+						// __item.recycle(); <== Very bad idea? 
+					} catch (Exception e) {
+						throw new RiverException(e);
+					} finally {
+						__item = null;
 					}
 				}
-			} catch (NotesException e) {
-				throw new RiverException(e);
 			}
-
-			return result;
+		} catch (NotesException e) {
+			throw new RiverException(e);
 		}
+
+		return result;
+		// }
 	}
 
 	@Override
 	public boolean hasField(String field) {
 		boolean result;
 		try {
-			synchronized (_session){
-				result = __doc.hasItem(field);
-			}
+			// synchronized (_session){
+			result = __doc.hasItem(field);
+			// }
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -305,9 +306,9 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 			// logWrapper.debug("getFields: loading items");
 
 			Vector<lotus.domino.Item> items = null;
-			synchronized (_session){
-				items = __doc.getItems();
-			}
+			// synchronized (_session){
+			items = __doc.getItems();
+			// }
 			//((DefaultSession) session).registerVector(items);
 
 			// logWrapper.debug("getFields: found " + items.size());
@@ -360,16 +361,16 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 
 	@Override
 	public boolean isOpen() {		
-		return (__doc != null && !isRecycled(__doc));
+		return (__doc != null && !isRecycled(__doc)); 
 	}
 
 	@Override
 	public boolean isNew() {
 		boolean result;
 		try {
-			synchronized (_session){
-				result = __doc.isNewNote();
-			}
+			// synchronized (_session){
+			result = __doc.isNewNote();
+			// }
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -382,7 +383,6 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 			if (__doc != null) {
 				try {
 					__doc.removePermanently(true);
-					//__doc.recycle(); <== Very bad idea? 
 				} catch (NotesException e) {
 					throw new RiverException(e);
 				} finally {
@@ -397,9 +397,9 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	@Override
 	public Document<lotus.domino.Base> save() {
 		try {
-			synchronized (_session){
-				__doc.save(true, false);
-			}
+			// synchronized (_session){
+			__doc.save(true, false);
+			// }
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -407,20 +407,21 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	}
 
 	@Override
+	@Deprecated
 	public void close() {
 		// Don't recycle or close it. Let the server do that.
 
 		// log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
 
-		synchronized (_session){
-			try {
-				if (__doc != null) 	__doc.recycle();			// <== Very bad idea? 
-			} catch (NotesException e) {
-				throw new RiverException(e);
-			} finally {
-				__doc = null;
-			}
-		}
+//		synchronized (_session){
+//			try {
+//				if (__doc != null) 	__doc.recycle();			// <== Very bad idea? 
+//			} catch (NotesException e) {
+//				throw new RiverException(e);
+//			} finally {
+//				__doc = null;
+//			}
+//		}
 	}	
 
 	@Override

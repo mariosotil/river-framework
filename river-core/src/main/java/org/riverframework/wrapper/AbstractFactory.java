@@ -3,7 +3,6 @@ package org.riverframework.wrapper;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,8 +13,8 @@ import org.riverframework.RiverException;
 public abstract class AbstractFactory<N> implements org.riverframework.wrapper.Factory<N> {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
-	protected volatile org.riverframework.wrapper.Session<N> _session = null;
 	protected Class<? extends AbstractNativeReference<N>> nativeReferenceClass = null;
+	protected volatile org.riverframework.wrapper.Session<N> _session = null;
 	protected volatile ConcurrentHashMap<String, AbstractNativeReference<N>> weakWrapperMap = null;
 	protected volatile ReferenceQueue<Base<N>> queue = null;
 
@@ -44,7 +43,6 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 		U _wrapper = null;
 
 		try {
-			// TODO: create a Constructor objects cache
 			Constructor<?> constructor = outputClass.getDeclaredConstructor(org.riverframework.wrapper.Session.class, inputClass);
 			constructor.setAccessible(true);
 			_wrapper = outputClass.cast(constructor.newInstance(_session, __obj));
@@ -55,25 +53,13 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 		return _wrapper;
 	}
 
-	private void createReference(String id, Base<N> _wrapper) {
+	private void registerReference(String id, Base<N> _wrapper) {
 		try {
 			AbstractNativeReference<N> ref = nativeReferenceClass.cast(constructorNativeReference.newInstance(_wrapper, queue));
 			weakWrapperMap.put(id, ref);
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
-	}
-
-	private String calcIdFromNativeObject(Class<? extends Base<N>> outputClass, Class<? extends N> inputClass, Object __obj) {
-		String id = null;
-		try {
-			Method methodCalcObjectId = outputClass.getDeclaredMethod("calcObjectId", inputClass);
-			methodCalcObjectId.setAccessible(true);
-			id = (String) methodCalcObjectId.invoke(null, __obj);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-		return id;
 	}
 
 	protected abstract boolean isValidNativeObject(N __native);
@@ -92,54 +78,52 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 				_wrapper = createWrapper(outputClass, inputClass, null);
 			} else {
 				// Looking for the object in the cache
-				String id = calcIdFromNativeObject(outputClass, inputClass, __obj);
+				_wrapper = createWrapper(outputClass, inputClass, __obj);
+				String id = _wrapper.getObjectId();
 				AbstractNativeReference<N> ref = nativeReferenceClass.cast(weakWrapperMap.get(id));
 
 				if (ref == null) {
 					// It's no registered in the cache
 					actionTaken = "No registered. Creating the wrapper for the object";
-					_wrapper = createWrapper(outputClass, inputClass, __obj);
-					createReference(id, _wrapper);
+					registerReference(id, _wrapper);
 				} else {
 					// It's registered in the cache
 					N __native = ref.getNativeObject();
-					_wrapper = (U) ((WeakReference<Base<N>>) ref).get();
+					U _oldWrapper = (U) ((WeakReference<Base<N>>) ref).get();
 
 					if (isValidNativeObject(__native)) {
 						// There's a valid native object
 
-						if (_wrapper == null) {
+						if (_oldWrapper == null) {
 							// There's no wrapper. We create a new one with the
 							// old native object
 							actionTaken = "Registered. Creating a wrapper for registered native object";
-							_wrapper = createWrapper(outputClass, inputClass, __native);
-							createReference(id, _wrapper);
+							registerReference(id, _wrapper);
 						} else {
 							// There's a wrapper
-							if (isValidNativeObject(_wrapper.getNativeObject())) {
+							if (isValidNativeObject(_oldWrapper.getNativeObject())) {
 								// with a valid native object
 								actionTaken = "Registered. Retrieving the wrapper and its native object from the cache";
+								// _wrapper = _oldWrapper;
 							} else {
 								// with an invalid native object.
 								actionTaken = "Registered but closed. Creating the wrapper with the registered native object from the cache";
-								_wrapper = createWrapper(outputClass, inputClass, __native);
-								createReference(id, _wrapper);
+								registerReference(id, _wrapper);
 							}
 						}
 					} else {
 						// There's no a valid native object
 
-						if (_wrapper == null) {
+						if (_oldWrapper == null) {
 							// There's no wrapper. We create a new one with the
 							// new native object
 							actionTaken = "Registered. Creating the wrapper for the object";
-							_wrapper = createWrapper(outputClass, inputClass, __obj);
-							createReference(id, _wrapper);
+							registerReference(id, _wrapper);
 						} else {
 							// There's a wrapper
 							actionTaken = "Registered. Replacing the object in an existent wrapper";
-							_wrapper = createWrapper(outputClass, inputClass, __obj);
-							createReference(id, _wrapper);
+							// _wrapper = _oldWrapper;
+							registerReference(id, _wrapper);
 						}
 					}
 				}

@@ -1,6 +1,5 @@
 package org.riverframework.core;
 
-import org.riverframework.ClosedObjectException;
 import org.riverframework.Database;
 import org.riverframework.Document;
 import org.riverframework.DocumentIterator;
@@ -55,8 +54,8 @@ public abstract class AbstractDocumentIterator implements DocumentIterator {
 
 	@Override
 	public String getObjectId() {
-		if (!isOpen())
-			throw new ClosedObjectException("The Document object is closed.");
+		// if (!isOpen())
+		// throw new ClosedObjectException("The Document object is closed.");
 
 		String result = _iterator.getObjectId();
 		return result;

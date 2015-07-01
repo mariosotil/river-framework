@@ -3,7 +3,6 @@ package org.riverframework.core;
 import org.riverframework.Counter;
 import org.riverframework.Database;
 import org.riverframework.Document;
-import org.riverframework.RiverException;
 import org.riverframework.Session;
 import org.riverframework.Unique;
 import org.riverframework.View;
@@ -61,8 +60,8 @@ public final class DefaultCounter extends AbstractDocument<DefaultCounter> imple
 		// TODO: synchronize this and test it
 		long n = 0;
 
-		if (!isOpen())
-			throw new RiverException("The counter is not open.");
+		// if (!isOpen())
+		// throw new RiverException("The counter is not open.");
 
 		n = getFieldAsInteger(FIELD_COUNT) + 1;
 		setField(FIELD_COUNT, n).save();

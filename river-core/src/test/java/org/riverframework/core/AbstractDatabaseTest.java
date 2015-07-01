@@ -149,10 +149,12 @@ public abstract class AbstractDatabaseTest {
 		}
 
 		@Override
-		public Class<? extends org.riverframework.Document> detectClass(org.riverframework.wrapper.Document<?> _doc) {
+		public Class<? extends org.riverframework.Document> getDocumentClass(org.riverframework.wrapper.Document<?> _doc) {
 			String form = _doc.getFieldAsString("Form").toLowerCase();
-			if (form.equals("fo_vacation_request"))
+
+			if (form.equals("fo_vacation_request")) {
 				return VacationRequest.class;
+			}
 
 			return null;
 		}

@@ -56,8 +56,8 @@ public class Converter {
 	 *            The date string to determine the SimpleDateFormat pattern for.
 	 * @return The matching SimpleDateFormat pattern, or null if format is unknown.
 	 * @see SimpleDateFormat
-	 * @author http://stackoverflow.com/users/157882/balusc
-	 *         (http://stackoverflow.com/questions/3389348/parse-any-date-in-java)
+	 * @author https://plus.google.com/113917986381339001702
+	 *         (http://balusc.blogspot.com/2007/09/dateutil.html)
 	 */
 	public static String determineDateFormat(String dateString) {
 		for (String regexp : DATE_FORMAT_REGEXPS.keySet()) {

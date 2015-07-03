@@ -133,7 +133,7 @@ I expected that this work be useful for you. I'll be looking forward for your id
 ## Next features
 
 Version 0.2.10
-- Creating Java and Lotus Notes examples
+- Fixes and improvements
 
 Version 0.3
 - Relation between documents (1..\*, \*..\*) using graphs

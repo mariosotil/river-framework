@@ -5,7 +5,8 @@ import java.lang.reflect.Constructor;
 import org.riverframework.RiverException;
 
 /**
- * It is used to manage Databases by default, if we don't need to create a class for each database accessed. 
+ * It is used to manage Databases by default, if we don't need to create a class
+ * for each database accessed.
  * 
  * @author mario.sotil@gmail.com
  *
@@ -66,7 +67,7 @@ public final class DefaultDatabase implements org.riverframework.core.Database {
 	public org.riverframework.core.Document createDocument(String... parameters) {
 		org.riverframework.wrapper.Document<?> _doc = _database.createDocument();
 		Document doc = new DefaultDocument(this, _doc);
-		
+
 		return doc;
 	}
 
@@ -77,7 +78,7 @@ public final class DefaultDatabase implements org.riverframework.core.Database {
 
 		org.riverframework.core.Document document = createDocument(parameters);
 		U xDocument = null;
-		
+
 		try {
 			Constructor<?> constructor = clazz.getDeclaredConstructor(org.riverframework.core.Document.class);
 			constructor.setAccessible(true);
@@ -101,7 +102,7 @@ public final class DefaultDatabase implements org.riverframework.core.Database {
 
 		org.riverframework.wrapper.Document<?> _doc = null;
 		Document doc = null;
-		
+
 		if (parameters.length > 0) {
 			String id = parameters[0];
 
@@ -134,13 +135,14 @@ public final class DefaultDatabase implements org.riverframework.core.Database {
 	}
 
 	@Override
-	public <U extends org.riverframework.extended.AbstractDocument<?>> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters) {
+	public <U extends org.riverframework.extended.AbstractDocument<?>> U getDocument(Class<U> clazz, boolean createIfDoesNotExist,
+			String... parameters) {
 		// if (!isOpen())
 		// throw new ClosedObjectException("The Session object is closed.");
 
 		org.riverframework.core.Document document = createDocument(parameters);
 		U xDocument = null;
-		
+
 		try {
 			Constructor<?> constructor = clazz.getDeclaredConstructor(org.riverframework.core.Document.class);
 			constructor.setAccessible(true);
@@ -151,7 +153,7 @@ public final class DefaultDatabase implements org.riverframework.core.Database {
 
 		return xDocument;
 	}
-	
+
 	@Override
 	public org.riverframework.core.View createView(String... parameters) {
 		// if (!isOpen())
@@ -180,7 +182,7 @@ public final class DefaultDatabase implements org.riverframework.core.Database {
 		// if (!isOpen())
 		// throw new ClosedObjectException("The Database object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator<?> _iterator = _database.getAllDocuments();
+		org.riverframework.wrapper.DocumentIterator<?, ?> _iterator = _database.getAllDocuments();
 		DocumentIterator result = new DefaultDocumentIterator(this, _iterator);
 
 		return result;
@@ -199,18 +201,18 @@ public final class DefaultDatabase implements org.riverframework.core.Database {
 		// if (!isOpen())
 		// throw new ClosedObjectException("The Database object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator<?> _iterator = _database.search(query);
+		org.riverframework.wrapper.DocumentIterator<?, ?> _iterator = _database.search(query);
 		DocumentIterator result = new DefaultDocumentIterator(this, _iterator);
 
 		return result;
 	}
 
 	@Override
-	public org.riverframework.core.Database refreshSearchIndex() {
+	public org.riverframework.core.Database refreshSearchIndex(boolean createIfNotExist) {
 		// if (!isOpen())
 		// throw new ClosedObjectException("The Database object is closed.");
 
-		_database.refreshSearchIndex();
+		_database.refreshSearchIndex(createIfNotExist);
 		return this;
 	}
 

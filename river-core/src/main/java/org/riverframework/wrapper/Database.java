@@ -13,19 +13,19 @@ public interface Database<N> extends Base<N> {
 
 	public String getName();
 
-	public Document<N> createDocument(String... parameters);
+	public Document<?> createDocument(String... parameters);
 
-	public Document<N> getDocument(String... parameters);
+	public Document<?> getDocument(String... parameters);
 
-	public View<N> createView(String... parameters);
+	public View<?> createView(String... parameters);
 
-	public View<N> getView(String... parameters);
+	public View<?> getView(String... parameters);
 
-	public DocumentIterator<N> getAllDocuments();
+	public DocumentIterator<?, ?> getAllDocuments();
 
-	public DocumentIterator<N> search(String query);
+	public DocumentIterator<?, ?> search(String query);
 
-	public Database<N> refreshSearchIndex();
+	public Database<N> refreshSearchIndex(boolean createIfNotExist);
 
 	public void delete();
 }

@@ -28,13 +28,13 @@ import org.riverframework.wrapper.Document;
  * @author mario.sotil@gmail.com
  * @version 0.0.x
  */
-class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.Document<lotus.domino.Base> {
+class DefaultDocument extends DefaultBase<lotus.domino.Document> implements org.riverframework.wrapper.Document<lotus.domino.Document> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	protected org.riverframework.wrapper.Session<lotus.domino.Base> _session = null;
+	protected org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
 	protected volatile lotus.domino.Document __doc = null;
 	private String objectId = null;
 
-	protected DefaultDocument(org.riverframework.wrapper.Session<lotus.domino.Base> s, lotus.domino.Document d) {
+	protected DefaultDocument(org.riverframework.wrapper.Session<lotus.domino.Session> s, lotus.domino.Document d) {
 		__doc = d;
 		_session = s;
 		// synchronized(_session) {
@@ -42,31 +42,31 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 		// }
 	}
 
-	public String calcObjectId(lotus.domino.Document __doc) {
-		String objectId = null;
+	public static String calcObjectId(lotus.domino.Document __doc) {
+		String objectId = "";
 		//long start = System.nanoTime();
-		if (__doc != null && !isRecycled(__doc)) {
+		if (__doc != null) {
+			long cpp = getCpp(__doc);
 
-			try {
-				lotus.domino.Database __database = __doc.getParentDatabase();
-				StringBuilder sb = new StringBuilder(512);
-				sb.append(__database.getServer());
-				sb.append(River.ID_SEPARATOR);
-				sb.append(__database.getFilePath());
-				sb.append(River.ID_SEPARATOR);
+			if(isRecycled(__doc)) {
+				throw new RiverException("The object " + cpp + " was recycled!");
+			} else {
+				try {
+					lotus.domino.Database __database = __doc.getParentDatabase();
 
-				// sb.append(__doc.getUniversalID());  
-				// Calling getUniversalID() takes 2~3ms on an Intel Core i7-3770 3.40GHz
-				// The getCpp function takes only 0.02ms in the same processor
-				
-				long cpp = getCpp(__doc);
-				sb.append(cpp);
+					StringBuilder sb = new StringBuilder(512);
+					sb.append(__database.getServer());
+					sb.append(River.ID_SEPARATOR);
+					sb.append(__database.getFilePath());
+					sb.append(River.ID_SEPARATOR);
+					sb.append(cpp);
 
-				objectId = sb.toString();
+					objectId = sb.toString();
 
-			} catch (NotesException e) {
-				throw new RiverException(e);
-			}	
+				} catch (NotesException e) {
+					throw new RiverException(e);
+				}
+			}
 		}
 		//				long end = System.nanoTime();
 		//				System.out.println(">>>>>>> O7=" + (((double)(end - start))/1000000));
@@ -103,7 +103,7 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 				lotus.domino.Session __session;
 				lotus.domino.DateTime _date;
 				try {
-					__session = (lotus.domino.Session) _session.getNativeObject(); //	__doc.getParentDatabase().getParent();
+					__session = _session.getNativeObject(); //	__doc.getParentDatabase().getParent();
 					_date = __session.createDateTime((java.util.Date) temp.get(i));
 				} catch (NotesException e) {
 					throw new RiverException(e);
@@ -129,7 +129,7 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	}
 
 	@Override
-	public Document<lotus.domino.Base> recalc() {
+	public Document<lotus.domino.Document> recalc() {
 		try {
 			// synchronized (_session){
 			__doc.computeWithForm(true, false);
@@ -392,7 +392,7 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	}
 
 	@Override
-	public Document<lotus.domino.Base> delete() {
+	public Document<lotus.domino.Document> delete() {
 		synchronized (_session){
 			if (__doc != null) {
 				try {
@@ -409,7 +409,7 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	}
 
 	@Override
-	public Document<lotus.domino.Base> save() {
+	public Document<lotus.domino.Document> save() {
 		try {
 			// synchronized (_session){
 			__doc.save(true, false);

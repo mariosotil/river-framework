@@ -2,9 +2,9 @@ package org.riverframework.wrapper;
 
 import java.util.Iterator;
 
-public interface DocumentIterator<N> extends Base<N>, Iterator<Document<N>>,	Iterable<Document<N>> {
+public interface DocumentIterator<N, D> extends Base<N>, Iterator<Document<D>>, Iterable<Document<D>> {
 	@Override
-	public DocumentIterator<N> iterator();
+	public DocumentIterator<N, D> iterator();
 
-	public DocumentIterator<N> deleteAll();
+	public DocumentIterator<N, D> deleteAll();
 }

@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.River;
+import org.riverframework.RiverException;
 
 public abstract class AbstractStressTest {
 	private final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
@@ -76,7 +77,7 @@ public abstract class AbstractStressTest {
 		end = System.nanoTime();
 		timeTest01Round02 = (end - start) / 1000000;
 
-		DocumentIterator<?> _iterator = _database.getAllDocuments();
+		DocumentIterator<?, ?> _iterator = _database.getAllDocuments();
 
 		i = 0;
 		start = System.nanoTime();
@@ -146,33 +147,38 @@ public abstract class AbstractStressTest {
 			}
 		}
 
-		// log.fine("Updating FT indexes");
-		// try {
-		// ((lotus.domino.Database) db1.getNativeObject()).updateFTIndex(true);
-		// ((lotus.domino.Database) db2.getNativeObject()).updateFTIndex(true);
-		//
-		// Thread.sleep(2000);
-		// } catch (Exception e) {
-		// throw new RiverException(e);
-		// }
+		log.fine("Updating FT indexes");
+		db1.refreshSearchIndex(true);
+		db2.refreshSearchIndex(true);
+
+		try {
+			Thread.sleep(2000);
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
 
 		log.fine("Stressing");
 
 		i = 0;
-		for (Document<?> doc1 : db1.getAllDocuments()) {
+		DocumentIterator<?, ?> iterator = db1.getAllDocuments();
+		for (Document<?> doc1 : iterator) {
 			int value = doc1.getFieldAsInteger("Value");
 
-			for (int j = 0; j < 100; j++) {
-				DocumentIterator<?> it = db2.search("FIELD Value=" + value + "");
+			for (int j = 0; j < 20; j++) {
+				log.fine("Round " + i + "," + j);
+				DocumentIterator<?, ?> it = db2.search("FIELD Value=" + value + "");
 				for (Document<?> doc2 : it) {
 					log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value + " on "
 							+ doc2.getObjectId());
-				}
 
-				if (i % 100 == 0) {
-					log.fine("Processed=" + i);
-					_session.getFactory().logStatus();
+					if (doc1 == null || !doc1.isOpen())
+						log.warning("doc1 is closed!");
 				}
+			}
+
+			if (i % 10 == 0) {
+				log.fine("Processed=" + i);
+				_session.getFactory().logStatus();
 			}
 			i++;
 		}
@@ -231,7 +237,7 @@ public abstract class AbstractStressTest {
 		view = database.getView(name);
 		assertTrue("There is a problem opening the last view created in the test database.", view.isOpen());
 
-		DocumentIterator<?> it = view.getAllDocuments();
+		DocumentIterator<?, ?> it = view.getAllDocuments();
 
 		i = 0;
 		for (@SuppressWarnings("unused")

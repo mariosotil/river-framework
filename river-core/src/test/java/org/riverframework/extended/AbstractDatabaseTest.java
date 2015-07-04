@@ -19,8 +19,6 @@ import org.riverframework.core.DocumentIterator;
 import org.riverframework.core.Field;
 import org.riverframework.core.Session;
 import org.riverframework.core.View;
-import org.riverframework.extended.AbstractDatabase;
-import org.riverframework.extended.AbstractDocument;
 
 public abstract class AbstractDatabaseTest {
 	final String TEST_FORM = "TestForm";
@@ -139,9 +137,7 @@ public abstract class AbstractDatabaseTest {
 		}
 
 		protected VacationRequest init() {
-			doc.setField("Form", "fo_vacation_request")
-			.setField("TEST_FIELD", "YES")
-			.setField("Form", "TestForm");
+			doc.setField("Form", "fo_vacation_request").setField("TEST_FIELD", "YES").setField("Form", "TestForm");
 
 			return getThis();
 		}
@@ -183,7 +179,7 @@ public abstract class AbstractDatabaseTest {
 
 		vacationDatabase.createDocument().setField("Form", TEST_FORM).setField("Value", "THIS_IS_THE_DOC").save();
 
-		vacationDatabase.refreshSearchIndex();
+		vacationDatabase.refreshSearchIndex(true);
 
 		col = null;
 		col = vacationDatabase.search("THIS IS IMPOSSIBLE TO FIND");
@@ -272,7 +268,6 @@ public abstract class AbstractDatabaseTest {
 		p = vacationDatabase.getDocument(Person.class, "John");
 		assertTrue("It could not possible load the person object for John.", p.isOpen());
 		assertTrue("It could not possible get the John's age.", p.getFieldAsInteger("Age") == 30);
-
 
 		p = vacationDatabase.getDocument(Person.class, "Kathy");
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());

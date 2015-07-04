@@ -11,7 +11,7 @@ import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Session;
 
-public class DefaultSession extends DefaultBase implements Session<lotus.domino.Base> {
+public class DefaultSession extends DefaultBase<lotus.domino.Session> implements Session<lotus.domino.Session> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	private final DefaultFactory factory = DefaultFactory.getInstance();
 
@@ -69,10 +69,10 @@ public class DefaultSession extends DefaultBase implements Session<lotus.domino.
 	}
 
 	@Override
-	public Database<lotus.domino.Base> createDatabase (String... location) {
+	public Database<lotus.domino.Database> createDatabase (String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
-		Database<lotus.domino.Base> _database = null;
+		Database<lotus.domino.Database> _database = null;
 		lotus.domino.Database __database = null;
 
 		if (location.length != 2)
@@ -107,7 +107,7 @@ public class DefaultSession extends DefaultBase implements Session<lotus.domino.
 	}
 
 	@Override
-	public Database<lotus.domino.Base> getDatabase(String... location) {
+	public Database<lotus.domino.Database> getDatabase(String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
 		// synchronized (this){
@@ -167,7 +167,7 @@ public class DefaultSession extends DefaultBase implements Session<lotus.domino.
 				throw new RiverException(e);
 			}
 
-			Database<lotus.domino.Base> database = getFactory().getDatabase(__database);
+			Database<lotus.domino.Database> database = getFactory().getDatabase(__database);
 			return database;
 			// }
 	}

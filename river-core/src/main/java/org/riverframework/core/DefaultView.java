@@ -5,7 +5,8 @@ import java.lang.reflect.Constructor;
 import org.riverframework.RiverException;
 
 /**
- * It is used to access Views of documents. Works as an index that makes easier access to the documents. 
+ * It is used to access Views of documents. Works as an index that makes easier
+ * access to the documents.
  * 
  * @author mario.sotil@gmail.com
  *
@@ -49,9 +50,9 @@ public final class DefaultView implements View {
 		// if (!isOpen())
 		// throw new ClosedObjectException("The View object is closed.");
 
-		Document doc = getDocumentByKey(key); 
+		Document doc = getDocumentByKey(key);
 		U xDoc = null;
-		
+
 		try {
 			Constructor<?> constructor = clazz.getDeclaredConstructor(Document.class);
 			xDoc = clazz.cast(constructor.newInstance(doc));
@@ -72,7 +73,7 @@ public final class DefaultView implements View {
 		// if (!isOpen())
 		// throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator<?> _iterator = _view.getAllDocuments();
+		org.riverframework.wrapper.DocumentIterator<?, ?> _iterator = _view.getAllDocuments();
 		DocumentIterator result = new DefaultDocumentIterator(database, _iterator);
 
 		return result;
@@ -83,7 +84,7 @@ public final class DefaultView implements View {
 		// if (!isOpen())
 		// throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator<?> _iterator = _view.getAllDocumentsByKey(key);
+		org.riverframework.wrapper.DocumentIterator<?, ?> _iterator = _view.getAllDocumentsByKey(key);
 		DocumentIterator result = new DefaultDocumentIterator(database, _iterator);
 
 		return result;
@@ -111,7 +112,7 @@ public final class DefaultView implements View {
 		// if (!isOpen())
 		// throw new ClosedObjectException("The View object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator<?> _it = _view.search(query);
+		org.riverframework.wrapper.DocumentIterator<?, ?> _it = _view.search(query);
 		DocumentIterator result = new DefaultDocumentIterator(database, _it);
 		return result;
 	}

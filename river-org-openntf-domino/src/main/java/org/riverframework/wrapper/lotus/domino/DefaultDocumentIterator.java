@@ -1,28 +1,26 @@
 package org.riverframework.wrapper.lotus.domino;
 
-import java.util.logging.Logger;
-
 import org.riverframework.River;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 
-class DefaultDocumentIterator extends DefaultBase implements DocumentIterator<org.openntf.domino.Base<?>> {
-	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+class DefaultDocumentIterator extends DefaultBase<org.openntf.domino.Base<?>> implements DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> {
+	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	private enum Type { COLLECTION, VIEW_ENTRY_COLLECTION } 
 
-	private org.riverframework.wrapper.Session<org.openntf.domino.Base<?>> _session = null;
+	private org.riverframework.wrapper.Session<org.openntf.domino.Session> _session = null;
 
 	private volatile org.openntf.domino.DocumentCollection __documentCollection = null;
 	private volatile org.openntf.domino.ViewEntryCollection __viewEntryCollection = null;
 
-	//private Document<org.openntf.domino.Base<?>> _doc = null;
+	// private Document<org.openntf.domino.Document> _doc = null;
 	private volatile org.openntf.domino.Document __document = null;
 	private volatile org.openntf.domino.ViewEntry __viewEntry = null;
 
 	private Type type = null;	
 	private String objectId = null;
 
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<org.openntf.domino.Base<?>> s, org.openntf.domino.DocumentCollection __obj) {
+	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<org.openntf.domino.Session> s, org.openntf.domino.DocumentCollection __obj) {
 		type = Type.COLLECTION;
 		_session = s;
 		__documentCollection = __obj;
@@ -35,7 +33,7 @@ class DefaultDocumentIterator extends DefaultBase implements DocumentIterator<or
 
 	}
 
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<org.openntf.domino.Base<?>> s, org.openntf.domino.View __obj) {
+	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<org.openntf.domino.Session> s, org.openntf.domino.View __obj) {
 		type = Type.VIEW_ENTRY_COLLECTION;
 		_session = s;		
 
@@ -48,7 +46,7 @@ class DefaultDocumentIterator extends DefaultBase implements DocumentIterator<or
 
 	}
 
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<org.openntf.domino.Base<?>> s, org.openntf.domino.ViewEntryCollection __obj) {
+	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<org.openntf.domino.Session> s, org.openntf.domino.ViewEntryCollection __obj) {
 		type = Type.VIEW_ENTRY_COLLECTION;		
 		_session = s;		
 		__viewEntryCollection = __obj;
@@ -98,7 +96,7 @@ class DefaultDocumentIterator extends DefaultBase implements DocumentIterator<or
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public Document<org.openntf.domino.Base<?>> next() {
+	public Document<org.openntf.domino.Document> next() {
 		org.openntf.domino.Document __current = null;
 
 		synchronized (_session){
@@ -115,13 +113,13 @@ class DefaultDocumentIterator extends DefaultBase implements DocumentIterator<or
 			}
 
 			@SuppressWarnings("unchecked")
-			Document<org.openntf.domino.Base<?>> _doc = _session.getFactory().getDocument(__current);
+			Document<org.openntf.domino.Document> _doc = _session.getFactory().getDocument(__current);
 			return _doc;
 		}
 	}
 
 	@Override
-	public DocumentIterator<org.openntf.domino.Base<?>> iterator() {
+	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> iterator() {
 		return this;
 	}
 
@@ -132,8 +130,8 @@ class DefaultDocumentIterator extends DefaultBase implements DocumentIterator<or
 	}
 
 	@Override
-	public DocumentIterator<org.openntf.domino.Base<?>> deleteAll() {
-		for (Document<org.openntf.domino.Base<?>> doc: this) {
+	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> deleteAll() {
+		for (Document<org.openntf.domino.Document> doc: this) {
 			doc.delete();
 		}
 
@@ -166,23 +164,7 @@ class DefaultDocumentIterator extends DefaultBase implements DocumentIterator<or
 
 	@Override
 	public void close() {
-		log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
 
-		try {
-			// CHECKING if (__col != null) __col.recycle();		// To recycle or not to recycle... That is the question.	
-			// } catch (NotesException e) {
-			// throw new RiverException(e);
-		} finally {
-			// __documentCollection = null;
-		}
-
-		try {
-			// CHECKING if (__vecol != null) __vecol.recycle(); // To recycle or not to recycle... That is the question.
-			// } catch (NotesException e) {
-			// throw new RiverException(e);
-		} finally {
-			// __viewEntryCollection = null;
-		}
 	}
 
 	@Override

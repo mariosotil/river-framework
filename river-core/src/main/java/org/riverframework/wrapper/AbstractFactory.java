@@ -14,7 +14,7 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	protected Class<? extends AbstractNativeReference<N>> nativeReferenceClass = null;
-	protected volatile org.riverframework.wrapper.Session<N> _session = null;
+	protected volatile org.riverframework.wrapper.Session<?> _session = null;
 	protected volatile Map<String, AbstractNativeReference<N>> wrapperMap = null;
 	protected volatile ReferenceQueue<Base<N>> wrapperQueue = null;
 
@@ -39,7 +39,21 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 		// TODO: ??
 	}
 
-	private <U extends Base<N>> U createWrapper(Class<U> outputClass, Class<? extends N> inputClass, Object __obj) {
+	protected void registerReference(String id, Base<?> _wrapper) {
+		try {
+			AbstractNativeReference<N> ref = nativeReferenceClass.cast(constructorNativeReference.newInstance(_wrapper, wrapperQueue));
+			wrapperMap.put(id, ref);
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+	}
+
+	protected abstract boolean isValidNativeObject(N __native);
+
+	@Override
+	public abstract void cleanUp(Base<N>... except);
+
+	protected <U extends Base<?>> U createWrapper(Class<U> outputClass, Class<? extends N> inputClass, N __obj) {
 		U _wrapper = null;
 
 		try {
@@ -55,59 +69,83 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 		return _wrapper;
 	}
 
-	private void registerReference(String id, Base<N> _wrapper) {
-		try {
-			AbstractNativeReference<N> ref = nativeReferenceClass.cast(constructorNativeReference.newInstance(_wrapper, wrapperQueue));
-			wrapperMap.put(id, ref);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-	}
-
-	protected abstract boolean isValidNativeObject(N __native);
-
 	@SuppressWarnings("unchecked")
-	public <U extends Base<N>> U getWrapper(Class<U> outputClass, Class<? extends N> inputClass, Object __obj) {
+	protected <U extends Base<?>> U getWrapper(Class<U> outputClass, Class<? extends N> inputClass, String __obj) {
 		U _wrapper = null;
 		String actionTaken = null;
 
 		try {
-			cleanUp();
+			// Retrieving directly from the cache
+			String id = __obj;
+			AbstractNativeReference<N> ref = nativeReferenceClass.cast(wrapperMap.get(id));
 
+			if (ref == null) {
+				_wrapper = createWrapper(outputClass, inputClass, null);
+			} else {
+				_wrapper = (U) ref.get();
+
+				if (_wrapper == null) {
+					_wrapper = createWrapper(outputClass, inputClass, null);
+				} else {
+					N __native = (N) _wrapper.getNativeObject();
+
+					if (isValidNativeObject(__native)) {
+						// Do nothing. Return the found wrapper.
+
+					} else {
+						// There's no a valid native object
+						_wrapper = createWrapper(outputClass, inputClass, null);
+					}
+				}
+			}
+
+			if (log.isLoggable(Level.FINEST)) {
+				StringBuilder sb = new StringBuilder();
+				sb.append(actionTaken);
+				sb.append(". id=");
+				sb.append(_wrapper.getObjectId());
+				sb.append(" wrapper=");
+				sb.append(_wrapper.getClass().getName());
+				sb.append(" (");
+				sb.append(_wrapper.hashCode());
+				sb.append(") native=");
+				sb.append(__obj == null ? "<null>" : __obj.getClass().getName());
+				sb.append(" (");
+				sb.append(__obj == null ? "" : __obj.hashCode());
+				sb.append(")");
+
+				log.finest(sb.toString());
+			}
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
+		return _wrapper;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <U extends Base<?>> U getWrapper(Class<U> outputClass, Class<? extends N> inputClass, N __obj) {
+		U _wrapper = null;
+		String actionTaken = null;
+
+		try {
 			if (__obj == null) {
 				// Null object pattern
 				actionTaken = "Created a null object";
 				_wrapper = createWrapper(outputClass, inputClass, null);
 
-			} else if (__obj instanceof String) {
-				// Retrieving directly from the cache
-				String id = (String) __obj;
-				AbstractNativeReference<N> ref = nativeReferenceClass.cast(wrapperMap.get(id));
-
-				if (ref == null) {
-					_wrapper = createWrapper(outputClass, inputClass, null);
-				} else {
-					_wrapper = (U) ref.get();
-
-					if (_wrapper == null) {
-						_wrapper = createWrapper(outputClass, inputClass, null);
-					} else {
-						N __native = _wrapper.getNativeObject();
-
-						if (isValidNativeObject(__native)) {
-							// Do nothing. Return the found wrapper.
-
-						} else {
-							// There's no a valid native object
-							_wrapper = createWrapper(outputClass, inputClass, null);
-						}
-					}
-				}
 			} else {
-				// Looking for the object in the cache
-				_wrapper = createWrapper(outputClass, inputClass, __obj);
-				String id = _wrapper.getObjectId();
+				log.finest("Getting a wrapper for the native object " + __obj.getClass().getName() + " hc=" + __obj.hashCode());
 
+				_wrapper = createWrapper(outputClass, inputClass, __obj);
+
+				// Clean up the reference map, except for the just created
+				// _wrapper object
+				// cleanUp((Base<N>) _wrapper);
+				cleanUp();
+
+				// Looking for the object in the cache
+				String id = _wrapper.getObjectId();
 				AbstractNativeReference<N> ref = nativeReferenceClass.cast(wrapperMap.get(id));
 
 				if (ref == null) {
@@ -129,10 +167,10 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 							registerReference(id, _wrapper);
 						} else {
 							// There's a wrapper
-							if (isValidNativeObject(_oldWrapper.getNativeObject())) {
+							if (isValidNativeObject((N) _oldWrapper.getNativeObject())) {
 								// with a valid native object
 								actionTaken = "Registered. Retrieving the wrapper and its native object from the cache";
-								// _wrapper = _oldWrapper;
+								_wrapper = _oldWrapper;
 							} else {
 								// with an invalid native object.
 								actionTaken = "Registered but closed. Creating the wrapper with the registered native object from the cache";
@@ -179,11 +217,6 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 		}
 
 		return _wrapper;
-	}
-
-	@Override
-	public void cleanUp() {
-
 	}
 
 	@Override

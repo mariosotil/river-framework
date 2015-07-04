@@ -9,57 +9,61 @@ import org.riverframework.core.View;
 
 public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements Base, Database {
 	protected Database database = null;
-	
+
 	public AbstractDatabase(Database database) {
 		this.database = database;
-	}	
-	
+	}
+
 	@Override
 	public boolean isOpen() {
 		return (database != null && database.isOpen());
 	}
-	
+
 	@Override
 	public String getObjectId() {
 		return database.getObjectId();
 	}
-	
+
 	public org.riverframework.core.Database getDatabase() {
 		return database;
 	}
-	
+
+	@Override
 	public Document createDocument(String... parameters) {
 		Document doc = database.createDocument(parameters);
-		
+
 		return doc;
 	}
 
+	@Override
 	public <U extends org.riverframework.extended.AbstractDocument<?>> U createDocument(Class<U> clazz, String... parameters) {
 		U xDoc = database.createDocument(clazz, parameters);
-		
+
 		return xDoc;
 	}
-	
+
+	@Override
 	public Document getDocument(String... parameters) {
 		Document doc = database.getDocument(parameters);
-		
+
 		return doc;
 	}
 
+	@Override
 	public <U extends org.riverframework.extended.AbstractDocument<?>> U getDocument(Class<U> clazz, String... parameters) {
 		U xDoc = database.getDocument(clazz, parameters);
-		
+
 		return xDoc;
 	}
-	
+
 	public T deleteAll() {
 		database.getAllDocuments().deleteAll();
-		
+
 		return getThis();
 	}
-	
+
 	protected abstract T getThis();
-		
+
 	@Override
 	public void close() {
 		database.close();
@@ -70,7 +74,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 
 		return counter;
 	}
-	
+
 	@Override
 	public Session getSession() {
 		return database.getSession();
@@ -122,8 +126,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 	}
 
 	@Override
-	public Database refreshSearchIndex() {
-		return database.refreshSearchIndex();
+	public Database refreshSearchIndex(boolean createIfNotExist) {
+		return database.refreshSearchIndex(createIfNotExist);
 	}
 
 	@Override

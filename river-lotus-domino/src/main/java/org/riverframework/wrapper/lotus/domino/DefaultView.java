@@ -11,13 +11,13 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultView extends DefaultBase implements org.riverframework.wrapper.View<lotus.domino.Base> {
+class DefaultView extends DefaultBase<lotus.domino.View> implements org.riverframework.wrapper.View<lotus.domino.View> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	protected org.riverframework.wrapper.Session<lotus.domino.Base> _session = null;
+	protected org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
 	protected volatile lotus.domino.View __view = null;
 	private String objectId = null;
 
-	protected DefaultView(org.riverframework.wrapper.Session<lotus.domino.Base> s, lotus.domino.View v) {
+	protected DefaultView(org.riverframework.wrapper.Session<lotus.domino.Session> s, lotus.domino.View v) {
 		__view = v;
 		_session = s;
 		// synchronized (_session){
@@ -82,7 +82,7 @@ class DefaultView extends DefaultBase implements org.riverframework.wrapper.View
 	}
 
 	@Override
-	public DocumentIterator<lotus.domino.Base> getAllDocuments() {
+	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> getAllDocuments() {
 		// synchronized (_session){
 		lotus.domino.ViewEntryCollection _col;
 		try {
@@ -92,13 +92,13 @@ class DefaultView extends DefaultBase implements org.riverframework.wrapper.View
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base> result = _session.getFactory().getDocumentIterator(_col);
+		DocumentIterator<lotus.domino.Base, lotus.domino.Document> result = _session.getFactory().getDocumentIterator(_col);
 		return result;
 		// }
 	}
 
 	@Override
-	public DocumentIterator<lotus.domino.Base> getAllDocumentsByKey(Object key) {
+	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> getAllDocumentsByKey(Object key) {
 		// synchronized (_session){
 		lotus.domino.DocumentCollection _col;
 		try {
@@ -108,13 +108,13 @@ class DefaultView extends DefaultBase implements org.riverframework.wrapper.View
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base> result = _session.getFactory().getDocumentIterator(_col);
+		DocumentIterator<lotus.domino.Base, lotus.domino.Document> result = _session.getFactory().getDocumentIterator(_col);
 		return result;
 		// }
 	}
 
 	@Override
-	public View<lotus.domino.Base> refresh() {
+	public View<lotus.domino.View> refresh() {
 		// synchronized (_session){
 		try {
 			__view.refresh();
@@ -142,7 +142,7 @@ class DefaultView extends DefaultBase implements org.riverframework.wrapper.View
 	}
 
 	@Override
-	public DocumentIterator<lotus.domino.Base> search(String query) {
+	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> search(String query) {
 		// synchronized (_session){
 		lotus.domino.View __temp = null;
 
@@ -154,7 +154,7 @@ class DefaultView extends DefaultBase implements org.riverframework.wrapper.View
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(__temp);
+		DocumentIterator<lotus.domino.Base, lotus.domino.Document> _iterator = _session.getFactory().getDocumentIterator(__temp);
 
 		return _iterator;
 		// }

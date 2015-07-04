@@ -24,18 +24,15 @@ public abstract class AbstractDocumentIteratorTest {
 		// Opening the test context in the current package
 		try {
 			if (context == null) {
-				Class<?> clazz = Class.forName(this.getClass().getPackage()
-						.getName()
-						+ ".Context");
+				Class<?> clazz = Class.forName(this.getClass().getPackage().getName() + ".Context");
 				if (Context.class.isAssignableFrom(clazz)) {
 					Constructor<?> constructor = clazz.getDeclaredConstructor();
 					constructor.setAccessible(true);
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session<?>) context.getSession().getWrapperObject();
-				database = session.getDatabase(context.getTestDatabaseServer(),
-						context.getTestDatabasePath());
+				session = context.getSession().getWrapperObject();
+				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 
 			}
@@ -51,47 +48,41 @@ public abstract class AbstractDocumentIteratorTest {
 
 	@Test
 	public void testIterator() {
-		assertTrue("The test database could not be instantiated.",
-				database != null);
+		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentIterator<?> col = database.getAllDocuments().deleteAll();
+		DocumentIterator<?, ?> _iterator = database.getAllDocuments().deleteAll();
 
 		RandomString rs = new RandomString(10);
 
 		for (int i = 0; i < 10; i++) {
-			database.createDocument().setField("Form", TEST_FORM)
-					.setField("Value", rs.nextString()).save();
+			database.createDocument().setField("Form", TEST_FORM).setField("Value", rs.nextString()).save();
 		}
 
-		col = database.getAllDocuments();
-		DocumentIterator<?> iterator = col.iterator();
+		_iterator = database.getAllDocuments();
 		int j = 0;
 		for (@SuppressWarnings("unused")
-		Document<?> doc : iterator) {
+		Document<?> doc : _iterator) {
 			j++;
 		}
-		assertTrue("The iterator does not returns the expected values.",
-				j == 10);
+		assertTrue("The iterator does not returns the expected values.", j == 10);
 
 	}
-	
+
 	@Test
 	public void testDeleteAll() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		// Creating at least one document
 		@SuppressWarnings("unused")
-		Document<?> doc = database.createDocument()
-				.setField("Form", TEST_FORM)
-				.save();
+		Document<?> doc = database.createDocument().setField("Form", TEST_FORM).save();
 
-		DocumentIterator<?> col = database.getAllDocuments();
-		col.deleteAll();
+		DocumentIterator<?, ?> _iterator = database.getAllDocuments();
+		_iterator.deleteAll();
 
-		col = null;
-		col = database.getAllDocuments();
+		_iterator = null;
+		_iterator = database.getAllDocuments();
 
-		assertFalse("The test database still has documents.", col.hasNext());
+		assertFalse("The test database still has documents.", _iterator.hasNext());
 	}
 }

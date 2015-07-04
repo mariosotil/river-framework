@@ -36,7 +36,8 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<o
 		return __native != null;
 	}
 
-	public Session<org.openntf.domino.Base<?>> getSession(Object... parameters) {
+	@SuppressWarnings("unchecked")
+	public Session<org.openntf.domino.Session> getSession(Object... parameters) {
 		org.openntf.domino.Session __obj = null;
 
 		if (parameters.length == 1 && parameters[0] instanceof org.openntf.domino.Session) {
@@ -45,7 +46,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<o
 			__obj = (org.openntf.domino.Session) parameters[0];
 
 			_session = getWrapper(DefaultSession.class, org.openntf.domino.Session.class, __obj); 
-			return _session; 
+			return (Session<org.openntf.domino.Session>) _session; 
 		}
 
 		if (parameters.length == 3 && parameters[2] instanceof String) {
@@ -60,7 +61,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<o
 			}
 
 			_session = getWrapper(DefaultSession.class, org.openntf.domino.Session.class, __obj);
-			return _session; 
+			return (Session<org.openntf.domino.Session>) _session; 
 		}
 
 		throw new RiverException(
@@ -68,28 +69,28 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<o
 	}
 
 	@Override
-	public Database<org.openntf.domino.Base<?>> getDatabase(org.openntf.domino.Base<?> __obj) {
+	public Database<org.openntf.domino.Database> getDatabase(org.openntf.domino.Base<?> __obj) {
 		return getWrapper(DefaultDatabase.class, org.openntf.domino.Database.class, __obj);
 	}
 
 	@Override
-	public Document<org.openntf.domino.Base<?>> getDocument(org.openntf.domino.Base<?> __obj) {
+	public Document<org.openntf.domino.Document> getDocument(org.openntf.domino.Base<?> __obj) {
 		return getWrapper(DefaultDocument.class, org.openntf.domino.Document.class, __obj);
 	}
 
 	@Override
-	public Document<org.openntf.domino.Base<?>> getDocument(String objectId) {
+	public Document<org.openntf.domino.Document> getDocument(String objectId) {
 		return getWrapper(DefaultDocument.class, org.openntf.domino.Document.class, objectId);
 	}
 
 	@Override
-	public View<org.openntf.domino.Base<?>> getView(org.openntf.domino.Base<?> __obj) {
+	public View<org.openntf.domino.View> getView(org.openntf.domino.Base<?> __obj) {
 		return getWrapper(DefaultView.class, org.openntf.domino.View.class, __obj);
 	}
 
 	@Override
-	public DocumentIterator<org.openntf.domino.Base<?>> getDocumentIterator(org.openntf.domino.Base<?> __obj) {
-		DocumentIterator<org.openntf.domino.Base<?>> _iterator = null;
+	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> getDocumentIterator(org.openntf.domino.Base<?> __obj) {
+		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = null;
 
 		if(__obj instanceof org.openntf.domino.DocumentCollection) {
 			_iterator = getWrapper(DefaultDocumentIterator.class, org.openntf.domino.DocumentCollection.class, __obj);

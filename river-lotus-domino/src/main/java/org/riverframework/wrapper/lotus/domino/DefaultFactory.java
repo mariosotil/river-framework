@@ -40,7 +40,8 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 		return __native != null; // && !DefaultBase.isRecycled(__native);
 	}
 
-	public Session<lotus.domino.Base> getSession(Object... parameters) {
+	@SuppressWarnings("unchecked")
+	public Session<lotus.domino.Session> getSession(Object... parameters) {
 		lotus.domino.Session __obj = null;
 
 		if (parameters.length == 1 && parameters[0] instanceof lotus.domino.Session) {
@@ -49,7 +50,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			__obj = (lotus.domino.Session) parameters[0];
 
 			_session = getWrapper(DefaultSession.class, lotus.domino.Session.class, __obj); 
-			return _session; 
+			return (Session<lotus.domino.Session>) _session; 
 		}
 
 		if (parameters.length == 3 && parameters[2] instanceof String) {
@@ -62,7 +63,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			}
 
 			_session = getWrapper(DefaultSession.class, lotus.domino.Session.class, __obj);
-			return _session; 
+			return (Session<lotus.domino.Session>) _session; 
 		}
 
 		throw new RiverException(
@@ -70,28 +71,28 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 	}
 
 	@Override
-	public Database<lotus.domino.Base> getDatabase(lotus.domino.Base __obj) {
+	public Database<lotus.domino.Database> getDatabase(lotus.domino.Base __obj) {
 		return getWrapper(DefaultDatabase.class, lotus.domino.Database.class, __obj);
 	}
 
 	@Override
-	public Document<lotus.domino.Base> getDocument(String objectId) {
+	public Document<lotus.domino.Document> getDocument(String objectId) {
 		return getWrapper(DefaultDocument.class, lotus.domino.Document.class, objectId);
 	}
 
 	@Override
-	public Document<lotus.domino.Base> getDocument(lotus.domino.Base __obj) {
+	public Document<lotus.domino.Document> getDocument(lotus.domino.Base __obj) {
 		return getWrapper(DefaultDocument.class, lotus.domino.Document.class, __obj);
 	}
 
 	@Override
-	public View<lotus.domino.Base> getView(lotus.domino.Base __obj) {
+	public View<lotus.domino.View> getView(lotus.domino.Base __obj) {
 		return getWrapper(DefaultView.class, lotus.domino.View.class, __obj);
 	}
 
 	@Override
-	public DocumentIterator<lotus.domino.Base> getDocumentIterator(lotus.domino.Base __obj) {
-		DocumentIterator<lotus.domino.Base> _iterator = null;
+	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> getDocumentIterator(lotus.domino.Base __obj) {
+		DocumentIterator<lotus.domino.Base, lotus.domino.Document> _iterator = null;
 
 		if(__obj instanceof lotus.domino.DocumentCollection) {
 			_iterator = getWrapper(DefaultDocumentIterator.class, lotus.domino.DocumentCollection.class, __obj);
@@ -110,14 +111,25 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 	}
 
 	@Override
-	public void cleanUp() {
+	public void cleanUp(Base<lotus.domino.Base>... except) {
 		Reference<? extends Base<lotus.domino.Base>> ref = null;
 
 		boolean cleaning = false;
 		long start = 0;
-
+		String exceptId = "";
+		
+		// If there is no a session created, return
 		if (_session == null) return;
 
+		
+		if (except.length > 0) {
+			// If the object to be keeped is not a document, return
+			if (!(except[0] instanceof org.riverframework.wrapper.Document)) return;
+			
+			// Otherwise, we save its Object Id
+			exceptId = except[0].getObjectId();
+		} 
+				
 		while ((ref = wrapperQueue.poll()) != null) { 
 			if (!cleaning) {
 				start = System.nanoTime();
@@ -132,24 +144,36 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 						__native instanceof lotus.domino.cso.Document) {				
 					String id = nat.getObjectId();
 
-					if (log.isLoggable(Level.FINEST)) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("Recycling: id=");
-						sb.append(id);
-						sb.append(" native=");
-						sb.append(__native == null ? "<null>" : __native.getClass().getName());
-						sb.append(" (");
-						sb.append(__native == null ? "<null>" : __native.hashCode());
-						sb.append(")");
+					if(exceptId.equals(id)) {
+						if (log.isLoggable(Level.FINEST)) {
+							StringBuilder sb = new StringBuilder();
+							sb.append("NO Recycling: id=");
+							sb.append(id);
+							sb.append(" native=");
+							sb.append(__native == null ? "<null>" : __native.getClass().getName());
+							sb.append(" (");
+							sb.append(__native == null ? "<null>" : __native.hashCode());
+							sb.append(")");
 
-						log.finest(sb.toString());
-					}
+							log.finest(sb.toString());
+						}
+						
+					} else {
+						if (log.isLoggable(Level.FINEST)) {
+							StringBuilder sb = new StringBuilder();
+							sb.append("Recycling: id=");
+							sb.append(id);
+							sb.append(" native=");
+							sb.append(__native == null ? "<null>" : __native.getClass().getName());
+							sb.append(" (");
+							sb.append(__native == null ? "<null>" : __native.hashCode());
+							sb.append(")");
 
-					try {
+							log.finest(sb.toString());
+						}
+
 						wrapperMap.remove(id);
 						nat.close();
-					} catch (Exception ex) {
-						log.log(Level.WARNING, "Exception at recycling", ex);
 					}
 				}
 			}
@@ -161,4 +185,6 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			cleaning = false;
 		}
 	}
+
+
 }

@@ -72,7 +72,7 @@ public interface Database extends Base {
 	public Document getDocument(String... parameters);
 
 	public Document getDocument(boolean createIfDoesNotExist, String... parameters);
-	
+
 	/**
 	 * Creates a Document object. The class is detected from the object doc
 	 * using the rules write in the method detectClass
@@ -85,7 +85,8 @@ public interface Database extends Base {
 
 	public <U extends org.riverframework.extended.AbstractDocument<?>> U getDocument(Class<U> clazz, String... parameters);
 
-	public <U extends org.riverframework.extended.AbstractDocument<?>> U getDocument(Class<U> clazz, boolean createIfDoesNotExist, String... parameters);
+	public <U extends org.riverframework.extended.AbstractDocument<?>> U getDocument(Class<U> clazz, boolean createIfDoesNotExist,
+			String... parameters);
 
 	/**
 	 * Returns all documents from the database as a DocumentIterator object,
@@ -115,9 +116,12 @@ public interface Database extends Base {
 	 * Refresh the database index. How this index is refreshed will depend on
 	 * how is implemented in the wrapper loaded.
 	 * 
+	 * @param createIfNotExist
+	 *            if the index does not exist, set true to force to be created.
+	 *            Otherwise, select false.
 	 * @return the object itself for method chaining
 	 */
-	public Database refreshSearchIndex();
+	public Database refreshSearchIndex(boolean createIfNotExist);
 
 	/**
 	 * Returns true if the wrapper Database object was opened. If the wrapper

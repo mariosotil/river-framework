@@ -143,7 +143,7 @@ public abstract class AbstractViewTest {
 			database.createDocument().setField("Form", TEST_FORM).setField("Text", "I_AM_THE_" + i).save();
 		}
 
-		database.refreshSearchIndex();
+		database.refreshSearchIndex(true);
 
 		DocumentIterator col = database.getView(TEST_VIEW).search("I_AM_THE_4");
 

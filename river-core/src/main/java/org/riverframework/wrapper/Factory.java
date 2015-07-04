@@ -1,21 +1,21 @@
 package org.riverframework.wrapper;
 
 public interface Factory<N> {
-	public Session<N> getSession(Object... parameters);
+	public Session<?> getSession(Object... parameters);
 
-	public Database<N> getDatabase(N obj);
+	public Database<?> getDatabase(N obj);
 
-	public Document<N> getDocument(String objectId);		
-	
-	public Document<N> getDocument(N obj);
+	public Document<?> getDocument(String objectId);
 
-	public View<N> getView(N obj);
+	public Document<?> getDocument(N obj);
 
-	public DocumentIterator<N> getDocumentIterator(N obj);
+	public View<?> getView(N obj);
+
+	public DocumentIterator<?, ?> getDocumentIterator(N obj);
 
 	public void close();
 
-	public void cleanUp();
-	
+	public void cleanUp(Base<N>... except);
+
 	public void logStatus();
 }

@@ -8,7 +8,7 @@ import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Session;
 
-public class DefaultSession extends DefaultBase implements Session<org.openntf.domino.Base<?>> {
+public class DefaultSession extends DefaultBase<org.openntf.domino.Session> implements Session<org.openntf.domino.Session> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	private final DefaultFactory factory = DefaultFactory.getInstance();
 
@@ -61,10 +61,10 @@ public class DefaultSession extends DefaultBase implements Session<org.openntf.d
 	}
 
 	@Override
-	public Database<org.openntf.domino.Base<?>> createDatabase (String... location) {
+	public Database<org.openntf.domino.Database> createDatabase (String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
-		Database<org.openntf.domino.Base<?>> _database = null;
+		Database<org.openntf.domino.Database> _database = null;
 		org.openntf.domino.Database __database = null;
 
 		if (location.length != 2)
@@ -95,7 +95,7 @@ public class DefaultSession extends DefaultBase implements Session<org.openntf.d
 	}
 
 	@Override
-	public Database<org.openntf.domino.Base<?>> getDatabase(String... location) {
+	public Database<org.openntf.domino.Database> getDatabase(String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
 		synchronized (this){
@@ -131,7 +131,7 @@ public class DefaultSession extends DefaultBase implements Session<org.openntf.d
 				}
 			}
 
-			Database<org.openntf.domino.Base<?>> database = getFactory().getDatabase(__database);
+			Database<org.openntf.domino.Database> database = getFactory().getDatabase(__database);
 			return database;
 		}
 	}

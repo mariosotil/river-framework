@@ -7,7 +7,7 @@ import lotus.domino.local.NotesBase;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Base;
 
-abstract class DefaultBase implements Base<lotus.domino.Base> {
+abstract class DefaultBase<N> implements Base<N> {
 	private static Field isDeleted = null;
 	private static Field weakObject = null;
 	private static Field cpp = null;

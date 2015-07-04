@@ -36,7 +36,7 @@ public abstract class AbstractDatabaseTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session<?>) context.getSession().getWrapperObject();
+				session = context.getSession().getWrapperObject();
 				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 			}
@@ -80,7 +80,7 @@ public abstract class AbstractDatabaseTest {
 		view = database.getView(name);
 		assertTrue("There is a problem opening the last view created in the test database.", view.isOpen());
 
-		DocumentIterator<?> it = view.getAllDocuments();
+		DocumentIterator<?, ?> it = view.getAllDocuments();
 
 		i = 0;
 		while (it.hasNext()) {
@@ -118,7 +118,7 @@ public abstract class AbstractDatabaseTest {
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DocumentIterator<?> col = null;
+		DocumentIterator<?, ?> _iterator = null;
 
 		database.getAllDocuments().deleteAll();
 		RandomString rs = new RandomString(10);
@@ -129,15 +129,15 @@ public abstract class AbstractDatabaseTest {
 
 		database.createDocument().setField("Form", TEST_FORM).setField("Value", "THIS_IS_THE_DOC").save();
 
-		database.refreshSearchIndex();
+		database.refreshSearchIndex(true);
 
-		col = null;
-		col = database.search("THIS IS IMPOSSIBLE TO FIND");
-		assertFalse("The search returns values for a query that would returns nothing.", col.hasNext());
+		_iterator = null;
+		_iterator = database.search("THIS IS IMPOSSIBLE TO FIND");
+		assertFalse("The search returns values for a query that would returns nothing.", _iterator.hasNext());
 
-		col = null;
-		col = database.search("THIS_IS_THE_DOC");
-		assertTrue("The search does not returns values for a query that would returns something.", col.hasNext());
+		_iterator = null;
+		_iterator = database.search("THIS_IS_THE_DOC");
+		assertTrue("The search does not returns values for a query that would returns something.", _iterator.hasNext());
 	}
 
 	@Test
@@ -172,9 +172,9 @@ public abstract class AbstractDatabaseTest {
 
 		database.createDocument().setField("Requester", "Michael").setField("Time", 27).save();
 
-		DocumentIterator<?> col = database.getAllDocuments();
+		DocumentIterator<?, ?> _iterator = database.getAllDocuments();
 
-		for (Document<?> doc : col) {
+		for (Document<?> doc : _iterator) {
 			assertTrue("It could not possible load the vacation request object from the DocumentList.", doc.isOpen());
 		}
 	}

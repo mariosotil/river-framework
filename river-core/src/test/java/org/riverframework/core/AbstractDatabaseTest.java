@@ -147,7 +147,7 @@ public abstract class AbstractDatabaseTest {
 
 		database.createDocument().setField("Form", TEST_FORM).setField("Value", "THIS_IS_THE_DOC").save();
 
-		database.refreshSearchIndex();
+		database.refreshSearchIndex(true);
 
 		col = null;
 		col = database.search("THIS IS IMPOSSIBLE TO FIND");
@@ -167,11 +167,14 @@ public abstract class AbstractDatabaseTest {
 		iterator = database.getAllDocuments();
 		assertFalse("The database still has documents.", iterator.hasNext());
 
-		String unidJohn = database.createDocument().setField("Name", "John").setField("Form", "fo_ap_people").setField("Age", 30).save().getObjectId();
+		String unidJohn = database.createDocument().setField("Name", "John").setField("Form", "fo_ap_people").setField("Age", 30).save()
+				.getObjectId();
 
-		String unidKathy = database.createDocument().setField("Name", "Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save().getObjectId();
+		String unidKathy = database.createDocument().setField("Name", "Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save()
+				.getObjectId();
 
-		String unidJake = database.createDocument().setField("Name", "Jake").setField("Form", "fo_ap_people").setField("Age", 27).save().getObjectId();
+		String unidJake = database.createDocument().setField("Name", "Jake").setField("Form", "fo_ap_people").setField("Age", 27).save()
+				.getObjectId();
 
 		Document p = database.getDocument(unidJake);
 		assertTrue("It could not possible load the person object for Jake.", p.isOpen());
@@ -180,7 +183,6 @@ public abstract class AbstractDatabaseTest {
 		p = database.getDocument(unidJohn);
 		assertTrue("It could not possible load the person object for John.", p.isOpen());
 		assertTrue("It could not possible get the John's age.", p.getFieldAsInteger("Age") == 30);
-
 
 		p = database.getDocument(unidKathy);
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());
@@ -198,7 +200,8 @@ public abstract class AbstractDatabaseTest {
 
 		database.getAllDocuments().deleteAll();
 
-		String id = database.createDocument().setField("ca_pe_name", "Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save().getObjectId();
+		String id = database.createDocument().setField("ca_pe_name", "Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save()
+				.getObjectId();
 
 		Document p = database.getDocument(id);
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());

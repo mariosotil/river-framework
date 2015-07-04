@@ -18,10 +18,14 @@ public class StressTest extends org.riverframework.wrapper.AbstractStressTest {
 	public static void before() {
 		NotesThread.sinitThread();
 
-		LoggerHelper lh = new LoggerHelper(log);
-		lh.clearHandlers().addConsoleHandler().setLevel(Level.OFF);
-
-		maxDocumentsForStressTest = 10000;
+		new LoggerHelper(log)
+		.setUseParentHandlers(false)
+		.clearHandlers()
+		.addConsoleHandler()
+		.addFileHandler("D:\\stress-test.txt")
+		.setLevel(Level.FINEST);
+		
+		maxDocumentsForStressTest = 100;
 
 		log.setUseParentHandlers(false);
 		log.fine("Starting test");

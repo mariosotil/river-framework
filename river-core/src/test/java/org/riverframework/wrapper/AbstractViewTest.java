@@ -33,7 +33,7 @@ public abstract class AbstractViewTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session<?>) context.getSession().getWrapperObject();
+				session = context.getSession().getWrapperObject();
 				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 
@@ -96,7 +96,7 @@ public abstract class AbstractViewTest {
 
 		View<?> view = database.getView(TEST_VIEW);
 		view.refresh();
-		DocumentIterator<?> col = view.getAllDocuments().deleteAll();
+		DocumentIterator<?, ?> col = view.getAllDocuments().deleteAll();
 
 		assertFalse("There is a problem with the database. There are still documents after the delete.", col.hasNext());
 
@@ -125,9 +125,9 @@ public abstract class AbstractViewTest {
 			database.createDocument().setField("Form", TEST_FORM).setField("Text", "I_AM_THE_" + i).save();
 		}
 
-		database.refreshSearchIndex();
+		database.refreshSearchIndex(true);
 
-		DocumentIterator<?> col = database.getView(TEST_VIEW).search("I_AM_THE_4");
+		DocumentIterator<?, ?> col = database.getView(TEST_VIEW).search("I_AM_THE_4");
 		Document<?> doc = col.next();
 		assertFalse("There is a problem finding documents from the database.", col.hasNext());
 		assertTrue("There is a problem finding documents from the database.", doc.getFieldAsString("Text").equals("I_AM_THE_4"));

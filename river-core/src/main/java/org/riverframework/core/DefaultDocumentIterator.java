@@ -1,17 +1,16 @@
 package org.riverframework.core;
 
-
 /**
- * It is used to manage collections of Documents. 
+ * It is used to manage collections of Documents.
  * 
  * @author mario.sotil@gmail.com
  *
  */
 public final class DefaultDocumentIterator implements org.riverframework.core.DocumentIterator {
 	protected Database database;
-	protected org.riverframework.wrapper.DocumentIterator<?> _iterator;
+	protected org.riverframework.wrapper.DocumentIterator<?, ?> _iterator;
 
-	protected DefaultDocumentIterator(Database d, org.riverframework.wrapper.DocumentIterator<?> _iterator) {
+	protected DefaultDocumentIterator(Database d, org.riverframework.wrapper.DocumentIterator<?, ?> _iterator) {
 		this.database = d;
 		this._iterator = _iterator;
 	}
@@ -25,10 +24,10 @@ public final class DefaultDocumentIterator implements org.riverframework.core.Do
 	public Document next() {
 		org.riverframework.wrapper.Document<?> _doc = _iterator.next();
 
-//		long start = System.nanoTime();
+		// long start = System.nanoTime();
 		org.riverframework.core.Document doc = database.getDocument(_doc);
-//		long end = System.nanoTime();
-//		System.out.println("F2=" + (((double)(end - start))/1000000));
+		// long end = System.nanoTime();
+		// System.out.println("F2=" + (((double)(end - start))/1000000));
 
 		return doc;
 	}
@@ -63,7 +62,7 @@ public final class DefaultDocumentIterator implements org.riverframework.core.Do
 	}
 
 	@Override
-	public org.riverframework.wrapper.DocumentIterator<?> getWrapperObject() {
+	public org.riverframework.wrapper.DocumentIterator<?, ?> getWrapperObject() {
 		return _iterator;
 	}
 
@@ -83,4 +82,3 @@ public final class DefaultDocumentIterator implements org.riverframework.core.Do
 		_iterator.close();
 	}
 }
-

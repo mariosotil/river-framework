@@ -11,8 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
-import org.riverframework.Database;
-import org.riverframework.Session;
+import org.riverframework.utils.Credentials;
 
 public abstract class AbstractSessionTest {
 	protected Context context = null;
@@ -58,7 +57,7 @@ public abstract class AbstractSessionTest {
 
 		String uuid1 = session.getObjectId();
 
-		Database database = session.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
+		Database database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 
 		String uuid2 = database.getSession().getObjectId();
 

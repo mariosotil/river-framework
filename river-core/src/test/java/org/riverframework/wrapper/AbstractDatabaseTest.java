@@ -153,10 +153,10 @@ public abstract class AbstractDatabaseTest {
 
 		Document<?> doc = database.createDocument().setField("Id", "Jake").setField("Form", "fo_ap_people").setField("Age", 27).save();
 
-		String unid = doc.getObjectId();
+		String objectId = doc.getObjectId();
 		doc = null;
-		doc = database.getDocument(unid);
-		assertTrue("It should be possible to load a person object with its Universal Id.", doc.isOpen());
+		doc = database.getDocument(objectId);
+		assertTrue("It should be possible to load a person object with its Object Id.", doc.isOpen());
 	}
 
 	@Test

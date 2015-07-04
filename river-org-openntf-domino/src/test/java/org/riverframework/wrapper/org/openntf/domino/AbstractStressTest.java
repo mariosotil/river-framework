@@ -24,7 +24,7 @@ public abstract class AbstractStressTest {
 	private final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	protected Context context = null;
-	protected Session<org.openntf.domino.Base> _session = null;
+	protected Session<org.openntf.domino.Base<?>> _session = null;
 
 	protected static long maxDocumentsForStressTest = 1000;
 
@@ -41,7 +41,7 @@ public abstract class AbstractStressTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				_session = (Session<org.openntf.domino.Base>) context.getSession().getWrapperObject();
+				_session = (Session<org.openntf.domino.Base<?>>) context.getSession().getWrapperObject();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -58,21 +58,21 @@ public abstract class AbstractStressTest {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
 		String suffixDb = sdf.format(new Date()) + ".nsf";
-		Database<org.openntf.domino.Base> db1 = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
+		Database<org.openntf.domino.Base<?>> db1 = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
 		assertTrue("The test database could not be instantiated.", db1 != null);
 		assertTrue("The test database could not be opened.", db1.isOpen());
 
-		Database<org.openntf.domino.Base> db2 = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
+		Database<org.openntf.domino.Base<?>> db2 = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
 		assertTrue("The test database could not be instantiated.", db2 != null);
 		assertTrue("The test database could not be opened.", db2.isOpen());
 
 		String name = "VIEW_" + sdf.format(new Date());
 		String form = "FORM_" + sdf.format(new Date());
 
-		View<org.openntf.domino.Base> view1 = db1.createView(name, "SELECT Form = \"" + form + "\"");
+		View<org.openntf.domino.Base<?>> view1 = db1.createView(name, "SELECT Form = \"" + form + "\"");
 		assertTrue("There is a problem creating the view in the test database.", view1.isOpen());
 
-		View<org.openntf.domino.Base> view2 = db2.createView(name, "SELECT Form = \"" + form + "\"");
+		View<org.openntf.domino.Base<?>> view2 = db2.createView(name, "SELECT Form = \"" + form + "\"");
 		assertTrue("There is a problem creating the view in the test database.", view2.isOpen());
 				
 		db1 = _session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
@@ -118,10 +118,10 @@ public abstract class AbstractStressTest {
 		log.fine("Stressing");
 		
 		i = 0;
-		for(Document<org.openntf.domino.Base> doc1: db1.getAllDocuments()) {
+		for(Document<org.openntf.domino.Base<?>> doc1: db1.getAllDocuments()) {
 			int value = doc1.getFieldAsInteger("Value");
-			DocumentIterator<org.openntf.domino.Base> it = db2.search("FIELD Value=" + value + "");
-			for(Document<org.openntf.domino.Base> doc2: it) {
+			DocumentIterator<org.openntf.domino.Base<?>> it = db2.search("FIELD Value=" + value + "");
+			for(Document<org.openntf.domino.Base<?>> doc2: it) {
 				log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value + " on " + doc2.getObjectId());
 			}
 			
@@ -150,14 +150,14 @@ public abstract class AbstractStressTest {
 	public void testStress2() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-		Database<org.openntf.domino.Base> database = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
+		Database<org.openntf.domino.Base<?>> database = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
 
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		String name = "VIEW_" + sdf.format(new Date());
 		String form = "FORM_" + sdf.format(new Date());
-		View<org.openntf.domino.Base> view = database.createView(name, "SELECT Form = \"" + form + "\"");
+		View<org.openntf.domino.Base<?>> view = database.createView(name, "SELECT Form = \"" + form + "\"");
 
 		assertTrue("There is a problem creating the view in the test database.", view.isOpen());
 
@@ -184,10 +184,10 @@ public abstract class AbstractStressTest {
 		view = database.getView(name);
 		assertTrue("There is a problem opening the last view created in the test database.", view.isOpen());
 
-		DocumentIterator<org.openntf.domino.Base> it = view.getAllDocuments();
+		DocumentIterator<org.openntf.domino.Base<?>> it = view.getAllDocuments();
 
 		i = 0;
-		for (@SuppressWarnings("unused") org.riverframework.wrapper.Document<org.openntf.domino.Base> doc: it) {
+		for (@SuppressWarnings("unused") org.riverframework.wrapper.Document<org.openntf.domino.Base<?>> doc: it) {
 			i++;
 			if(i % 500 == 0) { 
 				log.fine("Processed=" + i);
@@ -204,7 +204,7 @@ public abstract class AbstractStressTest {
 		i = 0;
 		while (it.hasNext()) {
 			i++;
-			Document<org.openntf.domino.Base> doc2 = it.next();
+			Document<org.openntf.domino.Base<?>> doc2 = it.next();
 			doc2.delete();
 			if(i % 500 == 0) { 
 				log.fine("Processed=" + i);

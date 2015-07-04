@@ -5,6 +5,8 @@ public interface Factory<N> {
 
 	public Database<N> getDatabase(N obj);
 
+	public Document<N> getDocument(String objectId);		
+	
 	public Document<N> getDocument(N obj);
 
 	public View<N> getView(N obj);

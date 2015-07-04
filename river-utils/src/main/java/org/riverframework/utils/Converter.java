@@ -1,11 +1,9 @@
 package org.riverframework.utils;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.joda.time.LocalDateTime;
 
 /**
  * Provides converters from any type to String, Integer, Double and Date. If the converter can not make the conversion
@@ -19,55 +17,6 @@ import java.util.Map;
 public class Converter {
 	private static final Calendar calendar = Calendar.getInstance();
 	
-	private static final Map<String, String> DATE_FORMAT_REGEXPS = new HashMap<String, String>() {
-		private static final long serialVersionUID = 1L;
-		{
-			put("^\\d{8}$", "yyyyMMdd");
-			put("^\\d{1,2}-\\d{1,2}-\\d{4}$", "dd-MM-yyyy");
-			put("^\\d{4}-\\d{1,2}-\\d{1,2}$", "yyyy-MM-dd");
-			put("^\\d{1,2}/\\d{1,2}/\\d{4}$", "MM/dd/yyyy");
-			put("^\\d{4}/\\d{1,2}/\\d{1,2}$", "yyyy/MM/dd");
-			put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}$", "dd MMM yyyy");
-			put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}$", "dd MMMM yyyy");
-			put("^\\d{12}$", "yyyyMMddHHmm");
-			put("^\\d{8}\\s\\d{4}$", "yyyyMMdd HHmm");
-			put("^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}$", "dd-MM-yyyy HH:mm");
-			put("^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}$", "yyyy-MM-dd HH:mm");
-			put("^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}$", "MM/dd/yyyy HH:mm");
-			put("^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}$", "yyyy/MM/dd HH:mm");
-			put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}$", "dd MMM yyyy HH:mm");
-			put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}$", "dd MMMM yyyy HH:mm");
-			put("^\\d{14}$", "yyyyMMddHHmmss");
-			put("^\\d{8}\\s\\d{6}$", "yyyyMMdd HHmmss");
-			put("^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd-MM-yyyy HH:mm:ss");
-			put("^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm:ss");
-			put("^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "MM/dd/yyyy HH:mm:ss");
-			put("^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy/MM/dd HH:mm:ss");
-			put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMM yyyy HH:mm:ss");
-			put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMMM yyyy HH:mm:ss");
-		}
-	};
-
-	/**
-	 * Determine SimpleDateFormat pattern matching with the given date string. Returns null if
-	 * format is unknown. You can simply extend DateUtil with more formats if needed.
-	 * 
-	 * @param dateString
-	 *            The date string to determine the SimpleDateFormat pattern for.
-	 * @return The matching SimpleDateFormat pattern, or null if format is unknown.
-	 * @see SimpleDateFormat
-	 * @author https://plus.google.com/113917986381339001702
-	 *         (http://balusc.blogspot.com/2007/09/dateutil.html)
-	 */
-	public static String determineDateFormat(String dateString) {
-		for (String regexp : DATE_FORMAT_REGEXPS.keySet()) {
-			if (dateString.toLowerCase().matches(regexp)) {
-				return DATE_FORMAT_REGEXPS.get(regexp);
-			}
-		}
-		return null; // Unknown format.
-	}
-
 	/**
 	 * Converts the value parameter to a String. If the value is null, it returns an empty string.
 	 * @param value It could be any object.
@@ -148,32 +97,18 @@ public class Converter {
 
 	/**
 	 * Converts the value parameter to a Date. If the value is null or invalid, it returns zero. If the value is a String, 
-	 * it has to have one of the following formats:
+	 * it has to have one of the following syntax (from http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#localDateOptionalTimeParser%28%29):
 	 * <p>
 	 * <ul>
-	 * <li>yyyyMMdd</li>
-	 * <li>dd-MM-yyyy</li>
-	 * <li>yyyy-MM-dd</li>
-	 * <li>MM/dd/yyyy</li>
-	 * <li>yyyy/MM/dd</li>
-	 * <li>dd MMM yyyy</li>
-	 * <li>dd MMMM yyyy</li>
-	 * <li>yyyyMMddHHmm</li>
-	 * <li>yyyyMMdd HHmm</li>
-	 * <li>dd-MM-yyyy HH:mm</li>
-	 * <li>yyyy-MM-dd HH:mm</li>
-	 * <li>MM/dd/yyyy HH:mm</li>
-	 * <li>yyyy/MM/dd HH:mm</li>
-	 * <li>dd MMM yyyy HH:mm</li>
-	 * <li>dd MMMM yyyy HH:mm</li>
-	 * <li>yyyyMMddHHmmss</li>
-	 * <li>yyyyMMdd HHmmss</li>
-	 * <li>dd-MM-yyyy HH:mm:ss</li>
-	 * <li>yyyy-MM-dd HH:mm:ss</li>
-	 * <li>MM/dd/yyyy HH:mm:ss</li>
-	 * <li>yyyy/MM/dd HH:mm:ss</li>
-	 * <li>dd MMM yyyy HH:mm:ss</li>
-	 * <li>dd MMMM yyyy HH:mm:ss</li>
+	 * <li>datetime          = date-element ['T' time-element]</li>
+	 * <li>date-element      = std-date-element | ord-date-element | week-date-element</li>
+	 * <li>std-date-element  = yyyy ['-' MM ['-' dd]]</li>
+	 * <li>ord-date-element  = yyyy ['-' DDD]</li>
+	 * <li>week-date-element = xxxx '-W' ww ['-' e]</li>
+	 * <li>time-element      = HH [minute-element] | [fraction]</li>
+	 * <li>minute-element    = ':' mm [second-element] | [fraction]</li>
+	 * <li>second-element    = ':' ss [fraction]</li>
+	 * <li>fraction          = ('.' | ',') digit+</li>
 	 * </ul> 
 	 * <p>
 	 * If the value is a Long number, it has to have the time in milliseconds.
@@ -186,9 +121,7 @@ public class Converter {
 
 		try {
 			if (value instanceof String) {
-				String format = determineDateFormat((String) value);
-				DateFormat df = new SimpleDateFormat(format);
-				result = df.parse((String) value);
+				result = LocalDateTime.parse((String) value).toDate();
 			} else if (value instanceof Long) {
 				calendar.setTimeInMillis((Long) value);
 				result = calendar.getTime();

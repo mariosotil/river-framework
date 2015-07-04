@@ -6,8 +6,8 @@ import lotus.domino.NotesThread;
 
 import org.junit.Test;
 import org.riverframework.River;
-import org.riverframework.Session;
-import org.riverframework.core.Credentials;
+import org.riverframework.core.Session;
+import org.riverframework.utils.Credentials;
 
 public class LotusNotesSessionTest {
 

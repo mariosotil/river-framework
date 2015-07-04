@@ -10,7 +10,7 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
-import org.riverframework.core.Credentials;
+import org.riverframework.utils.Credentials;
 
 public abstract class AbstractSessionTest {
 	protected Context context = null;

@@ -3,7 +3,7 @@ package org.riverframework.wrapper.lotus.domino._local;
 import lotus.domino.NotesThread;
 
 import org.riverframework.River;
-import org.riverframework.core.Credentials;
+import org.riverframework.utils.Credentials;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;

@@ -1,8 +1,8 @@
 package org.riverframework.wrapper.org.openntf.domino._remote;
 
 import org.riverframework.River;
-import org.riverframework.Session;
-import org.riverframework.core.Credentials;
+import org.riverframework.core.Session;
+import org.riverframework.utils.Credentials;
 
 public final class Context extends org.riverframework.core.AbstractContext {
 	@Override

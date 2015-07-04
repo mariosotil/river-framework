@@ -9,11 +9,11 @@ import org.riverframework.River;
 import org.riverframework.wrapper.AbstractNativeReference;
 import org.riverframework.wrapper.Base;
 
-class DefaultNativeReference extends AbstractNativeReference<org.openntf.domino.Base> {
+class DefaultNativeReference extends AbstractNativeReference<org.openntf.domino.Base<?>> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
-	public DefaultNativeReference(Base<org.openntf.domino.Base> referent,
-			ReferenceQueue<Base<org.openntf.domino.Base>> q) { 
+	public DefaultNativeReference(Base<org.openntf.domino.Base<?>> referent,
+			ReferenceQueue<Base<org.openntf.domino.Base<?>>> q) { 
 		super(referent, q);
 	}
 

@@ -9,15 +9,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.riverframework.River;
+import org.riverframework.utils.LoggerHelper;
 
-public class StressTest extends org.riverframework.wrapper.lotus.domino.AbstractStressTest {
+public class StressTest extends org.riverframework.wrapper.AbstractStressTest {
 	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	@BeforeClass
 	public static void before() {
 		NotesThread.sinitThread();
 
-		River.setLevel(log, Level.FINE);
+		LoggerHelper lh = new LoggerHelper(log);
+		lh.clearHandlers().addConsoleHandler().setLevel(Level.OFF);
 
 		maxDocumentsForStressTest = 10000;
 

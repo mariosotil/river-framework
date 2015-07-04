@@ -11,7 +11,7 @@ import java.util.Vector;
 import org.openntf.domino.DateTime;
 import org.openntf.domino.Item;
 
-import org.riverframework.Field;
+import org.riverframework.core.Field;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.core.DefaultField;
@@ -26,13 +26,13 @@ import org.riverframework.wrapper.Document;
  * @author mario.sotil@gmail.com
  * @version 0.0.x
  */
-class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.Document<org.openntf.domino.Base> {
+class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.Document<org.openntf.domino.Base<?>> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	protected org.riverframework.wrapper.Session<org.openntf.domino.Base> _session = null;
+	protected org.riverframework.wrapper.Session<org.openntf.domino.Base<?>> _session = null;
 	protected volatile org.openntf.domino.Document __doc = null;
 	private String objectId = null;
 
-	protected DefaultDocument(org.riverframework.wrapper.Session<org.openntf.domino.Base> s, org.openntf.domino.Document d) {
+	protected DefaultDocument(org.riverframework.wrapper.Session<org.openntf.domino.Base<?>> s, org.openntf.domino.Document d) {
 		__doc = d;
 		_session = s;
 		synchronized(_session) {
@@ -107,7 +107,7 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	}
 
 	@Override
-	public Document<org.openntf.domino.Base> recalc() {
+	public Document<org.openntf.domino.Base<?>> recalc() {
 		synchronized (_session){
 			__doc.computeWithForm(true, false);
 		}
@@ -254,7 +254,6 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Map<String, Field> getFields() {
 		Map<String, Field> result = null;
 
@@ -329,7 +328,7 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	}
 
 	@Override
-	public Document<org.openntf.domino.Base> delete() {
+	public Document<org.openntf.domino.Base<?>> delete() {
 		synchronized (_session){
 			if (__doc != null) {
 				__doc.removePermanently(true);
@@ -341,7 +340,7 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	}
 
 	@Override
-	public Document<org.openntf.domino.Base> save() {
+	public Document<org.openntf.domino.Base<?>> save() {
 		synchronized (_session){
 			__doc.save(true, false);
 		}

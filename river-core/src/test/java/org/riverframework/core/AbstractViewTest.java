@@ -9,12 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
-import org.riverframework.Database;
-import org.riverframework.Document;
-import org.riverframework.DocumentIterator;
 import org.riverframework.RandomString;
-import org.riverframework.Session;
-import org.riverframework.View;
 
 public abstract class AbstractViewTest {
 	final String TEST_FORM = "TestForm";
@@ -38,7 +33,7 @@ public abstract class AbstractViewTest {
 				}
 
 				session = context.getSession();
-				database = session.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
+				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 			}
 		} catch (Exception e) {
@@ -56,11 +51,11 @@ public abstract class AbstractViewTest {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		RandomString rs = new RandomString(10);
-		View view = database.getView(DefaultView.class, TEST_VIEW);
+		View view = database.getView(TEST_VIEW);
 
 		assertTrue("The test view could not be created in the test database.", view.isOpen());
 
-		Document doc = database.createDocument(DefaultDocument.class).setField("Form", TEST_FORM);
+		Document doc = database.createDocument().setField("Form", TEST_FORM);
 
 		String key = rs.nextString();
 
@@ -68,11 +63,11 @@ public abstract class AbstractViewTest {
 		view.refresh();
 
 		doc = null;
-		doc = view.getDocumentByKey(DefaultDocument.class, key);
+		doc = view.getDocumentByKey(key);
 		assertTrue("The test document could not be found in the view.", doc.isOpen());
 
 		doc = null;
-		doc = view.getDocumentByKey(DefaultDocument.class, "%%%%%");
+		doc = view.getDocumentByKey("%%%%%");
 		assertFalse("It was found an unexistent document in the view.", doc.isOpen());
 
 		/*
@@ -105,12 +100,12 @@ public abstract class AbstractViewTest {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		// RandomString rs = new RandomString(10);
-		View view = database.getView(DefaultView.class, TEST_VIEW);
+		View view = database.getView(TEST_VIEW);
 
 		assertTrue("The test view could not be found in the test database.", view.isOpen());
 
 		view = null;
-		view = database.getView(DefaultView.class, "%%%$%$%$%%$");
+		view = database.getView("%%%$%$%$%%$");
 
 		assertFalse("An unexistant view could be found in the test database.", view.isOpen());
 	}
@@ -122,10 +117,10 @@ public abstract class AbstractViewTest {
 		database.getAllDocuments().deleteAll();
 
 		for (int i = 0; i < 100; i++) {
-			database.createDocument(DefaultDocument.class).setField("Form", TEST_FORM).setField("Counter", i).save();
+			database.createDocument().setField("Form", TEST_FORM).setField("Counter", i).save();
 		}
 
-		View view = database.getView(DefaultView.class, TEST_VIEW);
+		View view = database.getView(TEST_VIEW);
 		view.refresh();
 		DocumentIterator col = view.getAllDocuments();
 
@@ -145,12 +140,12 @@ public abstract class AbstractViewTest {
 		database.getAllDocuments().deleteAll();
 
 		for (int i = 0; i < 10; i++) {
-			database.createDocument(DefaultDocument.class).setField("Form", TEST_FORM).setField("Text", "I_AM_THE_" + i).save();
+			database.createDocument().setField("Form", TEST_FORM).setField("Text", "I_AM_THE_" + i).save();
 		}
 
 		database.refreshSearchIndex();
 
-		DocumentIterator col = database.getView(DefaultView.class, TEST_VIEW).search("I_AM_THE_4");
+		DocumentIterator col = database.getView(TEST_VIEW).search("I_AM_THE_4");
 
 		assertTrue("There is a problem finding documents from the database.", col.hasNext());
 

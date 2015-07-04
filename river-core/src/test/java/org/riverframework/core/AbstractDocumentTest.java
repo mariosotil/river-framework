@@ -12,11 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
-import org.riverframework.Database;
-import org.riverframework.Document;
-import org.riverframework.Field;
 import org.riverframework.RandomString;
-import org.riverframework.Session;
 
 public abstract class AbstractDocumentTest {
 	protected Session session = null;
@@ -40,9 +36,9 @@ public abstract class AbstractDocumentTest {
 				}
 
 				session = context.getSession();
-				database = session.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
+				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				complexDatabase = session
-						.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
+						.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 
 				database.getAllDocuments().deleteAll();
 			}
@@ -61,7 +57,7 @@ public abstract class AbstractDocumentTest {
 	public void testCompareFieldValue() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 		assertFalse("A document was created but it is set as modified", doc.isModified());
@@ -130,7 +126,7 @@ public abstract class AbstractDocumentTest {
 
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 		assertFalse("A document was created but it is set as modified", doc.isModified());
@@ -156,7 +152,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsInteger() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 		assertFalse("A document was created but it is set as modified", doc.isModified());
@@ -175,7 +171,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsLong() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 		assertFalse("A document was created but it is set as modified", doc.isModified());
@@ -194,7 +190,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsDouble() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 		assertFalse("A document was created but it is set as modified", doc.isModified());
@@ -214,7 +210,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsDate() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 		assertFalse("A document was created but it is set as modified", doc.isModified());
@@ -239,7 +235,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsArrayString() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 		assertFalse("A document was created but it is set as modified", doc.isModified());
@@ -258,7 +254,7 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsVector() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 		assertFalse("A document was created but it is set as modified", doc.isModified());
@@ -279,7 +275,7 @@ public abstract class AbstractDocumentTest {
 
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 		assertFalse("A document was created but it is set as modified", doc.isModified());
@@ -310,7 +306,7 @@ public abstract class AbstractDocumentTest {
 	public void testGetIsFieldEmpty() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 
@@ -358,7 +354,7 @@ public abstract class AbstractDocumentTest {
 	public void testHasField() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 		assertFalse("The document is new and is set as a conflict.", doc.hasField("THIS_FIELD_DOES_NOT_EXIST"));
@@ -373,12 +369,12 @@ public abstract class AbstractDocumentTest {
 	public void testIsOpen() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document doc = database.getDocument(DefaultDocument.class);
+		Document doc = database.getDocument();
 
 		assertFalse("The document is not being detected as NOT open.", doc.isOpen());
 
 		doc = null;
-		doc = database.createDocument(DefaultDocument.class);
+		doc = database.createDocument();
 
 		assertTrue("The document could not be created", doc.isOpen());
 	}
@@ -387,7 +383,7 @@ public abstract class AbstractDocumentTest {
 	public void testIsNew() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		assertTrue("The document is new and is not detected like that.", doc.isNew());
 	}
@@ -396,7 +392,7 @@ public abstract class AbstractDocumentTest {
 	public void testGetUniversalId() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 		String uniqueId = doc.getObjectId();
 
 		assertFalse("It could not be retrieved de document's unique id.", uniqueId.equals(""));
@@ -423,138 +419,93 @@ public abstract class AbstractDocumentTest {
 
 		RandomString rs = new RandomString(10);
 		String uniqueId = "";
-		DefaultDocument doc = database.createDocument(DefaultDocument.class);
+		Document doc = database.createDocument();
 
 		doc.setField("Form", TEST_FORM);
 		uniqueId = doc.getObjectId();
 
 		doc = null;
-		doc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = database.getDocument(uniqueId);
 
 		assertFalse("A document that was not saved was found in the database.", doc.isOpen());
 
 		doc = null;
-		doc = database.createDocument(DefaultDocument.class);
+		doc = database.createDocument();
 		uniqueId = doc.getObjectId();
 		doc.save(false);
 		doc = null;
-		doc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = database.getDocument(uniqueId);
 
 		assertFalse(
 				"A document was created, NOT MODIFIED and saved with NOT FORCE parameter was found in the database.",
 				doc.isOpen());
 
 		doc = null;
-		doc = database.createDocument(DefaultDocument.class);
+		doc = database.createDocument();
 		uniqueId = doc.getObjectId();
 		doc.save();
 		doc = null;
-		doc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = database.getDocument(uniqueId);
 
 		assertFalse(
 				"A document was created, NOT MODIFIED and saved with A IMPLICIT NOT FORCE parameter was found in the database.",
 				doc.isOpen());
 
 		doc = null;
-		doc = database.createDocument(DefaultDocument.class);
+		doc = database.createDocument();
 		uniqueId = doc.getObjectId();
 		doc.save(false);
 		doc = null;
-		doc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = database.getDocument(uniqueId);
 
 		assertFalse(
 				"A document was created, NOT MODIFIED and saved with NOT FORCE parameter was found in the database.",
 				doc.isOpen());
 
 		doc = null;
-		doc = database.createDocument(DefaultDocument.class);
+		doc = database.createDocument();
 		uniqueId = doc.getObjectId();
 		doc.save(true);
 		doc = null;
-		doc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = database.getDocument(uniqueId);
 
 		assertTrue(
 				"A document was created, NOT MODIFIED and saved with FORCE parameter was not found in the database.",
 				doc.isOpen());
 
 		doc = null;
-		doc = database.createDocument(DefaultDocument.class);
+		doc = database.createDocument();
 		uniqueId = doc.getObjectId();
 		doc.save(true);
 		doc = null;
-		doc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = database.getDocument(uniqueId);
 
 		assertTrue(
 				"A document was created, NOT MODIFIED and saved with FORCE parameter was not found in the database.",
 				doc.isOpen());
 
 		doc = null;
-		doc = database.createDocument(DefaultDocument.class);
+		doc = database.createDocument();
 		uniqueId = doc.getObjectId();
 		doc.setField("SOME_TEST_FIELD", rs.nextString());
 		doc.save(false);
 		doc = null;
-		doc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = database.getDocument(uniqueId);
 
 		assertTrue(
 				"A document was created, MODIFIED and saved with NOT FORCE parameter was not found in the database.",
 				doc.isOpen());
 
 		doc = null;
-		doc = database.createDocument(DefaultDocument.class);
+		doc = database.createDocument();
 		uniqueId = doc.getObjectId();
 		doc.setField("SOME_TEST_FIELD", rs.nextString());
 		doc.save(true);
 		doc = null;
-		doc = database.getDocument(DefaultDocument.class, uniqueId);
+		doc = database.getDocument(uniqueId);
 
 		assertTrue(
 				"A document was created, MODIFIED and saved with FORCE parameter was not found in the database.",
 				doc.isOpen());
 	}
-
-	// Classes to testing the implementations
-	static class SimpleRequest extends AbstractDocument<SimpleRequest> {
-		protected SimpleRequest(Database d, org.riverframework.wrapper.Document<?> _d) {
-			super(d, _d);
-		}
-
-		@Override
-		protected SimpleRequest internalRecalc() {
-			super.internalRecalc();
-
-			RandomString rs = new RandomString(10);
-			setField("CALCULATED", rs.nextString());
-
-			return this;
-		}
-
-		@Override
-		protected SimpleRequest getThis() {
-			return this;
-		}
-	}
-
-	static class ComplexDatabase extends AbstractDatabase {
-
-		protected ComplexDatabase(Session s, org.riverframework.wrapper.Database<?> obj) {
-			super(s, obj);
-		}
-	}
-
-	@Test
-	public void testInternalRecalc() {
-		assertTrue("The test database Beach.nsf could not be opened as a ComplexDatabase .",
-				complexDatabase.isOpen());
-
-		SimpleRequest simple = complexDatabase.createDocument(SimpleRequest.class);
-		simple.recalc();
-		String calculated = simple.getFieldAsString("CALCULATED");
-		String non_existent = simple.getFieldAsString("NON_EXISTENT");
-
-		assertTrue("A non-existent field returned the value '" + non_existent + "'.",
-				non_existent.equals(""));
-		assertFalse("There is a problem with the recalc() method.", calculated.equals(""));
-	}
-
 }

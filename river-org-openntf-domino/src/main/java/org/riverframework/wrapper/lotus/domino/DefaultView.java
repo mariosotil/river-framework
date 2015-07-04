@@ -1,18 +1,17 @@
 package org.riverframework.wrapper.lotus.domino;
 
 import org.riverframework.River;
-import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultView extends DefaultBase implements org.riverframework.wrapper.View<org.openntf.domino.Base> {
+class DefaultView extends DefaultBase implements org.riverframework.wrapper.View<org.openntf.domino.Base<?>> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	protected org.riverframework.wrapper.Session<org.openntf.domino.Base> _session = null;
+	protected org.riverframework.wrapper.Session<org.openntf.domino.Base<?>> _session = null;
 	protected volatile org.openntf.domino.View __view = null;
 	private String objectId = null;
 
-	protected DefaultView(org.riverframework.wrapper.Session<org.openntf.domino.Base> s, org.openntf.domino.View v) {
+	protected DefaultView(org.riverframework.wrapper.Session<org.openntf.domino.Base<?>> s, org.openntf.domino.View v) {
 		__view = v;
 		_session = s;
 		synchronized (_session){
@@ -50,14 +49,14 @@ class DefaultView extends DefaultBase implements org.riverframework.wrapper.View
 	}
 
 	@Override
-	public Document<org.openntf.domino.Base> getDocumentByKey(String key) {
+	public Document<org.openntf.domino.Base<?>> getDocumentByKey(String key) {
 		synchronized (_session){
 			org.openntf.domino.Document __doc = null;
 
 			__doc = __view.getDocumentByKey(key, true);
 
 			@SuppressWarnings("unchecked")
-			Document<org.openntf.domino.Base> doc = _session.getFactory().getDocument(__doc);
+			Document<org.openntf.domino.Base<?>> doc = _session.getFactory().getDocument(__doc);
 
 			return doc;
 		}
@@ -69,31 +68,31 @@ class DefaultView extends DefaultBase implements org.riverframework.wrapper.View
 	}
 
 	@Override
-	public DocumentIterator<org.openntf.domino.Base> getAllDocuments() {
+	public DocumentIterator<org.openntf.domino.Base<?>> getAllDocuments() {
 		synchronized (_session){
 			org.openntf.domino.ViewEntryCollection _col;
 			_col = __view.getAllEntries();
 
 			@SuppressWarnings("unchecked")
-			DocumentIterator<org.openntf.domino.Base> result = _session.getFactory().getDocumentIterator(_col);
+			DocumentIterator<org.openntf.domino.Base<?>> result = _session.getFactory().getDocumentIterator(_col);
 			return result;
 		}
 	}
 
 	@Override
-	public DocumentIterator<org.openntf.domino.Base> getAllDocumentsByKey(Object key) {
+	public DocumentIterator<org.openntf.domino.Base<?>> getAllDocumentsByKey(Object key) {
 		synchronized (_session){
 			org.openntf.domino.DocumentCollection _col;
 			_col = __view.getAllDocumentsByKey(key, true);
 
 			@SuppressWarnings("unchecked")
-			DocumentIterator<org.openntf.domino.Base> result = _session.getFactory().getDocumentIterator(_col);
+			DocumentIterator<org.openntf.domino.Base<?>> result = _session.getFactory().getDocumentIterator(_col);
 			return result;
 		}
 	}
 
 	@Override
-	public View<org.openntf.domino.Base> refresh() {
+	public View<org.openntf.domino.Base<?>> refresh() {
 		synchronized (_session){
 			__view.refresh();
 		}
@@ -111,7 +110,7 @@ class DefaultView extends DefaultBase implements org.riverframework.wrapper.View
 	}
 
 	@Override
-	public DocumentIterator<org.openntf.domino.Base> search(String query) {
+	public DocumentIterator<org.openntf.domino.Base<?>> search(String query) {
 		synchronized (_session){
 			org.openntf.domino.View __temp = null;
 
@@ -119,7 +118,7 @@ class DefaultView extends DefaultBase implements org.riverframework.wrapper.View
 			__temp.FTSearch(query);
 
 			@SuppressWarnings("unchecked")
-			DocumentIterator<org.openntf.domino.Base> _iterator = _session.getFactory().getDocumentIterator(__temp);
+			DocumentIterator<org.openntf.domino.Base<?>> _iterator = _session.getFactory().getDocumentIterator(__temp);
 
 			return _iterator;
 		}

@@ -5,7 +5,7 @@ import lotus.domino.NotesThread;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-public class CounterTest extends org.riverframework.core.AbstractCounterTest {
+public class CounterTest extends org.riverframework.extended.AbstractCounterTest {
 	@BeforeClass
 	public static void before() {
 		NotesThread.sinitThread();

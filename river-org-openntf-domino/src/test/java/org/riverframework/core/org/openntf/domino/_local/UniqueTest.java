@@ -5,7 +5,7 @@ import lotus.domino.NotesThread;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-public class UniqueTest extends org.riverframework.core.AbstractUniqueTest {
+public class UniqueTest extends org.riverframework.extended.AbstractUniqueTest {
 	@BeforeClass
 	public static void before() {
 		NotesThread.sinitThread();

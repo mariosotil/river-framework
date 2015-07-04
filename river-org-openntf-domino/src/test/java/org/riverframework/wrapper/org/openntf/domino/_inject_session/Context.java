@@ -5,8 +5,8 @@ import lotus.domino.NotesFactory;
 
 import org.riverframework.River;
 import org.riverframework.RiverException;
-import org.riverframework.Session;
-import org.riverframework.core.Credentials;
+import org.riverframework.core.Session;
+import org.riverframework.utils.Credentials;
 
 public final class Context extends org.riverframework.core.AbstractContext {
 	@Override

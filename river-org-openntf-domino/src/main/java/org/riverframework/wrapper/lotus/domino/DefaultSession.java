@@ -1,7 +1,6 @@
 package org.riverframework.wrapper.lotus.domino;
 
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.riverframework.River;
@@ -9,14 +8,14 @@ import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Session;
 
-public class DefaultSession extends DefaultBase implements Session<org.openntf.domino.Base> {
+public class DefaultSession extends DefaultBase implements Session<org.openntf.domino.Base<?>> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	private final DefaultFactory factory = DefaultFactory.getInstance();
 
 	private volatile org.openntf.domino.Session __session = null;
 	private String objectId = null;
 
-	protected DefaultSession(org.riverframework.wrapper.Session<org.openntf.domino.Base> dummy, org.openntf.domino.Session obj) {
+	protected DefaultSession(org.riverframework.wrapper.Session<org.openntf.domino.Base<?>> dummy, org.openntf.domino.Session obj) {
 		__session = obj;
 		synchronized (this){
 			objectId = calcObjectId(__session);
@@ -62,10 +61,10 @@ public class DefaultSession extends DefaultBase implements Session<org.openntf.d
 	}
 
 	@Override
-	public Database<org.openntf.domino.Base> createDatabase (String... location) {
+	public Database<org.openntf.domino.Base<?>> createDatabase (String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
-		Database<org.openntf.domino.Base> _database = null;
+		Database<org.openntf.domino.Base<?>> _database = null;
 		org.openntf.domino.Database __database = null;
 
 		if (location.length != 2)
@@ -96,7 +95,7 @@ public class DefaultSession extends DefaultBase implements Session<org.openntf.d
 	}
 
 	@Override
-	public Database<org.openntf.domino.Base> getDatabase(String... location) {
+	public Database<org.openntf.domino.Base<?>> getDatabase(String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
 		synchronized (this){
@@ -132,7 +131,7 @@ public class DefaultSession extends DefaultBase implements Session<org.openntf.d
 				}
 			}
 
-			Database<org.openntf.domino.Base> database = getFactory().getDatabase(__database);
+			Database<org.openntf.domino.Base<?>> database = getFactory().getDatabase(__database);
 			return database;
 		}
 	}

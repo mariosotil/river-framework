@@ -1,8 +1,8 @@
 package org.riverframework.wrapper;
 
 import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,16 +15,16 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 
 	protected Class<? extends AbstractNativeReference<N>> nativeReferenceClass = null;
 	protected volatile org.riverframework.wrapper.Session<N> _session = null;
-	protected volatile ConcurrentHashMap<String, AbstractNativeReference<N>> weakWrapperMap = null;
-	protected volatile ReferenceQueue<Base<N>> queue = null;
+	protected volatile Map<String, AbstractNativeReference<N>> wrapperMap = null;
+	protected volatile ReferenceQueue<Base<N>> wrapperQueue = null;
 
 	private Constructor<?> constructorNativeReference = null;
 
 	protected AbstractFactory(Class<? extends AbstractNativeReference<N>> nativeReferenceClass) {
 		this.nativeReferenceClass = nativeReferenceClass;
 
-		weakWrapperMap = new ConcurrentHashMap<String, AbstractNativeReference<N>>();
-		queue = new ReferenceQueue<Base<N>>();
+		wrapperMap = new ConcurrentHashMap<String, AbstractNativeReference<N>>();
+		wrapperQueue = new ReferenceQueue<Base<N>>();
 
 		try {
 			constructorNativeReference = nativeReferenceClass.getDeclaredConstructor(Base.class, ReferenceQueue.class);
@@ -45,7 +45,9 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 		try {
 			Constructor<?> constructor = outputClass.getDeclaredConstructor(org.riverframework.wrapper.Session.class, inputClass);
 			constructor.setAccessible(true);
+
 			_wrapper = outputClass.cast(constructor.newInstance(_session, __obj));
+
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
@@ -55,8 +57,8 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 
 	private void registerReference(String id, Base<N> _wrapper) {
 		try {
-			AbstractNativeReference<N> ref = nativeReferenceClass.cast(constructorNativeReference.newInstance(_wrapper, queue));
-			weakWrapperMap.put(id, ref);
+			AbstractNativeReference<N> ref = nativeReferenceClass.cast(constructorNativeReference.newInstance(_wrapper, wrapperQueue));
+			wrapperMap.put(id, ref);
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
@@ -76,11 +78,37 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 				// Null object pattern
 				actionTaken = "Created a null object";
 				_wrapper = createWrapper(outputClass, inputClass, null);
+
+			} else if (__obj instanceof String) {
+				// Retrieving directly from the cache
+				String id = (String) __obj;
+				AbstractNativeReference<N> ref = nativeReferenceClass.cast(wrapperMap.get(id));
+
+				if (ref == null) {
+					_wrapper = createWrapper(outputClass, inputClass, null);
+				} else {
+					_wrapper = (U) ref.get();
+
+					if (_wrapper == null) {
+						_wrapper = createWrapper(outputClass, inputClass, null);
+					} else {
+						N __native = _wrapper.getNativeObject();
+
+						if (isValidNativeObject(__native)) {
+							// Do nothing. Return the found wrapper.
+
+						} else {
+							// There's no a valid native object
+							_wrapper = createWrapper(outputClass, inputClass, null);
+						}
+					}
+				}
 			} else {
 				// Looking for the object in the cache
 				_wrapper = createWrapper(outputClass, inputClass, __obj);
 				String id = _wrapper.getObjectId();
-				AbstractNativeReference<N> ref = nativeReferenceClass.cast(weakWrapperMap.get(id));
+
+				AbstractNativeReference<N> ref = nativeReferenceClass.cast(wrapperMap.get(id));
 
 				if (ref == null) {
 					// It's no registered in the cache
@@ -89,7 +117,7 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 				} else {
 					// It's registered in the cache
 					N __native = ref.getNativeObject();
-					U _oldWrapper = (U) ((WeakReference<Base<N>>) ref).get();
+					U _oldWrapper = (U) ref.get();
 
 					if (isValidNativeObject(__native)) {
 						// There's a valid native object
@@ -160,8 +188,8 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 
 	@Override
 	public void close() {
-		log.fine("Cleaning the last objects in the cache: " + weakWrapperMap.size());
-		weakWrapperMap.clear();
+		log.fine("Cleaning the last objects in the cache: " + wrapperMap.size());
+		wrapperMap.clear();
 		log.info("Factory closed.");
 	}
 

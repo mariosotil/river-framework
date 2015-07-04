@@ -8,11 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
-import org.riverframework.Database;
-import org.riverframework.Document;
 import org.riverframework.RandomString;
-import org.riverframework.Session;
-import org.riverframework.DocumentIterator;
 
 public abstract class AbstractDocumentIteratorTest {
 	protected Session session = null;
@@ -35,7 +31,7 @@ public abstract class AbstractDocumentIteratorTest {
 				}
 
 				session = context.getSession();
-				database = session.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
+				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 			}
 		} catch (Exception e) {

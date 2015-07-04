@@ -1,9 +1,5 @@
 package org.riverframework.wrapper.lotus.domino;
 
-// import java.util.logging.Level;
-// import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
 import lotus.domino.NotesException;
 
 import org.riverframework.River;
@@ -16,12 +12,15 @@ import org.riverframework.wrapper.View;
 class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.Database<lotus.domino.Base> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<?> _session = null;
+	protected org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
 	protected volatile lotus.domino.Database __database = null;
 	private String objectId = null;
 
+	@SuppressWarnings("unchecked")
 	protected DefaultDatabase(org.riverframework.wrapper.Session<?> _s, lotus.domino.Database __obj) {
 		__database = __obj;
 		_session = _s;
+		_factory = _s.getFactory();
 		// synchronized (_session){
 		objectId = calcObjectId(__database);
 		// }
@@ -103,8 +102,7 @@ class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.
 			throw new RiverException(e);
 		}
 
-		@SuppressWarnings("unchecked")
-		Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
+		Document<lotus.domino.Base> doc = _factory.getDocument(__doc);
 
 		return doc;
 		// }
@@ -115,50 +113,40 @@ class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.
 	{
 		// synchronized (_session){
 		lotus.domino.Document __doc = null;
+		Document<lotus.domino.Base> doc = null;
 
 		if (parameters.length > 0) {
 			String id = parameters[0];
 
-			String[] temp = id.split(Pattern.quote(River.ID_SEPARATOR));
-			if (temp.length == 3) {
-				id = temp[2];
-			}
+			doc = _factory.getDocument(id);
 
-			try {
-				if (id.length() == 32) {
-					__doc = __database.getDocumentByUNID(id);
-				}
-			} catch (Exception e) {
-				// Maybe it was an invalid UNID. We just ignore the exception.
-				//					try {
-				//						if (__doc != null) __doc.recycle();
-				//					} catch (NotesException e1) {
-				//						log.log(Level.WARNING, "Exception while getting the object " + id, e);
-				//
-				//					} finally {
-				//						__doc = null;
-				//					}
-			}
+			if (!doc.isOpen()) { 
+				//			String[] temp = id.split(Pattern.quote(River.ID_SEPARATOR));
+				//			if (temp.length == 3) {
+				//				id = temp[2];
+				//			}
 
-			try {
-				if (__doc == null && id.length() == 8) {
-					__doc = __database.getDocumentByID(id);
+				try {
+					if (id.length() == 32) {
+						__doc = __database.getDocumentByUNID(id);
+					}
+				} catch (Exception e) {
+					// Do nothing
 				}
-			} catch (Exception e) {
-				// Maybe it was an invalid UNID. We just ignore the exception.
-				//					try {
-				//						 if (__doc != null) __doc.recycle();
-				//					} catch (NotesException e1) {
-				//						 log.log(Level.WARNING, "Exception while getting the object " + id, e);
-				//
-				//					} finally {
-				//						__doc = null;
-				//					}
+
+				try {
+					if (__doc == null && id.length() == 8) {
+						__doc = __database.getDocumentByID(id);
+					}
+				} catch (Exception e) {
+					// Do nothing
+				}
+				
+				doc = _factory.getDocument(__doc);
 			}
+		} else {
+			doc = _factory.getDocument((lotus.domino.Document) null);
 		}
-
-		@SuppressWarnings("unchecked")
-		Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
 
 		return doc;
 		// }
@@ -215,8 +203,7 @@ class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.
 			throw new RiverException(e);
 		}
 
-		@SuppressWarnings("unchecked")
-		View<lotus.domino.Base> _view = _session.getFactory().getView(__view);
+		View<lotus.domino.Base> _view = _factory.getView(__view);
 		return _view;
 		// }
 	}
@@ -232,8 +219,7 @@ class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.
 			throw new RiverException(e);
 		}
 
-		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(_col);
+		DocumentIterator<lotus.domino.Base> _iterator = _factory.getDocumentIterator(_col);
 		return _iterator;
 		// }
 	}
@@ -249,8 +235,7 @@ class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.
 			throw new RiverException(e);
 		}
 
-		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base> _iterator = _session.getFactory().getDocumentIterator(_col);
+		DocumentIterator<lotus.domino.Base> _iterator = _factory.getDocumentIterator(_col);
 		return _iterator;
 		// }
 	}

@@ -13,10 +13,10 @@ import lotus.domino.DateTime;
 import lotus.domino.Item;
 import lotus.domino.NotesException;
 
-import org.riverframework.Field;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.core.DefaultField;
+import org.riverframework.core.Field;
 import org.riverframework.utils.Converter;
 import org.riverframework.wrapper.Document;
 
@@ -43,23 +43,33 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	}
 
 	public String calcObjectId(lotus.domino.Document __doc) {
-		String objectId = "";
+		String objectId = null;
+		//long start = System.nanoTime();
 		if (__doc != null && !isRecycled(__doc)) {
+
 			try {
 				lotus.domino.Database __database = __doc.getParentDatabase();
-
-				StringBuilder sb = new StringBuilder(1024);
+				StringBuilder sb = new StringBuilder(512);
 				sb.append(__database.getServer());
 				sb.append(River.ID_SEPARATOR);
 				sb.append(__database.getFilePath());
 				sb.append(River.ID_SEPARATOR);
-				sb.append(__doc.getUniversalID());
+
+				// sb.append(__doc.getUniversalID());  
+				// Calling getUniversalID() takes 2~3ms on an Intel Core i7-3770 3.40GHz
+				// The getCpp function takes only 0.02ms in the same processor
+				
+				long cpp = getCpp(__doc);
+				sb.append(cpp);
 
 				objectId = sb.toString();
+
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			}	
 		}
+		//				long end = System.nanoTime();
+		//				System.out.println(">>>>>>> O7=" + (((double)(end - start))/1000000));
 
 		return objectId;
 	}
@@ -162,12 +172,16 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 	@Override
 	public String getFieldAsString(String field) {
 		String result = null;
-		try {
+		try {			
+			//			long start = System.nanoTime();
+
 			Vector<?> value = null;
 			// synchronized (_session){
 			value = __doc.getItemValue(field);  // We must not use getItemValueString(field) because it does not converts from the other types to string 
 			// }
 			result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
+			//			long end = System.nanoTime();
+			//			System.out.println("FS2=" + (((double)(end - start))/1000000));
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -413,15 +427,15 @@ class DefaultDocument extends DefaultBase implements org.riverframework.wrapper.
 
 		// log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
 
-//		synchronized (_session){
-//			try {
-//				if (__doc != null) 	__doc.recycle();			// <== Very bad idea? 
-//			} catch (NotesException e) {
-//				throw new RiverException(e);
-//			} finally {
-//				__doc = null;
-//			}
-//		}
+		//		synchronized (_session){
+		//			try {
+		//				if (__doc != null) 	__doc.recycle();			// <== Very bad idea? 
+		//			} catch (NotesException e) {
+		//				throw new RiverException(e);
+		//			} finally {
+		//				__doc = null;
+		//			}
+		//		}
 	}	
 
 	@Override

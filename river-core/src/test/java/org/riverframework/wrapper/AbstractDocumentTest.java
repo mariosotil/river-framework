@@ -13,8 +13,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
-import org.riverframework.Field;
 import org.riverframework.RandomString;
+import org.riverframework.core.Field;
 
 public abstract class AbstractDocumentTest {
 	protected Session<?> session = null;

@@ -158,7 +158,7 @@ public class ConverterTest {
 		assertTrue("Failed from a right Long to Date", result.getTime() == 1425960000000L);
 		
 		// TODO: add tests for each date pattern
-		obj = "2015/03/10";
+		obj = "2015-03-10";
 		result = Converter.getAsDate(obj);
 		assertTrue("Failed from a right String to Date", result.getTime() == 1425960000000L);
 

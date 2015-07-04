@@ -66,14 +66,6 @@ class DefaultView extends DefaultBase implements org.riverframework.wrapper.View
 		try {
 			__doc = __view.getDocumentByKey(key, true);
 		} catch (NotesException e) {
-			//				try {
-			//					if (__doc != null) __doc.recycle();				<== Very bad idea? 
-			//				} catch (Exception e1) {
-			//					log.log(Level.WARNING, "Exception while getting the document woth the key " + key, e1);
-			//				} finally {
-			//					__doc = null;
-			//				}
-
 			throw new RiverException(e);
 		}
 

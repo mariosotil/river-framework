@@ -75,6 +75,11 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 	}
 
 	@Override
+	public Document<lotus.domino.Base> getDocument(String objectId) {
+		return getWrapper(DefaultDocument.class, lotus.domino.Document.class, objectId);
+	}
+
+	@Override
 	public Document<lotus.domino.Base> getDocument(lotus.domino.Base __obj) {
 		return getWrapper(DefaultDocument.class, lotus.domino.Document.class, __obj);
 	}
@@ -113,7 +118,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 
 		if (_session == null) return;
 
-		while ((ref = queue.poll()) != null) {
+		while ((ref = wrapperQueue.poll()) != null) { 
 			if (!cleaning) {
 				start = System.nanoTime();
 				cleaning = true;
@@ -141,7 +146,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 					}
 
 					try {
-						weakWrapperMap.remove(id);
+						wrapperMap.remove(id);
 						nat.close();
 					} catch (Exception ex) {
 						log.log(Level.WARNING, "Exception at recycling", ex);

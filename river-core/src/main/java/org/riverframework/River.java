@@ -5,14 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
-import org.riverframework.core.AbstractSession;
 import org.riverframework.core.DefaultSession;
+import org.riverframework.core.Session;
+import org.riverframework.utils.LoggerHelper;
 
 /**
  * This static class is used for load a River NoSQL wrapper, and create and close core Session objects for control the
@@ -38,10 +36,10 @@ public class River {
 	public static final String ID_SEPARATOR = "**"; 
 	
 	public static Object lock = new Object();
-	private final static Map<String, AbstractSession> map = new HashMap<String, AbstractSession>();
+	private final static Map<String, Session> map = new HashMap<String, Session>();
 
 	static {
-		setLevel(LOG_ROOT, Level.SEVERE);
+		new LoggerHelper(LOG_ROOT).clearHandlers().setLevel(Level.SEVERE);
 	}
 
 	private River() {
@@ -67,7 +65,7 @@ public class River {
 		org.riverframework.wrapper.Session<?> _session = null;
 
 		// Trying to retrieve the session from the map
-		AbstractSession session = map.get(wrapper);
+		Session session = map.get(wrapper);
 
 		if (session != null && session.isOpen()) {
 			// There is an open session
@@ -99,9 +97,6 @@ public class River {
 
 				if (parameters.length > 0) {
 					// There are parameters. So, we try to create a new one.
-//					method = clazzFactory.getDeclaredMethod("getSession", Object[].class);
-//					method.setAccessible(true);
-//					_session = (org.riverframework.wrapper.Session<?>) method.invoke(_factory, new Object[] { parameters });
 					_session = (org.riverframework.wrapper.Session<?>) _factory.getSession(parameters);
 				} else {
 					// There are no parameters. We create a closed session.
@@ -134,7 +129,7 @@ public class River {
 		if (session != null) {
 			Method method;
 			try {
-				method = session.getClass().getSuperclass().getDeclaredMethod("protectedClose");
+				method = session.getClass().getDeclaredMethod("protectedClose");
 				method.setAccessible(true);
 				method.invoke(session);
 			} catch (InvocationTargetException e) {
@@ -145,17 +140,4 @@ public class River {
 			map.remove(wrapper);
 		}
 	}
-
-	public static void setLevel(Logger log, Level level) {
-		for (Handler h : log.getHandlers()) {
-			log.removeHandler(h);
-		}
-
-		ConsoleHandler handler = new ConsoleHandler();
-		handler.setFormatter(new SimpleFormatter());
-		handler.setLevel(level);
-		log.addHandler(handler);
-		log.setLevel(level);
-	}
-
 }

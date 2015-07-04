@@ -3,7 +3,7 @@ package org.riverframework.wrapper;
 import java.util.Date;
 import java.util.Map;
 
-import org.riverframework.Field;
+import org.riverframework.core.Field;
 
 /**
  * Loads an document

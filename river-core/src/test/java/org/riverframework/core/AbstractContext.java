@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.ini4j.Wini;
 import org.riverframework.RiverException;
-import org.riverframework.Session;
 
 public abstract class AbstractContext implements org.riverframework.Context {
 	private String testDatabaseServer = "";

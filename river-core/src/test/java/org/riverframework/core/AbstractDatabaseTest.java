@@ -12,14 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
-import org.riverframework.Database;
-import org.riverframework.Document;
-import org.riverframework.DocumentIterator;
-import org.riverframework.Field;
 import org.riverframework.RandomString;
-import org.riverframework.Session;
-import org.riverframework.Unique;
-import org.riverframework.View;
 
 public abstract class AbstractDatabaseTest {
 	final String TEST_FORM = "TestForm";
@@ -28,7 +21,6 @@ public abstract class AbstractDatabaseTest {
 
 	protected Session session = null;
 	protected Database database = null;
-	protected Database vacationDatabase = null;
 	protected Context context = null;
 
 	@Before
@@ -44,11 +36,8 @@ public abstract class AbstractDatabaseTest {
 				}
 
 				session = context.getSession();
-				database = session.getDatabase(DefaultDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
-				vacationDatabase = session.getDatabase(VacationDatabase.class, context.getTestDatabaseServer(),
-						context.getTestDatabasePath());
+				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
-				vacationDatabase.getAllDocuments().deleteAll();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -143,56 +132,6 @@ public abstract class AbstractDatabaseTest {
 		assertFalse("There is a problem deleting the last view created.", view.isOpen());
 	}
 
-	static class VacationDatabase extends AbstractDatabase {
-		protected VacationDatabase(Session s, org.riverframework.wrapper.Database<?> obj) {
-			super(s, obj);
-		}
-
-		@Override
-		public Class<? extends org.riverframework.Document> getDocumentClass(org.riverframework.wrapper.Document<?> _doc) {
-			String form = _doc.getFieldAsString("Form").toLowerCase();
-
-			if (form.equals("fo_vacation_request")) {
-				return VacationRequest.class;
-			}
-
-			return null;
-		}
-	}
-
-	static class VacationRequest extends AbstractDocument<VacationRequest> {
-		protected VacationRequest(Database d, org.riverframework.wrapper.Document<?> _d) {
-			super(d, _d);
-		}
-
-		@Override
-		protected VacationRequest afterCreate() {
-			setField("Form", "fo_vacation_request");
-			return this;
-		}
-
-		@Override
-		protected VacationRequest getThis() {
-			return this;
-		}
-	}
-
-	@Test
-	public void testCreateAndGetVacationRequest() {
-		assertTrue("The test database could not be opened as a VacationDatabase.", vacationDatabase.isOpen());
-
-		VacationRequest doc = vacationDatabase.createDocument(VacationRequest.class);
-
-		assertTrue("There is a problem creating a new VacationRequest in the test database.", doc.isOpen());
-
-		String universalId = doc.setField("TEST_FIELD", "YES").setField("Form", "TestForm").save().getObjectId();
-
-		doc = null;
-		doc = vacationDatabase.getDocument(VacationRequest.class, universalId);
-
-		assertTrue("There is a problem getting a VacationRequest created in the test database.", doc.isOpen());
-	}
-
 	@Test
 	public void testSearch() {
 		assertTrue("The test database could not be instantiated.", database != null);
@@ -203,10 +142,10 @@ public abstract class AbstractDatabaseTest {
 		RandomString rs = new RandomString(10);
 
 		for (int i = 0; i < 10; i++) {
-			database.createDocument(DefaultDocument.class).setField("Form", TEST_FORM).setField("Value", rs.nextString()).save();
+			database.createDocument().setField("Form", TEST_FORM).setField("Value", rs.nextString()).save();
 		}
 
-		database.createDocument(DefaultDocument.class).setField("Form", TEST_FORM).setField("Value", "THIS_IS_THE_DOC").save();
+		database.createDocument().setField("Form", TEST_FORM).setField("Value", "THIS_IS_THE_DOC").save();
 
 		database.refreshSearchIndex();
 
@@ -220,95 +159,36 @@ public abstract class AbstractDatabaseTest {
 	}
 
 	@Test
-	public void testGetDocumentCollection() {
-		assertTrue("The vacation database could not be instantiated.", vacationDatabase != null);
-		assertTrue("The vacation database could not be opened.", vacationDatabase.isOpen());
-
-		vacationDatabase.getAllDocuments().deleteAll();
-
-		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "John").setField("Time", 30).save();
-
-		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "Kathy").setField("Time", 25).save();
-
-		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "Michael").setField("Time", 27).save();
-
-		DocumentIterator col = vacationDatabase.getAllDocuments();
-
-		for (Document doc : col) {
-			assertTrue("It could not possible load the vacation request object from the DocumentList.", doc.isOpen());
-			assertTrue("The vacation request object from the DocumentList is an instance from " + doc.getClass().getName()
-					+ ", and not from VacationRequest.", doc.getClass().getSimpleName().contains("VacationRequest"));
-		}
-	}
-
-	static class Person extends AbstractDocument<Person> implements Document, Unique {
-		protected Person(Database d, org.riverframework.wrapper.Document<?> _d) {
-			super(d, _d);
-		}
-
-		@Override
-		public String getIndexName() {
-			return "vi_ap_people_index";
-		}
-
-		@Override
-		public String getId() {
-			return getFieldAsString("ca_pe_name");
-		}
-
-		@Override
-		public org.riverframework.Document generateId() {
-			// Do nothing
-			return this;
-		}
-
-		@Override
-		public org.riverframework.Document setId(String arg0) {
-			setField("ca_pe_name", arg0);
-			return this;
-		}
-
-		@Override
-		protected Person getThis() {
-			return this;
-		}
-
-	}
-
-	@Test
 	public void testGetDocument() {
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
 
 		DocumentIterator iterator = database.getAllDocuments().deleteAll();
+		iterator = database.getAllDocuments();
 		assertFalse("The database still has documents.", iterator.hasNext());
 
-		database.createDocument(Person.class).setId("John").setField("Form", "fo_ap_people").setField("Age", 30).save();
+		String unidJohn = database.createDocument().setField("Name", "John").setField("Form", "fo_ap_people").setField("Age", 30).save().getObjectId();
 
-		database.createDocument(Person.class).setId("Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save();
+		String unidKathy = database.createDocument().setField("Name", "Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save().getObjectId();
 
-		database.createDocument(Person.class).setId("Jake").setField("Form", "fo_ap_people").setField("Age", 27).save();
+		String unidJake = database.createDocument().setField("Name", "Jake").setField("Form", "fo_ap_people").setField("Age", 27).save().getObjectId();
 
-		Document p = database.getDocument(Person.class, "Jake");
+		Document p = database.getDocument(unidJake);
 		assertTrue("It could not possible load the person object for Jake.", p.isOpen());
 		assertTrue("It could not possible get the Jake's age.", p.getFieldAsInteger("Age") == 27);
 
-		p = database.getDocument(Person.class, "John");
+		p = database.getDocument(unidJohn);
 		assertTrue("It could not possible load the person object for John.", p.isOpen());
 		assertTrue("It could not possible get the John's age.", p.getFieldAsInteger("Age") == 30);
 
-		p = database.getDocument(Person.class, "Kathy");
+
+		p = database.getDocument(unidKathy);
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());
 		assertTrue("It could not possible get the Kathy's age.", p.getFieldAsInteger("Age") == 25);
 
-		String unid = p.getObjectId();
 		p = null;
-		p = database.getDocument(unid);
-		assertTrue("It should be possible to load a person object for Kathy with its Universal Id.", p.isOpen());
-
-		p = null;
-		p = database.getDocument("Kathy");
-		assertFalse("It should not be possible to load a person object for Kathy without indicate its class.", p.isOpen());
+		p = database.getDocument("%%%%%%");
+		assertFalse("It should not be possible to load a person object for an unknown id.", p.isOpen());
 	}
 
 	@Test
@@ -318,9 +198,9 @@ public abstract class AbstractDatabaseTest {
 
 		database.getAllDocuments().deleteAll();
 
-		database.createDocument(Person.class).setId("Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save().close();
+		String id = database.createDocument().setField("ca_pe_name", "Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save().getObjectId();
 
-		Document p = database.getDocument(Person.class, "Kathy");
+		Document p = database.getDocument(id);
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());
 
 		Map<String, Field> fields = p.getFields();

@@ -3,7 +3,7 @@ package org.riverframework.wrapper.org.openntf.domino._local;
 import lotus.domino.NotesThread;
 
 import org.riverframework.River;
-import org.riverframework.core.Credentials;
+import org.riverframework.utils.Credentials;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
@@ -14,15 +14,15 @@ public class FactoryTest {
 		NotesThread.sinitThread();
 
 		@SuppressWarnings("unchecked")
-		Session<org.openntf.domino.Base> session = (Session<org.openntf.domino.Base>) River.getSession(River.LOTUS_DOMINO,
+		Session<org.openntf.domino.Base<?>> session = (Session<org.openntf.domino.Base<?>>) River.getSession(River.LOTUS_DOMINO,
 				(String) null, (String) null, Credentials.getPassword()).getWrapperObject();
-		Database<org.openntf.domino.Base> database = session.getDatabase("", "massive.nsf");
+		Database<org.openntf.domino.Base<?>> database = session.getDatabase("", "massive.nsf");
 
-		DocumentIterator<org.openntf.domino.Base> it = database.getAllDocuments();
+		DocumentIterator<org.openntf.domino.Base<?>> it = database.getAllDocuments();
 		int i = 0;
 		
 		while(it.hasNext()) {
-			Document<org.openntf.domino.Base> doc = it.next();
+			Document<org.openntf.domino.Base<?>> doc = it.next();
 			String counter = doc.getFieldAsString("counter");
 			if (++i % 250 == 0) {
 				System.out.println("=" + counter);

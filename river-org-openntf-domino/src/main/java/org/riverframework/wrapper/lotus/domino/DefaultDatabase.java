@@ -11,7 +11,7 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.Database<org.openntf.domino.Base> {
+class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.Database<org.openntf.domino.Base<?>> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<?> _session = null;
 	protected volatile org.openntf.domino.Database __database = null;
@@ -71,21 +71,21 @@ class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.
 	}
 
 	@Override
-	public Document<org.openntf.domino.Base> createDocument(String... parameters) {
+	public Document<org.openntf.domino.Base<?>> createDocument(String... parameters) {
 		synchronized (_session){
 			org.openntf.domino.Document __doc = null;
 
 			__doc = __database.createDocument();
 
 			@SuppressWarnings("unchecked")
-			Document<org.openntf.domino.Base> doc = _session.getFactory().getDocument(__doc);
+			Document<org.openntf.domino.Base<?>> doc = _session.getFactory().getDocument(__doc);
 
 			return doc;
 		}
 	}
 
 	@Override
-	public Document<org.openntf.domino.Base> getDocument(String... parameters)
+	public Document<org.openntf.domino.Base<?>> getDocument(String... parameters)
 	{
 		synchronized (_session){
 			org.openntf.domino.Document __doc = null;
@@ -132,14 +132,14 @@ class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.
 			}
 
 			@SuppressWarnings("unchecked")
-			Document<org.openntf.domino.Base> doc = _session.getFactory().getDocument(__doc);
+			Document<org.openntf.domino.Base<?>> doc = _session.getFactory().getDocument(__doc);
 
 			return doc;
 		}
 	}
 
 	@Override
-	public View<org.openntf.domino.Base> createView(String... parameters) {
+	public View<org.openntf.domino.Base<?>> createView(String... parameters) {
 		org.openntf.domino.View __view = null;
 		String name = null;
 
@@ -158,12 +158,12 @@ class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.
 			__view = null;
 		}
 
-		View<org.openntf.domino.Base> _view = getView(name);
+		View<org.openntf.domino.Base<?>> _view = getView(name);
 		return _view;
 	}
 
 	@Override
-	public View<org.openntf.domino.Base> getView(String... parameters) {
+	public View<org.openntf.domino.Base<?>> getView(String... parameters) {
 		synchronized (_session){
 			org.openntf.domino.View __view = null;
 
@@ -176,39 +176,39 @@ class DefaultDatabase extends DefaultBase implements org.riverframework.wrapper.
 				__view.setAutoUpdate(false);
 
 			@SuppressWarnings("unchecked")
-			View<org.openntf.domino.Base> _view = _session.getFactory().getView(__view);
+			View<org.openntf.domino.Base<?>> _view = _session.getFactory().getView(__view);
 			return _view;
 		}
 	}
 
 	@Override
-	public DocumentIterator<org.openntf.domino.Base> getAllDocuments() {
+	public DocumentIterator<org.openntf.domino.Base<?>> getAllDocuments() {
 		synchronized (_session){
 			org.openntf.domino.DocumentCollection _col;
 
 			_col = __database.getAllDocuments();
 
 			@SuppressWarnings("unchecked")
-			DocumentIterator<org.openntf.domino.Base> _iterator = _session.getFactory().getDocumentIterator(_col);
+			DocumentIterator<org.openntf.domino.Base<?>> _iterator = _session.getFactory().getDocumentIterator(_col);
 			return _iterator;
 		}
 	}
 
 	@Override
-	public DocumentIterator<org.openntf.domino.Base> search(String query) {
+	public DocumentIterator<org.openntf.domino.Base<?>> search(String query) {
 		synchronized (_session){
 			org.openntf.domino.DocumentCollection _col;
 
 			_col = __database.FTSearch(query);
 
 			@SuppressWarnings("unchecked")
-			DocumentIterator<org.openntf.domino.Base> _iterator = _session.getFactory().getDocumentIterator(_col);
+			DocumentIterator<org.openntf.domino.Base<?>> _iterator = _session.getFactory().getDocumentIterator(_col);
 			return _iterator;
 		}
 	}
 
 	@Override
-	public Database<org.openntf.domino.Base> refreshSearchIndex() {
+	public Database<org.openntf.domino.Base<?>> refreshSearchIndex() {
 		__database.updateFTIndex(false);
 		return this;
 	}

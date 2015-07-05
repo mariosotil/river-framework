@@ -2,9 +2,9 @@
 
 ## What is the River Framework?
 
-This is an Application Framework for NoSQL databases in an **EARLY development stage**. To date (July 02, 2015) the Framework is capable to access Lotus Notes databases using the native Java libraries (`lotus.domino`) or the OpenNTF libraries (`org.openntf.domino`).
+This is an Application Framework for NoSQL databases in an **EARLY development stage**. To date (July 02, 2015) the Framework is capable to access IBM Notes databases using the native Java libraries (`lotus.domino`) or the OpenNTF libraries (`org.openntf.domino`).
 
-Right now, I'm improving the Lotus Notes wrapper and redesigning the Framework itself. The next steps are finishing the development of the Lotus Notes wrapper, creating graph relations, developing workflow supporting and wrappers for other NoSQL databases like MongoDB. 
+Right now, I'm improving the IBM Notes wrapper and redesigning the Framework itself. The next steps are finishing the development of the IBM Notes wrapper, creating graph relations, developing workflow supporting and wrappers for other NoSQL databases like MongoDB. 
 
 Until the version 0.2.8, the code written with this framework looks like this:
 
@@ -104,9 +104,9 @@ About the wrapper for OpenNTF Domino:
     - The extended layer, that allows the developer to write logic, rules, etc. for a single object. e.g. a document or a database
   - Moving the support for Ids and indexes to the extended layer
   - Writing a LoggerHelper class to make easier to control the `java.util.logging.Logger` objects
-  - Optimizing the Lotus Notes wrapper library
+  - Optimizing the IBM Notes wrapper library
   - Experimenting with the IBM Notes auto recycling
-  - Experimenting with Lotus Notes objects caching
+  - Experimenting with IBM Notes objects caching
   - Temporarily removing the support to Hazelcast wrapper library
   - Updating the documention using Javadoc
   - Various fixes 
@@ -164,15 +164,15 @@ Next versions
 
 Version 0.2.8
 - Fixes and improvements
-- Adding again the support to the org.openntf.domino library
+- Adding again the support to the `org.openntf.domino` library
 
 Version 0.2.7
 - Auto recycling of IBM Notes objects. So far, it works good with a standalone Java program. I still making tests in XPages.
-- Temporarily removing the support to the org.openntf.domino library, considering that the auto recycling is working on the lotus.domino wrapper, and it's necessary to focus efforts in one wrapper at a time. 
+- Temporarily removing the support to the org.openntf.domino library, considering that the auto recycling is working on the `lotus.domino` wrapper, and it's necessary to focus efforts in one wrapper at a time. 
 - Adding more functionality (create and removing databases, views, etc.)
 
 Version 0.2.6
-- As the logical separation was done, physically separate the current Framework in three JAR files: the Core, the lotus.domino wrapper and the org.openntf.domino wrapper.
+- As the logical separation was done, physically separate the current Framework in three JAR files: the Core, the `lotus.domino` wrapper and the org.openntf.domino wrapper.
 - Publish the JARs in a public Maven repository
 
 Version 0.2.5

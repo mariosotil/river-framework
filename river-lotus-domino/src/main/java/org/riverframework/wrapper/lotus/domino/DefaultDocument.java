@@ -18,6 +18,7 @@ import java.util.Vector;
 
 
 
+
 import lotus.domino.Base;
 import lotus.domino.DateTime;
 import lotus.domino.Item;
@@ -56,23 +57,18 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 
 	@Override
 	public boolean isRecycled() {
-		if (_factory.getIsRemoteSession()) {
-			java.lang.reflect.Field deleted;
-			try {
-				deleted = lotus.domino.cso.Document.class.getDeclaredField("deleted");
-				deleted.setAccessible(true);
-				return deleted.getBoolean(__doc);
-			} catch (Exception e) {
-				throw new RiverException(e);
-			}
-		} else {
 			return isObjectRecycled(__doc);
-		}
 	}
 	
-	public String getQuickDocumentId() {
+	String getDocumentId() {
 		if (_factory.getIsRemoteSession()) {
-			return getNoteIDStr(__doc); 
+			String id;
+			try {
+				id = __doc.getUniversalID();
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
+			return id; 
 		} else {
 			return String.valueOf(getCpp(__doc));
 		}
@@ -82,7 +78,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		String objectId = "";
 		//long start = System.nanoTime();
 		if (__doc != null) {
-			String quickDocumentId = getQuickDocumentId();
+			String quickDocumentId = getDocumentId();
 
 			if(isRecycled()) {
 				throw new RiverException("The object " + quickDocumentId + " was recycled!");

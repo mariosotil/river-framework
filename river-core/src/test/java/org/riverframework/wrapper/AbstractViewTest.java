@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.RandomString;
+import org.riverframework.RiverException;
 
 public abstract class AbstractViewTest {
 	final String TEST_FORM = "TestForm";
@@ -127,9 +128,15 @@ public abstract class AbstractViewTest {
 
 		database.refreshSearchIndex(true);
 
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			throw new RiverException(e);
+		}
+
 		DocumentIterator<?, ?> col = database.getView(TEST_VIEW).search("I_AM_THE_4");
+		assertTrue("There is a problem finding documents from the database.", col.hasNext());
 		Document<?> doc = col.next();
-		assertFalse("There is a problem finding documents from the database.", col.hasNext());
 		assertTrue("There is a problem finding documents from the database.", doc.getFieldAsString("Text").equals("I_AM_THE_4"));
 	}
 }

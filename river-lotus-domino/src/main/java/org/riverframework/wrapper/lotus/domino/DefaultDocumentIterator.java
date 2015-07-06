@@ -95,31 +95,9 @@ class DefaultDocumentIterator extends AbstractBase<lotus.domino.Base> implements
 	public boolean isRecycled() {
 		switch(type) {
 		case COLLECTION:
-			if (_factory.getIsRemoteSession()) {
-				java.lang.reflect.Field deleted;
-				try {
-					deleted = lotus.domino.cso.DocumentCollection.class.getDeclaredField("deleted");
-					deleted.setAccessible(true);
-					return deleted.getBoolean(__documentCollection);
-				} catch (Exception e) {
-					throw new RiverException(e);
-				}
-			} else {
-				return isObjectRecycled(__documentCollection);
-			}
+			return isObjectRecycled(__documentCollection);
 		case VIEW_ENTRY_COLLECTION:
-			if (_factory.getIsRemoteSession()) {
-				java.lang.reflect.Field deleted;
-				try {
-					deleted = lotus.domino.cso.ViewEntryCollection.class.getDeclaredField("deleted");
-					deleted.setAccessible(true);
-					return deleted.getBoolean(__viewEntryCollection);
-				} catch (Exception e) {
-					throw new RiverException(e);
-				}
-			} else {
-				return isObjectRecycled(__viewEntryCollection);
-			}
+			return isObjectRecycled(__viewEntryCollection);
 		default:
 			throw new RiverException("Wrong iterator type");
 		}
@@ -133,18 +111,7 @@ class DefaultDocumentIterator extends AbstractBase<lotus.domino.Base> implements
 
 			if (__doc == null) return false;
 
-			if (_factory.getIsRemoteSession()) {
-				java.lang.reflect.Field deleted;
-				try {
-					deleted = lotus.domino.cso.Document.class.getDeclaredField("deleted");
-					deleted.setAccessible(true);
-					if (deleted.getBoolean(__doc)) return false;
-				} catch (Exception e) {
-					throw new RiverException(e);
-				}
-			} else {
-				if (isObjectRecycled(__ve.getDocument())) return false;
-			}
+			if (isObjectRecycled(__ve.getDocument())) return false;
 
 			if (__doc.isDeleted()) return false;
 

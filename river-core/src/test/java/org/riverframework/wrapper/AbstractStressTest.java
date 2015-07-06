@@ -21,7 +21,7 @@ public abstract class AbstractStressTest {
 	protected Context context = null;
 	protected Session<?> _session = null;
 
-	protected static long maxDocumentsForStressTest = 1000;
+	protected static long maxDocumentsForStressTest = 100;
 
 	@Before
 	public void open() {

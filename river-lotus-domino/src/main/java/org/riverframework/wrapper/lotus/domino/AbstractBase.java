@@ -9,6 +9,10 @@ abstract class AbstractBase<N> implements Base<N> {
 	private static Field isDeleted = null;
 	private static Field weakObject = null;
 	private static Field cpp = null;
+	private static Field remoteDatabaseDeleted = null;
+	private static Field remoteDocumentDeleted = null;
+//	private static Field remoteDocumentCollectionDeleted = null;
+//	private static Field remoteViewEntryCollectionDeleted = null;
 	private static Field noteIDStr = null;
 			
 	static {
@@ -25,6 +29,18 @@ abstract class AbstractBase<N> implements Base<N> {
 			cpp.setAccessible(true);
 
 			// For remote connections
+			remoteDatabaseDeleted = lotus.domino.cso.Database.class.getDeclaredField("deleted");
+			remoteDatabaseDeleted.setAccessible(true);
+				
+			remoteDocumentDeleted = lotus.domino.cso.Document.class.getDeclaredField("deleted");
+			remoteDocumentDeleted.setAccessible(true);
+
+//			remoteDocumentCollectionDeleted = lotus.domino.cso.DocumentCollection.class.getDeclaredField("deleted");
+//			remoteDocumentCollectionDeleted.setAccessible(true);
+//			
+//			remoteViewEntryCollectionDeleted = lotus.domino.cso.ViewEntryCollection.class.getDeclaredField("deleted");
+//			remoteViewEntryCollectionDeleted.setAccessible(true);
+
 			noteIDStr = lotus.domino.cso.Document.class.getDeclaredField("noteIDStr");
 			noteIDStr.setAccessible(true);
 
@@ -63,7 +79,23 @@ abstract class AbstractBase<N> implements Base<N> {
 		boolean result = false;
 		
 		try {
-			result = isDeleted.getBoolean((lotus.domino.local.NotesBase) __native);
+			if(__native instanceof lotus.domino.local.NotesBase) {
+				result = isDeleted.getBoolean((lotus.domino.local.NotesBase) __native);
+				
+			} else if(__native instanceof lotus.domino.cso.Document) {
+				result = remoteDocumentDeleted.getBoolean(__native);
+				
+//			} else if(__native instanceof lotus.domino.cso.DocumentCollection) {
+//				result = remoteDocumentCollectionDeleted.getBoolean(__native);
+//				
+//			} else if(__native instanceof lotus.domino.cso.ViewEntryCollection) {
+//				result = remoteViewEntryCollectionDeleted.getBoolean(__native);
+				
+			} else if(__native instanceof lotus.domino.cso.Database) {
+				result = remoteDatabaseDeleted.getBoolean(__native);
+				
+			}			
+			
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}

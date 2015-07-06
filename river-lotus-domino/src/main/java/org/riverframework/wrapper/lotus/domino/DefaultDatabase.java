@@ -31,18 +31,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 	@Override
 	public boolean isRecycled() {
 		// If it's not a remote session, returns false. Otherwise, returns if the object is recycled
-		if (_factory.getIsRemoteSession()) {
-			java.lang.reflect.Field deleted;
-			try {
-				deleted = lotus.domino.cso.Database.class.getDeclaredField("deleted");
-				deleted.setAccessible(true);
-				return deleted.getBoolean(__database);
-			} catch (Exception e) {
-				throw new RiverException(e);
-			}
-		} else {
-			return isObjectRecycled(__database);
-		}
+		return isObjectRecycled(__database);
 	}
 	
 	@Override

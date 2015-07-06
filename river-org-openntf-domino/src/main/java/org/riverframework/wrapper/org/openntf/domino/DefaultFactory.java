@@ -111,4 +111,9 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<o
 	public void cleanUp(Base<? extends org.openntf.domino.Base<?>>... except) {
 
 	}
+
+	@Override
+	public boolean getIsRemoteSession() {
+		return false;
+	}
 }

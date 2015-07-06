@@ -9,6 +9,16 @@ import java.util.Vector;
 // import java.util.logging.Logger;
 
 
+
+
+
+
+
+
+
+
+
+import lotus.domino.Base;
 import lotus.domino.DateTime;
 import lotus.domino.Item;
 import lotus.domino.NotesException;
@@ -19,6 +29,7 @@ import org.riverframework.core.DefaultField;
 import org.riverframework.core.Field;
 import org.riverframework.utils.Converter;
 import org.riverframework.wrapper.Document;
+import org.riverframework.wrapper.Factory;
 
 /**
  * Loads an IBM Notes document
@@ -28,28 +39,53 @@ import org.riverframework.wrapper.Document;
  * @author mario.sotil@gmail.com
  * @version 0.0.x
  */
-class DefaultDocument extends DefaultBase<lotus.domino.Document> implements org.riverframework.wrapper.Document<lotus.domino.Document> {
+class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org.riverframework.wrapper.Document<lotus.domino.Document> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
+	protected org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
 	protected volatile lotus.domino.Document __doc = null;
 	private String objectId = null;
 
-	protected DefaultDocument(org.riverframework.wrapper.Session<lotus.domino.Session> s, lotus.domino.Document d) {
-		__doc = d;
-		_session = s;
-		// synchronized(_session) {
+	@SuppressWarnings("unchecked")
+	protected DefaultDocument(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.Document __d) {
+		__doc = __d;
+		_session = _s;
+		_factory = (Factory<Base>) _session.getFactory();
 		objectId = calcObjectId(__doc);
-		// }
 	}
 
-	public static String calcObjectId(lotus.domino.Document __doc) {
+	@Override
+	public boolean isRecycled() {
+		if (_factory.getIsRemoteSession()) {
+			java.lang.reflect.Field deleted;
+			try {
+				deleted = lotus.domino.cso.Document.class.getDeclaredField("deleted");
+				deleted.setAccessible(true);
+				return deleted.getBoolean(__doc);
+			} catch (Exception e) {
+				throw new RiverException(e);
+			}
+		} else {
+			return isObjectRecycled(__doc);
+		}
+	}
+	
+	public String getQuickDocumentId() {
+		if (_factory.getIsRemoteSession()) {
+			return getNoteIDStr(__doc); 
+		} else {
+			return String.valueOf(getCpp(__doc));
+		}
+	}
+	
+	public String calcObjectId(lotus.domino.Document __doc) {
 		String objectId = "";
 		//long start = System.nanoTime();
 		if (__doc != null) {
-			long cpp = getCpp(__doc);
+			String quickDocumentId = getQuickDocumentId();
 
-			if(isRecycled(__doc)) {
-				throw new RiverException("The object " + cpp + " was recycled!");
+			if(isRecycled()) {
+				throw new RiverException("The object " + quickDocumentId + " was recycled!");
 			} else {
 				try {
 					lotus.domino.Database __database = __doc.getParentDatabase();
@@ -59,7 +95,7 @@ class DefaultDocument extends DefaultBase<lotus.domino.Document> implements org.
 					sb.append(River.ID_SEPARATOR);
 					sb.append(__database.getFilePath());
 					sb.append(River.ID_SEPARATOR);
-					sb.append(cpp);
+					sb.append(quickDocumentId);
 
 					objectId = sb.toString();
 
@@ -375,7 +411,7 @@ class DefaultDocument extends DefaultBase<lotus.domino.Document> implements org.
 
 	@Override
 	public boolean isOpen() {		
-		return (__doc != null && !isRecycled(__doc)); 
+		return (__doc != null && !isRecycled()); 
 	}
 
 	@Override

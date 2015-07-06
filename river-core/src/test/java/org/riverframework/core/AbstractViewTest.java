@@ -69,30 +69,6 @@ public abstract class AbstractViewTest {
 		doc = null;
 		doc = view.getDocumentByKey("%%%%%");
 		assertFalse("It was found an unexistent document in the view.", doc.isOpen());
-
-		/*
-		 * This code doesn't works because the created view does not works as
-		 * expected. It's necessary to open the Designer and update the view to
-		 * get it works.
-		 * 
-		 * String viewName = rs.nextString(); String formName = rs.nextString();
-		 * org.riverframework.View rView = rDatabase.getView(viewName);
-		 * if(!rView.isOpen()) { rView = rDatabase.createView(viewName,
-		 * "Form =\"" + formName + "\""); }
-		 * 
-		 * assertTrue("The test view could not be created in the test database.",
-		 * rView.isOpen());
-		 * 
-		 * String title = rs.nextString(); String field = rs.nextString();
-		 * String formula = "@GetField({" + field + "})"; String key =
-		 * rs.nextString();
-		 * 
-		 * rView.addColumn(0).modifyColumn(0, title, formula, true).refresh();
-		 * org.riverframework.Document rDoc =
-		 * rDatabase.createDocument(formName);
-		 * 
-		 * rDoc.setField(field, key); rDoc.save();
-		 */
 	}
 
 	@Test
@@ -122,6 +98,12 @@ public abstract class AbstractViewTest {
 
 		View view = database.getView(TEST_VIEW);
 		view.refresh();
+		try {
+			Thread.sleep(5000);
+		} catch (Exception e) {
+
+		}
+
 		DocumentIterator col = view.getAllDocuments();
 
 		int size = 0;

@@ -12,22 +12,30 @@ import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.Session;
 
-public class DefaultSession extends DefaultBase<lotus.domino.Session> implements Session<lotus.domino.Session> {
+public class DefaultSession extends AbstractBase<lotus.domino.Session> implements Session<lotus.domino.Session> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	private final DefaultFactory factory = DefaultFactory.getInstance();
+	private final DefaultFactory _factory = DefaultFactory.getInstance();
 
 	private volatile lotus.domino.Session __session = null;
 	private String objectId = null;
 
 	protected DefaultSession(org.riverframework.wrapper.Session<lotus.domino.Base> dummy, lotus.domino.Session obj) {
 		__session = obj;
-		// synchronized (this){
-			objectId = calcObjectId(__session);
-			// }
+		objectId = calcObjectId(__session);
 
 		log.fine("ObjectId:" + getObjectId());
 	}
 
+	@Override
+	public boolean isRecycled() {
+		if (_factory.getIsRemoteSession()) {
+			// There's no a deleted field for the Session class
+			return false;
+		} else {
+			return isObjectRecycled(__session);
+		}
+	}
+	
 	public static String calcObjectId(lotus.domino.Session  __session) {
 		String objectId = "";
 
@@ -51,7 +59,7 @@ public class DefaultSession extends DefaultBase<lotus.domino.Session> implements
 	}
 
 	public Factory<lotus.domino.Base> getFactory() {
-		return factory;
+		return _factory;
 	}
 
 	@Override
@@ -66,7 +74,7 @@ public class DefaultSession extends DefaultBase<lotus.domino.Session> implements
 
 	@Override
 	public boolean isOpen() {
-		return (__session != null && !isRecycled(__session)); 
+		return (__session != null && !isRecycled()); 
 	}
 
 	@SuppressWarnings("unchecked")
@@ -90,17 +98,14 @@ public class DefaultSession extends DefaultBase<lotus.domino.Session> implements
 				db = dir.getNextDatabase(); 
 			}
 
-			// synchronized (this){
-				if (!found) {
-					__database = dir.createDatabase(location[1]);
-					_database = (Database<lotus.domino.Database>) getFactory().getDatabase(__database);
-				}
-				else {
-					_database = (Database<lotus.domino.Database>) getFactory().getDatabase(null);
-				}
-				// }
+			if (!found) {
+				__database = dir.createDatabase(location[1]);
+				_database = (Database<lotus.domino.Database>) getFactory().getDatabase(__database);
+			}
+			else {
+				_database = (Database<lotus.domino.Database>) getFactory().getDatabase(null);
+			}
 
-			// CHECKING dir.recycle(); 	// To recycle or not to recycle... That is the question.
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -113,66 +118,66 @@ public class DefaultSession extends DefaultBase<lotus.domino.Session> implements
 		log.fine("location=" + Arrays.deepToString(location));
 
 		// synchronized (this){
-			lotus.domino.Database __database = null;
+		lotus.domino.Database __database = null;
 
-			if (location.length != 2)
-				throw new RiverException("It is expected two parameters: server and path, or server and replicaID");
+		if (location.length != 2)
+			throw new RiverException("It is expected two parameters: server and path, or server and replicaID");
 
-			String server = location[0];
-			String path = location[1];
+		String server = location[0];
+		String path = location[1];
 
-			try {
-				if (path.length() == 16) {
-					log.finer("Trying with a replica ID");
-					boolean res = false;
-					__database = __session.getDatabase(null, null);
-					res = __database.openByReplicaID(server, path);
-					if (!res) __database = null;
-				}
-			} catch (NotesException e) {
-				try {
-					// if (__database != null) __database.recycle();
-				} catch (Exception e1) {
-					log.log(Level.WARNING, "Exception while getting the database at " + server + "!!" + path, e1);
-				} finally {
-					__database = null;
-				}
+		try {
+			if (path.length() == 16) {
+				log.finer("Trying with a replica ID");
+				boolean res = false;
+				__database = __session.getDatabase(null, null);
+				res = __database.openByReplicaID(server, path);
+				if (!res) __database = null;
 			}
-
+		} catch (NotesException e) {
 			try {
-				if (__database == null || !__database.isOpen()) {
-					log.finer("Trying with a file path");
-					__database = __session.getDatabase(server, path, false);
-				}
-			} catch (NotesException e1) {
+				// if (__database != null) __database.recycle();
+			} catch (Exception e1) {
+				log.log(Level.WARNING, "Exception while getting the database at " + server + "!!" + path, e1);
+			} finally {
+				__database = null;
+			}
+		}
+
+		try {
+			if (__database == null || !__database.isOpen()) {
+				log.finer("Trying with a file path");
+				__database = __session.getDatabase(server, path, false);
+			}
+		} catch (NotesException e1) {
+			try {
+				// if (__database != null) __database.recycle();
+			} catch (Exception e) {
+				log.log(Level.WARNING, "Exception while getting the database at " + server + "!!" + path, e1);
+			} finally {
+				__database = null;
+			}
+		}
+
+		try {
+			if (__database != null && !__database.isOpen()) {
+				log.finer("The database could not be opened");
 				try {
-					// if (__database != null) __database.recycle();
+					// __database.recycle();
 				} catch (Exception e) {
-					log.log(Level.WARNING, "Exception while getting the database at " + server + "!!" + path, e1);
-				} finally {
+					throw new RiverException(e);
+				} finally {	
 					__database = null;
 				}
 			}
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 
-			try {
-				if (__database != null && !__database.isOpen()) {
-					log.finer("The database could not be opened");
-					try {
-						// __database.recycle();
-					} catch (Exception e) {
-						throw new RiverException(e);
-					} finally {	
-						__database = null;
-					}
-				}
-			} catch (NotesException e) {
-				throw new RiverException(e);
-			}
-
-			@SuppressWarnings("unchecked")
-			Database<lotus.domino.Database> database = (Database<lotus.domino.Database>) getFactory().getDatabase(__database);
-			return database;
-			// }
+		@SuppressWarnings("unchecked")
+		Database<lotus.domino.Database> database = (Database<lotus.domino.Database>) getFactory().getDatabase(__database);
+		return database;
+		// }
 	}
 
 	@Override

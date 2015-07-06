@@ -2,32 +2,37 @@ package org.riverframework.wrapper.lotus.domino;
 
 import java.lang.reflect.Field;
 
-import lotus.domino.local.NotesBase;
-
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Base;
 
-abstract class DefaultBase<N> implements Base<N> {
+abstract class AbstractBase<N> implements Base<N> {
 	private static Field isDeleted = null;
 	private static Field weakObject = null;
 	private static Field cpp = null;
+	private static Field noteIDStr = null;
 			
 	static {
-		try {
-			isDeleted = NotesBase.class.getDeclaredField("isdeleted");
+		try {			
+			// For local connections
+			isDeleted = lotus.domino.local.NotesBase.class.getDeclaredField("isdeleted");
 			isDeleted.setAccessible(true);
 
-			weakObject = NotesBase.class.getDeclaredField("weakObject");
+			weakObject = lotus.domino.local.NotesBase.class.getDeclaredField("weakObject");
 			weakObject.setAccessible(true);
 
 			Class<?> clazz = Class.forName("lotus.domino.local.NotesWeakReference");
 			cpp = clazz.getDeclaredField("cpp_object");
 			cpp.setAccessible(true);
+
+			// For remote connections
+			noteIDStr = lotus.domino.cso.Document.class.getDeclaredField("noteIDStr");
+			noteIDStr.setAccessible(true);
+
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
 	}
-	
+
 	static Object getFieldValue(Object __obj, String name) {
 		Class<?> clazz = __obj.getClass();
 		Field field = null;
@@ -53,12 +58,12 @@ abstract class DefaultBase<N> implements Base<N> {
 		}
 		return result;
 	}
-
-	static boolean isRecycled(lotus.domino.Base __native) {
+	
+	static boolean isObjectRecycled(lotus.domino.Base __native) {
 		boolean result = false;
 		
 		try {
-			result = isDeleted.getBoolean((NotesBase) __native);
+			result = isDeleted.getBoolean((lotus.domino.local.NotesBase) __native);
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
@@ -78,4 +83,19 @@ abstract class DefaultBase<N> implements Base<N> {
 
 		return result;
 	}
+
+	static String getNoteIDStr(lotus.domino.Base __native) {
+		String result;
+
+		try {
+			result = (String) noteIDStr.get(__native);
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
+		return result;
+	}
+	
+	abstract boolean isRecycled();
+
 }

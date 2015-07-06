@@ -142,7 +142,6 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 				// Clean up the reference map, except for the just created
 				// _wrapper object
 				cleanUp((Base<N>) _wrapper);
-				// cleanUp();
 
 				// Looking for the object in the cache
 				String id = _wrapper.getObjectId();

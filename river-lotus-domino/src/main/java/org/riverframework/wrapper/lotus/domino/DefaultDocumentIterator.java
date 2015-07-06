@@ -11,7 +11,7 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.Factory;
 
-class DefaultDocumentIterator extends DefaultBase<lotus.domino.Base> implements DocumentIterator<lotus.domino.Base, lotus.domino.Document> {
+class DefaultDocumentIterator extends AbstractBase<lotus.domino.Base> implements DocumentIterator<lotus.domino.Base, lotus.domino.Document> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	private enum Type { COLLECTION, VIEW_ENTRY_COLLECTION } 
 
@@ -91,6 +91,40 @@ class DefaultDocumentIterator extends DefaultBase<lotus.domino.Base> implements 
 		objectId = calcObjectId(__viewEntryCollection);
 	}
 
+	@Override
+	public boolean isRecycled() {
+		switch(type) {
+		case COLLECTION:
+			if (_factory.getIsRemoteSession()) {
+				java.lang.reflect.Field deleted;
+				try {
+					deleted = lotus.domino.cso.DocumentCollection.class.getDeclaredField("deleted");
+					deleted.setAccessible(true);
+					return deleted.getBoolean(__documentCollection);
+				} catch (Exception e) {
+					throw new RiverException(e);
+				}
+			} else {
+				return isObjectRecycled(__documentCollection);
+			}
+		case VIEW_ENTRY_COLLECTION:
+			if (_factory.getIsRemoteSession()) {
+				java.lang.reflect.Field deleted;
+				try {
+					deleted = lotus.domino.cso.ViewEntryCollection.class.getDeclaredField("deleted");
+					deleted.setAccessible(true);
+					return deleted.getBoolean(__viewEntryCollection);
+				} catch (Exception e) {
+					throw new RiverException(e);
+				}
+			} else {
+				return isObjectRecycled(__viewEntryCollection);
+			}
+		default:
+			throw new RiverException("Wrong iterator type");
+		}
+	}
+
 	private boolean isViewEntryValid(lotus.domino.ViewEntry __ve){
 		if(__ve == null) return true;
 
@@ -99,7 +133,18 @@ class DefaultDocumentIterator extends DefaultBase<lotus.domino.Base> implements 
 
 			if (__doc == null) return false;
 
-			if (isRecycled(__ve.getDocument())) return false;
+			if (_factory.getIsRemoteSession()) {
+				java.lang.reflect.Field deleted;
+				try {
+					deleted = lotus.domino.cso.Document.class.getDeclaredField("deleted");
+					deleted.setAccessible(true);
+					if (deleted.getBoolean(__doc)) return false;
+				} catch (Exception e) {
+					throw new RiverException(e);
+				}
+			} else {
+				if (isObjectRecycled(__ve.getDocument())) return false;
+			}
 
 			if (__doc.isDeleted()) return false;
 
@@ -173,21 +218,27 @@ class DefaultDocumentIterator extends DefaultBase<lotus.domino.Base> implements 
 	public Document<lotus.domino.Document> next() {
 		Document<lotus.domino.Document> _current = _doc;
 
-		try {
-			switch(type) {
-			case COLLECTION:
+		switch(type) {
+		case COLLECTION:
+			try {
 				__document = __documentCollection.getNextDocument(__document);
 				break;
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
 
-			case VIEW_ENTRY_COLLECTION:
+		case VIEW_ENTRY_COLLECTION:
+			try {
 				__viewEntry = __viewEntryCollection.getNextEntry(__viewEntry);
 				updateCurrentDocumentFromViewEntry();
 				break;
+			} catch (NotesException e) {
+				throw new RiverException(e);
 			}
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
 
+		default:
+			throw new RiverException("Wrong iterator type");
+		}
 
 		_doc = (Document<lotus.domino.Document>) _factory.getDocument(__document); //Document<lotus.domino.Base>
 
@@ -221,9 +272,9 @@ class DefaultDocumentIterator extends DefaultBase<lotus.domino.Base> implements 
 			return __documentCollection;
 		case VIEW_ENTRY_COLLECTION:
 			return __viewEntryCollection;
+		default:
+			throw new RiverException("Wrong iterator type");
 		}
-
-		return null;
 	}
 
 	@Override
@@ -233,9 +284,9 @@ class DefaultDocumentIterator extends DefaultBase<lotus.domino.Base> implements 
 			return __documentCollection != null; // && !isRecycled(__documentCollection);
 		case VIEW_ENTRY_COLLECTION:
 			return __viewEntryCollection != null; // && !isRecycled(__viewEntryCollection);
+		default:
+			throw new RiverException("Wrong iterator type");
 		}
-
-		return false;
 	}
 
 	@Override

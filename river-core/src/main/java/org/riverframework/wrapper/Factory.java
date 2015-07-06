@@ -3,6 +3,8 @@ package org.riverframework.wrapper;
 public interface Factory<N> {
 	public Session<? extends N> getSession(Object... parameters);
 
+	public boolean getIsRemoteSession();
+
 	public <U extends N> Database<? extends N> getDatabase(U obj);
 
 	public Document<? extends N> getDocument(String objectId);

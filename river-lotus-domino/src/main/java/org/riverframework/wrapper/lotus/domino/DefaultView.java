@@ -13,7 +13,7 @@ import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.View;
 
-class DefaultView extends DefaultBase<lotus.domino.View> implements org.riverframework.wrapper.View<lotus.domino.View> {
+class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverframework.wrapper.View<lotus.domino.View> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
 	protected org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
@@ -82,8 +82,18 @@ class DefaultView extends DefaultBase<lotus.domino.View> implements org.riverfra
 	}
 
 	@Override
+	public boolean isRecycled() {
+		if (_factory.getIsRemoteSession()) {
+			// There's no a deleted field for the View class
+			return false;
+		} else {
+			return isObjectRecycled(__view);
+		}
+	}
+	
+	@Override
 	public boolean isOpen() {
-		return __view != null && !isRecycled(__view);
+		return __view != null && !isRecycled();
 	}
 
 	@Override

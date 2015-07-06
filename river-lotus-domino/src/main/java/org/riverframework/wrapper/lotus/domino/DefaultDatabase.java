@@ -11,7 +11,7 @@ import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.View;
 
-class DefaultDatabase extends DefaultBase<lotus.domino.Database> implements org.riverframework.wrapper.Database<lotus.domino.Database> {
+class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org.riverframework.wrapper.Database<lotus.domino.Database> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
 	protected org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
@@ -28,6 +28,23 @@ class DefaultDatabase extends DefaultBase<lotus.domino.Database> implements org.
 		// }
 	}
 
+	@Override
+	public boolean isRecycled() {
+		// If it's not a remote session, returns false. Otherwise, returns if the object is recycled
+		if (_factory.getIsRemoteSession()) {
+			java.lang.reflect.Field deleted;
+			try {
+				deleted = lotus.domino.cso.Database.class.getDeclaredField("deleted");
+				deleted.setAccessible(true);
+				return deleted.getBoolean(__database);
+			} catch (Exception e) {
+				throw new RiverException(e);
+			}
+		} else {
+			return isObjectRecycled(__database);
+		}
+	}
+	
 	@Override
 	public lotus.domino.Database getNativeObject() {
 		return __database;
@@ -87,7 +104,7 @@ class DefaultDatabase extends DefaultBase<lotus.domino.Database> implements org.
 	@Override
 	public boolean isOpen() {
 		try {
-			return (__database != null && !isRecycled(__database) && __database.isOpen()); 
+			return (__database != null && !isRecycled() && __database.isOpen()); 
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}

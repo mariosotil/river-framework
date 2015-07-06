@@ -12,6 +12,7 @@ import java.util.Date;
 
 
 
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,7 +93,7 @@ public abstract class AbstractBaseTest {
 
 		_session.getFactory().cleanUp();
 
-		boolean isRecycled = DefaultDocument.isRecycled(__doc);
+		boolean isRecycled = AbstractBase.isObjectRecycled(__doc);
 
 		assertTrue("The document was no recycled.", isRecycled);
 

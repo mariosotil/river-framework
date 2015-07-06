@@ -7,18 +7,19 @@ import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
 
 import org.riverframework.RiverException;
+import org.riverframework.wrapper.AbstractNativeReference;
 import org.riverframework.wrapper.Base;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
-import org.riverframework.wrapper.AbstractNativeReference;
 import org.riverframework.wrapper.Session;
 import org.riverframework.wrapper.View;
 
 public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<lotus.domino.Base> {
 
 	private static DefaultFactory instance = null;
-
+	private boolean isRemoteSession = false;
+	
 	protected DefaultFactory(Class<? extends AbstractNativeReference<lotus.domino.Base>> nativeReferenceClass) {
 		super(nativeReferenceClass);
 	}
@@ -34,6 +35,11 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 		}
 		return instance;
 	}
+
+	@Override
+	public boolean getIsRemoteSession() {
+		return isRemoteSession;
+	} 
 
 	@Override
 	protected boolean isValidNativeObject(lotus.domino.Base __native) {
@@ -57,6 +63,8 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			log.finer("Creating a session with three parameters: server, username, password");
 
 			try {
+				isRemoteSession = (parameters[0] != null);					
+					
 				__obj = NotesFactory.createSession((String) parameters[0], (String) parameters[1], (String) parameters[2]); 
 			} catch (NotesException e) {
 				throw new RiverException(e);

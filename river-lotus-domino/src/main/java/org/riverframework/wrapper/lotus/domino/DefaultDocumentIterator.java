@@ -2,88 +2,93 @@ package org.riverframework.wrapper.lotus.domino;
 
 import java.util.logging.Logger;
 
+import lotus.domino.Base;
 import lotus.domino.NotesException;
 
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
+import org.riverframework.wrapper.Factory;
 
 class DefaultDocumentIterator extends DefaultBase<lotus.domino.Base> implements DocumentIterator<lotus.domino.Base, lotus.domino.Document> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	private enum Type { COLLECTION, VIEW_ENTRY_COLLECTION } 
 
-	private org.riverframework.wrapper.Session<lotus.domino.Base> _session = null;
+	@SuppressWarnings("unused")
+	private org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
 	private org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
 
-	private volatile lotus.domino.DocumentCollection __documentCollection = null;
-	private volatile lotus.domino.ViewEntryCollection __viewEntryCollection = null;
+	private lotus.domino.DocumentCollection __documentCollection = null;
+	private lotus.domino.ViewEntryCollection __viewEntryCollection = null;
 
-	private volatile Document<lotus.domino.Document> _doc = null;
-	private volatile lotus.domino.Document __document = null;
-	private volatile lotus.domino.ViewEntry __viewEntry = null;
+	private lotus.domino.Document __document = null;
+	private lotus.domino.ViewEntry __viewEntry = null;
+
+	private Document<lotus.domino.Document> _doc = null;
 
 	private Type type = null;	
 	private String objectId = null;
 
 	@SuppressWarnings("unchecked")
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Base> _s, lotus.domino.DocumentCollection __obj) {
+	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.DocumentCollection __obj) {
 		type = Type.COLLECTION;
 		_session = _s;
-		_factory = _s.getFactory();
+		_factory = (Factory<Base>) _s.getFactory();
 		__documentCollection = __obj;
 
-		synchronized (_session){
-			try {
-				__document = __documentCollection.getFirstDocument();
-
-			} catch (NotesException e) {
-				throw new RiverException(e);
-			}
-			objectId = calcObjectId(__documentCollection);
+		try {
+			__document = __documentCollection.getFirstDocument();
+		} catch (NotesException e) {
+			throw new RiverException(e);
 		}
+
+		_doc = (Document<lotus.domino.Document>) _factory.getDocument(__document); //Document<lotus.domino.Base>
+
+		objectId = calcObjectId(__documentCollection);
 
 	}
 
 	@SuppressWarnings("unchecked")
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Base> _s, lotus.domino.View __obj) {
+	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.View __obj) {
 		type = Type.VIEW_ENTRY_COLLECTION;
+
 		_session = _s;		
-		_factory = _s.getFactory();
+		_factory = (Factory<Base>) _s.getFactory();
 
-		synchronized (_session){
-			try {
-				__viewEntryCollection = __obj.getAllEntries();
-				__viewEntry = __viewEntryCollection.getFirstEntry();
+		try {
+			__viewEntryCollection = __obj.getAllEntries();
+			__viewEntry = __viewEntryCollection.getFirstEntry();
 
-				updateCurrentDocumentFromViewEntry();
-			} catch (NotesException e) {
-				throw new RiverException(e);
-			}
-
-			objectId = calcObjectId(__viewEntryCollection);
+			updateCurrentDocumentFromViewEntry();
+		} catch (NotesException e) {
+			throw new RiverException(e);
 		}
+
+		_doc = (Document<lotus.domino.Document>) _factory.getDocument(__document); //Document<lotus.domino.Base>
+
+		objectId = calcObjectId(__viewEntryCollection);
 
 	}
 
 	@SuppressWarnings("unchecked")
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Base> _s, lotus.domino.ViewEntryCollection __obj) {
+	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.ViewEntryCollection __obj) {
 		type = Type.VIEW_ENTRY_COLLECTION;		
 		_session = _s;		
-		_factory = _s.getFactory();
+		_factory = (Factory<Base>) _s.getFactory();
 		__viewEntryCollection = __obj;
 
-		synchronized (_session){
-			try {
-				__viewEntry = __viewEntryCollection.getFirstEntry();
+		try {
+			__viewEntry = __viewEntryCollection.getFirstEntry();
 
-				updateCurrentDocumentFromViewEntry();
-			} catch (NotesException e) {
-				throw new RiverException(e);
-			}
-
-			objectId = calcObjectId(__viewEntryCollection);
+			updateCurrentDocumentFromViewEntry();
+		} catch (NotesException e) {
+			throw new RiverException(e);
 		}
+
+		_doc = (Document<lotus.domino.Document>) _factory.getDocument(__document); //Document<lotus.domino.Base>
+
+		objectId = calcObjectId(__viewEntryCollection);
 	}
 
 	private boolean isViewEntryValid(lotus.domino.ViewEntry __ve){
@@ -106,21 +111,19 @@ class DefaultDocumentIterator extends DefaultBase<lotus.domino.Base> implements 
 	}
 
 	private void updateCurrentDocumentFromViewEntry() {
-		synchronized (_session){
-			try {
-				while (!isViewEntryValid(__viewEntry)) 
-				{
-					// lotus.domino.ViewEntry __old = __ve;
-					__viewEntry = __viewEntryCollection.getNextEntry(__viewEntry);
-					// CHECKING __old.recycle();  // To recycle or not to recycle... That is the question.
-				} 
+		try {
+			while (!isViewEntryValid(__viewEntry)) 
+			{
+				// lotus.domino.ViewEntry __old = __ve;
+				__viewEntry = __viewEntryCollection.getNextEntry(__viewEntry);
+				// CHECKING __old.recycle();  // To recycle or not to recycle... That is the question.
+			} 
 
-				log.finest("Current view entry=" + (__viewEntry == null ? "<null>" :__viewEntry.getDocument().hashCode()));
+			log.finest("Current view entry=" + (__viewEntry == null ? "<null>" :__viewEntry.getDocument().hashCode()));
 
-				__document = __viewEntry == null ? null : __viewEntry.getDocument();				
-			} catch (NotesException e) {
-				throw new RiverException(e);
-			}
+			__document = __viewEntry == null ? null : __viewEntry.getDocument();				
+		} catch (NotesException e) {
+			throw new RiverException(e);
 		}
 	}
 
@@ -170,12 +173,7 @@ class DefaultDocumentIterator extends DefaultBase<lotus.domino.Base> implements 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Document<lotus.domino.Document> next() {
-		lotus.domino.Document __current = null;
-
-		__current = __document;
-		
-		if (isRecycled(__current)) 
-			throw new RiverException("Current object was recycled!");
+		Document<lotus.domino.Document> _current = _doc;
 
 		try {
 			switch(type) {
@@ -193,8 +191,9 @@ class DefaultDocumentIterator extends DefaultBase<lotus.domino.Base> implements 
 		}
 
 
-		_doc = (Document<lotus.domino.Document>) _factory.getDocument(__current); //Document<lotus.domino.Base>
-		return _doc;
+		_doc = (Document<lotus.domino.Document>) _factory.getDocument(__document); //Document<lotus.domino.Base>
+
+		return _current;
 	}
 
 	@Override

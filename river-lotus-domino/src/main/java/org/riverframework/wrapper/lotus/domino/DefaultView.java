@@ -3,23 +3,28 @@ package org.riverframework.wrapper.lotus.domino;
 // import java.util.logging.Level;
 // import java.util.logging.Logger;
 
+import lotus.domino.Base;
 import lotus.domino.NotesException;
 
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
+import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.View;
 
 class DefaultView extends DefaultBase<lotus.domino.View> implements org.riverframework.wrapper.View<lotus.domino.View> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
+	protected org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
 	protected volatile lotus.domino.View __view = null;
 	private String objectId = null;
 
-	protected DefaultView(org.riverframework.wrapper.Session<lotus.domino.Session> s, lotus.domino.View v) {
+	@SuppressWarnings("unchecked")
+	protected DefaultView(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.View v) {
 		__view = v;
-		_session = s;
+		_session = _s;
+		_factory = (Factory<Base>) _s.getFactory();
 		// synchronized (_session){
 		objectId = calcObjectId(__view);
 		// }		
@@ -58,8 +63,9 @@ class DefaultView extends DefaultBase<lotus.domino.View> implements org.riverfra
 		return __view;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Document<lotus.domino.Base> getDocumentByKey(String key) {
+	public Document<lotus.domino.Document> getDocumentByKey(String key) {
 		// synchronized (_session){
 		lotus.domino.Document __doc = null;
 
@@ -69,8 +75,7 @@ class DefaultView extends DefaultBase<lotus.domino.View> implements org.riverfra
 			throw new RiverException(e);
 		}
 
-		@SuppressWarnings("unchecked")
-		Document<lotus.domino.Base> doc = _session.getFactory().getDocument(__doc);
+		Document<lotus.domino.Document> doc = (Document<lotus.domino.Document>) _factory.getDocument(__doc);
 
 		return doc;
 		// }
@@ -84,15 +89,16 @@ class DefaultView extends DefaultBase<lotus.domino.View> implements org.riverfra
 	@Override
 	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> getAllDocuments() {
 		// synchronized (_session){
-		lotus.domino.ViewEntryCollection _col;
+		lotus.domino.ViewEntryCollection __vecol;
 		try {
-			_col = __view.getAllEntries();
+			__vecol = __view.getAllEntries();
+
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base, lotus.domino.Document> result = _session.getFactory().getDocumentIterator(_col);
+		DocumentIterator<lotus.domino.Base, lotus.domino.Document> result = (DocumentIterator<Base, lotus.domino.Document>) _factory.getDocumentIterator(__vecol);
 		return result;
 		// }
 	}
@@ -108,7 +114,7 @@ class DefaultView extends DefaultBase<lotus.domino.View> implements org.riverfra
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base, lotus.domino.Document> result = _session.getFactory().getDocumentIterator(_col);
+		DocumentIterator<lotus.domino.Base, lotus.domino.Document> result = (DocumentIterator<Base, lotus.domino.Document>) _factory.getDocumentIterator(_col);
 		return result;
 		// }
 	}
@@ -154,7 +160,7 @@ class DefaultView extends DefaultBase<lotus.domino.View> implements org.riverfra
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator<lotus.domino.Base, lotus.domino.Document> _iterator = _session.getFactory().getDocumentIterator(__temp);
+		DocumentIterator<lotus.domino.Base, lotus.domino.Document> _iterator = (DocumentIterator<Base, lotus.domino.Document>) _factory.getDocumentIterator(__temp);
 
 		return _iterator;
 		// }

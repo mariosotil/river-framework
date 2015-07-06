@@ -8,6 +8,7 @@ import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
+import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.View;
 
 class DefaultDatabase extends DefaultBase<lotus.domino.Database> implements org.riverframework.wrapper.Database<lotus.domino.Database> {
@@ -21,7 +22,7 @@ class DefaultDatabase extends DefaultBase<lotus.domino.Database> implements org.
 	protected DefaultDatabase(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.Database __obj) {
 		__database = __obj;
 		_session = _s;
-		_factory = _s.getFactory();
+		_factory = (Factory<Base>) _s.getFactory();
 		// synchronized (_session){
 		objectId = calcObjectId(__database);
 		// }

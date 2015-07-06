@@ -253,7 +253,10 @@ public abstract class AbstractStressTest {
 		_session.getFactory().logStatus();
 		log.info("Step 2!");
 
+		long start = System.nanoTime();
 		it = view.getAllDocuments();
+		long end = System.nanoTime();
+		log.info("getAllDocuments=" + (((double) end - start) / 1000000));
 
 		i = 0;
 		while (it.hasNext()) {
@@ -270,6 +273,7 @@ public abstract class AbstractStressTest {
 
 		view.refresh();
 		i = 0;
+
 		it = view.getAllDocuments();
 		while (it.hasNext()) {
 			i++;

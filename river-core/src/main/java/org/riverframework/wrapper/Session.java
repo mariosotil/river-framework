@@ -7,8 +7,7 @@ public interface Session<N> extends Base<N> {
 
 	public String getUserName();
 
-	@SuppressWarnings("rawtypes")
-	public Factory getFactory();
+	public Factory<?> getFactory();
 
 	@Override
 	public void close();

@@ -22,8 +22,8 @@ public class StressTest extends org.riverframework.wrapper.AbstractStressTest {
 		.setUseParentHandlers(false)
 		.clearHandlers()
 		.addConsoleHandler()
-		.addFileHandler("D:\\stress-test.txt")
-		.setLevel(Level.FINEST);
+		//.addFileHandler("D:\\stress-test.txt")
+		.setLevel(Level.INFO);
 		
 		maxDocumentsForStressTest = 100;
 

@@ -71,7 +71,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 	}
 
 	@Override
-	public Database<lotus.domino.Database> getDatabase(lotus.domino.Base __obj) {
+	public <U extends lotus.domino.Base> Database<lotus.domino.Database> getDatabase(U __obj) {
 		return getWrapper(DefaultDatabase.class, lotus.domino.Database.class, __obj);
 	}
 
@@ -81,17 +81,17 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 	}
 
 	@Override
-	public Document<lotus.domino.Document> getDocument(lotus.domino.Base __obj) {
+	public <U extends lotus.domino.Base> Document<lotus.domino.Document> getDocument(U __obj) {
 		return getWrapper(DefaultDocument.class, lotus.domino.Document.class, __obj);
 	}
 
 	@Override
-	public View<lotus.domino.View> getView(lotus.domino.Base __obj) {
+	public <U extends lotus.domino.Base> View<lotus.domino.View> getView(U __obj) {
 		return getWrapper(DefaultView.class, lotus.domino.View.class, __obj);
 	}
 
 	@Override
-	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> getDocumentIterator(lotus.domino.Base __obj) {
+	public <U extends lotus.domino.Base> DocumentIterator<lotus.domino.Base, lotus.domino.Document> getDocumentIterator(U __obj) {
 		DocumentIterator<lotus.domino.Base, lotus.domino.Document> _iterator = null;
 
 		if(__obj instanceof lotus.domino.DocumentCollection) {
@@ -111,12 +111,12 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 	}
 
 	@Override
-	public void cleanUp(Base<lotus.domino.Base>... except) {
+	public void cleanUp(Base<? extends lotus.domino.Base>... except) {
 		Reference<? extends Base<lotus.domino.Base>> ref = null;
 
 		boolean cleaning = false;
 		long start = 0;
-		String exceptId = "";
+		String exceptId = null;
 		
 		// If there is no a session created, return
 		if (_session == null) return;
@@ -128,7 +128,9 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			
 			// Otherwise, we save its Object Id
 			exceptId = except[0].getObjectId();
-		} 
+		} else {
+			exceptId = "";
+		}
 				
 		while ((ref = wrapperQueue.poll()) != null) { 
 			if (!cleaning) {

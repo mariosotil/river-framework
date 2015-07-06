@@ -9,6 +9,7 @@ import lotus.domino.NotesException;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
+import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.Session;
 
 public class DefaultSession extends DefaultBase<lotus.domino.Session> implements Session<lotus.domino.Session> {
@@ -49,7 +50,7 @@ public class DefaultSession extends DefaultBase<lotus.domino.Session> implements
 		return objectId;
 	}
 
-	public DefaultFactory getFactory() {
+	public Factory<lotus.domino.Base> getFactory() {
 		return factory;
 	}
 
@@ -68,6 +69,7 @@ public class DefaultSession extends DefaultBase<lotus.domino.Session> implements
 		return (__session != null && !isRecycled(__session)); 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Database<lotus.domino.Database> createDatabase (String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
@@ -91,10 +93,10 @@ public class DefaultSession extends DefaultBase<lotus.domino.Session> implements
 			// synchronized (this){
 				if (!found) {
 					__database = dir.createDatabase(location[1]);
-					_database = getFactory().getDatabase(__database);
+					_database = (Database<lotus.domino.Database>) getFactory().getDatabase(__database);
 				}
 				else {
-					_database = getFactory().getDatabase(null);
+					_database = (Database<lotus.domino.Database>) getFactory().getDatabase(null);
 				}
 				// }
 
@@ -167,7 +169,8 @@ public class DefaultSession extends DefaultBase<lotus.domino.Session> implements
 				throw new RiverException(e);
 			}
 
-			Database<lotus.domino.Database> database = getFactory().getDatabase(__database);
+			@SuppressWarnings("unchecked")
+			Database<lotus.domino.Database> database = (Database<lotus.domino.Database>) getFactory().getDatabase(__database);
 			return database;
 			// }
 	}

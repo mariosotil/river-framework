@@ -51,7 +51,7 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 	protected abstract boolean isValidNativeObject(N __native);
 
 	@Override
-	public abstract void cleanUp(Base<N>... except);
+	public abstract void cleanUp(Base<? extends N>... except);
 
 	protected <U extends Base<?>> U createWrapper(Class<U> outputClass, Class<? extends N> inputClass, N __obj) {
 		U _wrapper = null;
@@ -141,8 +141,8 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 
 				// Clean up the reference map, except for the just created
 				// _wrapper object
-				// cleanUp((Base<N>) _wrapper);
-				cleanUp();
+				cleanUp((Base<N>) _wrapper);
+				// cleanUp();
 
 				// Looking for the object in the cache
 				String id = _wrapper.getObjectId();

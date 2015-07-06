@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import org.riverframework.River;
 
 public class NativeReferenceCollectorTest extends org.riverframework.wrapper.org.openntf.domino.AbstractStressTest {
-	protected static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+	protected static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 	
 	@BeforeClass
 	public static void before() {

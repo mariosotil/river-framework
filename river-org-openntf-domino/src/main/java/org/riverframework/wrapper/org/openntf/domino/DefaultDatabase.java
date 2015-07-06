@@ -1,28 +1,31 @@
-package org.riverframework.wrapper.lotus.domino;
+package org.riverframework.wrapper.org.openntf.domino;
 
 // import java.util.logging.Level;
 // import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.openntf.domino.Base;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
+import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.View;
 
 class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implements org.riverframework.wrapper.Database<org.openntf.domino.Database> {
-	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 	protected org.riverframework.wrapper.Session<org.openntf.domino.Session> _session = null;
+	protected org.riverframework.wrapper.Factory<org.openntf.domino.Base<?>> _factory = null;
 	protected volatile org.openntf.domino.Database __database = null;
 	private String objectId = null;
 
+	@SuppressWarnings("unchecked")
 	protected DefaultDatabase(org.riverframework.wrapper.Session<org.openntf.domino.Session> _s, org.openntf.domino.Database __obj) {
 		__database = __obj;
 		_session = _s;
-		synchronized (_session){
-			objectId = calcObjectId(__database);
-		}
+		_factory = (Factory<Base<?>>) _session.getFactory();
+		objectId = calcObjectId(__database);
 	}
 
 	@Override
@@ -72,54 +75,50 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 
 	@Override
 	public Document<org.openntf.domino.Document> createDocument(String... parameters) {
-		synchronized (_session){
-			org.openntf.domino.Document __doc = null;
+		org.openntf.domino.Document __doc = null;
 
-			__doc = __database.createDocument();
+		__doc = __database.createDocument();
 
-			@SuppressWarnings("unchecked")
-			Document<org.openntf.domino.Document> doc = _session.getFactory().getDocument(__doc);
+		@SuppressWarnings("unchecked")
+		Document<org.openntf.domino.Document> doc = (Document<org.openntf.domino.Document>) _factory.getDocument(__doc);
 
-			return doc;
-		}
+		return doc;
 	}
 
 	@Override
 	public Document<org.openntf.domino.Document> getDocument(String... parameters)
 	{
-		synchronized (_session){
-			org.openntf.domino.Document __doc = null;
+		org.openntf.domino.Document __doc = null;
 
-			if (parameters.length > 0) {
-				String id = parameters[0];
+		if (parameters.length > 0) {
+			String id = parameters[0];
 
-				String[] temp = id.split(Pattern.quote(River.ID_SEPARATOR));
-				if (temp.length == 3) {
-					id = temp[2];
-				}
-
-				try {
-					if (id.length() == 32) {
-						__doc = __database.getDocumentByUNID(id);
-					}
-				} catch (Exception e) {
-					// Maybe it was an invalid UNID. We just ignore the exception.
-				}
-
-				try {
-					if (__doc == null && id.length() == 8) {
-						__doc = __database.getDocumentByID(id);
-					}
-				} catch (Exception e) {
-					// Maybe it was an invalid UNID. We just ignore the exception.
-				}
+			String[] temp = id.split(Pattern.quote(River.ID_SEPARATOR));
+			if (temp.length == 3) {
+				id = temp[2];
 			}
 
-			@SuppressWarnings("unchecked")
-			Document<org.openntf.domino.Document> doc = _session.getFactory().getDocument(__doc);
+			try {
+				if (id.length() == 32) {
+					__doc = __database.getDocumentByUNID(id);
+				}
+			} catch (Exception e) {
+				// Maybe it was an invalid UNID. We just ignore the exception.
+			}
 
-			return doc;
+			try {
+				if (__doc == null && id.length() == 8) {
+					__doc = __database.getDocumentByID(id);
+				}
+			} catch (Exception e) {
+				// Maybe it was an invalid UNID. We just ignore the exception.
+			}
 		}
+
+		@SuppressWarnings("unchecked")
+		Document<org.openntf.domino.Document> doc = (Document<org.openntf.domino.Document>) _factory.getDocument(__doc);
+
+		return doc;
 	}
 
 	@Override
@@ -148,47 +147,43 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 
 	@Override
 	public View<org.openntf.domino.View> getView(String... parameters) {
-		synchronized (_session){
-			org.openntf.domino.View __view = null;
+		org.openntf.domino.View __view = null;
 
-			if (parameters.length > 0) {
-				String id = parameters[0];
-				__view = __database.getView(id);
-			}
-
-			if (__view != null)
-				__view.setAutoUpdate(false);
-
-			@SuppressWarnings("unchecked")
-			View<org.openntf.domino.View> _view = _session.getFactory().getView(__view);
-			return _view;
+		if (parameters.length > 0) {
+			String id = parameters[0];
+			__view = __database.getView(id);
 		}
+
+		if (__view != null)
+			__view.setAutoUpdate(false);
+
+		@SuppressWarnings("unchecked")
+		View<org.openntf.domino.View> _view = (View<org.openntf.domino.View>) _factory.getView(__view);
+		return _view;
 	}
 
 	@Override
 	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> getAllDocuments() {
-		synchronized (_session){
-			org.openntf.domino.DocumentCollection _col;
+		org.openntf.domino.DocumentCollection _col;
 
-			_col = __database.getAllDocuments();
+		_col = __database.getAllDocuments();
 
-			@SuppressWarnings("unchecked")
-			DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = _session.getFactory().getDocumentIterator(_col);
-			return _iterator;
-		}
+		@SuppressWarnings("unchecked")
+		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = 
+		(DocumentIterator<Base<?>, org.openntf.domino.Document>) _factory.getDocumentIterator(_col);
+		return _iterator;
 	}
 
 	@Override
 	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> search(String query) {
-		synchronized (_session){
-			org.openntf.domino.DocumentCollection _col;
+		org.openntf.domino.DocumentCollection _col;
 
-			_col = __database.FTSearch(query);
+		_col = __database.FTSearch(query);
 
-			@SuppressWarnings("unchecked")
-			DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = _session.getFactory().getDocumentIterator(_col);
-			return _iterator;
-		}
+		@SuppressWarnings("unchecked")
+		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = 
+		(DocumentIterator<Base<?>, org.openntf.domino.Document>) _factory.getDocumentIterator(_col);
+		return _iterator;
 	}
 
 	@Override

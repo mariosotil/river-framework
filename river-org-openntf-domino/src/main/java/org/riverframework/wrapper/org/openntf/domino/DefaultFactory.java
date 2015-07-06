@@ -1,9 +1,10 @@
-package org.riverframework.wrapper.lotus.domino;
+package org.riverframework.wrapper.org.openntf.domino;
 
 import lotus.domino.NotesException;
 import lotus.domino.NotesFactory;
 
 import org.riverframework.RiverException;
+import org.riverframework.wrapper.Base;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
@@ -22,11 +23,9 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<o
 	public static DefaultFactory getInstance() {
 		if (instance == null) {
 			// Thread Safe. Might be costly operation in some case
-			synchronized (DefaultFactory.class) {
 				if (instance == null) {
 					instance = new DefaultFactory(DefaultNativeReference.class);
 				}
-			}
 		}
 		return instance;
 	}
@@ -69,12 +68,12 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<o
 	}
 
 	@Override
-	public Database<org.openntf.domino.Database> getDatabase(org.openntf.domino.Base<?> __obj) {
+	public <U extends org.openntf.domino.Base<?>> Database<org.openntf.domino.Database> getDatabase(U __obj) {
 		return getWrapper(DefaultDatabase.class, org.openntf.domino.Database.class, __obj);
 	}
 
 	@Override
-	public Document<org.openntf.domino.Document> getDocument(org.openntf.domino.Base<?> __obj) {
+	public <U extends org.openntf.domino.Base<?>> Document<org.openntf.domino.Document> getDocument(U __obj) {
 		return getWrapper(DefaultDocument.class, org.openntf.domino.Document.class, __obj);
 	}
 
@@ -84,12 +83,12 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<o
 	}
 
 	@Override
-	public View<org.openntf.domino.View> getView(org.openntf.domino.Base<?> __obj) {
+	public <U extends org.openntf.domino.Base<?>> View<org.openntf.domino.View> getView(U __obj) {
 		return getWrapper(DefaultView.class, org.openntf.domino.View.class, __obj);
 	}
 
 	@Override
-	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> getDocumentIterator(org.openntf.domino.Base<?> __obj) {
+	public <U extends org.openntf.domino.Base<?>> DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> getDocumentIterator(U __obj) {
 		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = null;
 
 		if(__obj instanceof org.openntf.domino.DocumentCollection) {
@@ -109,7 +108,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<o
 	}
 
 	@Override
-	public void cleanUp() {
+	public void cleanUp(Base<? extends org.openntf.domino.Base<?>>... except) {
 
 	}
 }

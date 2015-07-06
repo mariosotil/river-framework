@@ -6,7 +6,8 @@ import org.riverframework.River;
 import org.riverframework.RiverException;
 
 /**
- * It is used to manage a session using a NoSQL wrapper from this framework. Allows access to databases.
+ * It is used to manage a session using a NoSQL wrapper from this framework.
+ * Allows access to databases.
  * 
  * @author mario.sotil@gmail.com
  *
@@ -43,7 +44,7 @@ public final class DefaultSession implements org.riverframework.core.Session {
 	public org.riverframework.core.Database createDatabase(String... location) {
 		org.riverframework.wrapper.Database<?> _database = _session.createDatabase(location);
 		org.riverframework.core.Database database = new DefaultDatabase(this, _database);
-		
+
 		return database;
 	}
 
@@ -54,7 +55,7 @@ public final class DefaultSession implements org.riverframework.core.Session {
 
 		org.riverframework.core.Database database = createDatabase(location);
 		U xDatabase = null;
-		
+
 		try {
 			Constructor<?> constructor = clazz.getDeclaredConstructor(org.riverframework.core.Database.class);
 			constructor.setAccessible(true);
@@ -70,7 +71,7 @@ public final class DefaultSession implements org.riverframework.core.Session {
 	public org.riverframework.core.Database getDatabase(String... location) {
 		org.riverframework.wrapper.Database<?> _database = _session.getDatabase(location);
 		org.riverframework.core.Database database = new DefaultDatabase(this, _database);
-		
+
 		return database;
 	}
 
@@ -93,11 +94,12 @@ public final class DefaultSession implements org.riverframework.core.Session {
 		return xDatabase;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void cleanUp() {
 		_session.getFactory().cleanUp();
 	}
-	
+
 	@Override
 	public String getUserName() {
 		// if (!isOpen())

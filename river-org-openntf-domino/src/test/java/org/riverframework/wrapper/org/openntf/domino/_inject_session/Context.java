@@ -26,12 +26,12 @@ public final class Context extends org.riverframework.core.AbstractContext {
 			throw new RiverException(e);
 		}
 
-		Session session = River.getSession(River.LOTUS_DOMINO, _session);
+		Session session = River.getSession(River.ORG_OPENNTF_DOMINO, _session);
 		return session;
 	}
 
 	@Override
 	public void closeSession() {
-		River.closeSession(River.LOTUS_DOMINO);
+		River.closeSession(River.ORG_OPENNTF_DOMINO);
 	}
 }

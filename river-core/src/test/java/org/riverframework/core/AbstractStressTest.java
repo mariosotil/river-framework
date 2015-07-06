@@ -342,16 +342,15 @@ public abstract class AbstractStressTest {
 			}
 		}
 
-		// log.fine("Updating FT indexes");
-		// try {
-		// ((lotus.domino.Database)
-		// db1.getWrapperObject().getNativeObject()).updateFTIndex(true);
-		// ((lotus.domino.Database)
-		// db2.getWrapperObject().getNativeObject()).updateFTIndex(true);
-		//
-		// } catch (Exception e) {
-		// throw new RiverException(e);
-		// }
+		log.fine("Updating FT indexes");
+		try {
+			db1.refreshSearchIndex(true);
+			db2.refreshSearchIndex(true);
+
+			Thread.sleep(2000);
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
 
 		log.fine("Stressing");
 

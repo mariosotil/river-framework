@@ -114,9 +114,7 @@ class DefaultDocumentIterator extends DefaultBase<lotus.domino.Base> implements 
 		try {
 			while (!isViewEntryValid(__viewEntry)) 
 			{
-				// lotus.domino.ViewEntry __old = __ve;
 				__viewEntry = __viewEntryCollection.getNextEntry(__viewEntry);
-				// CHECKING __old.recycle();  // To recycle or not to recycle... That is the question.
 			} 
 
 			log.finest("Current view entry=" + (__viewEntry == null ? "<null>" :__viewEntry.getDocument().hashCode()));

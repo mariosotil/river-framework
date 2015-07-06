@@ -22,12 +22,12 @@ import org.riverframework.wrapper.Session;
 import org.riverframework.wrapper.View;
 
 public abstract class AbstractStressTest {
-	private final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+	private final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 
 	protected Context context = null;
 	protected Session<org.openntf.domino.Base<?>> _session = null;
 
-	protected static long maxDocumentsForStressTest = 1000;
+	protected static long maxDocumentsForStressTest = 100;
 
 	@SuppressWarnings("unchecked")
 	@Before
@@ -78,13 +78,13 @@ public abstract class AbstractStressTest {
 
 		View<org.openntf.domino.View> view2 = (View<org.openntf.domino.View>) db2.createView(name, "SELECT Form = \"" + form + "\"");
 		assertTrue("There is a problem creating the view in the test database.", view2.isOpen());
-				
+
 		db1 = (Database<org.openntf.domino.Database>) _session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
 		db2 = (Database<org.openntf.domino.Database>) _session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
-		
+
 		int i;
 		final int MODULE = 100;
-		
+
 		for (i = 0; i < (maxDocumentsForStressTest); i++) {
 			db1.createDocument()
 			.setField("Form", form)
@@ -114,44 +114,44 @@ public abstract class AbstractStressTest {
 		db2.refreshSearchIndex(true);
 
 		try {
-			
+
 			Thread.sleep(2000);
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
-		
+
 		log.fine("Stressing");
-		
+
 		i = 0;
 		for(Document<org.openntf.domino.Document> doc1: (DocumentIterator<Base<?>, org.openntf.domino.Document>) db1.getAllDocuments()) {
 			int value = doc1.getFieldAsInteger("Value");
-			
+
 			DocumentIterator<org.openntf.domino.Base<?>, org.openntf.domino.Document> it = 
 					(DocumentIterator<Base<?>, org.openntf.domino.Document>) db2.search("FIELD Value=" + value + "");
-			
+
 			for(Document<org.openntf.domino.Document> doc2: it) {
 				log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value + " on " + doc2.getObjectId());
 			}
-			
+
 			if(i++ % 100 == 0) { 
 				log.fine("Processed=" + i);
 				_session.getFactory().logStatus();
 			}
 		}
-		
+
 		log.fine("Done");
 
-//		view1.delete();
-//		assertFalse("There is a problem deleting the last view created.", view1.isOpen());
-//
-//		view2.delete();
-//		assertFalse("There is a problem deleting the last view created.", view1.isOpen());
-//
-//		db1.delete();		
-//		assertFalse("There is a problem deleting the last database created.", db1.isOpen());
-//
-//		db2.delete();		
-//		assertFalse("There is a problem deleting the last database created.", db1.isOpen());
+		//		view1.delete();
+		//		assertFalse("There is a problem deleting the last view created.", view1.isOpen());
+		//
+		//		view2.delete();
+		//		assertFalse("There is a problem deleting the last view created.", view1.isOpen());
+		//
+		//		db1.delete();		
+		//		assertFalse("There is a problem deleting the last database created.", db1.isOpen());
+		//
+		//		db2.delete();		
+		//		assertFalse("There is a problem deleting the last database created.", db1.isOpen());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -193,7 +193,8 @@ public abstract class AbstractStressTest {
 		view = (View<org.openntf.domino.View>) database.getView(name);
 		assertTrue("There is a problem opening the last view created in the test database.", view.isOpen());
 
-		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> it = (DocumentIterator<Base<?>, org.openntf.domino.Document>) view.getAllDocuments();
+		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> it = 
+				(DocumentIterator<Base<?>, org.openntf.domino.Document>) view.getAllDocuments();
 
 		i = 0;
 		for (@SuppressWarnings("unused") org.riverframework.wrapper.Document<org.openntf.domino.Document> doc: 
@@ -244,5 +245,5 @@ public abstract class AbstractStressTest {
 		database.delete();		
 		assertFalse("There is a problem deleting the last database created.", database.isOpen());
 	}
-	
+
 }

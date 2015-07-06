@@ -15,7 +15,7 @@ public class FactoryTest {
 	public static void main(String[] args) {
 		NotesThread.sinitThread();
 
-		Session<org.openntf.domino.Base<?>> session = (Session<org.openntf.domino.Base<?>>) River.getSession(River.LOTUS_DOMINO,
+		Session<org.openntf.domino.Base<?>> session = (Session<org.openntf.domino.Base<?>>) River.getSession(River.ORG_OPENNTF_DOMINO,
 				(String) null, (String) null, Credentials.getPassword()).getWrapperObject();
 		
 		Database<org.openntf.domino.Database> database = (Database<org.openntf.domino.Database>) session.getDatabase("", "massive.nsf");
@@ -35,7 +35,7 @@ public class FactoryTest {
 		
 		System.out.println("Done");
 
-		River.closeSession(River.LOTUS_DOMINO);
+		River.closeSession(River.ORG_OPENNTF_DOMINO);
 		
 		NotesThread.stermThread();
 	}

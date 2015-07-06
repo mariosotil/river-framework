@@ -1,4 +1,4 @@
-package org.riverframework.wrapper.lotus.domino;
+package org.riverframework.wrapper.org.openntf.domino;
 
 import org.riverframework.wrapper.Base;
 

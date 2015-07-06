@@ -1,61 +1,64 @@
-package org.riverframework.wrapper.lotus.domino;
+package org.riverframework.wrapper.org.openntf.domino;
 
+import java.util.Iterator;
+
+import lotus.domino.NotesException;
+
+import org.openntf.domino.Base;
 import org.riverframework.River;
+import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
+import org.riverframework.wrapper.Factory;
 
 class DefaultDocumentIterator extends DefaultBase<org.openntf.domino.Base<?>> implements DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> {
-	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 	private enum Type { COLLECTION, VIEW_ENTRY_COLLECTION } 
 
 	private org.riverframework.wrapper.Session<org.openntf.domino.Session> _session = null;
+	protected org.riverframework.wrapper.Factory<org.openntf.domino.Base<?>> _factory = null;
 
-	private volatile org.openntf.domino.DocumentCollection __documentCollection = null;
-	private volatile org.openntf.domino.ViewEntryCollection __viewEntryCollection = null;
+	private org.openntf.domino.DocumentCollection __documentCollection = null;
+	private org.openntf.domino.ViewEntryCollection __viewEntryCollection = null;
 
-	// private Document<org.openntf.domino.Document> _doc = null;
-	private volatile org.openntf.domino.Document __document = null;
-	private volatile org.openntf.domino.ViewEntry __viewEntry = null;
+	private Iterator<org.openntf.domino.Document> __documentIterator = null;
+	private Iterator<org.openntf.domino.ViewEntry> __viewEntryIterator = null;
+
+	private Document<org.openntf.domino.Document> _doc = null;
+	private org.openntf.domino.Document __document = null;
+	private org.openntf.domino.ViewEntry __viewEntry = null;
 
 	private Type type = null;	
 	private String objectId = null;
 
+	@SuppressWarnings("unchecked")
 	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<org.openntf.domino.Session> s, org.openntf.domino.DocumentCollection __obj) {
 		type = Type.COLLECTION;
 		_session = s;
+		_factory = (Factory<Base<?>>) _session.getFactory();
 		__documentCollection = __obj;
-
-		synchronized (_session){
-			__document = __documentCollection.getFirstDocument();
-
-			objectId = calcObjectId(__documentCollection);
-		}
-
+		__documentIterator = __documentCollection.iterator();
+		objectId = calcObjectId(__documentCollection);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<org.openntf.domino.Session> s, org.openntf.domino.View __obj) {
 		type = Type.VIEW_ENTRY_COLLECTION;
 		_session = s;		
-
-		synchronized (_session){
-			__viewEntryCollection = __obj.getAllEntries();
-			__viewEntry = __viewEntryCollection.getFirstEntry();
-
-			objectId = calcObjectId(__viewEntryCollection);
-		}
-
+		_factory = (Factory<Base<?>>) _session.getFactory();
+		__viewEntryCollection = __obj.getAllEntries();
+		__viewEntryIterator = __viewEntryCollection.iterator();
+		objectId = calcObjectId(__viewEntryCollection);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<org.openntf.domino.Session> s, org.openntf.domino.ViewEntryCollection __obj) {
 		type = Type.VIEW_ENTRY_COLLECTION;		
 		_session = s;		
+		_factory = (Factory<Base<?>>) _session.getFactory();
 		__viewEntryCollection = __obj;
-
-		synchronized (_session){
-			__viewEntry = __viewEntryCollection.getFirstEntry();
-
-			objectId = calcObjectId(__viewEntryCollection);
-		}
+		__viewEntryIterator = __viewEntryCollection.iterator();
+		objectId = calcObjectId(__viewEntryCollection);
 	}
 
 	private static String internalCalcObjectId(org.openntf.domino.Base<?> __object) {
@@ -89,33 +92,61 @@ class DefaultDocumentIterator extends DefaultBase<org.openntf.domino.Base<?>> im
 		return objectId;
 	}
 
-	@Override
-	public boolean hasNext() {
-		return __document != null;
+	private boolean isViewEntryValid(lotus.domino.ViewEntry __ve){
+		if(__ve == null) return true;
+
+		try {
+			lotus.domino.Document __doc = __ve.getDocument();
+
+			if (__doc == null) return false;
+			if (__doc.isDeleted()) return false;
+
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
+
+		return true;
 	}
 
-	@SuppressWarnings("deprecation")
+	private void updateCurrentDocumentFromViewEntry() {
+		while (__viewEntryIterator.hasNext() && !isViewEntryValid(__viewEntry)) 
+		{
+			__viewEntry = __viewEntryIterator.next();
+		} 
+
+		__document = __viewEntry == null ? null : __viewEntry.getDocument();				
+	}
+
+	@Override
+	public boolean hasNext() {
+		switch(type) {
+		case COLLECTION:
+			return __documentIterator.hasNext();
+		case VIEW_ENTRY_COLLECTION:
+			return __viewEntryIterator.hasNext();
+		default:
+			throw new RiverException("Wrong iterator type");
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public Document<org.openntf.domino.Document> next() {
-		org.openntf.domino.Document __current = null;
+		switch(type) {
+		case COLLECTION:
+			__document = __documentIterator.next();			
+			break;
 
-		synchronized (_session){
-			switch(type) {
-			case COLLECTION:
-				__current = __document;
-				__document = __documentCollection.getNextDocument(__document);
-				break;
-
-			case VIEW_ENTRY_COLLECTION:
-				__current = __document;
-				__viewEntry = __viewEntryCollection.getNextEntry(__viewEntry);
-				break;
-			}
-
-			@SuppressWarnings("unchecked")
-			Document<org.openntf.domino.Document> _doc = _session.getFactory().getDocument(__current);
-			return _doc;
+		case VIEW_ENTRY_COLLECTION:
+			__viewEntry = __viewEntryIterator.next();
+			updateCurrentDocumentFromViewEntry();
+			break;
+		default:
+			throw new RiverException("Wrong iterator type");
 		}
+
+		_doc = (Document<org.openntf.domino.Document>) _factory.getDocument(__document);
+		return _doc;
 	}
 
 	@Override
@@ -145,9 +176,9 @@ class DefaultDocumentIterator extends DefaultBase<org.openntf.domino.Base<?>> im
 			return __documentCollection;
 		case VIEW_ENTRY_COLLECTION:
 			return __viewEntryCollection;
+		default:
+			throw new RiverException("Wrong iterator type");
 		}
-
-		return null;
 	}
 
 	@Override
@@ -157,9 +188,9 @@ class DefaultDocumentIterator extends DefaultBase<org.openntf.domino.Base<?>> im
 			return __documentCollection != null;
 		case VIEW_ENTRY_COLLECTION:
 			return __viewEntryCollection != null;
+		default:
+			throw new RiverException("Wrong iterator type");
 		}
-
-		return false;
 	}
 
 	@Override

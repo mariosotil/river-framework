@@ -18,7 +18,7 @@ public class StressTest extends org.riverframework.core.AbstractStressTest {
 	public static void before() {
 		NotesThread.sinitThread();
 
-		maxDocumentsForStressTest = 10000;
+		maxDocumentsForStressTest = 100;
 
 		new LoggerHelper(log).clearHandlers().addConsoleHandler().setLevel(Level.OFF);
 

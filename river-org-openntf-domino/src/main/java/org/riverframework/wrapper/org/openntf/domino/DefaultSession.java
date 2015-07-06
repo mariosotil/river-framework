@@ -1,4 +1,4 @@
-package org.riverframework.wrapper.lotus.domino;
+package org.riverframework.wrapper.org.openntf.domino;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -9,7 +9,7 @@ import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Session;
 
 public class DefaultSession extends DefaultBase<org.openntf.domino.Session> implements Session<org.openntf.domino.Session> {
-	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+	private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 	private final DefaultFactory factory = DefaultFactory.getInstance();
 
 	private volatile org.openntf.domino.Session __session = null;
@@ -17,9 +17,7 @@ public class DefaultSession extends DefaultBase<org.openntf.domino.Session> impl
 
 	protected DefaultSession(org.riverframework.wrapper.Session<org.openntf.domino.Base<?>> dummy, org.openntf.domino.Session obj) {
 		__session = obj;
-		synchronized (this){
-			objectId = calcObjectId(__session);
-		}
+		objectId = calcObjectId(__session);
 
 		log.fine("ObjectId:" + getObjectId());
 	}
@@ -79,14 +77,12 @@ public class DefaultSession extends DefaultBase<org.openntf.domino.Session> impl
 			db = dir.getNextDatabase(); 
 		}
 
-		synchronized (this){
-			if (!found) {
-				__database = dir.createDatabase(location[1]);
-				_database = getFactory().getDatabase(__database);
-			}
-			else {
-				_database = getFactory().getDatabase(null);
-			}
+		if (!found) {
+			__database = dir.createDatabase(location[1]);
+			_database = getFactory().getDatabase(__database);
+		}
+		else {
+			_database = getFactory().getDatabase(null);
 		}
 
 		// CHECKING dir.recycle(); 	// To recycle or not to recycle... That is the question.
@@ -98,42 +94,40 @@ public class DefaultSession extends DefaultBase<org.openntf.domino.Session> impl
 	public Database<org.openntf.domino.Database> getDatabase(String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
-		synchronized (this){
-			org.openntf.domino.Database __database = null;
+		org.openntf.domino.Database __database = null;
 
-			if (location.length != 2)
-				throw new RiverException("It is expected two parameters: server and path, or server and replicaID");
+		if (location.length != 2)
+			throw new RiverException("It is expected two parameters: server and path, or server and replicaID");
 
-			String server = location[0];
-			String path = location[1];
+		String server = location[0];
+		String path = location[1];
 
-			if (path.length() == 16) {
-				log.finer("Trying with a replica ID");
-				boolean res = false;
-				__database = __session.getDatabase(null, null);
-				res = __database.openByReplicaID(server, path);
-				if (!res) __database = null;
-			}
-
-			if (__database == null || !__database.isOpen()) {
-				log.finer("Trying with a file path");
-				__database = __session.getDatabase(server, path, false);
-			}
-
-			if (__database != null && !__database.isOpen()) {
-				log.finer("The database could not be opened");
-				try {
-					// __database.recycle();
-				} catch (Exception e) {
-					throw new RiverException(e);
-				} finally {	
-					__database = null;
-				}
-			}
-
-			Database<org.openntf.domino.Database> database = getFactory().getDatabase(__database);
-			return database;
+		if (path.length() == 16) {
+			log.finer("Trying with a replica ID");
+			boolean res = false;
+			__database = __session.getDatabase(null, null);
+			res = __database.openByReplicaID(server, path);
+			if (!res) __database = null;
 		}
+
+		if (__database == null || !__database.isOpen()) {
+			log.finer("Trying with a file path");
+			__database = __session.getDatabase(server, path, false);
+		}
+
+		if (__database != null && !__database.isOpen()) {
+			log.finer("The database could not be opened");
+			try {
+				// __database.recycle();
+			} catch (Exception e) {
+				throw new RiverException(e);
+			} finally {	
+				__database = null;
+			}
+		}
+
+		Database<org.openntf.domino.Database> database = getFactory().getDatabase(__database);
+		return database;
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package org.riverframework.wrapper.lotus.domino;
+package org.riverframework.wrapper.org.openntf.domino;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -27,7 +27,7 @@ import org.riverframework.wrapper.Document;
  * @version 0.0.x
  */
 class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implements org.riverframework.wrapper.Document<org.openntf.domino.Document> {
-	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 	protected org.riverframework.wrapper.Session<org.openntf.domino.Session> _session = null;
 	protected volatile org.openntf.domino.Document __doc = null;
 	private String objectId = null;
@@ -35,9 +35,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 	protected DefaultDocument(org.riverframework.wrapper.Session<org.openntf.domino.Session> s, org.openntf.domino.Document d) {
 		__doc = d;
 		_session = s;
-		synchronized(_session) {
-			objectId = calcObjectId(__doc);
-		}
+		objectId = calcObjectId(__doc);
 	}
 
 	public static String calcObjectId(org.openntf.domino.Document __doc) {
@@ -60,9 +58,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 
 	@Override
 	public org.openntf.domino.Document getNativeObject() {
-		synchronized (_session){
-			return __doc;
-		}
+		return __doc;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -94,9 +90,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 			}
 		}
 
-		synchronized (_session){
-			__doc.replaceItemValue(field, temp);
-		}
+		__doc.replaceItemValue(field, temp);
 
 		return this;
 	}
@@ -108,21 +102,14 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 
 	@Override
 	public Document<org.openntf.domino.Document> recalc() {
-		synchronized (_session){
-			__doc.computeWithForm(true, false);
-		}
+		__doc.computeWithForm(true, false);
 		return this;
 	}
 
 	@Override
 	public Field getField(String field) {
-		Field value = null;
-
-		Vector<?> temp = null;
-		synchronized (_session){
-			temp = __doc.getItemValue(field);
-		}
-		value = temp == null ? new DefaultField() : new DefaultField(temp);
+		Vector<?> temp = __doc.getItemValue(field);
+		Field value = temp == null ? new DefaultField() : new DefaultField(temp);
 
 		if (!value.isEmpty()) {
 			if (value.get(0) instanceof org.openntf.domino.DateTime) {
@@ -137,51 +124,32 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 
 	@Override
 	public String getFieldAsString(String field) {
-		String result = null;
-		Vector<?> value = null;
-		synchronized (_session){
-			value = __doc.getItemValue(field);
-		}
-		result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
+		Vector<?> value = __doc.getItemValue(field);
+		String result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
 
 		return result;
 	}
 
 	@Override
 	public int getFieldAsInteger(String field) {
-		int result = 0;
-		Vector<?> value = null;
-
-		synchronized (_session){
-			value = __doc.getItemValue(field);
-		}
-		result = value.size() > 0 ? Converter.getAsInteger(value.get(0)) : 0;
+		Vector<?> value = __doc.getItemValue(field);
+		int result = value.size() > 0 ? Converter.getAsInteger(value.get(0)) : 0;
 
 		return result;
 	}
 
 	@Override
 	public long getFieldAsLong(String field) {
-		long result = 0;
-
-		Vector<?> value = null;
-		synchronized (_session){
-			value = __doc.getItemValue(field);
-		}
-		result = value.size() > 0 ? Converter.getAsLong(value.get(0)) : 0;
+		Vector<?> value = __doc.getItemValue(field);
+		long result = value.size() > 0 ? Converter.getAsLong(value.get(0)) : 0;
 
 		return result;
 	}
 
 	@Override
 	public double getFieldAsDouble(String field) {
-		double result;
-
-		Vector<?> value = null;
-		synchronized (_session){
-			value = __doc.getItemValue(field);
-		}
-		result = value.size() > 0 ? Converter.getAsDouble(value.get(0)) : 0;
+		Vector<?> value = __doc.getItemValue(field);
+		double result = value.size() > 0 ? Converter.getAsDouble(value.get(0)) : 0;
 
 		return result;
 	}
@@ -191,9 +159,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 		Date result;
 
 		Vector<?> value = null;
-		synchronized (_session){
-			value = __doc.getItemValue(field);
-		}
+		value = __doc.getItemValue(field);
 		Object temp = value.size() > 0 ? value.get(0) : null;  
 		if (temp != null && temp.getClass().getName().endsWith("DateTime")) {
 			temp = ((DateTime) temp).toJavaDate();
@@ -207,48 +173,44 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 	@Override
 	public boolean isFieldEmpty(String field) {
 		boolean result = true;
-		synchronized (_session){
-			if (__doc.hasItem(field)) {
-				org.openntf.domino.Item __item = __doc.getFirstItem(field);
-				if (__item != null) {
-					if (__item.getType() == org.openntf.domino.Item.RICHTEXT) {
-						if (!__doc.getEmbeddedObjects().isEmpty()) {
-							for (@SuppressWarnings("unchecked")
-							Iterator<org.openntf.domino.EmbeddedObject> i = __doc.getEmbeddedObjects()
-							.iterator(); i.hasNext();) {
-								org.openntf.domino.EmbeddedObject eo = i.next();
-								if (eo.getType() != 0) {
-									result = false;
-									break;
-								}
+		if (__doc.hasItem(field)) {
+			org.openntf.domino.Item __item = __doc.getFirstItem(field);
+			if (__item != null) {
+				if (__item.getType() == org.openntf.domino.Item.RICHTEXT) {
+					if (!__doc.getEmbeddedObjects().isEmpty()) {
+						for (@SuppressWarnings("unchecked")
+						Iterator<org.openntf.domino.EmbeddedObject> i = __doc.getEmbeddedObjects()
+						.iterator(); i.hasNext();) {
+							org.openntf.domino.EmbeddedObject eo = i.next();
+							if (eo.getType() != 0) {
+								result = false;
+								break;
 							}
 						}
 					}
+				}
 
-					if (result && __item.getText() != "")
-						result = false;
+				if (result && __item.getText() != "")
+					result = false;
 
-					try {
-						// __item.recycle(); <== Very bad idea? 
-					} catch (Exception e) {
-						throw new RiverException(e);
-					} finally {
-						__item = null;
-					}
+				try {
+					// __item.recycle(); <== Very bad idea? 
+				} catch (Exception e) {
+					throw new RiverException(e);
+				} finally {
+					__item = null;
 				}
 			}
-
-			return result;
 		}
+
+		return result;
 	}
 
 	@Override
 	public boolean hasField(String field) {
 		boolean result;
 
-		synchronized (_session){
-			result = __doc.hasItem(field);
-		}
+		result = __doc.hasItem(field);
 
 		return result;
 	}
@@ -261,10 +223,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 		// logWrapper.debug("getFields: loading items");
 
 		Vector<org.openntf.domino.Item> items = null;
-		synchronized (_session){
-			items = __doc.getItems();
-		}
-		//((DefaultSession) session).registerVector(items);
+		items = __doc.getItems();
 
 		// logWrapper.debug("getFields: found " + items.size());
 		result = new HashMap<String, Field>(items.size());
@@ -320,43 +279,31 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 	public boolean isNew() {
 		boolean result;
 
-		synchronized (_session){
-			result = __doc.isNewNote();
-		}
+		result = __doc.isNewNote();
 
 		return result;
 	}
 
 	@Override
 	public Document<org.openntf.domino.Document> delete() {
-		synchronized (_session){
-			if (__doc != null) {
-				__doc.removePermanently(true);
-				__doc = null;
-			}
-
-			return this;
-		}
-	}
-
-	@Override
-	public Document<org.openntf.domino.Document> save() {
-		synchronized (_session){
-			__doc.save(true, false);
+		if (__doc != null) {
+			__doc.removePermanently(true);
+			__doc = null;
 		}
 
 		return this;
 	}
 
 	@Override
+	public Document<org.openntf.domino.Document> save() {
+		__doc.save(true, false);
+
+		return this;
+	}
+
+	@Override
 	public void close() {
-		// Don't recycle or close it. Let the server do that.
-
-		// log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
-
-		synchronized (_session){
-			__doc = null;
-		}
+		__doc = null;
 	}	
 
 	@Override

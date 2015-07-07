@@ -63,10 +63,11 @@ In both cases, you have to add to your classpath the Notes.jar library, and only
 
 ## Features
 
-So far, this framework has the following features: 
+The current version has the following features: 
 
 - Designed to provide a unique interface to connect to NoSQL databases 
 - Simplifies the writting of code 
+- Compiled for Java 1.6+ 
 - Uses the Java Logging API
 - Controls five basic elements:
   - The session
@@ -85,6 +86,7 @@ About the wrapper for IBM Notes:
 - Supports the elements to work with a Notes Database
 - Auto recycling the Notes objects
 - Good to develop standalone Java programs, Servlets or XPages programs 
+- Supports local and remote sessions (DIIOP) 
 - So far, it does not supports RichText items
 
 
@@ -108,7 +110,7 @@ About the wrapper for OpenNTF Domino:
   - Experimenting with the IBM Notes auto recycling
   - Experimenting with IBM Notes objects caching
   - Temporarily removing the support to Hazelcast wrapper library
-  - Updating the documention using Javadoc
+  - Updating the documention 
   - Various fixes 
 
   
@@ -118,7 +120,7 @@ There are a lot of features that I will add to this framework:
 
 - Support to relations between documents using graphs, 1..\* or \*..\*
 - Support to workflow applications development
-- Connections to Mongo, CouchDB, Node4J, Hazelcast, etc. 
+- Connections to MongoDB, CouchDB, Node4J, Hazelcast, etc. 
 
 
 ## Why am I creating this Framework?

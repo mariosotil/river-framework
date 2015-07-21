@@ -1,49 +1,51 @@
 package org.riverframework.core;
 
-import org.riverframework.extended.AbstractDocument;
-import org.riverframework.extended.Counter;
-import org.riverframework.extended.Unique;
+import org.riverframework.RiverException;
 
 /**
- * It is used to manage counters into the Database. This counters can be used to
- * create unique Ids.
+ * It is used to manage counters into the Database. This counters can be used to create unique Ids.
  * 
  * @author mario.sotil@gmail.com
  *
  */
-public final class DefaultCounter extends AbstractDocument<DefaultCounter> 
-implements Counter, Unique<DefaultCounter> {
-
+public final class DefaultCounter extends AbstractDocument<DefaultCounter> implements IndexedDocument<DefaultCounter> {
+	protected final static String INDEX_NAME = Session.ELEMENT_PREFIX + "counter";
 	protected final static String FORM_NAME = Session.ELEMENT_PREFIX + "counter";
 	protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 	protected final static String FIELD_COUNT = Session.FIELD_PREFIX + "count";
+	protected static View index = null;
 
-	protected View index = null;
+	protected DefaultCounter(Database database, org.riverframework.wrapper.Document<?> _doc) {
+		super(database, _doc);
 
-	protected DefaultCounter(Document doc) {
-		super(doc);
+		if (index == null) {
+			// TODO: you cannot always hope that a view is loaded with one unique parameter.
+			index = database.getView(INDEX_NAME);
+		}
 	}
 
 	@Override
-	public String getIndexName() {
-		return Session.ELEMENT_PREFIX + "Counter_Index";
+	public View getIndex() {
+		return index;
 	}
 
-	protected DefaultCounter afterCreate() {
-		doc.setField("Form", FORM_NAME).setField(FIELD_COUNT, 0);
+	@Override
+	public DefaultCounter afterCreate() {
+		// TODO: this works only for IBM Notes. It's necessary to fix this.
+		_doc.setField("Form", FORM_NAME).setField(FIELD_COUNT, 0);
 
-		return this;
+		return getThis();
 	}
 
 	@Override
 	public DefaultCounter setId(String id) {
-		doc.setField(FIELD_ID, id);
+		_doc.setField(FIELD_ID, id);
 		return this;
 	}
 
 	@Override
 	public String getId() {
-		String id = doc.getFieldAsString(FIELD_ID);
+		String id = _doc.getFieldAsString(FIELD_ID);
 		return id;
 	}
 
@@ -53,15 +55,12 @@ implements Counter, Unique<DefaultCounter> {
 		return this;
 	}
 
-	@Override
 	synchronized public long getCount() {
-		long n = 0;
+		if (!isOpen())
+			throw new RiverException("The DefaultCounter object is not open.");
 
-		// if (!isOpen())
-		// throw new RiverException("The counter is not open.");
-
-		n = doc.getFieldAsInteger(FIELD_COUNT) + 1;
-		doc.setField(FIELD_COUNT, n).save();
+		long n = _doc.getFieldAsInteger(FIELD_COUNT) + 1;
+		_doc.setField(FIELD_COUNT, n).save();
 
 		return n;
 	}

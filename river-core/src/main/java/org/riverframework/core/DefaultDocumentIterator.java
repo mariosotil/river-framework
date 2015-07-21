@@ -23,11 +23,7 @@ public final class DefaultDocumentIterator implements org.riverframework.core.Do
 	@Override
 	public Document next() {
 		org.riverframework.wrapper.Document<?> _doc = _iterator.next();
-
-		// long start = System.nanoTime();
 		org.riverframework.core.Document doc = database.getDocument(_doc);
-		// long end = System.nanoTime();
-		// System.out.println("F2=" + (((double)(end - start))/1000000));
 
 		return doc;
 	}
@@ -64,6 +60,11 @@ public final class DefaultDocumentIterator implements org.riverframework.core.Do
 	@Override
 	public org.riverframework.wrapper.DocumentIterator<?, ?> getWrapperObject() {
 		return _iterator;
+	}
+
+	@Override
+	public Object getNativeObject() {
+		return _iterator.getNativeObject();
 	}
 
 	@Override

@@ -41,7 +41,8 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 
 	protected void registerReference(String id, Base<?> _wrapper) {
 		try {
-			AbstractNativeReference<N> ref = nativeReferenceClass.cast(constructorNativeReference.newInstance(_wrapper, wrapperQueue));
+			AbstractNativeReference<N> ref = nativeReferenceClass.cast(constructorNativeReference.newInstance(_wrapper,
+					wrapperQueue));
 			wrapperMap.put(id, ref);
 		} catch (Exception e) {
 			throw new RiverException(e);
@@ -57,7 +58,8 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 		U _wrapper = null;
 
 		try {
-			Constructor<?> constructor = outputClass.getDeclaredConstructor(org.riverframework.wrapper.Session.class, inputClass);
+			Constructor<?> constructor = outputClass.getDeclaredConstructor(org.riverframework.wrapper.Session.class,
+					inputClass);
 			constructor.setAccessible(true);
 
 			_wrapper = outputClass.cast(constructor.newInstance(_session, __obj));
@@ -135,12 +137,12 @@ public abstract class AbstractFactory<N> implements org.riverframework.wrapper.F
 				_wrapper = createWrapper(outputClass, inputClass, null);
 
 			} else {
-				log.finest("Getting a wrapper for the native object " + __obj.getClass().getName() + " hc=" + __obj.hashCode());
+				log.finest("Getting a wrapper for the native object " + __obj.getClass().getName() + " hc="
+						+ __obj.hashCode());
 
 				_wrapper = createWrapper(outputClass, inputClass, __obj);
 
-				// Clean up the reference map, except for the just created
-				// _wrapper object
+				// Clean up the reference map, except for the just created _wrapper object
 				cleanUp((Base<N>) _wrapper);
 
 				// Looking for the object in the cache

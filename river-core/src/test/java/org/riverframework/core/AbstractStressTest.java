@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.River;
 import org.riverframework.RiverException;
-import org.riverframework.extended.Unique;
 
 public abstract class AbstractStressTest {
 	private final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
@@ -48,32 +47,16 @@ public abstract class AbstractStressTest {
 		context.closeSession();
 	}
 
-	static class Book extends org.riverframework.extended.AbstractDocument<Book> implements Unique<Book> {
+	static class Book extends org.riverframework.core.AbstractDocument<Book> { // implements IndexedDocument<Book>
+		// protected static View index = null;
 
-		protected Book(Document doc) {
-			super(doc);
-		}
+		protected Book(Database d, org.riverframework.wrapper.Document<?> _d) {
+			super(d, _d);
 
-		@Override
-		public String getIndexName() {
-			return "vi_books";
-		}
-
-		@Override
-		public Book generateId() {
-			// Do nothing
-			return this;
-		}
-
-		@Override
-		public Book setId(String id) {
-			// Do nothing
-			return this;
-		}
-
-		@Override
-		public String getId() {
-			return null;
+			// if (index == null) {
+			// // TODO: you cannot always hope that a view is loaded with one unique parameter.
+			// index = database.getView("vi_ap_people_index");
+			// }
 		}
 
 		@Override
@@ -81,12 +64,33 @@ public abstract class AbstractStressTest {
 			return this;
 		}
 
+		// @Override
+		// public View getIndex() {
+		// return index;
+		// }
+		//
+		// @Override
+		// public Book generateId() {
+		// // Do nothing
+		// return this;
+		// }
+		//
+		// @Override
+		// public Book setId(String id) {
+		// // Do nothing
+		// return this;
+		// }
+		//
+		// @Override
+		// public String getId() {
+		// return null;
+		// }
+
 	}
 
-	static class Library extends org.riverframework.extended.AbstractDatabase<Library> {
-
-		protected Library(Database database) {
-			super(database);
+	static class Library extends org.riverframework.core.AbstractDatabase<Library> {
+		protected Library(Session s, org.riverframework.wrapper.Database<?> _db) {
+			super(s, _db);
 		}
 
 		@Override
@@ -148,7 +152,8 @@ public abstract class AbstractStressTest {
 		end = System.nanoTime();
 		timeTest02Round01 = (end - start) / 1000000;
 
-		Database library = session.createDatabase(Library.class, context.getTestDatabaseServer(), "TEST_LIBRARY_" + suffixDb);
+		Database library = session.createDatabase(Library.class, context.getTestDatabaseServer(), "TEST_LIBRARY_"
+				+ suffixDb);
 		@SuppressWarnings("unused")
 		View books = library.createView("vi_books", "SELECT Form=\"fo_book\"");
 
@@ -267,8 +272,8 @@ public abstract class AbstractStressTest {
 			for (int j = 0; j < 100; j++) {
 				DocumentIterator it = db2.search("FIELD Value=" + value + "");
 				for (Document doc2 : it) {
-					log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value + " on "
-							+ doc2.getObjectId());
+					log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value
+							+ " on " + doc2.getObjectId());
 				}
 
 				if (i % 100 == 0) {
@@ -393,7 +398,8 @@ public abstract class AbstractStressTest {
 	public void testStress4() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-		Database database = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
+		Database database = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date())
+				+ ".nsf");
 
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());

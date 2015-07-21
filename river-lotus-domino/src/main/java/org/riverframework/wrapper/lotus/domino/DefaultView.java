@@ -25,9 +25,7 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 		__view = v;
 		_session = _s;
 		_factory = (Factory<Base>) _s.getFactory();
-		// synchronized (_session){
 		objectId = calcObjectId(__view);
-		// }		
 	}
 
 	@Override
@@ -66,10 +64,11 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 	@SuppressWarnings("unchecked")
 	@Override
 	public Document<lotus.domino.Document> getDocumentByKey(String key) {
-		// synchronized (_session){
 		lotus.domino.Document __doc = null;
 
 		try {
+			//AQUIIIIII
+			__view.refresh();
 			__doc = __view.getDocumentByKey(key, true);
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -78,7 +77,6 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 		Document<lotus.domino.Document> doc = (Document<lotus.domino.Document>) _factory.getDocument(__doc);
 
 		return doc;
-		// }
 	}
 
 	@Override
@@ -98,7 +96,6 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 
 	@Override
 	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> getAllDocuments() {
-		// synchronized (_session){
 		lotus.domino.ViewEntryCollection __vecol;
 		try {
 			__vecol = __view.getAllEntries();
@@ -110,12 +107,10 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 		@SuppressWarnings("unchecked")
 		DocumentIterator<lotus.domino.Base, lotus.domino.Document> result = (DocumentIterator<Base, lotus.domino.Document>) _factory.getDocumentIterator(__vecol);
 		return result;
-		// }
 	}
 
 	@Override
 	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> getAllDocumentsByKey(Object key) {
-		// synchronized (_session){
 		lotus.domino.DocumentCollection _col;
 		try {
 			_col = __view.getAllDocumentsByKey(key, true);
@@ -126,24 +121,21 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 		@SuppressWarnings("unchecked")
 		DocumentIterator<lotus.domino.Base, lotus.domino.Document> result = (DocumentIterator<Base, lotus.domino.Document>) _factory.getDocumentIterator(_col);
 		return result;
-		// }
 	}
 
 	@Override
 	public View<lotus.domino.View> refresh() {
-		// synchronized (_session){
 		try {
 			__view.refresh();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
-		// }
+
 		return this;
 	}
 
 	@Override
 	public void delete() {
-		// synchronized (_session){
 		if (__view != null) {
 			try {
 				__view.remove();
@@ -154,12 +146,10 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 				__view = null;
 			}
 		}
-		// }
 	}
 
 	@Override
 	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> search(String query) {
-		// synchronized (_session){
 		lotus.domino.View __temp = null;
 
 		try {
@@ -173,7 +163,6 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 		DocumentIterator<lotus.domino.Base, lotus.domino.Document> _iterator = (DocumentIterator<Base, lotus.domino.Document>) _factory.getDocumentIterator(__temp);
 
 		return _iterator;
-		// }
 	}
 
 	@Override

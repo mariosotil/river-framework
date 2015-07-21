@@ -1,16 +1,18 @@
-package org.riverframework.extended;
+package org.riverframework.core;
+
 /**
  * Exposes the methods to make a document indexable.
  * 
  * @author mario.sotil@gmail.com
  *
  */
-public interface Unique<T> {
+public interface IndexedDocument<T> {
 	/**
-	 * Returns the Index that will be used to search documents of this class. 
+	 * Returns the Index that will be used to search documents of this class.
+	 * 
 	 * @return the index name
 	 */
-	public String getIndexName();
+	public View getIndex();
 
 	/**
 	 * Generate a new Id for the document each time is called.
@@ -30,6 +32,7 @@ public interface Unique<T> {
 
 	/**
 	 * Returns the current Document's Id, whether it was generated or set manually.
+	 * 
 	 * @return the current Id
 	 */
 	public String getId();

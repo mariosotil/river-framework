@@ -1,11 +1,11 @@
-package org.riverframework.wrapper.org.openntf.domino._remote;
+package org.riverframework.core.lotus.domino._inject_session;
 
 import lotus.domino.NotesThread;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-public class DocumentTest extends org.riverframework.wrapper.AbstractDocumentTest {
+public class CounterTest extends org.riverframework.core.AbstractCounterTest {
 	@BeforeClass
 	public static void before() {
 		NotesThread.sinitThread();

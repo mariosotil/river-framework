@@ -146,7 +146,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 				cleaning = true;
 			}
 
-			synchronized (_session){							
+			// synchronized (_session){  <== necessary?							
 				AbstractNativeReference<lotus.domino.Base> nat = nativeReferenceClass.cast(ref);
 				lotus.domino.Base __native = nat.getNativeObject();
 
@@ -186,7 +186,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 						nat.close();
 					}
 				}
-			}
+			// }
 		}
 
 		if (cleaning) {

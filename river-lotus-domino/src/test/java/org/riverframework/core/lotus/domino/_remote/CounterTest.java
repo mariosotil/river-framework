@@ -1,11 +1,11 @@
-package org.riverframework.extended.lotus.domino._remote;
+package org.riverframework.core.lotus.domino._remote;
 
 import lotus.domino.NotesThread;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-public class UniqueTest extends org.riverframework.extended.AbstractUniqueTest {
+public class CounterTest extends org.riverframework.core.AbstractCounterTest {
 	@BeforeClass
 	public static void before() {
 		NotesThread.sinitThread();

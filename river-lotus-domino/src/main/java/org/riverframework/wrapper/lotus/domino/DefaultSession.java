@@ -117,7 +117,6 @@ public class DefaultSession extends AbstractBase<lotus.domino.Session> implement
 	public Database<lotus.domino.Database> getDatabase(String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
-		// synchronized (this){
 		lotus.domino.Database __database = null;
 
 		if (location.length != 2)
@@ -177,7 +176,6 @@ public class DefaultSession extends AbstractBase<lotus.domino.Session> implement
 		@SuppressWarnings("unchecked")
 		Database<lotus.domino.Database> database = (Database<lotus.domino.Database>) getFactory().getDatabase(__database);
 		return database;
-		// }
 	}
 
 	@Override

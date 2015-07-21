@@ -57,9 +57,9 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 
 	@Override
 	public boolean isRecycled() {
-			return isObjectRecycled(__doc);
+		return isObjectRecycled(__doc);
 	}
-	
+
 	String getDocumentId() {
 		if (_factory.getIsRemoteSession()) {
 			String id;
@@ -73,15 +73,14 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 			return String.valueOf(getCpp(__doc));
 		}
 	}
-	
+
 	public String calcObjectId(lotus.domino.Document __doc) {
 		String objectId = "";
-		//long start = System.nanoTime();
 		if (__doc != null) {
-			String quickDocumentId = getDocumentId();
+			String documentId = getDocumentId();
 
 			if(isRecycled()) {
-				throw new RiverException("The object " + quickDocumentId + " was recycled!");
+				throw new RiverException("The object " + documentId + " was recycled!");
 			} else {
 				try {
 					lotus.domino.Database __database = __doc.getParentDatabase();
@@ -91,7 +90,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 					sb.append(River.ID_SEPARATOR);
 					sb.append(__database.getFilePath());
 					sb.append(River.ID_SEPARATOR);
-					sb.append(quickDocumentId);
+					sb.append(documentId);
 
 					objectId = sb.toString();
 
@@ -100,17 +99,13 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 				}
 			}
 		}
-		//				long end = System.nanoTime();
-		//				System.out.println(">>>>>>> O7=" + (((double)(end - start))/1000000));
 
 		return objectId;
 	}
 
 	@Override
 	public lotus.domino.Document getNativeObject() {
-		// synchronized (_session){
 		return __doc;
-		// }
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -145,9 +140,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		}
 
 		try {
-			// synchronized (_session){
 			__doc.replaceItemValue(field, temp);
-			// }
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -163,9 +156,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	@Override
 	public Document<lotus.domino.Document> recalc() {
 		try {
-			// synchronized (_session){
 			__doc.computeWithForm(true, false);
-			// }
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -178,9 +169,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 
 		try {
 			Vector<?> temp = null;
-			// synchronized (_session){
 			temp = __doc.getItemValue(field);
-			// }
 			value = temp == null ? new DefaultField() : new DefaultField(temp);
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -205,15 +194,10 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	public String getFieldAsString(String field) {
 		String result = null;
 		try {			
-			//			long start = System.nanoTime();
-
 			Vector<?> value = null;
-			// synchronized (_session){
 			value = __doc.getItemValue(field);  // We must not use getItemValueString(field) because it does not converts from the other types to string 
-			// }
 			result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
-			//			long end = System.nanoTime();
-			//			System.out.println("FS2=" + (((double)(end - start))/1000000));
+
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -226,9 +210,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		int result = 0;
 		try {
 			Vector<?> value = null;
-			// synchronized (_session){
 			value = __doc.getItemValue(field);
-			// }
 			result = value.size() > 0 ? Converter.getAsInteger(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -241,9 +223,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		long result = 0;
 		try {
 			Vector<?> value = null;
-			// synchronized (_session){
 			value = __doc.getItemValue(field);
-			// }
 			result = value.size() > 0 ? Converter.getAsLong(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -256,9 +236,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		double result;
 		try {
 			Vector<?> value = null;
-			// synchronized (_session){
 			value = __doc.getItemValue(field);
-			// }
 			result = value.size() > 0 ? Converter.getAsDouble(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -271,9 +249,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		Date result;
 		try {
 			Vector<?> value = null;
-			// synchronized (_session){
 			value = __doc.getItemValue(field);
-			// }
 			Object temp = value.size() > 0 ? value.get(0) : null;  
 			if (temp != null && temp.getClass().getName().endsWith("DateTime")) {
 				temp = ((DateTime) temp).toJavaDate();
@@ -290,7 +266,6 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	@Override
 	public boolean isFieldEmpty(String field) {
 		boolean result = true;
-		// synchronized (_session){
 		try {
 			if (__doc.hasItem(field)) {
 				lotus.domino.Item __item = __doc.getFirstItem(field);
@@ -326,16 +301,13 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		}
 
 		return result;
-		// }
 	}
 
 	@Override
 	public boolean hasField(String field) {
 		boolean result;
 		try {
-			// synchronized (_session){
 			result = __doc.hasItem(field);
-			// }
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -352,13 +324,10 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 			// logWrapper.debug("getFields: loading items");
 
 			Vector<lotus.domino.Item> items = null;
-			// synchronized (_session){
 			items = __doc.getItems();
-			// }
-			//((DefaultSession) session).registerVector(items);
 
 			// logWrapper.debug("getFields: found " + items.size());
-			result = new HashMap<String, Field>(items.size());
+			result = new HashMap<String, Field>();
 
 			for (lotus.domino.Item __item : items) {
 				String name = __item.getName();
@@ -367,12 +336,12 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 
 				Field values = null;
 
-				if (type == Item.DATETIMES
-						|| type == Item.NAMES
+				if (type == Item.TEXT
 						|| type == Item.NUMBERS
+						|| type == Item.NAMES
+						|| type == Item.DATETIMES
 						|| type == Item.READERS
-						|| type == Item.RICHTEXT
-						|| type == Item.TEXT) {
+						|| type == Item.RICHTEXT) {
 					Vector<Object> temp = __item.getValues();
 					values = temp == null ? new DefaultField() : new DefaultField(temp);
 				} else {
@@ -414,9 +383,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	public boolean isNew() {
 		boolean result;
 		try {
-			// synchronized (_session){
 			result = __doc.isNewNote();
-			// }
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -425,27 +392,25 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 
 	@Override
 	public Document<lotus.domino.Document> delete() {
-		synchronized (_session){
-			if (__doc != null) {
-				try {
-					__doc.removePermanently(true);
-				} catch (NotesException e) {
-					throw new RiverException(e);
-				} finally {
-					__doc = null;
-				}
+		// synchronized (_session){  <== necessary?
+		if (__doc != null) {
+			try {
+				__doc.removePermanently(true);
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			} finally {
+				__doc = null;
 			}
-
-			return this;
 		}
+
+		return this;
+		// }
 	}
 
 	@Override
 	public Document<lotus.domino.Document> save() {
 		try {
-			// synchronized (_session){
 			__doc.save(true, false);
-			// }
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -456,18 +421,6 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	@Deprecated
 	public void close() {
 		// Don't recycle or close it. Let the server do that.
-
-		// log.finest("Closing: id=" + objectId + " (" + this.hashCode() + ")");
-
-		//		synchronized (_session){
-		//			try {
-		//				if (__doc != null) 	__doc.recycle();			// <== Very bad idea? 
-		//			} catch (NotesException e) {
-		//				throw new RiverException(e);
-		//			} finally {
-		//				__doc = null;
-		//			}
-		//		}
 	}	
 
 	@Override

@@ -6,26 +6,24 @@ import org.riverframework.River;
 import org.riverframework.RiverException;
 
 /**
- * It is used to manage a session using a NoSQL wrapper from this framework.
- * Allows access to databases.
+ * It is used to manage a session using a NoSQL wrapper from this framework. Allows access to databases.
  * 
  * @author mario.sotil@gmail.com
  *
  */
-public final class DefaultSession implements org.riverframework.core.Session {
+public final class DefaultSession implements Session {
 	public static final String PREFIX = "RIVER_";
 
 	private org.riverframework.wrapper.Session<?> _session = null;
 
-	protected DefaultSession(org.riverframework.wrapper.Session<?> _s) {
+	protected DefaultSession(org.riverframework.wrapper.Session<?> _session) {
 		// Exists only to defeat instantiation.
-		_session = _s;
+		this._session = _session;
 	}
 
 	@Override
 	public String getObjectId() {
-		// if (!isOpen())
-		// throw new ClosedObjectException("The Session object is closed.");
+		// if (!isOpen()) throw new ClosedObjectException("The Session object is closed.");
 
 		return _session.getObjectId();
 	}
@@ -36,62 +34,67 @@ public final class DefaultSession implements org.riverframework.core.Session {
 	}
 
 	@Override
+	public Object getNativeObject() {
+		return _session.getNativeObject();
+	}
+
+	@Override
 	public boolean isOpen() {
 		return (_session != null && _session.isOpen());
 	}
 
 	@Override
-	public org.riverframework.core.Database createDatabase(String... location) {
+	public Database createDatabase(String... location) {
 		org.riverframework.wrapper.Database<?> _database = _session.createDatabase(location);
-		org.riverframework.core.Database database = new DefaultDatabase(this, _database);
+		Database database = new DefaultDatabase(this, _database);
 
 		return database;
 	}
 
 	@Override
-	public <U extends org.riverframework.extended.AbstractDatabase<?>> U createDatabase(Class<U> clazz, String... location) {
+	public <U extends AbstractDatabase<?>> U createDatabase(Class<U> clazz, String... location) {
 		// if (!isOpen())
 		// throw new ClosedObjectException("The Session object is closed.");
 
-		org.riverframework.core.Database database = createDatabase(location);
-		U xDatabase = null;
+		org.riverframework.wrapper.Database<?> _database = _session.createDatabase(location);
+		U database = null;
 
 		try {
-			Constructor<?> constructor = clazz.getDeclaredConstructor(org.riverframework.core.Database.class);
+			Constructor<?> constructor = clazz.getDeclaredConstructor(Session.class, org.riverframework.wrapper.Database.class);
 			constructor.setAccessible(true);
-			xDatabase = clazz.cast(constructor.newInstance(database));
+			database = clazz.cast(constructor.newInstance(this, _database));
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
 
-		return xDatabase;
+		return database;
 	}
 
 	@Override
-	public org.riverframework.core.Database getDatabase(String... location) {
+	public Database getDatabase(String... location) {
 		org.riverframework.wrapper.Database<?> _database = _session.getDatabase(location);
-		org.riverframework.core.Database database = new DefaultDatabase(this, _database);
+		Database database = new DefaultDatabase(this, _database);
 
 		return database;
 	}
 
 	@Override
-	public <U extends org.riverframework.extended.AbstractDatabase<?>> U getDatabase(Class<U> clazz, String... location) {
-		// if (!isOpen())
-		// throw new ClosedObjectException("The Session object is closed.");
+	public <U extends AbstractDatabase<?>> U getDatabase(Class<U> clazz, String... location) {
+		// if (!isOpen()) throw new ClosedObjectException("The Session object is closed.");
 
-		U xDatabase = null;
-		Database database = getDatabase(location);
+		U database = null;
+		org.riverframework.wrapper.Database<?> _database = _session.getDatabase(location);
 
 		try {
-			Constructor<?> constructor = clazz.getDeclaredConstructor(org.riverframework.core.Database.class);
+			Constructor<?> constructor = clazz.getDeclaredConstructor(Session.class, org.riverframework.wrapper.Database.class);
+
 			constructor.setAccessible(true);
-			xDatabase = clazz.cast(constructor.newInstance(database));
+			database = clazz.cast(constructor.newInstance(this, _database));
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
 
-		return xDatabase;
+		return database;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -109,10 +112,8 @@ public final class DefaultSession implements org.riverframework.core.Session {
 	}
 
 	/**
-	 * It's the really responsible to close the session. It's called by the
-	 * close() method. It's hide from the real world as a protected method,
-	 * because it never has to be called alone. Only the River factory class can
-	 * call it.
+	 * It's the really responsible to close the session. It's called by the close() method. It's hide from the real world as a protected
+	 * method, because it never has to be called alone. Only the River factory class can call it.
 	 */
 	protected void protectedClose() {
 		_session.close();

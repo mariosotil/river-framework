@@ -23,9 +23,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		__database = __obj;
 		_session = _s;
 		_factory = (Factory<Base>) _s.getFactory();
-		// synchronized (_session){
 		objectId = calcObjectId(__database);
-		// }
 	}
 
 	@Override
@@ -101,7 +99,6 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 
 	@Override
 	public Document<lotus.domino.Document> createDocument(String... parameters) {
-		// synchronized (_session){
 		lotus.domino.Document __doc = null;
 
 		try {
@@ -114,14 +111,12 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		Document<lotus.domino.Document> doc = (Document<lotus.domino.Document>) _factory.getDocument(__doc);
 
 		return doc;
-		// }
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Document<lotus.domino.Document> getDocument(String... parameters)
 	{
-		// synchronized (_session){
 		lotus.domino.Document __doc = null;
 		Document<lotus.domino.Document> doc = null;
 
@@ -131,11 +126,6 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 			doc = (Document<lotus.domino.Document>) _factory.getDocument(id);
 
 			if (!doc.isOpen()) { 
-				//			String[] temp = id.split(Pattern.quote(River.ID_SEPARATOR));
-				//			if (temp.length == 3) {
-				//				id = temp[2];
-				//			}
-
 				try {
 					if (id.length() == 32) {
 						__doc = __database.getDocumentByUNID(id);
@@ -159,7 +149,6 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		}
 
 		return doc;
-		// }
 	}
 
 	@Override
@@ -197,7 +186,6 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 
 	@Override
 	public View<lotus.domino.View> getView(String... parameters) {
-		// synchronized (_session){
 		lotus.domino.View __view = null;
 
 		try {
@@ -216,12 +204,10 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		@SuppressWarnings("unchecked")
 		View<lotus.domino.View> _view = (View<lotus.domino.View>) _factory.getView(__view);
 		return _view;
-		// }
 	}
 
 	@Override
 	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> getAllDocuments() {
-		// synchronized (_session){
 		lotus.domino.DocumentCollection _col;
 
 		try {
@@ -234,12 +220,10 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		DocumentIterator<lotus.domino.Base, lotus.domino.Document> _iterator = 
 				(DocumentIterator<Base, lotus.domino.Document>) _factory.getDocumentIterator(_col);
 		return _iterator;
-		// }
 	}
 
 	@Override
 	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> search(String query) {
-		// synchronized (_session){
 		lotus.domino.DocumentCollection _col;
 
 		try {
@@ -252,7 +236,6 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		DocumentIterator<lotus.domino.Base, lotus.domino.Document> _iterator = 
 				(DocumentIterator<Base, lotus.domino.Document>) _factory.getDocumentIterator(_col);
 		return _iterator;
-		// }
 	}
 
 	@Override

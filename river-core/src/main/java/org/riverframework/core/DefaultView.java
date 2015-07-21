@@ -2,11 +2,11 @@ package org.riverframework.core;
 
 import java.lang.reflect.Constructor;
 
+import org.riverframework.ClosedObjectException;
 import org.riverframework.RiverException;
 
 /**
- * It is used to access Views of documents. Works as an index that makes easier
- * access to the documents.
+ * It is used to access Views of documents. Works as an index that makes easier access to the documents.
  * 
  * @author mario.sotil@gmail.com
  *
@@ -15,21 +15,26 @@ public final class DefaultView implements View {
 	protected Database database = null;
 	protected org.riverframework.wrapper.View<?> _view = null;
 
-	protected DefaultView(Database d, org.riverframework.wrapper.View<?> obj) {
-		database = d;
+	protected DefaultView(Database database, org.riverframework.wrapper.View<?> obj) {
+		this.database = database;
 		_view = obj;
 	}
 
 	@Override
 	public String getObjectId() {
-		// if (!isOpen())
-		// throw new ClosedObjectException("The View object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The View object is closed.");
 		return _view.getObjectId();
 	}
 
 	@Override
 	public org.riverframework.wrapper.View<?> getWrapperObject() {
 		return _view;
+	}
+
+	@Override
+	public Object getNativeObject() {
+		return _view.getNativeObject();
 	}
 
 	@Override
@@ -46,21 +51,22 @@ public final class DefaultView implements View {
 	}
 
 	@Override
-	public <U extends org.riverframework.extended.AbstractDocument<?>> U getDocumentByKey(Class<U> clazz, String key) {
-		// if (!isOpen())
-		// throw new ClosedObjectException("The View object is closed.");
+	public <U extends org.riverframework.core.AbstractDocument<?>> U getDocumentByKey(Class<U> clazz, String key) {
+		if (!isOpen())
+			throw new ClosedObjectException("The View object is closed.");
 
-		Document doc = getDocumentByKey(key);
-		U xDoc = null;
+		org.riverframework.wrapper.Document<?> _doc = _view.getDocumentByKey(key);
+		U doc = null;
 
 		try {
-			Constructor<?> constructor = clazz.getDeclaredConstructor(Document.class);
-			xDoc = clazz.cast(constructor.newInstance(doc));
+			Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class,
+					org.riverframework.wrapper.Document.class);
+			doc = clazz.cast(constructor.newInstance(database, _doc));
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
 
-		return xDoc;
+		return doc;
 	}
 
 	@Override
@@ -70,8 +76,8 @@ public final class DefaultView implements View {
 
 	@Override
 	public DocumentIterator getAllDocuments() {
-		// if (!isOpen())
-		// throw new ClosedObjectException("The View object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The View object is closed.");
 
 		org.riverframework.wrapper.DocumentIterator<?, ?> _iterator = _view.getAllDocuments();
 		DocumentIterator result = new DefaultDocumentIterator(database, _iterator);
@@ -81,8 +87,8 @@ public final class DefaultView implements View {
 
 	@Override
 	public DocumentIterator getAllDocumentsByKey(Object key) {
-		// if (!isOpen())
-		// throw new ClosedObjectException("The View object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The View object is closed.");
 
 		org.riverframework.wrapper.DocumentIterator<?, ?> _iterator = _view.getAllDocumentsByKey(key);
 		DocumentIterator result = new DefaultDocumentIterator(database, _iterator);
@@ -92,8 +98,8 @@ public final class DefaultView implements View {
 
 	@Override
 	public View refresh() {
-		// if (!isOpen())
-		// throw new ClosedObjectException("The View object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The View object is closed.");
 
 		_view.refresh();
 		return this;
@@ -101,16 +107,16 @@ public final class DefaultView implements View {
 
 	@Override
 	public void delete() {
-		// if (!isOpen())
-		// throw new ClosedObjectException("The View object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The View object is closed.");
 
 		_view.delete();
 	}
 
 	@Override
 	public DocumentIterator search(String query) {
-		// if (!isOpen())
-		// throw new ClosedObjectException("The View object is closed.");
+		if (!isOpen())
+			throw new ClosedObjectException("The View object is closed.");
 
 		org.riverframework.wrapper.DocumentIterator<?, ?> _it = _view.search(query);
 		DocumentIterator result = new DefaultDocumentIterator(database, _it);

@@ -37,8 +37,7 @@ public abstract class AbstractDocumentTest {
 
 				session = context.getSession();
 				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
-				complexDatabase = session
-						.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
+				complexDatabase = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 
 				database.getAllDocuments().deleteAll();
 			}
@@ -69,24 +68,16 @@ public abstract class AbstractDocumentTest {
 		calendar.set(Calendar.MILLISECOND, 0);
 		Date testDate = calendar.getTime();
 
-		doc.setField("FIELD_STRING", "SOME_TEXT")
-				.setField("FIELD_INTEGER", 100)
-				.setField("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0)
-				.setField("FIELD_DOUBLE_WITH_DECIMALS", 100.55)
-				.setField("FIELD_DATE", testDate)
+		doc.setField("FIELD_STRING", "SOME_TEXT").setField("FIELD_INTEGER", 100).setField("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0)
+				.setField("FIELD_DOUBLE_WITH_DECIMALS", 100.55).setField("FIELD_DATE", testDate)
 				.setField("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" })
-				.setField("FIELD_OBJECT",
-						new DefaultField(Arrays.asList(new String[] { "VAL1", "VAL2" })));
+				.setField("FIELD_OBJECT", new DefaultField(Arrays.asList(new String[] { "VAL1", "VAL2" })));
 
-		assertTrue("The String saved must be equal to the test value",
-				doc.compareFieldValue("FIELD_STRING", "SOME_TEXT"));
-		assertFalse("The String saved must be different to a random value",
-				doc.compareFieldValue("FIELD_STRING", "SODIUHOUIFD"));
+		assertTrue("The String saved must be equal to the test value", doc.compareFieldValue("FIELD_STRING", "SOME_TEXT"));
+		assertFalse("The String saved must be different to a random value", doc.compareFieldValue("FIELD_STRING", "SODIUHOUIFD"));
 
-		assertTrue("The Integer saved must be equal to the test value",
-				doc.compareFieldValue("FIELD_INTEGER", 100));
-		assertFalse("The Integer saved must be different to a random value",
-				doc.compareFieldValue("FIELD_INTEGER", 3847));
+		assertTrue("The Integer saved must be equal to the test value", doc.compareFieldValue("FIELD_INTEGER", 100));
+		assertFalse("The Integer saved must be different to a random value", doc.compareFieldValue("FIELD_INTEGER", 3847));
 
 		assertTrue("The Double WITHOUT decimals saved must be equal to the test value",
 				doc.compareFieldValue("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0));
@@ -98,26 +89,20 @@ public abstract class AbstractDocumentTest {
 		assertFalse("The Double WITH decimals saved must be different to a random value",
 				doc.compareFieldValue("FIELD_DOUBLE_WITH_DECIMALS", 100.89));
 
-		assertTrue("The Date saved must be equal to the test value",
-				doc.compareFieldValue("FIELD_DATE", testDate));
+		assertTrue("The Date saved must be equal to the test value", doc.compareFieldValue("FIELD_DATE", testDate));
 		calendar.set(2012, 1, 15, 5, 25, 12);
 		Date randomDate = calendar.getTime();
-		assertFalse("The Date saved must be different to a random value",
-				doc.compareFieldValue("FIELD_DATE", randomDate));
+		assertFalse("The Date saved must be different to a random value", doc.compareFieldValue("FIELD_DATE", randomDate));
 
 		assertTrue("The String array saved must be equal to the test value",
 				doc.compareFieldValue("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" }));
 		assertFalse("The String array saved must be different to a random value",
 				doc.compareFieldValue("FIELD_STRING_ARRAY", new String[] { "VALWW", "VALZZ" }));
 
-		assertTrue(
-				"The Vector saved must be equal to the test value",
-				doc.compareFieldValue("FIELD_OBJECT",
-						new String[] { "VAL1", "VAL2" }));
-		assertFalse(
-				"The Vector saved must be different to a random value",
-				doc.compareFieldValue("FIELD_OBJECT",
-						new String[] { "VAL1", "VALZZ" }));
+		assertTrue("The Vector saved must be equal to the test value",
+				doc.compareFieldValue("FIELD_OBJECT", new String[] { "VAL1", "VAL2" }));
+		assertFalse("The Vector saved must be different to a random value",
+				doc.compareFieldValue("FIELD_OBJECT", new String[] { "VAL1", "VALZZ" }));
 	}
 
 	@Test
@@ -202,8 +187,7 @@ public abstract class AbstractDocumentTest {
 		doc.setField(testField, testValue);
 		Double newValue = doc.getFieldAsDouble(testField);
 
-		assertTrue("The value retrieved was different to the saved",
-				Double.compare(newValue, testValue) == 0);
+		assertTrue("The value retrieved was different to the saved", Double.compare(newValue, testValue) == 0);
 	}
 
 	@Test
@@ -246,8 +230,8 @@ public abstract class AbstractDocumentTest {
 		doc.setField(testField, new String[] { "VAL1", "VAL2" });
 		Field newValue = doc.getField(testField);
 
-		assertTrue("The Array saved is different to the Array retrieved", newValue.size() == 2
-				&& newValue.get(0).equals("VAL1") && newValue.get(1).equals("VAL2"));
+		assertTrue("The Array saved is different to the Array retrieved", newValue.size() == 2 && newValue.get(0).equals("VAL1")
+				&& newValue.get(1).equals("VAL2"));
 	}
 
 	@Test
@@ -265,8 +249,8 @@ public abstract class AbstractDocumentTest {
 		doc.setField(testField, new String[] { "VAL1", "VAL2" });
 		Field newValue = doc.getField(testField);
 
-		assertTrue("The Vector saved is different to the Vector retrieved", newValue.size() == 2
-				&& newValue.get(0).equals("VAL1") && newValue.get(1).equals("VAL2"));
+		assertTrue("The Vector saved is different to the Vector retrieved", newValue.size() == 2 && newValue.get(0).equals("VAL1")
+				&& newValue.get(1).equals("VAL2"));
 	}
 
 	@Test
@@ -313,30 +297,22 @@ public abstract class AbstractDocumentTest {
 		doc.setField("Form", TEST_FORM);
 		doc.setField("THIS_FIELD_EXISTS", "SOME_VALUE");
 
-		assertTrue("An inexistent field was not detected.",
-				doc.isFieldEmpty("THIS_FIELD_DOES_NOT_EXIST"));
+		assertTrue("An inexistent field was not detected.", doc.isFieldEmpty("THIS_FIELD_DOES_NOT_EXIST"));
 		assertFalse("An existent field was not detected.", doc.isFieldEmpty("THIS_FIELD_EXISTS"));
 	}
 
 	/*
-	 * @Test
-	 * public void testSetAndGetIsPublic() {
-	 * assertTrue("The test database could not be opened.", rDatabase.isOpen());
+	 * @Test public void testSetAndGetIsPublic() { assertTrue("The test database could not be opened.", rDatabase.isOpen());
 	 * 
 	 * DefaultDocument rDoc = rDatabase.createDocument(DefaultDocument.class);
 	 * 
 	 * assertTrue("The document could not be created", rDoc.isOpen());
 	 * 
-	 * rDoc.setAsPublic(true);
-	 * assertTrue("The document could not be set as Public", rDoc.isPublic());
+	 * rDoc.setAsPublic(true); assertTrue("The document could not be set as Public", rDoc.isPublic());
 	 * 
-	 * rDoc.setAsPublic(false);
-	 * assertFalse("The document could not be set as NOT Public", rDoc.isPublic());
-	 * }
+	 * rDoc.setAsPublic(false); assertFalse("The document could not be set as NOT Public", rDoc.isPublic()); }
 	 * 
-	 * @Test
-	 * public void testGetDocumentClass() {
-	 * assertTrue("The test database could not be opened.", rDatabase.isOpen());
+	 * @Test public void testGetDocumentClass() { assertTrue("The test database could not be opened.", rDatabase.isOpen());
 	 * 
 	 * DefaultDocument rDoc = rDatabase.createDocument(DefaultDocument.class);
 	 * 
@@ -346,8 +322,7 @@ public abstract class AbstractDocumentTest {
 	 * 
 	 * String form = rDoc.getDocumentClass();
 	 * 
-	 * assertFalse("It can not be retrieved the field Form.", form.equals(""));
-	 * }
+	 * assertFalse("It can not be retrieved the field Form.", form.equals("")); }
 	 */
 
 	@Test
@@ -399,9 +374,7 @@ public abstract class AbstractDocumentTest {
 	}
 
 	/*
-	 * @Test
-	 * public void testMarkAndUnmarkAndIsDeleted() {
-	 * assertTrue("The test database could not be opened.", rDatabase.isOpen());
+	 * @Test public void testMarkAndUnmarkAndIsDeleted() { assertTrue("The test database could not be opened.", rDatabase.isOpen());
 	 * 
 	 * DefaultDocument rDoc = rDatabase.createDocument(DefaultDocument.class);
 	 * 
@@ -411,8 +384,7 @@ public abstract class AbstractDocumentTest {
 	 * 
 	 * rDoc.unmarkDeleted();
 	 * 
-	 * assertFalse("The document could not be unmarked as deleted.", rDoc.isDeleted());
-	 * }
+	 * assertFalse("The document could not be unmarked as deleted.", rDoc.isDeleted()); }
 	 */
 	public void testSave() {
 		assertTrue("The test database could not be opened.", database.isOpen());
@@ -436,9 +408,7 @@ public abstract class AbstractDocumentTest {
 		doc = null;
 		doc = database.getDocument(uniqueId);
 
-		assertFalse(
-				"A document was created, NOT MODIFIED and saved with NOT FORCE parameter was found in the database.",
-				doc.isOpen());
+		assertFalse("A document was created, NOT MODIFIED and saved with NOT FORCE parameter was found in the database.", doc.isOpen());
 
 		doc = null;
 		doc = database.createDocument();
@@ -447,8 +417,7 @@ public abstract class AbstractDocumentTest {
 		doc = null;
 		doc = database.getDocument(uniqueId);
 
-		assertFalse(
-				"A document was created, NOT MODIFIED and saved with A IMPLICIT NOT FORCE parameter was found in the database.",
+		assertFalse("A document was created, NOT MODIFIED and saved with A IMPLICIT NOT FORCE parameter was found in the database.",
 				doc.isOpen());
 
 		doc = null;
@@ -458,9 +427,7 @@ public abstract class AbstractDocumentTest {
 		doc = null;
 		doc = database.getDocument(uniqueId);
 
-		assertFalse(
-				"A document was created, NOT MODIFIED and saved with NOT FORCE parameter was found in the database.",
-				doc.isOpen());
+		assertFalse("A document was created, NOT MODIFIED and saved with NOT FORCE parameter was found in the database.", doc.isOpen());
 
 		doc = null;
 		doc = database.createDocument();
@@ -469,9 +436,7 @@ public abstract class AbstractDocumentTest {
 		doc = null;
 		doc = database.getDocument(uniqueId);
 
-		assertTrue(
-				"A document was created, NOT MODIFIED and saved with FORCE parameter was not found in the database.",
-				doc.isOpen());
+		assertTrue("A document was created, NOT MODIFIED and saved with FORCE parameter was not found in the database.", doc.isOpen());
 
 		doc = null;
 		doc = database.createDocument();
@@ -480,9 +445,7 @@ public abstract class AbstractDocumentTest {
 		doc = null;
 		doc = database.getDocument(uniqueId);
 
-		assertTrue(
-				"A document was created, NOT MODIFIED and saved with FORCE parameter was not found in the database.",
-				doc.isOpen());
+		assertTrue("A document was created, NOT MODIFIED and saved with FORCE parameter was not found in the database.", doc.isOpen());
 
 		doc = null;
 		doc = database.createDocument();
@@ -492,9 +455,7 @@ public abstract class AbstractDocumentTest {
 		doc = null;
 		doc = database.getDocument(uniqueId);
 
-		assertTrue(
-				"A document was created, MODIFIED and saved with NOT FORCE parameter was not found in the database.",
-				doc.isOpen());
+		assertTrue("A document was created, MODIFIED and saved with NOT FORCE parameter was not found in the database.", doc.isOpen());
 
 		doc = null;
 		doc = database.createDocument();
@@ -504,8 +465,52 @@ public abstract class AbstractDocumentTest {
 		doc = null;
 		doc = database.getDocument(uniqueId);
 
-		assertTrue(
-				"A document was created, MODIFIED and saved with FORCE parameter was not found in the database.",
-				doc.isOpen());
+		assertTrue("A document was created, MODIFIED and saved with FORCE parameter was not found in the database.", doc.isOpen());
+	}
+
+	// Classes to testing the implementations
+	static class SimpleRequest extends AbstractDocument<SimpleRequest> {
+
+		protected SimpleRequest(Database database, org.riverframework.wrapper.Document<?> _doc) {
+			super(database, _doc);
+		}
+
+		@Override
+		protected SimpleRequest internalRecalc() {
+			RandomString rs = new RandomString(10);
+			setField("CALCULATED", rs.nextString());
+
+			return this;
+		}
+
+		@Override
+		protected SimpleRequest getThis() {
+			return this;
+		}
+	}
+
+	static class ComplexDatabase extends AbstractDatabase<ComplexDatabase> {
+
+		protected ComplexDatabase(Session session, org.riverframework.wrapper.Database<?> _database) {
+			super(session, _database);
+		}
+
+		@Override
+		protected ComplexDatabase getThis() {
+			return this;
+		}
+	}
+
+	@Test
+	public void testInternalRecalc() {
+		assertTrue("The test database Beach.nsf could not be opened as a ComplexDatabase .", complexDatabase.isOpen());
+
+		SimpleRequest simple = complexDatabase.createDocument(SimpleRequest.class);
+		simple.recalc();
+		String calculated = simple.getFieldAsString("CALCULATED");
+		String non_existent = simple.getFieldAsString("NON_EXISTENT");
+
+		assertTrue("A non-existent field returned the value '" + non_existent + "'.", non_existent.equals(""));
+		assertFalse("There is a problem with the recalc() method.", calculated.equals(""));
 	}
 }

@@ -100,11 +100,8 @@ About the wrapper for OpenNTF Domino:
 ## What I'm working on now?
 
 - Version 0.2.9
-  - Redesigning in three layers:
-    - The wrapper layer
-    - The core layer
-    - The extended layer, that allows the developer to write logic, rules, etc. for a single object. e.g. a document or a database
-  - Moving the support for Ids and indexes to the extended layer
+  - ~~Redesigning in three layers~~
+  - Redesigning the core layer to allows the developer to write logic, rules, etc. for a single object. e.g. a document or a database
   - Writing a LoggerHelper class to make easier to control the `java.util.logging.Logger` objects
   - Optimizing the IBM Notes wrapper library
   - Experimenting with the IBM Notes auto recycling
@@ -178,7 +175,6 @@ Version 0.2.6
 - Publish the JARs in a public Maven repository
 
 Version 0.2.5
-- ~~Rolling back from the `org.openntf.domino` package to `lotus.domino`~~
 - Improvements in the design, wrapping the `lotus.domino` and the `org.openntf.domino` classes with the `org.riverframework.wrapper`classes
 - The package `org.riverframework.core` will control the wrapped classes 
 - Improvements in the design, making that the wrappers classes be totally separated from the core. So, each wrapper can be loaded on runtime.
@@ -191,7 +187,6 @@ Version 0.2
 - Generation of unique identifiers for the documents
 - Opening documents by a unique id
 - Credentials file (~/.river-framework/credentials)
-- ~~Using the `org.openntf.domino` package instead `lotus.domino`~~
 - Support to local session using a installed IBM Notes client 
 - First example in Java
 

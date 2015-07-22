@@ -58,37 +58,23 @@ public abstract class AbstractDatabaseTest {
 		}
 	}
 
-	static class Person extends AbstractDocument<Person> implements IndexedDocument<Person> {
-		protected View index = null;
+	static class Person extends AbstractIndexedDocument<Person> {
 
 		protected Person(Database database, org.riverframework.wrapper.Document<?> _doc) {
 			super(database, _doc);
 
-			if (index == null) {
-				// TODO: you cannot always hope that a view is loaded with one unique parameter.
-				index = database.getView("vi_ap_people_index");
-			}
+			indexName = new String[] {"vi_ap_people_index"};
+			indexField = "ca_pe_name";
 		}
 
-		@Override
-		public View getIndex() {
-			return index;
-		}
-
-		@Override
-		public String getId() {
-			return _doc.getFieldAsString("ca_pe_name");
+		@Override 
+		public Person afterCreate() {
+			return setField("Form", "fo_ap_people");			
 		}
 
 		@Override
 		public Person generateId() {
 			// Do nothing
-			return this;
-		}
-
-		@Override
-		public Person setId(String arg0) {
-			_doc.setField("ca_pe_name", arg0);
 			return this;
 		}
 
@@ -253,13 +239,13 @@ public abstract class AbstractDatabaseTest {
 		iterator = database.getAllDocuments();
 		assertFalse("The database still has documents.", iterator.hasNext());
 
-		String unidJohn = database.createDocument().setField("Name", "John").setField("Form", "fo_ap_people")
+		String unidJohn = database.createDocument().setField("Name", "John")
 				.setField("Age", 30).save().getObjectId();
 
-		String unidKathy = database.createDocument().setField("Name", "Kathy").setField("Form", "fo_ap_people")
+		String unidKathy = database.createDocument().setField("Name", "Kathy")
 				.setField("Age", 25).save().getObjectId();
 
-		String unidJake = database.createDocument().setField("Name", "Jake").setField("Form", "fo_ap_people")
+		String unidJake = database.createDocument().setField("Name", "Jake")
 				.setField("Age", 27).save().getObjectId();
 
 		boolean temp;
@@ -428,14 +414,20 @@ public abstract class AbstractDatabaseTest {
 
 		vacationDatabase.getAllDocuments().deleteAll();
 
-		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "John").setField("Time", 30)
-				.save();
+		vacationDatabase.createDocument(VacationRequest.class)
+		.setField("Requester", "John")
+		.setField("Time", 30)
+		.save();
 
-		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "Kathy").setField("Time", 25)
-				.save();
+		vacationDatabase.createDocument(VacationRequest.class)
+		.setField("Requester", "Kathy")
+		.setField("Time", 25)
+		.save();
 
-		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "Michael").setField("Time", 27)
-				.save();
+		vacationDatabase.createDocument(VacationRequest.class)
+		.setField("Requester", "Michael")
+		.setField("Time", 27)
+		.save();
 
 		DocumentIterator it = vacationDatabase.getAllDocuments();
 
@@ -456,30 +448,36 @@ public abstract class AbstractDatabaseTest {
 		assertTrue("The test database could not be instantiated.", vacationDatabase != null);
 		assertTrue("The test database could not be opened.", vacationDatabase.isOpen());
 
-		DocumentIterator iterator = vacationDatabase.getAllDocuments().deleteAll();
-		iterator = vacationDatabase.getAllDocuments();
-		assertFalse("The database still has documents.", iterator.hasNext());
+		vacationDatabase.getAllDocuments().deleteAll();
 
-		vacationDatabase.createDocument(Person.class).setId("John").setField("Form", "fo_ap_people")
-				.setField("Age", 30).save();
+		assertFalse("The database still has documents.", vacationDatabase.getAllDocuments().hasNext());
 
-		vacationDatabase.createDocument(Person.class).setId("Kathy").setField("Form", "fo_ap_people")
-				.setField("Age", 25).save();
+		vacationDatabase.createDocument(Person.class)
+		.setId("John")
+		.setField("Age", 30)
+		.save();
 
-		vacationDatabase.createDocument(Person.class).setId("Jake").setField("Form", "fo_ap_people")
-				.setField("Age", 27).save();
+		vacationDatabase.createDocument(Person.class)
+		.setId("Jake")
+		.setField("Age", 27)
+		.save();
 
-		Person p = vacationDatabase.getDocument(Person.class, "Jake");
+		vacationDatabase.createDocument(Person.class)
+		.setId("Kathy")
+		.setField("Age", 25)
+		.save();
+
+		Person p = vacationDatabase.getDocument(Person.class, "Kathy");
+		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());
+		assertTrue("It could not possible get the Kathy's age.", p.getFieldAsInteger("Age") == 25);
+
+		p = vacationDatabase.getDocument(Person.class, "Jake");
 		assertTrue("It could not possible load the person object for Jake.", p.isOpen());
 		assertTrue("It could not possible get the Jake's age.", p.getFieldAsInteger("Age") == 27);
 
 		p = vacationDatabase.getDocument(Person.class, "John");
 		assertTrue("It could not possible load the person object for John.", p.isOpen());
 		assertTrue("It could not possible get the John's age.", p.getFieldAsInteger("Age") == 30);
-
-		p = vacationDatabase.getDocument(Person.class, "Kathy");
-		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());
-		assertTrue("It could not possible get the Kathy's age.", p.getFieldAsInteger("Age") == 25);
 
 		String unid = p.getObjectId();
 		p = null;
@@ -501,7 +499,7 @@ public abstract class AbstractDatabaseTest {
 		vacationDatabase.getAllDocuments().deleteAll();
 
 		vacationDatabase.createDocument(Person.class).setId("Kathy").setField("Form", "fo_ap_people")
-				.setField("Age", 25).save().close();
+		.setField("Age", 25).save().close();
 
 		Document p = vacationDatabase.getDocument(Person.class, "Kathy");
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());

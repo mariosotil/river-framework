@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class DefaultField extends ArrayList<Object> implements Field {
-	private static final long serialVersionUID = 331527408098154987L;
+	private static final long serialVersionUID = 5873581772813746498L;
 
 	public DefaultField() {
 		super();
@@ -17,4 +17,5 @@ public class DefaultField extends ArrayList<Object> implements Field {
 	public DefaultField(int initialCapacity) {
 		super(initialCapacity);
 	}
+		
 }

@@ -1,10 +1,12 @@
 package org.riverframework.core;
 
+import java.lang.reflect.Constructor;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.riverframework.ClosedObjectException;
+import org.riverframework.RiverException;
 
 /**
  * It is used to manage Documents. It is used if we don't need to create specific classes for each document type.
@@ -236,6 +238,22 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 		return _doc.isFieldEmpty(field);
 	}
 
+	@Override
+	public <U extends AbstractDocument<?>> U getAs(Class<U> clazz) {
+		U doc = null;
+
+		try {
+			Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class,
+					org.riverframework.wrapper.Document.class);
+			constructor.setAccessible(true);
+			doc = clazz.cast(constructor.newInstance(database, _doc));
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
+		return doc;
+	}
+	
 	@Override
 	public boolean isModified() {
 		if (!isOpen())

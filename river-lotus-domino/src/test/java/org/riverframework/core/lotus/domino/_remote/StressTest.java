@@ -1,4 +1,4 @@
-package org.riverframework.core.lotus.domino._local;
+package org.riverframework.core.lotus.domino._remote;
 
 import lotus.domino.NotesThread;
 

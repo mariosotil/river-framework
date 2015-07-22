@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -69,9 +70,9 @@ public abstract class AbstractDocumentTest {
 		Date testDate = calendar.getTime();
 
 		doc.setField("FIELD_STRING", "SOME_TEXT").setField("FIELD_INTEGER", 100).setField("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0)
-				.setField("FIELD_DOUBLE_WITH_DECIMALS", 100.55).setField("FIELD_DATE", testDate)
-				.setField("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" })
-				.setField("FIELD_OBJECT", new DefaultField(Arrays.asList(new String[] { "VAL1", "VAL2" })));
+		.setField("FIELD_DOUBLE_WITH_DECIMALS", 100.55).setField("FIELD_DATE", testDate)
+		.setField("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" })
+		.setField("FIELD_OBJECT", new DefaultField(Arrays.asList(new String[] { "VAL1", "VAL2" })));
 
 		assertTrue("The String saved must be equal to the test value", doc.compareFieldValue("FIELD_STRING", "SOME_TEXT"));
 		assertFalse("The String saved must be different to a random value", doc.compareFieldValue("FIELD_STRING", "SODIUHOUIFD"));
@@ -103,6 +104,61 @@ public abstract class AbstractDocumentTest {
 				doc.compareFieldValue("FIELD_OBJECT", new String[] { "VAL1", "VAL2" }));
 		assertFalse("The Vector saved must be different to a random value",
 				doc.compareFieldValue("FIELD_OBJECT", new String[] { "VAL1", "VALZZ" }));
+	}
+
+	@Test
+	public void testGetFields() {
+		assertTrue("The test database could not be opened.", database.isOpen());
+
+		Document doc = database.createDocument();
+
+		assertTrue("The document could not be created", doc.isOpen());
+		assertFalse("A document was created but it is set as modified", doc.isModified());
+
+		doc.setField("Form", TEST_FORM);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.set(Calendar.MILLISECOND, 0);
+		Date testDate = calendar.getTime();
+
+		doc.setField("FIELD_STRING", "SOME_TEXT")
+		.setField("FIELD_INTEGER", 100)
+		.setField("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0)
+		.setField("FIELD_DOUBLE_WITH_DECIMALS", 100.55)
+		.setField("FIELD_DATE", testDate)
+		.setField("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" })
+		.setField("FIELD_OBJECT", new DefaultField(Arrays.asList(new String[] { "VAL1", "VAL2" })))
+		.save();
+
+		Map<String, Field> fields = doc.getFields();
+
+		assertTrue("The field map does not have 8 fields as expected", fields.size() == 9);
+
+		String s1 = doc.getFieldAsString("FIELD_STRING");
+		String s2 = (String) fields.get("FIELD_STRING").get(0);
+		assertTrue("The String saved must be equal to the fields map value", s1.equals(s2));
+		
+		Double d1 = Double.valueOf(doc.getFieldAsInteger("FIELD_INTEGER"));
+		Double d2 = (Double) fields.get("FIELD_INTEGER").get(0);
+		assertTrue("The Integer saved must be equal to the fields map value", d1.compareTo(d2) == 0);
+
+		d1 = doc.getFieldAsDouble("FIELD_DOUBLE_WITHOUT_DECIMALS");
+		d2 = (Double) fields.get("FIELD_DOUBLE_WITHOUT_DECIMALS").get(0);
+		assertTrue("The double without decimals saved must be equal to the fields map value", d1.compareTo(d2) == 0);
+
+		d1 = doc.getFieldAsDouble("FIELD_DOUBLE_WITH_DECIMALS");
+		d2 = (Double) fields.get("FIELD_DOUBLE_WITH_DECIMALS").get(0);
+		assertTrue("The double with decimals saved must be equal to the fields map value", d1.compareTo(d2) == 0);
+
+		assertTrue("The date saved must be equal to the fields map value", 
+				doc.getFieldAsDate("FIELD_DATE").compareTo((Date) fields.get("FIELD_DATE").get(0)) == 0);
+
+		assertTrue("The String array saved must be equal to the fields map value", 
+				Arrays.equals(doc.getField("FIELD_STRING_ARRAY").toArray(), fields.get("FIELD_STRING_ARRAY").toArray()));
+
+		assertTrue("The Object saved must be equal to the fields map value", 
+				Arrays.equals(doc.getField("FIELD_OBJECT").toArray(), fields.get("FIELD_OBJECT").toArray()));
 	}
 
 	@Test

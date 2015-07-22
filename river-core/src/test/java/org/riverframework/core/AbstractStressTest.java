@@ -21,7 +21,7 @@ public abstract class AbstractStressTest {
 	protected Context context = null;
 	protected Session session = null;
 
-	protected static long maxDocumentsForStressTest = 1000;
+	protected static long testDepth = 2;
 
 	@Before
 	public void open() {
@@ -47,44 +47,16 @@ public abstract class AbstractStressTest {
 		context.closeSession();
 	}
 
-	static class Book extends org.riverframework.core.AbstractDocument<Book> { // implements IndexedDocument<Book>
-		// protected static View index = null;
+	static class Book extends org.riverframework.core.AbstractDocument<Book> { 
 
-		protected Book(Database d, org.riverframework.wrapper.Document<?> _d) {
-			super(d, _d);
-
-			// if (index == null) {
-			// // TODO: you cannot always hope that a view is loaded with one unique parameter.
-			// index = database.getView("vi_ap_people_index");
-			// }
+		protected Book(Database database, org.riverframework.wrapper.Document<?> _doc) {
+			super(database, _doc);
 		}
 
 		@Override
 		protected Book getThis() {
 			return this;
 		}
-
-		// @Override
-		// public View getIndex() {
-		// return index;
-		// }
-		//
-		// @Override
-		// public Book generateId() {
-		// // Do nothing
-		// return this;
-		// }
-		//
-		// @Override
-		// public Book setId(String id) {
-		// // Do nothing
-		// return this;
-		// }
-		//
-		// @Override
-		// public String getId() {
-		// return null;
-		// }
 
 	}
 
@@ -102,178 +74,285 @@ public abstract class AbstractStressTest {
 
 	@Test
 	public void testStress1() {
-		long timeTest01Round01 = 0;
-		long timeTest01Round02 = 0;
-		long timeTest02Round01 = 0;
-		long timeTest02Round02 = 0;
+		for (int depth = 0; depth <= testDepth; depth++) {
+			long maxDocuments = 10^depth;
+			log.info("Depth=" + depth + "   maxDocuments=" + maxDocuments);
 
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+			long timeTest01Round01 = 0;
+			long timeTest01Round02 = 0;
+			long timeTest02Round01 = 0;
+			long timeTest02Round02 = 0;
 
-		String suffixDb = sdf.format(new Date()) + ".nsf";
 
-		String form = "FORM_" + sdf.format(new Date());
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-		long start = 0;
-		long end = 0;
+			String suffixDb = sdf.format(new Date()) + ".nsf";
 
-		final int MODULE = 100;
-		final long STEP = maxDocumentsForStressTest / 20;
-		int i = 0;
+			String form = "FORM_" + sdf.format(new Date());
 
-		Database database = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
+			long start = 0;
+			long end = 0;
 
-		start = System.nanoTime();
-		for (i = 0; i < (maxDocumentsForStressTest); i++) {
+			final int MODULE = 100;
+			final long STEP = 500;
+			int i = 0;
+
+			Database database = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
+
+			start = System.nanoTime();
+			for (i = 0; i < (maxDocuments); i++) {
+				@SuppressWarnings("unused")
+				Document doc = database.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+
+				if (i % STEP == 0) {
+					log.fine("Processed=" + i);
+				}
+
+			}
+
+			end = System.nanoTime();
+
+			timeTest01Round01 = (end - start) / 1000000;
+
+			DocumentIterator iterator = database.getAllDocuments();
+
+			i = 0;
+			start = System.nanoTime();
+			for (Document doc : iterator) {
+				doc.setField("Value", i * 4).save();
+
+				if (i % STEP == 0) {
+					log.fine("Processed=" + i);
+				}
+				i++;
+			}
+			end = System.nanoTime();
+			timeTest02Round01 = (end - start) / 1000000;
+
+			Database library = session.createDatabase(Library.class, context.getTestDatabaseServer(), "TEST_LIBRARY_"
+					+ suffixDb);
 			@SuppressWarnings("unused")
-			Document doc = database.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+			View books = library.createView("vi_books", "SELECT Form=\"fo_book\"");
 
-			if (i % STEP == 0) {
-				log.fine("Processed=" + i);
+			start = System.nanoTime();
+			for (i = 0; i < (maxDocuments); i++) {
+				@SuppressWarnings("unused")
+				Document doc = library.createDocument().setField("Form", "fo_book").setField("Value", i % MODULE).save();
+
+				if (i % STEP == 0) {
+					log.fine("Processed=" + i);
+				}
+
 			}
 
-		}
+			end = System.nanoTime();
 
-		end = System.nanoTime();
+			timeTest01Round02 = (end - start) / 1000000;
 
-		timeTest01Round01 = (end - start) / 1000000;
+			DocumentIterator booksIterator = library.getAllDocuments();
 
-		DocumentIterator iterator = database.getAllDocuments();
+			i = 0;
+			start = System.nanoTime();
+			for (Document doc : booksIterator) {
+				doc.setField("Value", i * 8).save();
 
-		i = 0;
-		start = System.nanoTime();
-		for (Document doc : iterator) {
-			doc.setField("Value", i * 4).save();
-
-			if (i % STEP == 0) {
-				log.fine("Processed=" + i);
+				if (i % STEP == 0) {
+					log.fine("Processed=" + i);
+				}
+				i++;
 			}
-			i++;
+			end = System.nanoTime();
+			timeTest02Round02 = (end - start) / 1000000;
+
+			String logTest01Round02 = "Test01Round02: The framework makes a time of " + timeTest01Round01;
+			String logTest02Round02 = "Test02Round02: The framework makes a time of " + timeTest02Round01;
+
+			String logTest01Round03 = "Test01Round03: The framework makes a time of " + timeTest01Round02;
+			String logTest02Round03 = "Test02Round03: The framework makes a time of " + timeTest02Round02;
+
+			log.fine(logTest01Round02);
+			log.fine(logTest02Round02);
+
+			log.fine(logTest01Round03);
+			log.fine(logTest02Round03);
+
+			assertTrue(logTest01Round02, true);
+			assertTrue(logTest02Round02, true);
+
+			assertTrue(logTest01Round03, true);
+			assertTrue(logTest02Round03, true);
 		}
-		end = System.nanoTime();
-		timeTest02Round01 = (end - start) / 1000000;
-
-		Database library = session.createDatabase(Library.class, context.getTestDatabaseServer(), "TEST_LIBRARY_"
-				+ suffixDb);
-		@SuppressWarnings("unused")
-		View books = library.createView("vi_books", "SELECT Form=\"fo_book\"");
-
-		start = System.nanoTime();
-		for (i = 0; i < (maxDocumentsForStressTest); i++) {
-			@SuppressWarnings("unused")
-			Document doc = library.createDocument().setField("Form", "fo_book").setField("Value", i % MODULE).save();
-
-			if (i % STEP == 0) {
-				log.fine("Processed=" + i);
-			}
-
-		}
-
-		end = System.nanoTime();
-
-		timeTest01Round02 = (end - start) / 1000000;
-
-		DocumentIterator booksIterator = library.getAllDocuments();
-
-		i = 0;
-		start = System.nanoTime();
-		for (Document doc : booksIterator) {
-			doc.setField("Value", i * 8).save();
-
-			if (i % STEP == 0) {
-				log.fine("Processed=" + i);
-			}
-			i++;
-		}
-		end = System.nanoTime();
-		timeTest02Round02 = (end - start) / 1000000;
-
-		String logTest01Round02 = "Test01Round02: The framework makes a time of " + timeTest01Round01;
-		String logTest02Round02 = "Test02Round02: The framework makes a time of " + timeTest02Round01;
-
-		String logTest01Round03 = "Test01Round03: The framework makes a time of " + timeTest01Round02;
-		String logTest02Round03 = "Test02Round03: The framework makes a time of " + timeTest02Round02;
-
-		log.fine(logTest01Round02);
-		log.fine(logTest02Round02);
-
-		log.fine(logTest01Round03);
-		log.fine(logTest02Round03);
-
-		assertTrue(logTest01Round02, true);
-		assertTrue(logTest02Round02, true);
-
-		assertTrue(logTest01Round03, true);
-		assertTrue(logTest02Round03, true);
 	}
 
 	@Test
 	public void testStress2() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		for (int depth = 0; depth <= testDepth; depth++) {
+			long maxDocuments = 10^depth;
+			log.info("Depth=" + depth + "   maxDocuments=" + maxDocuments);
 
-		String suffixDb = sdf.format(new Date()) + ".nsf";
-		Database db1 = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
-		assertTrue("The test database could not be instantiated.", db1 != null);
-		assertTrue("The test database could not be opened.", db1.isOpen());
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-		Database db2 = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
-		assertTrue("The test database could not be instantiated.", db2 != null);
-		assertTrue("The test database could not be opened.", db2.isOpen());
+			String suffixDb = sdf.format(new Date()) + ".nsf";
+			Database db1 = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
+			assertTrue("The test database could not be instantiated.", db1 != null);
+			assertTrue("The test database could not be opened.", db1.isOpen());
 
-		String name = "VIEW_" + sdf.format(new Date());
-		String form = "FORM_" + sdf.format(new Date());
+			Database db2 = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
+			assertTrue("The test database could not be instantiated.", db2 != null);
+			assertTrue("The test database could not be opened.", db2.isOpen());
 
-		View view1 = db1.createView(name, "SELECT Form = \"" + form + "\"");
-		assertTrue("There is a problem creating the view in the test database.", view1.isOpen());
+			String name = "VIEW_" + sdf.format(new Date());
+			String form = "FORM_" + sdf.format(new Date());
 
-		View view2 = db2.createView(name, "SELECT Form = \"" + form + "\"");
-		assertTrue("There is a problem creating the view in the test database.", view2.isOpen());
+			View view1 = db1.createView(name, "SELECT Form = \"" + form + "\"");
+			assertTrue("There is a problem creating the view in the test database.", view1.isOpen());
 
-		db1 = session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
-		db2 = session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
+			View view2 = db2.createView(name, "SELECT Form = \"" + form + "\"");
+			assertTrue("There is a problem creating the view in the test database.", view2.isOpen());
 
-		int i;
-		final int MODULE = 100;
+			db1 = session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
+			db2 = session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
 
-		for (i = 0; i < (maxDocumentsForStressTest); i++) {
-			db1.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+			int i;
+			final int MODULE = 100;
 
-			if (i % 500 == 0) {
-				log.fine("Processed=" + i);
+			for (i = 0; i < (maxDocuments); i++) {
+				db1.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+
+				if (i % 500 == 0) {
+					log.fine("Processed=" + i);
+				}
 			}
-		}
 
-		for (i = 0; i < maxDocumentsForStressTest; i++) {
-			db2.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+			for (i = 0; i < maxDocuments; i++) {
+				db2.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
 
-			if (i % 500 == 0) {
-				log.fine("Processed=" + i);
+				if (i % 500 == 0) {
+					log.fine("Processed=" + i);
+				}
 			}
+
+			log.fine("Updating FT indexes");
+			db1.refreshSearchIndex(true);
+			db2.refreshSearchIndex(true);
+
+			log.fine("Cleaning");
+			System.gc();
+			try {
+				Thread.sleep(5000);
+			} catch (Exception e) {
+				throw new RiverException(e);
+			}
+			session.cleanUp();
+
+			log.fine("Stressing");
+
+			i = 0;
+			for (Document doc1 : db1.getAllDocuments()) {
+				int value = doc1.getFieldAsInteger("Value");
+
+				for (int j = 0; j < 100; j++) {
+					DocumentIterator it = db2.search("FIELD Value=" + value + "");
+					for (Document doc2 : it) {
+						log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value
+								+ " on " + doc2.getObjectId());
+					}
+
+					if (i % 100 == 0) {
+						log.fine("Processed=" + i);
+					}
+
+					i++;
+				}
+			}
+
+			log.fine("Done");
+			//
+			// view1.delete();
+			// assertFalse("There is a problem deleting the last view created.",
+			// view1.isOpen());
+			//
+			// view2.delete();
+			// assertFalse("There is a problem deleting the last view created.",
+			// view1.isOpen());
+			//
+			// db1.delete();
+			// assertFalse("There is a problem deleting the last database created.",
+			// db1.isOpen());
+			//
+			// db2.delete();
+			// assertFalse("There is a problem deleting the last database created.",
+			// db1.isOpen());
 		}
+	}
 
-		log.fine("Updating FT indexes");
-		db1.refreshSearchIndex(true);
-		db2.refreshSearchIndex(true);
+	@Test
+	public void testStress3() {
+		for (int depth = 0; depth <= testDepth; depth++) {
+			long maxDocuments = 10^depth;
+			log.info("Depth=" + depth + "   maxDocuments=" + maxDocuments);
 
-		log.fine("Cleaning");
-		System.gc();
-		try {
-			Thread.sleep(5000);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-		session.cleanUp();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-		log.fine("Stressing");
+			String suffixDb = sdf.format(new Date()) + ".nsf";
+			Database db1 = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
+			assertTrue("The test database could not be instantiated.", db1 != null);
+			assertTrue("The test database could not be opened.", db1.isOpen());
 
-		i = 0;
-		for (Document doc1 : db1.getAllDocuments()) {
-			int value = doc1.getFieldAsInteger("Value");
+			Database db2 = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
+			assertTrue("The test database could not be instantiated.", db2 != null);
+			assertTrue("The test database could not be opened.", db2.isOpen());
 
-			for (int j = 0; j < 100; j++) {
+			String name = "VIEW_" + sdf.format(new Date());
+			String form = "FORM_" + sdf.format(new Date());
+
+			View view1 = db1.createView(name, "SELECT Form = \"" + form + "\"");
+			assertTrue("There is a problem creating the view in the test database.", view1.isOpen());
+
+			View view2 = db2.createView(name, "SELECT Form = \"" + form + "\"");
+			assertTrue("There is a problem creating the view in the test database.", view2.isOpen());
+
+			db1 = session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
+			db2 = session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
+
+			int i;
+			final int MODULE = 100;
+
+			for (i = 0; i < (maxDocuments); i++) {
+				db1.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+
+				if (i % 500 == 0) {
+					log.fine("Processed=" + i);
+				}
+			}
+
+			for (i = 0; i < maxDocuments; i++) {
+				db2.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+
+				if (i % 500 == 0) {
+					log.fine("Processed=" + i);
+				}
+			}
+
+			log.fine("Updating FT indexes");
+			try {
+				db1.refreshSearchIndex(true);
+				db2.refreshSearchIndex(true);
+
+				Thread.sleep(2000);
+			} catch (Exception e) {
+				throw new RiverException(e);
+			}
+
+			log.fine("Stressing");
+
+			i = 0;
+			for (Document doc1 : db1.getAllDocuments()) {
+				int value = doc1.getFieldAsInteger("Value");
 				DocumentIterator it = db2.search("FIELD Value=" + value + "");
 				for (Document doc2 : it) {
-					log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value
-							+ " on " + doc2.getObjectId());
+					log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value + " on "
+							+ doc2.getObjectId());
 				}
 
 				if (i % 100 == 0) {
@@ -282,198 +361,112 @@ public abstract class AbstractStressTest {
 
 				i++;
 			}
+
+			log.fine("Done");
+			//
+			// view1.delete();
+			// assertFalse("There is a problem deleting the last view created.",
+			// view1.isOpen());
+			//
+			// view2.delete();
+			// assertFalse("There is a problem deleting the last view created.",
+			// view1.isOpen());
+			//
+			// db1.delete();
+			// assertFalse("There is a problem deleting the last database created.",
+			// db1.isOpen());
+			//
+			// db2.delete();
+			// assertFalse("There is a problem deleting the last database created.",
+			// db1.isOpen());
 		}
-
-		log.fine("Done");
-		//
-		// view1.delete();
-		// assertFalse("There is a problem deleting the last view created.",
-		// view1.isOpen());
-		//
-		// view2.delete();
-		// assertFalse("There is a problem deleting the last view created.",
-		// view1.isOpen());
-		//
-		// db1.delete();
-		// assertFalse("There is a problem deleting the last database created.",
-		// db1.isOpen());
-		//
-		// db2.delete();
-		// assertFalse("There is a problem deleting the last database created.",
-		// db1.isOpen());
-	}
-
-	@Test
-	public void testStress3() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-
-		String suffixDb = sdf.format(new Date()) + ".nsf";
-		Database db1 = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
-		assertTrue("The test database could not be instantiated.", db1 != null);
-		assertTrue("The test database could not be opened.", db1.isOpen());
-
-		Database db2 = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
-		assertTrue("The test database could not be instantiated.", db2 != null);
-		assertTrue("The test database could not be opened.", db2.isOpen());
-
-		String name = "VIEW_" + sdf.format(new Date());
-		String form = "FORM_" + sdf.format(new Date());
-
-		View view1 = db1.createView(name, "SELECT Form = \"" + form + "\"");
-		assertTrue("There is a problem creating the view in the test database.", view1.isOpen());
-
-		View view2 = db2.createView(name, "SELECT Form = \"" + form + "\"");
-		assertTrue("There is a problem creating the view in the test database.", view2.isOpen());
-
-		db1 = session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_1_" + suffixDb);
-		db2 = session.getDatabase(context.getTestDatabaseServer(), "TEST_DB_2_" + suffixDb);
-
-		int i;
-		final int MODULE = 100;
-
-		for (i = 0; i < (maxDocumentsForStressTest); i++) {
-			db1.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
-
-			if (i % 500 == 0) {
-				log.fine("Processed=" + i);
-			}
-		}
-
-		for (i = 0; i < maxDocumentsForStressTest; i++) {
-			db2.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
-
-			if (i % 500 == 0) {
-				log.fine("Processed=" + i);
-			}
-		}
-
-		log.fine("Updating FT indexes");
-		try {
-			db1.refreshSearchIndex(true);
-			db2.refreshSearchIndex(true);
-
-			Thread.sleep(2000);
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
-		log.fine("Stressing");
-
-		i = 0;
-		for (Document doc1 : db1.getAllDocuments()) {
-			int value = doc1.getFieldAsInteger("Value");
-			DocumentIterator it = db2.search("FIELD Value=" + value + "");
-			for (Document doc2 : it) {
-				log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value + " on "
-						+ doc2.getObjectId());
-			}
-
-			if (i % 100 == 0) {
-				log.fine("Processed=" + i);
-			}
-
-			i++;
-		}
-
-		log.fine("Done");
-		//
-		// view1.delete();
-		// assertFalse("There is a problem deleting the last view created.",
-		// view1.isOpen());
-		//
-		// view2.delete();
-		// assertFalse("There is a problem deleting the last view created.",
-		// view1.isOpen());
-		//
-		// db1.delete();
-		// assertFalse("There is a problem deleting the last database created.",
-		// db1.isOpen());
-		//
-		// db2.delete();
-		// assertFalse("There is a problem deleting the last database created.",
-		// db1.isOpen());
 	}
 
 	@Test
 	public void testStress4() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		for (int depth = 0; depth <= testDepth; depth++) {
+			long maxDocuments = 10^depth;
+			log.info("Depth=" + depth + "   maxDocuments=" + maxDocuments);
 
-		Database database = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date())
-				+ ".nsf");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-		assertTrue("The test database could not be instantiated.", database != null);
-		assertTrue("The test database could not be opened.", database.isOpen());
+			Database database = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date())
+					+ ".nsf");
 
-		String name = "VIEW_" + sdf.format(new Date());
-		String form = "FORM_" + sdf.format(new Date());
-		View view = database.createView(name, "SELECT Form = \"" + form + "\"");
+			assertTrue("The test database could not be instantiated.", database != null);
+			assertTrue("The test database could not be opened.", database.isOpen());
 
-		assertTrue("There is a problem creating the view in the test database.", view.isOpen());
+			String name = "VIEW_" + sdf.format(new Date());
+			String form = "FORM_" + sdf.format(new Date());
+			View view = database.createView(name, "SELECT Form = \"" + form + "\"");
 
-		view.close();
-		view = null;
+			assertTrue("There is a problem creating the view in the test database.", view.isOpen());
 
-		int i;
+			view.close();
+			view = null;
 
-		for (i = 0; i < maxDocumentsForStressTest; i++) {
-			database.createDocument().setField("Form", form).setField("Value", i).save();
+			int i;
 
-			if (i % 500 == 0) {
-				log.fine("Processed=" + i);
+			for (i = 0; i < maxDocuments; i++) {
+				database.createDocument().setField("Form", form).setField("Value", i).save();
+
+				if (i % 500 == 0) {
+					log.fine("Processed=" + i);
+				}
 			}
-		}
 
-		log.info("Step 1!");
+			log.info("Step 1!");
 
-		view = database.getView(name);
-		assertTrue("There is a problem opening the last view created in the test database.", view.isOpen());
+			view = database.getView(name);
+			assertTrue("There is a problem opening the last view created in the test database.", view.isOpen());
 
-		DocumentIterator it = view.getAllDocuments();
+			DocumentIterator it = view.getAllDocuments();
 
-		i = 0;
-		for (@SuppressWarnings("unused")
-		Document doc : it) {
-			i++;
-			if (i % 500 == 0) {
-				log.fine("Processed=" + i);
+			i = 0;
+			for (@SuppressWarnings("unused")
+			Document doc : it) {
+				i++;
+				if (i % 500 == 0) {
+					log.fine("Processed=" + i);
+				}
 			}
-		}
-		assertTrue("There is a problem with the documents indexed in the last view.", i == maxDocumentsForStressTest);
+			assertTrue("There is a problem with the documents indexed in the last view.", i == maxDocuments);
 
-		log.info("Step 2!");
+			log.info("Step 2!");
 
-		it = view.getAllDocuments();
+			it = view.getAllDocuments();
 
-		i = 0;
-		while (it.hasNext()) {
-			i++;
-			Document doc2 = it.next();
-			doc2.delete();
-			if (i % 500 == 0) {
-				log.fine("Processed=" + i);
+			i = 0;
+			while (it.hasNext()) {
+				i++;
+				Document doc2 = it.next();
+				doc2.delete();
+				if (i % 500 == 0) {
+					log.fine("Processed=" + i);
+				}
 			}
+
+			log.info("Step 3!");
+
+			view.refresh();
+			i = 0;
+			it = view.getAllDocuments();
+			while (it.hasNext()) {
+				i++;
+				it.next();
+				if (i % 500 == 0)
+					log.fine("Processed=" + i);
+			}
+			log.info("Step 4!");
+
+			assertTrue("There is a problem with the last documents created when we try to delete them.", i == 0);
+
+			view.delete();
+			assertFalse("There is a problem deleting the last view created.", view.isOpen());
+
+			database.delete();
+			assertFalse("There is a problem deleting the last database created.", database.isOpen());
 		}
-
-		log.info("Step 3!");
-
-		view.refresh();
-		i = 0;
-		it = view.getAllDocuments();
-		while (it.hasNext()) {
-			i++;
-			it.next();
-			if (i % 500 == 0)
-				log.fine("Processed=" + i);
-		}
-		log.info("Step 4!");
-
-		assertTrue("There is a problem with the last documents created when we try to delete them.", i == 0);
-
-		view.delete();
-		assertFalse("There is a problem deleting the last view created.", view.isOpen());
-
-		database.delete();
-		assertFalse("There is a problem deleting the last database created.", database.isOpen());
 	}
 
 }

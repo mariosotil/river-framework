@@ -323,8 +323,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 			// logWrapper.debug("getFields: " + _doc.getUniversalID());
 			// logWrapper.debug("getFields: loading items");
 
-			Vector<lotus.domino.Item> items = null;
-			items = __doc.getItems();
+			Vector<lotus.domino.Item> items = __doc.getItems();
 
 			// logWrapper.debug("getFields: found " + items.size());
 			result = new HashMap<String, Field>();
@@ -341,14 +340,16 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 						|| type == Item.NAMES
 						|| type == Item.DATETIMES
 						|| type == Item.READERS
-						|| type == Item.RICHTEXT) {
+						|| type == Item.RICHTEXT) 
+				{
 					Vector<Object> temp = __item.getValues();
 					values = temp == null ? new DefaultField() : new DefaultField(temp);
-				} else {
+				} else 
+				{
 					values = new DefaultField();
 				}
 
-				// __item.recycle(); <== Very bad idea? 
+				// __item.recycle(); // <== Very bad idea? 
 
 				if (values.isEmpty()) {
 					// logWrapper.debug("getFields: it's empty");

@@ -67,9 +67,17 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 		lotus.domino.Document __doc = null;
 
 		try {
-			//AQUIIIIII
-			__view.refresh();
 			__doc = __view.getDocumentByKey(key, true);
+			while (__doc != null && __doc.isDeleted()) 
+			{
+				// TODO: register this documents into the cache to avoid the conflict after recycling
+				// lotus.domino.Document __deleted = __doc;
+				__doc = __view.getNextDocument(__doc);
+				// __deleted.recycle();  <== Bad idea
+			}
+			
+			if (__doc != null && !__doc.getColumnValues().get(0).equals(key)) __doc = null;
+			
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}

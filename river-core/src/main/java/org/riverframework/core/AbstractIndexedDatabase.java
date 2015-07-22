@@ -9,7 +9,7 @@ import org.riverframework.ClosedObjectException;
  *
  */
 public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<T>> extends AbstractDatabase<T>
-		implements IndexedDatabase {
+implements IndexedDatabase {
 
 	protected AbstractIndexedDatabase(Session session, org.riverframework.wrapper.Database<?> _database) {
 		super(session, _database);
@@ -63,10 +63,8 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 
 		if (doc == null || !doc.isOpen()) {
 			doc = super.getDocument(clazz, createIfDoesNotExist, parameters);
-		}
 
-		if (doc != null && doc.isOpen()) {
-			if (IndexedDocument.class.isAssignableFrom(clazz)) {
+			if (createIfDoesNotExist && IndexedDocument.class.isAssignableFrom(clazz) && doc != null && doc.isOpen()) {
 				IndexedDocument<?> idxDoc = ((IndexedDocument<?>) doc);
 
 				if (idxDoc.getId().equals(""))

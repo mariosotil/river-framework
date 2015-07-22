@@ -122,6 +122,8 @@ public interface Document extends Base {
 	 */
 	public boolean isModified();
 
+	public <U extends AbstractDocument<?>> U getAs(Class<U> clazz);
+	
 	/**
 	 * Returns true if the Document was recently created and still has not been saved.
 	 * 

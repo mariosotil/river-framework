@@ -92,9 +92,8 @@ About the wrapper for IBM Notes:
 
 About the wrapper for OpenNTF Domino:
 
-- Takes advantage of this great library
+- Takes advantage of this great library developed by [OpenNTF](http://www.openntf.org/main.nsf/project.xsp?r=project/OpenNTF%20Domino%20API)
 - The auto recycling is managed by OpenNTF Domino
-- Provides a good reference to measure the performance ot the IBM Notes wrapper
 
   
 ## What I'm working on now?

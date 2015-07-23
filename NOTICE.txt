@@ -2,8 +2,7 @@
    Copyright 2014-2015 Mario Sotil Falen
 
    This product includes software developed by Mario Sotil Falen
-
+   
    Date convertion support is provided by the code developed by 
-   Balusc. The original software is available from
-      http://balusc.blogspot.com/2007/09/dateutil.html
+   Joda.org (http://www.joda.org/).   
 

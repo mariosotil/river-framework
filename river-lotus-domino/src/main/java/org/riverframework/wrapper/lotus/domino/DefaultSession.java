@@ -35,7 +35,7 @@ public class DefaultSession extends AbstractBase<lotus.domino.Session> implement
 			return isObjectRecycled(__session);
 		}
 	}
-	
+
 	public static String calcObjectId(lotus.domino.Session  __session) {
 		String objectId = "";
 
@@ -85,29 +85,20 @@ public class DefaultSession extends AbstractBase<lotus.domino.Session> implement
 		Database<lotus.domino.Database> _database = null;
 		lotus.domino.Database __database = null;
 
-		if (location.length != 2)
-			throw new RiverException("It is expected two parameters: server and path, or server and replicaID");
+		_database = getDatabase(location);
 
-		try {
-			lotus.domino.DbDirectory dir = __session.getDbDirectory(location[0]);
-			boolean found = false;
-			lotus.domino.Database db = dir.getFirstDatabase(lotus.domino.DbDirectory.DATABASE);
-			while (db != null) {
-				String fn = db.getFileName();
-				if (fn.equalsIgnoreCase(location[1])) found = true;
-				db = dir.getNextDatabase(); 
-			}
-
-			if (!found) {
+		if (!_database.isOpen()) {
+			try {
+				lotus.domino.DbDirectory dir = __session.getDbDirectory(location[0]);
 				__database = dir.createDatabase(location[1]);
-				_database = (Database<lotus.domino.Database>) getFactory().getDatabase(__database);
-			}
-			else {
-				_database = (Database<lotus.domino.Database>) getFactory().getDatabase(null);
+			} catch (NotesException e) {
+				throw new RiverException(e);
 			}
 
-		} catch (NotesException e) {
-			throw new RiverException(e);
+			_database = (Database<lotus.domino.Database>) getFactory().getDatabase(__database);
+
+		} else {
+			_database = (Database<lotus.domino.Database>) getFactory().getDatabase(null);
 		}
 
 		return _database;

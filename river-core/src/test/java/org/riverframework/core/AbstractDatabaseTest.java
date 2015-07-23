@@ -63,13 +63,13 @@ public abstract class AbstractDatabaseTest {
 		protected Person(Database database, org.riverframework.wrapper.Document<?> _doc) {
 			super(database, _doc);
 
-			indexName = new String[] {"vi_ap_people_index"};
+			indexName = new String[] { "vi_ap_people_index" };
 			indexField = "ca_pe_name";
 		}
 
-		@Override 
+		@Override
 		public Person afterCreate() {
-			return setField("Form", "fo_ap_people");			
+			return setField("Form", "fo_ap_people");
 		}
 
 		@Override
@@ -239,14 +239,11 @@ public abstract class AbstractDatabaseTest {
 		iterator = database.getAllDocuments();
 		assertFalse("The database still has documents.", iterator.hasNext());
 
-		String unidJohn = database.createDocument().setField("Name", "John")
-				.setField("Age", 30).save().getObjectId();
+		String unidJohn = database.createDocument().setField("Name", "John").setField("Age", 30).save().getObjectId();
 
-		String unidKathy = database.createDocument().setField("Name", "Kathy")
-				.setField("Age", 25).save().getObjectId();
+		String unidKathy = database.createDocument().setField("Name", "Kathy").setField("Age", 25).save().getObjectId();
 
-		String unidJake = database.createDocument().setField("Name", "Jake")
-				.setField("Age", 27).save().getObjectId();
+		String unidJake = database.createDocument().setField("Name", "Jake").setField("Age", 27).save().getObjectId();
 
 		boolean temp;
 
@@ -414,20 +411,14 @@ public abstract class AbstractDatabaseTest {
 
 		vacationDatabase.getAllDocuments().deleteAll();
 
-		vacationDatabase.createDocument(VacationRequest.class)
-		.setField("Requester", "John")
-		.setField("Time", 30)
-		.save();
+		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "John").setField("Time", 30)
+				.save();
 
-		vacationDatabase.createDocument(VacationRequest.class)
-		.setField("Requester", "Kathy")
-		.setField("Time", 25)
-		.save();
+		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "Kathy").setField("Time", 25)
+				.save();
 
-		vacationDatabase.createDocument(VacationRequest.class)
-		.setField("Requester", "Michael")
-		.setField("Time", 27)
-		.save();
+		vacationDatabase.createDocument(VacationRequest.class).setField("Requester", "Michael").setField("Time", 27)
+				.save();
 
 		DocumentIterator it = vacationDatabase.getAllDocuments();
 
@@ -452,20 +443,11 @@ public abstract class AbstractDatabaseTest {
 
 		assertFalse("The database still has documents.", vacationDatabase.getAllDocuments().hasNext());
 
-		vacationDatabase.createDocument(Person.class)
-		.setId("John")
-		.setField("Age", 30)
-		.save();
+		vacationDatabase.createDocument(Person.class).setId("John").setField("Age", 30).save();
 
-		vacationDatabase.createDocument(Person.class)
-		.setId("Jake")
-		.setField("Age", 27)
-		.save();
+		vacationDatabase.createDocument(Person.class).setId("Jake").setField("Age", 27).save();
 
-		vacationDatabase.createDocument(Person.class)
-		.setId("Kathy")
-		.setField("Age", 25)
-		.save();
+		vacationDatabase.createDocument(Person.class).setId("Kathy").setField("Age", 25).save();
 
 		Person p = vacationDatabase.getDocument(Person.class, "Kathy");
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());
@@ -482,7 +464,7 @@ public abstract class AbstractDatabaseTest {
 		String unid = p.getObjectId();
 		p = null;
 		p = vacationDatabase.getDocument(Person.class, unid);
-		assertTrue("It should be possible to load a person object for Kathy with its Universal Id.", p.isOpen());
+		assertTrue("It should be possible to load a person object for Kathy with its Object Id.", p.isOpen());
 
 		p = null;
 		Document d = vacationDatabase.getDocument(DefaultDocument.class, "Kathy");
@@ -499,7 +481,7 @@ public abstract class AbstractDatabaseTest {
 		vacationDatabase.getAllDocuments().deleteAll();
 
 		vacationDatabase.createDocument(Person.class).setId("Kathy").setField("Form", "fo_ap_people")
-		.setField("Age", 25).save().close();
+				.setField("Age", 25).save().close();
 
 		Document p = vacationDatabase.getDocument(Person.class, "Kathy");
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());

@@ -6,3 +6,5 @@
    Date convertion support is provided by the code developed by 
    Joda.org (http://www.joda.org/).   
 
+   The org-openntf-domino wrapper uses the OpenNTF Domino API 
+   developed by OpenNTF (http://www.openntf.org/main.nsf/project.xsp?r=project/OpenNTF%20Domino%20API)

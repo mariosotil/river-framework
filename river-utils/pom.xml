@@ -108,7 +108,7 @@
 								</goals>
 								<configuration>
 									<executable>gpg2.exe</executable>
-									<keyname>89C6CCFF</keyname>
+									<keyname>A6782E09</keyname>
 								</configuration>
 							</execution>
 						</executions>

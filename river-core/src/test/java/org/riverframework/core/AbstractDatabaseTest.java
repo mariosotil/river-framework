@@ -60,7 +60,7 @@ public abstract class AbstractDatabaseTest {
 
 	static class Person extends AbstractIndexedDocument<Person> {
 
-		protected Person(Database database, org.riverframework.wrapper.Document<?> _doc) {
+		protected Person(IndexedDatabase database, org.riverframework.wrapper.Document<?> _doc) {
 			super(database, _doc);
 
 			indexName = new String[] { "vi_ap_people_index" };

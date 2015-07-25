@@ -2,15 +2,15 @@ package org.riverframework.core;
 
 import org.riverframework.wrapper.Document;
 
-public abstract class AbstractIndexedDocument<T extends AbstractIndexedDocument<T>> 
-extends AbstractDocument<T> implements IndexedDocument<T> {
-
+public abstract class AbstractIndexedDocument<T extends AbstractIndexedDocument<T>> extends AbstractDocument<T>
+		implements IndexedDocument<T> {
+	protected IndexedDatabase database = null;
 	protected View index = null;
 
 	protected String[] indexName = null;
 	protected String indexField = null;
 
-	protected AbstractIndexedDocument(Database database, Document<?> _doc) {
+	protected AbstractIndexedDocument(IndexedDatabase database, Document<?> _doc) {
 		super(database, _doc);
 	}
 

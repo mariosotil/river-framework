@@ -1,6 +1,10 @@
 package org.riverframework.core;
 
+import java.lang.reflect.Constructor;
+
 import org.riverframework.ClosedObjectException;
+import org.riverframework.RiverException;
+import org.riverframework.wrapper.Database;
 
 /**
  * It is used to manage Databases by default, if we don't need to create a class for each database accessed.
@@ -9,9 +13,9 @@ import org.riverframework.ClosedObjectException;
  *
  */
 public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<T>> extends AbstractDatabase<T>
-implements IndexedDatabase {
+		implements IndexedDatabase {
 
-	protected AbstractIndexedDatabase(Session session, org.riverframework.wrapper.Database<?> _database) {
+	protected AbstractIndexedDatabase(Session session, Database<?> _database) {
 		super(session, _database);
 	}
 
@@ -44,6 +48,29 @@ implements IndexedDatabase {
 		Class<? extends AbstractDocument<?>> clazz = getClassFromDocument(_doc);
 
 		Document doc = getDocument(clazz, _doc);
+		return doc;
+	}
+
+	@Override
+	public <U extends AbstractDocument<?>> U createDocument(Class<U> clazz, String... parameters) {
+		org.riverframework.wrapper.Document<?> _doc = _database.createDocument(parameters);
+		U doc = null;
+
+		if (!IndexedDocument.class.isAssignableFrom(clazz))
+			return super.createDocument(clazz, parameters);
+
+		try {
+			Constructor<?> constructor = clazz.getDeclaredConstructor(IndexedDatabase.class,
+					org.riverframework.wrapper.Document.class);
+			constructor.setAccessible(true);
+			doc = clazz.cast(constructor.newInstance(this, _doc));
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
+		doc.afterCreate();
+		doc.isModified = false;
+
 		return doc;
 	}
 

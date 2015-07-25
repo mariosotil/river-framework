@@ -8,25 +8,18 @@ import org.riverframework.RiverException;
  * @author mario.sotil@gmail.com
  *
  */
-public final class DefaultCounter extends AbstractDocument<DefaultCounter> implements IndexedDocument<DefaultCounter> {
+public final class DefaultCounter extends AbstractIndexedDocument<DefaultCounter> {
 	protected final static String INDEX_NAME = Session.ELEMENT_PREFIX + "counter";
 	protected final static String FORM_NAME = Session.ELEMENT_PREFIX + "counter";
 	protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 	protected final static String FIELD_COUNT = Session.FIELD_PREFIX + "count";
 	protected static View index = null;
 
-	protected DefaultCounter(Database database, org.riverframework.wrapper.Document<?> _doc) {
+	protected DefaultCounter(IndexedDatabase database, org.riverframework.wrapper.Document<?> _doc) {
 		super(database, _doc);
 
-		if (index == null) {
-			// TODO: you cannot always hope that a view is loaded with one unique parameter.
-			index = database.getView(INDEX_NAME);
-		}
-	}
-
-	@Override
-	public View getIndex() {
-		return index;
+		indexName = new String[] { INDEX_NAME };
+		idField = FIELD_ID;
 	}
 
 	@Override
@@ -35,18 +28,6 @@ public final class DefaultCounter extends AbstractDocument<DefaultCounter> imple
 		_doc.setField("Form", FORM_NAME).setField(FIELD_COUNT, 0);
 
 		return getThis();
-	}
-
-	@Override
-	public DefaultCounter setId(String id) {
-		_doc.setField(FIELD_ID, id);
-		return this;
-	}
-
-	@Override
-	public String getId() {
-		String id = _doc.getFieldAsString(FIELD_ID);
-		return id;
 	}
 
 	@Override

@@ -59,8 +59,17 @@ public final class DefaultView implements View {
 		U doc = null;
 
 		try {
-			Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class,
-					org.riverframework.wrapper.Document.class);
+			Constructor<?> constructor = null;
+
+			if (IndexedDocument.class.isAssignableFrom(clazz)) {
+				constructor =
+						clazz.getDeclaredConstructor(IndexedDatabase.class, org.riverframework.wrapper.Document.class);
+
+			} else {
+				constructor = clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
+
+			}
+
 			doc = clazz.cast(constructor.newInstance(database, _doc));
 		} catch (Exception e) {
 			throw new RiverException(e);

@@ -5,6 +5,7 @@ package org.riverframework.wrapper.lotus.domino;
 
 import lotus.domino.Base;
 import lotus.domino.NotesException;
+import lotus.domino.ViewColumn;
 
 import org.riverframework.River;
 import org.riverframework.RiverException;
@@ -139,6 +140,18 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 			throw new RiverException(e);
 		}
 
+		return this;
+	}
+
+	@Override
+	public View<lotus.domino.View> addColumn(String name, String value, boolean sorted) {
+		try {
+			ViewColumn __col = __view.createColumn(__view.getColumnCount(), name, value);
+			__col.setSorted(sorted);
+			
+		} catch (NotesException e) {
+			throw new RiverException(e);
+		}
 		return this;
 	}
 

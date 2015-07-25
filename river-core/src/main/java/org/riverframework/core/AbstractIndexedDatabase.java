@@ -60,8 +60,8 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 			return super.createDocument(clazz, parameters);
 
 		try {
-			Constructor<?> constructor = clazz.getDeclaredConstructor(IndexedDatabase.class,
-					org.riverframework.wrapper.Document.class);
+			Constructor<?> constructor =
+					clazz.getDeclaredConstructor(IndexedDatabase.class, org.riverframework.wrapper.Document.class);
 			constructor.setAccessible(true);
 			doc = clazz.cast(constructor.newInstance(this, _doc));
 		} catch (Exception e) {
@@ -70,6 +70,47 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 
 		doc.afterCreate();
 		doc.isModified = false;
+
+		return doc;
+	}
+
+	@Override
+	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document<?> _doc) {
+		if (!isOpen())
+			throw new ClosedObjectException("The Session object is closed.");
+
+		U doc = null;
+
+		if (!IndexedDocument.class.isAssignableFrom(clazz))
+			return super.getDocument(clazz, _doc);
+
+		try {
+			Constructor<?> constructor =
+					clazz.getDeclaredConstructor(IndexedDatabase.class, org.riverframework.wrapper.Document.class);
+			constructor.setAccessible(true);
+			doc = clazz.cast(constructor.newInstance(this, _doc));
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
+		return doc;
+	}
+
+	@Override
+	public <U extends AbstractDocument<?>> U getClosedDocument(Class<U> clazz) {
+		U doc = null;
+
+		if (!IndexedDocument.class.isAssignableFrom(clazz))
+			return super.getClosedDocument(clazz);
+
+		try {
+			Constructor<?> constructor =
+					clazz.getDeclaredConstructor(IndexedDatabase.class, org.riverframework.wrapper.Document.class);
+			constructor.setAccessible(true);
+			doc = clazz.cast(constructor.newInstance(this, null));
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
 
 		return doc;
 	}

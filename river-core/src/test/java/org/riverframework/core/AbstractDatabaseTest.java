@@ -64,7 +64,7 @@ public abstract class AbstractDatabaseTest {
 			super(database, _doc);
 
 			indexName = new String[] { "vi_ap_people_index" };
-			indexField = "ca_pe_name";
+			idField = "ca_pe_name";
 		}
 
 		@Override

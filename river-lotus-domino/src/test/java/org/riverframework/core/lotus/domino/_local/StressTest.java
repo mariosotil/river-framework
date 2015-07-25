@@ -18,7 +18,7 @@ public class StressTest extends org.riverframework.core.AbstractStressTest {
 	public static void before() {
 		NotesThread.sinitThread();
 
-		testDepth = 3;
+		testDepth = 2;
 
 		new LoggerHelper(log).clearHandlers().addConsoleHandler().setLevel(Level.OFF);
 

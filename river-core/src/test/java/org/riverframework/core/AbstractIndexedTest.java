@@ -31,8 +31,9 @@ public abstract class AbstractIndexedTest {
 				}
 
 				session = context.getSession();
-				database = session.getDatabase(UniqueDatabase.class, context.getTestDatabaseServer(),
-						context.getTestDatabasePath());
+				database =
+						session.getDatabase(UniqueDatabase.class, context.getTestDatabaseServer(),
+								context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 			}
 		} catch (Exception e) {
@@ -78,24 +79,18 @@ public abstract class AbstractIndexedTest {
 		}
 	}
 
-	static class UniqueDocument extends AbstractDocument<UniqueDocument> implements IndexedDocument<UniqueDocument> {
+	static class UniqueDocument extends AbstractIndexedDocument<UniqueDocument> implements
+			IndexedDocument<UniqueDocument> {
 		protected final static String FORM_NAME = Session.ELEMENT_PREFIX + "Unique";
 		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 
 		protected static View index = null;
 
-		protected UniqueDocument(Database database, Document<?> _doc) {
+		protected UniqueDocument(IndexedDatabase database, Document<?> _doc) {
 			super(database, _doc);
 
-			if (index == null) {
-				// TODO: you cannot always hope that a view is loaded with one unique parameter.
-				index = database.getView(Session.ELEMENT_PREFIX + "Unique_Index");
-			}
-		}
-
-		@Override
-		public View getIndex() {
-			return index;
+			indexName = new String[] { Session.ELEMENT_PREFIX + "Unique_Index" };
+			idField = FIELD_ID;
 		}
 
 		@Override
@@ -105,20 +100,7 @@ public abstract class AbstractIndexedTest {
 		}
 
 		@Override
-		public String getId() {
-			String id = getFieldAsString(FIELD_ID);
-			return id;
-		}
-
-		@Override
-		public UniqueDocument setId(String id) {
-			setField(FIELD_ID, id);
-			return this;
-		}
-
-		@Override
 		public UniqueDocument generateId() {
-			// Do nothing
 			return this;
 		}
 

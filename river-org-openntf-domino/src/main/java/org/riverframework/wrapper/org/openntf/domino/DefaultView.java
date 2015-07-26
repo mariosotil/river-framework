@@ -1,6 +1,7 @@
 package org.riverframework.wrapper.org.openntf.domino;
 
 import org.openntf.domino.Base;
+import org.openntf.domino.ViewColumn;
 import org.riverframework.River;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
@@ -116,6 +117,13 @@ class DefaultView extends DefaultBase<org.openntf.domino.View> implements org.ri
 		(DocumentIterator<Base<?>, org.openntf.domino.Document>) _factory.getDocumentIterator(__temp);
 
 		return _iterator;
+	}
+
+	@Override
+	public View<org.openntf.domino.View> addColumn(String name, String value, boolean isSorted) {
+		ViewColumn __col =  __view.createColumn(__view.getColumnCount(), name, value);
+		__col.setSorted(isSorted);
+		return null;
 	}
 
 	@Override

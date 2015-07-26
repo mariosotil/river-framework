@@ -82,7 +82,8 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 	@Override
 	public String getName() {
 		try {
-			return __database.getTitle();
+			String name = __database.getTitle();
+			return name.equals("") ? __database.getFileName() : name;
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}

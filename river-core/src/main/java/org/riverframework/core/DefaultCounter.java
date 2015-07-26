@@ -9,23 +9,21 @@ import org.riverframework.RiverException;
  *
  */
 public final class DefaultCounter extends AbstractIndexedDocument<DefaultCounter> {
-	protected final static String INDEX_NAME = Session.ELEMENT_PREFIX + "counter";
-	protected final static String FORM_NAME = Session.ELEMENT_PREFIX + "counter";
-	protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 	protected final static String FIELD_COUNT = Session.FIELD_PREFIX + "count";
+
 	protected static View index = null;
 
-	protected DefaultCounter(IndexedDatabase database, org.riverframework.wrapper.Document<?> _doc) {
+	protected DefaultCounter(Database database, org.riverframework.wrapper.Document<?> _doc) {
 		super(database, _doc);
 
-		indexName = new String[] { INDEX_NAME };
-		idField = FIELD_ID;
+		indexName = new String[] { AbstractIndexedDatabase.INDEX_NAME };
+		idField = AbstractIndexedDatabase.FIELD_ID;
 	}
 
 	@Override
 	public DefaultCounter afterCreate() {
 		// TODO: this works only for IBM Notes. It's necessary to fix this.
-		_doc.setField("Form", FORM_NAME).setField(FIELD_COUNT, 0);
+		_doc.setField("Form", AbstractIndexedDatabase.FORM_NAME).setField(FIELD_COUNT, 0);
 
 		return getThis();
 	}

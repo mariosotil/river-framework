@@ -9,14 +9,19 @@ public abstract class AbstractIndexedDocument<T extends AbstractIndexedDocument<
 	protected String[] indexName = null;
 	protected String idField = null;
 
-	protected AbstractIndexedDocument(IndexedDatabase database, Document<?> _doc) {
+	protected AbstractIndexedDocument(Database database, Document<?> _doc) {
 		super(database, _doc);
+	}
+
+	@Override
+	public IndexedDatabase getDatabase() {
+		return (IndexedDatabase) super.getDatabase();
 	}
 
 	@Override
 	public final View getIndex() {
 		if (index == null) {
-			index = database.getView(indexName);
+			index = getDatabase().getView(indexName);
 		}
 		return index;
 	}
@@ -34,6 +39,25 @@ public abstract class AbstractIndexedDocument<T extends AbstractIndexedDocument<
 		_doc.setField(idField, arg0);
 		return getThis();
 	}
+
+	// @Override
+	// public <U extends AbstractDocument<?>> U getAs(Class<U> clazz) {
+	// U doc = null;
+	//
+	// if (!IndexedDocument.class.isAssignableFrom(clazz))
+	// return super.getAs(clazz);
+	//
+	// try {
+	// Constructor<?> constructor =
+	// clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
+	// constructor.setAccessible(true);
+	// doc = clazz.cast(constructor.newInstance(getDatabase(), _doc));
+	// } catch (Exception e) {
+	// throw new RiverException(e);
+	// }
+	//
+	// return doc;
+	// }
 
 	@Override
 	protected abstract T getThis();

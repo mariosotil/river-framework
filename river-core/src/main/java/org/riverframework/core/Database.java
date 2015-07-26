@@ -42,6 +42,8 @@ public interface Database extends Base {
 	 */
 	public View createView(String... parameters);
 
+	public <U extends AbstractView<?>> U createView(Class<U> clazz, String... parameters);
+
 	/**
 	 * Returns an existent view. The parameters needed will depend on what wrapper is being used.
 	 * 
@@ -51,7 +53,11 @@ public interface Database extends Base {
 	 */
 	public View getView(String... parameters);
 
+	public <U extends AbstractView<?>> U getView(Class<U> clazz, String... parameters);
+
 	public View getClosedView();
+
+	public <U extends AbstractView<?>> U getClosedView(Class<U> clazz);
 
 	/**
 	 * Returns an existent Document. The parameters needed will depend on what wrapper is being used.

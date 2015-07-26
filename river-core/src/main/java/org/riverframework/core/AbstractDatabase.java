@@ -127,18 +127,12 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 	}
 
 	@Override
-	public View getClosedView() {
-		View view = new DefaultView(this, null);
-		return view;
-	}
-
-	@Override
 	public <U extends AbstractDocument<?>> U getClosedDocument(Class<U> clazz) {
 		U doc = null;
 
 		try {
-			Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class,
-					org.riverframework.wrapper.Document.class);
+			Constructor<?> constructor =
+					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
 			constructor.setAccessible(true);
 			doc = clazz.cast(constructor.newInstance(this, null));
 		} catch (Exception e) {
@@ -154,8 +148,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 		U doc = null;
 
 		try {
-			Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class,
-					org.riverframework.wrapper.Document.class);
+			Constructor<?> constructor =
+					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
 			constructor.setAccessible(true);
 			doc = clazz.cast(constructor.newInstance(this, _doc));
 		} catch (Exception e) {
@@ -181,8 +175,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 		U doc = null;
 
 		try {
-			Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class,
-					org.riverframework.wrapper.Document.class);
+			Constructor<?> constructor =
+					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
 			constructor.setAccessible(true);
 			doc = clazz.cast(constructor.newInstance(this, _doc));
 		} catch (Exception e) {
@@ -213,23 +207,72 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 
 	@Override
 	public View createView(String... parameters) {
+		return createView(DefaultView.class, parameters);
+	}
+
+	@Override
+	public <U extends AbstractView<?>> U createView(Class<U> clazz, String... parameters) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Database object is closed.");
 
 		org.riverframework.wrapper.View<?> _view = _database.createView(parameters);
-		View view = new DefaultView(this, _view);
+		U view = null;
+
+		try {
+			Constructor<?> constructor =
+					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.View.class);
+			constructor.setAccessible(true);
+			view = clazz.cast(constructor.newInstance(this, _view));
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
 
 		return view;
 	}
 
 	@Override
 	public View getView(String... parameters) {
+		return getView(DefaultView.class, parameters);
+	}
+
+	@Override
+	public <U extends AbstractView<?>> U getView(Class<U> clazz, String... parameters) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Database object is closed.");
 
 		String id = parameters[0];
 		org.riverframework.wrapper.View<?> _view = _database.getView(id);
-		View view = new DefaultView(this, _view);
+		U view = null;
+
+		try {
+			Constructor<?> constructor =
+					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.View.class);
+			constructor.setAccessible(true);
+			view = clazz.cast(constructor.newInstance(this, _view));
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
+
+		return view;
+	}
+
+	@Override
+	public View getClosedView() {
+		return getClosedView(DefaultView.class);
+	}
+
+	@Override
+	public <U extends AbstractView<?>> U getClosedView(Class<U> clazz) {
+		U view = null;
+
+		try {
+			Constructor<?> constructor =
+					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.View.class);
+			constructor.setAccessible(true);
+			view = clazz.cast(constructor.newInstance(this, null));
+		} catch (Exception e) {
+			throw new RiverException(e);
+		}
 
 		return view;
 	}

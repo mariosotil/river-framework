@@ -1,9 +1,8 @@
 package org.riverframework.core;
 
-import java.lang.reflect.Constructor;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.riverframework.ClosedObjectException;
-import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 
 /**
@@ -15,8 +14,36 @@ import org.riverframework.wrapper.Database;
 public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<T>> extends AbstractDatabase<T>
 		implements IndexedDatabase {
 
+	final static ConcurrentHashMap<String, DefaultIndex> indexes = new ConcurrentHashMap<String, DefaultIndex>();
+
+	final static String INDEX_NAME = Session.ELEMENT_PREFIX + "counter";
+	final static String FORM_NAME = Session.ELEMENT_PREFIX + "counter";
+	final static String FIELD_ID = Session.FIELD_PREFIX + "id";
+
 	protected AbstractIndexedDatabase(Session session, Database<?> _database) {
 		super(session, _database);
+	}
+
+	public DefaultIndex createIndex(String key, String... parameters) {
+		DefaultIndex index = createView(DefaultIndex.class, parameters);
+		indexes.put(key, index);
+
+		return index;
+	}
+
+	public DefaultIndex getIndex(String key) {
+		DefaultIndex index = indexes.get(key);
+
+		return index == null ? getClosedView(DefaultIndex.class) : index;
+	}
+
+	@Override
+	public T initCounter() {
+		if (!getView(INDEX_NAME).isOpen()) {
+			createView(INDEX_NAME, "SELECT Form = \"" + FORM_NAME + "\"").addColumn("Id", FIELD_ID, true);
+		}
+
+		return getThis();
 	}
 
 	@Override
@@ -24,7 +51,7 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 		DefaultCounter counter = getDocument(DefaultCounter.class, key);
 
 		if (!counter.isOpen()) {
-			counter = createDocument(DefaultCounter.class, key);
+			counter = createDocument(DefaultCounter.class, key).setId(key).save();
 		}
 		return counter;
 	}
@@ -52,70 +79,6 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 	}
 
 	@Override
-	public <U extends AbstractDocument<?>> U createDocument(Class<U> clazz, String... parameters) {
-		org.riverframework.wrapper.Document<?> _doc = _database.createDocument(parameters);
-		U doc = null;
-
-		if (!IndexedDocument.class.isAssignableFrom(clazz))
-			return super.createDocument(clazz, parameters);
-
-		try {
-			Constructor<?> constructor =
-					clazz.getDeclaredConstructor(IndexedDatabase.class, org.riverframework.wrapper.Document.class);
-			constructor.setAccessible(true);
-			doc = clazz.cast(constructor.newInstance(this, _doc));
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
-		doc.afterCreate();
-		doc.isModified = false;
-
-		return doc;
-	}
-
-	@Override
-	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document<?> _doc) {
-		if (!isOpen())
-			throw new ClosedObjectException("The Session object is closed.");
-
-		U doc = null;
-
-		if (!IndexedDocument.class.isAssignableFrom(clazz))
-			return super.getDocument(clazz, _doc);
-
-		try {
-			Constructor<?> constructor =
-					clazz.getDeclaredConstructor(IndexedDatabase.class, org.riverframework.wrapper.Document.class);
-			constructor.setAccessible(true);
-			doc = clazz.cast(constructor.newInstance(this, _doc));
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
-		return doc;
-	}
-
-	@Override
-	public <U extends AbstractDocument<?>> U getClosedDocument(Class<U> clazz) {
-		U doc = null;
-
-		if (!IndexedDocument.class.isAssignableFrom(clazz))
-			return super.getClosedDocument(clazz);
-
-		try {
-			Constructor<?> constructor =
-					clazz.getDeclaredConstructor(IndexedDatabase.class, org.riverframework.wrapper.Document.class);
-			constructor.setAccessible(true);
-			doc = clazz.cast(constructor.newInstance(this, null));
-		} catch (Exception e) {
-			throw new RiverException(e);
-		}
-
-		return doc;
-	}
-
-	@Override
 	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz, boolean createIfDoesNotExist,
 			String... parameters) {
 		if (!isOpen())
@@ -125,7 +88,6 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 
 		View index = getIndex(clazz);
 		if (index.isOpen()) {
-			// TODO: maybe it would be necessary to allow more arguments as key
 			doc = clazz.cast(index.getDocumentByKey(clazz, parameters[0]));
 		}
 

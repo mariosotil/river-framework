@@ -15,7 +15,7 @@ import org.riverframework.RiverException;
  *
  */
 public abstract class AbstractDocument<T extends AbstractDocument<T>> implements Document {
-	protected Database database = null;
+	private Database database = null;
 	protected org.riverframework.wrapper.Document<?> _doc = null;
 	protected boolean isModified = false;
 
@@ -243,8 +243,8 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 		U doc = null;
 
 		try {
-			Constructor<?> constructor = clazz.getDeclaredConstructor(Database.class,
-					org.riverframework.wrapper.Document.class);
+			Constructor<?> constructor =
+					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
 			constructor.setAccessible(true);
 			doc = clazz.cast(constructor.newInstance(database, _doc));
 		} catch (Exception e) {
@@ -253,7 +253,7 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 
 		return doc;
 	}
-	
+
 	@Override
 	public boolean isModified() {
 		if (!isOpen())

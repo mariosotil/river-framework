@@ -86,7 +86,7 @@ public abstract class AbstractIndexedTest {
 
 		protected static View index = null;
 
-		protected UniqueDocument(IndexedDatabase database, Document<?> _doc) {
+		protected UniqueDocument(Database database, Document<?> _doc) {
 			super(database, _doc);
 
 			indexName = new String[] { Session.ELEMENT_PREFIX + "Unique_Index" };

@@ -60,7 +60,7 @@ public abstract class AbstractDatabaseTest {
 
 	static class Person extends AbstractIndexedDocument<Person> {
 
-		protected Person(IndexedDatabase database, org.riverframework.wrapper.Document<?> _doc) {
+		protected Person(Database database, org.riverframework.wrapper.Document<?> _doc) {
 			super(database, _doc);
 
 			indexName = new String[] { "vi_ap_people_index" };
@@ -106,8 +106,9 @@ public abstract class AbstractDatabaseTest {
 				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 
-				vacationDatabase = session.getDatabase(VacationDatabase.class, context.getTestDatabaseServer(),
-						context.getTestDatabasePath());
+				vacationDatabase =
+						session.getDatabase(VacationDatabase.class, context.getTestDatabaseServer(),
+								context.getTestDatabasePath());
 				vacationDatabase.getAllDocuments().deleteAll();
 
 			}
@@ -277,8 +278,9 @@ public abstract class AbstractDatabaseTest {
 
 		database.getAllDocuments().deleteAll();
 
-		String id = database.createDocument().setField("ca_pe_name", "Kathy").setField("Form", "fo_ap_people")
-				.setField("Age", 25).save().getObjectId();
+		String id =
+				database.createDocument().setField("ca_pe_name", "Kathy").setField("Form", "fo_ap_people")
+						.setField("Age", 25).save().getObjectId();
 
 		Document p = database.getDocument(id);
 		assertTrue("It could not possible load the person object for Kathy.", p.isOpen());

@@ -144,10 +144,10 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 	}
 
 	@Override
-	public View<lotus.domino.View> addColumn(String name, String value, boolean sorted) {
+	public View<lotus.domino.View> addColumn(String name, String value, boolean isSorted) {
 		try {
 			ViewColumn __col = __view.createColumn(__view.getColumnCount(), name, value);
-			__col.setSorted(sorted);
+			__col.setSorted(isSorted);
 			
 		} catch (NotesException e) {
 			throw new RiverException(e);

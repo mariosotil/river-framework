@@ -8,9 +8,9 @@ public interface View extends Base {
 	public Database getDatabase();
 
 	/**
-	 * Returns the object that wraps the native object. For example, if the wrapper loaded is River.LOTUS_DOMINO, and the object is an
-	 * instance of org.riverframework.core.DefaultDocument, getNativeObject() will return an object that implements the
-	 * org.riverframework.wrapper.Document interface.
+	 * Returns the object that wraps the native object. For example, if the wrapper loaded is River.LOTUS_DOMINO, and
+	 * the object is an instance of org.riverframework.core.DefaultDocument, getNativeObject() will return an object
+	 * that implements the org.riverframework.wrapper.Document interface.
 	 * 
 	 * @return the object used to wrap the native object
 	 */
@@ -62,11 +62,15 @@ public interface View extends Base {
 	public void delete();
 
 	/**
-	 * Searches by the query and returns a DocumentList object with the documents that match. So far, The style of the query will depend on
-	 * how is implemented in the wrapper loaded. For example, with the lotus.domino wrapper, it will be something like "Black AND Dog"
+	 * Searches by the query and returns a DocumentList object with the documents that match. So far, The style of the
+	 * query will depend on how is implemented in the wrapper loaded. For example, with the lotus.domino wrapper, it
+	 * will be something like "Black AND Dog"
 	 * 
 	 * @param query
 	 * @return a DocumentIterator document
 	 */
 	public DocumentIterator search(String query);
+
+	public View addColumn(String name, String value, boolean isSorted);
+
 }

@@ -9,21 +9,38 @@ import org.riverframework.RiverException;
  *
  */
 public final class DefaultCounter extends AbstractIndexedDocument<DefaultCounter> {
-	protected final static String FIELD_COUNT = Session.FIELD_PREFIX + "count";
+	final static String INDEX_NAME = Session.ELEMENT_PREFIX + "counter";
+	final static String FORM_NAME = Session.ELEMENT_PREFIX + "counter";
+	final static String FIELD_ID = Session.FIELD_PREFIX + "id";
 
-	protected static View index = null;
+	protected final static String FIELD_COUNT = Session.FIELD_PREFIX + "count";
 
 	protected DefaultCounter(Database database, org.riverframework.wrapper.Document<?> _doc) {
 		super(database, _doc);
+	}
 
-		indexName = new String[] { AbstractIndexedDatabase.INDEX_NAME };
-		idField = AbstractIndexedDatabase.FIELD_ID;
+	@Override
+	protected String getIdField() {
+		return FIELD_ID;
+	}
+
+	@Override
+	protected String getIndexName() {
+		return INDEX_NAME;
+	}
+
+	@Override
+	public View createIndex() {
+		View index = getDatabase().createView(DefaultView.class, "Form=\"" + getIndexName() + "\"")
+									.addColumn("Id", getIdField(), true);
+		return index;
 	}
 
 	@Override
 	public DefaultCounter afterCreate() {
-		// TODO: this works only for IBM Notes. It's necessary to fix this.
-		_doc.setField("Form", AbstractIndexedDatabase.FORM_NAME).setField(FIELD_COUNT, 0);
+		// TODO: this works only for IBM Notes. It's necessary to fix this. SQL++?
+		_doc.setField("Form", FORM_NAME)
+			.setField(FIELD_COUNT, 0);
 
 		return getThis();
 	}
@@ -39,7 +56,8 @@ public final class DefaultCounter extends AbstractIndexedDocument<DefaultCounter
 			throw new RiverException("The DefaultCounter object is not open.");
 
 		long n = _doc.getFieldAsInteger(FIELD_COUNT) + 1;
-		_doc.setField(FIELD_COUNT, n).save();
+		_doc.setField(FIELD_COUNT, n)
+			.save();
 
 		return n;
 	}

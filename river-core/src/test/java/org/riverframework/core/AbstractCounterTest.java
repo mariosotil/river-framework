@@ -20,7 +20,9 @@ public abstract class AbstractCounterTest {
 		// Opening the test context in the current package
 		try {
 			if (context == null) {
-				String className = this.getClass().getPackage().getName() + ".Context";
+				String className = this.getClass()
+										.getPackage()
+										.getName() + ".Context";
 				Class<?> clazz = Class.forName(className);
 				if (org.riverframework.Context.class.isAssignableFrom(clazz)) {
 					Constructor<?> constructor = clazz.getDeclaredConstructor();
@@ -29,9 +31,10 @@ public abstract class AbstractCounterTest {
 				}
 
 				session = context.getSession();
-				database = session.getDatabase(UniqueDatabase.class, context.getTestDatabaseServer(),
-						context.getTestDatabasePath());
-				database.getAllDocuments().deleteAll();
+				database =
+						session.getDatabase(UniqueDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
+				database.getAllDocuments()
+						.deleteAll();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

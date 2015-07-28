@@ -92,7 +92,7 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 	public boolean isRecycled() {
 		if (_factory.getIsRemoteSession()) {
 			// There's no a deleted field for the View class
-			return false;
+			return false; // getCpp(__view) == 0;
 		} else {
 			return isObjectRecycled(__view);
 		}

@@ -22,7 +22,9 @@ public abstract class AbstractIndexedTest {
 		// Opening the test context in the current package
 		try {
 			if (context == null) {
-				String className = this.getClass().getPackage().getName() + ".Context";
+				String className = this.getClass()
+										.getPackage()
+										.getName() + ".Context";
 				Class<?> clazz = Class.forName(className);
 				if (org.riverframework.Context.class.isAssignableFrom(clazz)) {
 					Constructor<?> constructor = clazz.getDeclaredConstructor();
@@ -32,9 +34,9 @@ public abstract class AbstractIndexedTest {
 
 				session = context.getSession();
 				database =
-						session.getDatabase(UniqueDatabase.class, context.getTestDatabaseServer(),
-								context.getTestDatabasePath());
-				database.getAllDocuments().deleteAll();
+						session.getDatabase(UniqueDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
+				database.getAllDocuments()
+						.deleteAll();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -88,9 +90,6 @@ public abstract class AbstractIndexedTest {
 
 		protected UniqueDocument(Database database, Document<?> _doc) {
 			super(database, _doc);
-
-			indexName = new String[] { Session.ELEMENT_PREFIX + "Unique_Index" };
-			idField = FIELD_ID;
 		}
 
 		@Override
@@ -108,6 +107,22 @@ public abstract class AbstractIndexedTest {
 		protected UniqueDocument getThis() {
 			return this;
 		}
+
+		@Override
+		protected String getIdField() {
+			return FIELD_ID;
+		}
+
+		@Override
+		protected String getIndexName() {
+			return Session.ELEMENT_PREFIX + "Unique_Index";
+		}
+
+		@Override
+		public View createIndex() {
+			return getDatabase().createView(getIndexName(), "Form=\"" + FORM_NAME + "\"")
+								.addColumn("Id", getIdField(), true);
+		}
 	}
 
 	UniqueDatabase indexedDatabase = null;
@@ -122,12 +137,14 @@ public abstract class AbstractIndexedTest {
 		RandomString rs = new RandomString(10);
 
 		String key = rs.nextString();
-		unique.setId(key).save();
+		unique.setId(key)
+				.save();
 
 		String oldKey = unique.getId();
 		assertTrue("The Id retrieved is different to the saved.", key.equals(oldKey));
 
-		database.getIndex(UniqueDocument.class).refresh();
+		database.getIndex(UniqueDocument.class)
+				.refresh();
 
 		unique = null;
 		unique = database.getDocument(UniqueDocument.class, key);

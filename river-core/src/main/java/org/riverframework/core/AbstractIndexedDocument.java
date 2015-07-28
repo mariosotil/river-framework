@@ -4,14 +4,14 @@ import org.riverframework.wrapper.Document;
 
 public abstract class AbstractIndexedDocument<T extends AbstractIndexedDocument<T>> extends AbstractDocument<T>
 		implements IndexedDocument<T> {
-	protected View index = null;
-
-	protected String[] indexName = null;
-	protected String idField = null;
 
 	protected AbstractIndexedDocument(Database database, Document<?> _doc) {
 		super(database, _doc);
 	}
+
+	protected abstract String getIdField();
+
+	protected abstract String getIndexName();
 
 	@Override
 	public IndexedDatabase getDatabase() {
@@ -19,16 +19,18 @@ public abstract class AbstractIndexedDocument<T extends AbstractIndexedDocument<
 	}
 
 	@Override
+	public abstract View createIndex();
+
+	@Override
 	public final View getIndex() {
-		if (index == null) {
-			index = getDatabase().getView(indexName);
-		}
-		return index;
+		View index = getDatabase().getView(getIndexName());
+
+		return (index != null && index.isOpen()) ? index : getDatabase().getClosedView();
 	}
 
 	@Override
 	public final String getId() {
-		return _doc.getFieldAsString(idField);
+		return _doc.getFieldAsString(getIdField());
 	}
 
 	@Override
@@ -36,28 +38,9 @@ public abstract class AbstractIndexedDocument<T extends AbstractIndexedDocument<
 
 	@Override
 	public final T setId(String arg0) {
-		_doc.setField(idField, arg0);
+		_doc.setField(getIdField(), arg0);
 		return getThis();
 	}
-
-	// @Override
-	// public <U extends AbstractDocument<?>> U getAs(Class<U> clazz) {
-	// U doc = null;
-	//
-	// if (!IndexedDocument.class.isAssignableFrom(clazz))
-	// return super.getAs(clazz);
-	//
-	// try {
-	// Constructor<?> constructor =
-	// clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
-	// constructor.setAccessible(true);
-	// doc = clazz.cast(constructor.newInstance(getDatabase(), _doc));
-	// } catch (Exception e) {
-	// throw new RiverException(e);
-	// }
-	//
-	// return doc;
-	// }
 
 	@Override
 	protected abstract T getThis();

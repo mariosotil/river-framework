@@ -8,9 +8,16 @@ package org.riverframework.core;
  */
 public interface IndexedDocument<T> {
 	/**
-	 * Returns the Index that will be used to search documents of this class.
+	 * Creates the Index that will be used to search documents of this class. it.
 	 * 
-	 * @return the index name
+	 * @return a DefaultView object with the index. The object will be closed if it is not possible to create it.
+	 */
+	public View createIndex();
+
+	/**
+	 * Returns the Index that will be used to search documents of this class. it.
+	 * 
+	 * @return a DefaultView object with the index. The object will be closed if it is not possible to find it.
 	 */
 	public View getIndex();
 

@@ -14,36 +14,53 @@ import org.riverframework.wrapper.Database;
 public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<T>> extends AbstractDatabase<T>
 		implements IndexedDatabase {
 
-	final static ConcurrentHashMap<String, DefaultIndex> indexes = new ConcurrentHashMap<String, DefaultIndex>();
-
-	final static String INDEX_NAME = Session.ELEMENT_PREFIX + "counter";
-	final static String FORM_NAME = Session.ELEMENT_PREFIX + "counter";
-	final static String FIELD_ID = Session.FIELD_PREFIX + "id";
+	final static ConcurrentHashMap<String, View> indexes = new ConcurrentHashMap<String, View>();
 
 	protected AbstractIndexedDatabase(Session session, Database<?> _database) {
 		super(session, _database);
 	}
 
-	public DefaultIndex createIndex(String key, String... parameters) {
-		DefaultIndex index = createView(DefaultIndex.class, parameters);
-		indexes.put(key, index);
+	@Override
+	public <U extends AbstractDocument<?>> View createIndex(Class<U> clazz) {
+		if (IndexedDocument.class.isAssignableFrom(clazz)) {
+			View index = getIndex(clazz);
 
-		return index;
-	}
+			if (index == null || !index.isOpen()) {
+				index = ((IndexedDocument<?>) getClosedDocument(clazz)).createIndex();
+			}
 
-	public DefaultIndex getIndex(String key) {
-		DefaultIndex index = indexes.get(key);
+			if (index == null) {
+				index = getClosedView();
+			}
 
-		return index == null ? getClosedView(DefaultIndex.class) : index;
+			return index;
+		} else {
+			return getClosedView();
+		}
 	}
 
 	@Override
-	public T initCounter() {
-		if (!getView(INDEX_NAME).isOpen()) {
-			createView(INDEX_NAME, "SELECT Form = \"" + FORM_NAME + "\"").addColumn("Id", FIELD_ID, true);
-		}
+	public <U extends AbstractDocument<?>> View getIndex(Class<U> clazz) {
+		if (IndexedDocument.class.isAssignableFrom(clazz)) {
+			String key = clazz.getName();
+			View index = indexes.get(key);
 
-		return getThis();
+			if (index == null || !index.isOpen()) {
+				index = ((IndexedDocument<?>) getClosedDocument(clazz)).getIndex();
+
+				if (index != null && index.isOpen())
+					indexes.put(key, index);
+			}
+
+			if (index == null) {
+				index = getClosedView();
+			}
+
+			return index;
+
+		} else {
+			return getClosedView();
+		}
 	}
 
 	@Override
@@ -51,18 +68,10 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 		DefaultCounter counter = getDocument(DefaultCounter.class, key);
 
 		if (!counter.isOpen()) {
-			counter = createDocument(DefaultCounter.class, key).setId(key).save();
+			counter = createDocument(DefaultCounter.class, key).setId(key)
+																.save();
 		}
 		return counter;
-	}
-
-	@Override
-	public <U extends AbstractDocument<?>> View getIndex(Class<U> clazz) {
-		if (IndexedDocument.class.isAssignableFrom(clazz)) {
-			return ((IndexedDocument<?>) getClosedDocument(clazz)).getIndex();
-		} else {
-			return getClosedView();
-		}
 	}
 
 	@Override
@@ -97,7 +106,8 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 			if (createIfDoesNotExist && IndexedDocument.class.isAssignableFrom(clazz) && doc != null && doc.isOpen()) {
 				IndexedDocument<?> idxDoc = ((IndexedDocument<?>) doc);
 
-				if (idxDoc.getId().equals(""))
+				if (idxDoc.getId()
+							.equals(""))
 					idxDoc.setId(parameters[0]);
 			}
 		}

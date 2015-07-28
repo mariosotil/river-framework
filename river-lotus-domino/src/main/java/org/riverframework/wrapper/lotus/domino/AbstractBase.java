@@ -80,7 +80,7 @@ abstract class AbstractBase<N> implements Base<N> {
 		
 		try {
 			if(__native instanceof lotus.domino.local.NotesBase) {
-				result = isDeleted.getBoolean((lotus.domino.local.NotesBase) __native);
+				result = isDeleted.getBoolean((lotus.domino.local.NotesBase) __native) || getCpp((lotus.domino.local.NotesBase) __native) == 0;
 				
 			} else if(__native instanceof lotus.domino.cso.Document) {
 				result = remoteDocumentDeleted.getBoolean(__native);

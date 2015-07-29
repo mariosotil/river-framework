@@ -174,7 +174,9 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 
 		if (name != null && !name.equals("") && __view != null) {
 			try {
-				// __view.recycle(); <== Never do that! Let the server do it
+				if (_factory.getIsRemoteSession()) 
+					__view.recycle();
+				
 				__view = null;
 			} catch (Exception e) {
 				throw new RiverException(e);

@@ -9,12 +9,14 @@ abstract class AbstractBase<N> implements Base<N> {
 	private static Field isDeleted = null;
 	private static Field weakObject = null;
 	private static Field cpp = null;
+	private static Class<?> clazzRecycleThread = null;
 	private static Field remoteDatabaseDeleted = null;
 	private static Field remoteDocumentDeleted = null;
-//	private static Field remoteDocumentCollectionDeleted = null;
-//	private static Field remoteViewEntryCollectionDeleted = null;
+	private static Field mRecycler = null;
+	private static Field mRunning = null;
+
 	private static Field noteIDStr = null;
-			
+
 	static {
 		try {			
 			// For local connections
@@ -31,15 +33,16 @@ abstract class AbstractBase<N> implements Base<N> {
 			// For remote connections
 			remoteDatabaseDeleted = lotus.domino.cso.Database.class.getDeclaredField("deleted");
 			remoteDatabaseDeleted.setAccessible(true);
-				
+
 			remoteDocumentDeleted = lotus.domino.cso.Document.class.getDeclaredField("deleted");
 			remoteDocumentDeleted.setAccessible(true);
 
-//			remoteDocumentCollectionDeleted = lotus.domino.cso.DocumentCollection.class.getDeclaredField("deleted");
-//			remoteDocumentCollectionDeleted.setAccessible(true);
-//			
-//			remoteViewEntryCollectionDeleted = lotus.domino.cso.ViewEntryCollection.class.getDeclaredField("deleted");
-//			remoteViewEntryCollectionDeleted.setAccessible(true);
+			mRecycler = lotus.domino.cso.Base.class.getDeclaredField("m_recycler");
+			mRecycler.setAccessible(true);
+
+			clazzRecycleThread = Class.forName("lotus.domino.cso.RecycleThread");
+			mRunning = clazzRecycleThread.getDeclaredField("m_running");
+			mRunning.setAccessible(true);
 
 			noteIDStr = lotus.domino.cso.Document.class.getDeclaredField("noteIDStr");
 			noteIDStr.setAccessible(true);
@@ -54,55 +57,55 @@ abstract class AbstractBase<N> implements Base<N> {
 		Field field = null;
 		Object result = null;
 
-		try {
-			while(!clazz.getSimpleName().equals("Object") && field == null) {
-				try {
-					field = clazz.getDeclaredField(name);
-				} catch (NoSuchFieldException e) {
-					// Do nothing
+		while(!clazz.getSimpleName().equals("Object") && field == null) {
+			try {
+				field = clazz.getDeclaredField(name);
+
+				if (field != null) {
+					field.setAccessible(true);				
+					result = field.get(__obj);
+
+					return result;
 				}
-				clazz = clazz.getSuperclass();
+			} catch (NoSuchFieldException e) {
+				// Do nothing
+			} catch (Exception e1) {
+				throw new RiverException(e1);
 			}
 
 
-			if (field != null) {
-				field.setAccessible(true);				
-				result = field.get(__obj);
-			}
-		} catch (Exception e) {
-			throw new RiverException(e);
+			clazz = clazz.getSuperclass();
 		}
+
 		return result;
 	}
-	
+
 	static boolean isObjectRecycled(lotus.domino.Base __native) {
 		boolean result = false;
-		
+
 		try {
 			if(__native instanceof lotus.domino.local.NotesBase) {
 				result = isDeleted.getBoolean((lotus.domino.local.NotesBase) __native) || getCpp((lotus.domino.local.NotesBase) __native) == 0;
+
+			} else if(__native instanceof lotus.domino.cso.Database) {
+				result = remoteDatabaseDeleted.getBoolean((lotus.domino.cso.Database) __native);
 				
 			} else if(__native instanceof lotus.domino.cso.Document) {
-				result = remoteDocumentDeleted.getBoolean(__native);
+				result = remoteDocumentDeleted.getBoolean((lotus.domino.cso.Document) __native);
 				
-//			} else if(__native instanceof lotus.domino.cso.DocumentCollection) {
-//				result = remoteDocumentCollectionDeleted.getBoolean(__native);
-//				
-//			} else if(__native instanceof lotus.domino.cso.ViewEntryCollection) {
-//				result = remoteViewEntryCollectionDeleted.getBoolean(__native);
-				
-			} else if(__native instanceof lotus.domino.cso.Database) {
-				result = remoteDatabaseDeleted.getBoolean(__native);
-				
-			}			
-			
+			} else if(__native instanceof lotus.domino.cso.Base) {
+				Object m_recycler = mRecycler.get((lotus.domino.cso.Base) __native);
+				result = !mRunning.getBoolean(clazzRecycleThread.cast(m_recycler));
+
+			} 
+
 		} catch (Exception e) {
 			throw new RiverException(e);
 		}
 
 		return result;
 	}
-	
+
 	static long getCpp(lotus.domino.Base __native) {
 		long result = 0;
 
@@ -127,7 +130,7 @@ abstract class AbstractBase<N> implements Base<N> {
 
 		return result;
 	}
-	
+
 	abstract boolean isRecycled();
 
 }

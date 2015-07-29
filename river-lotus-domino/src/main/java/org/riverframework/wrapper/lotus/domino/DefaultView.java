@@ -1,8 +1,5 @@
 package org.riverframework.wrapper.lotus.domino;
 
-// import java.util.logging.Level;
-// import java.util.logging.Logger;
-
 import lotus.domino.Base;
 import lotus.domino.NotesException;
 import lotus.domino.ViewColumn;
@@ -15,7 +12,6 @@ import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.View;
 
 class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverframework.wrapper.View<lotus.domino.View> {
-	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
 	protected org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
 	protected volatile lotus.domino.View __view = null;
@@ -76,9 +72,9 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 				__doc = __view.getNextDocument(__doc);
 				// __deleted.recycle();  <== Bad idea
 			}
-			
+
 			if (__doc != null && !__doc.getColumnValues().get(0).equals(key)) __doc = null;
-			
+
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -90,14 +86,9 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 
 	@Override
 	public boolean isRecycled() {
-		if (_factory.getIsRemoteSession()) {
-			// There's no a deleted field for the View class
-			return false; // getCpp(__view) == 0;
-		} else {
-			return isObjectRecycled(__view);
-		}
+		return isObjectRecycled(__view);
 	}
-	
+
 	@Override
 	public boolean isOpen() {
 		return __view != null && !isRecycled();
@@ -148,7 +139,17 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 		try {
 			ViewColumn __col = __view.createColumn(__view.getColumnCount(), name, value);
 			__col.setSorted(isSorted);
-			
+
+			if(_factory.getIsRemoteSession()) {
+				// If this is a remote session, calling recycle permits to save
+				// the changes. Otherwise, the view looks damaged.
+
+				lotus.domino.Database __db = __view.getParent();
+				String viewName = __view.getName();
+
+				__view.recycle(); 
+				__view = __db.getView(viewName);
+			}
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -160,7 +161,7 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 		if (__view != null) {
 			try {
 				__view.remove();
-				// __view.recycle();  <== Let the server to recycle
+				// __view.recycle();  <== Let the server recycle
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			} finally {

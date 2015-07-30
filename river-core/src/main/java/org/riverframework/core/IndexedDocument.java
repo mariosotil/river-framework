@@ -6,18 +6,26 @@ package org.riverframework.core;
  * @author mario.sotil@gmail.com
  *
  */
-public interface IndexedDocument<T> {
+public interface IndexedDocument<T> extends Document {
+	public String getIdField();
+
+	public String getIndexName();
+
 	/**
-	 * Creates the Index that will be used to search documents of this class. it.
+	 * Creates the Index that will be used to search documents of this class.
+	 * it.
 	 * 
-	 * @return a DefaultView object with the index. The object will be closed if it is not possible to create it.
+	 * @return a DefaultView object with the index. The object will be closed if
+	 *         it is not possible to create it.
 	 */
 	public View createIndex();
 
 	/**
-	 * Returns the Index that will be used to search documents of this class. it.
+	 * Returns the Index that will be used to search documents of this class.
+	 * it.
 	 * 
-	 * @return a DefaultView object with the index. The object will be closed if it is not possible to find it.
+	 * @return a DefaultView object with the index. The object will be closed if
+	 *         it is not possible to find it.
 	 */
 	public View getIndex();
 
@@ -38,7 +46,8 @@ public interface IndexedDocument<T> {
 	public T setId(String id);
 
 	/**
-	 * Returns the current Document's Id, whether it was generated or set manually.
+	 * Returns the current Document's Id, whether it was generated or set
+	 * manually.
 	 * 
 	 * @return the current Id
 	 */

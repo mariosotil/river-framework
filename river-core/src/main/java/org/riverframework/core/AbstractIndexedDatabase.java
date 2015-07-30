@@ -1,42 +1,68 @@
 package org.riverframework.core;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 import org.riverframework.ClosedObjectException;
+import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 
 /**
- * It is used to manage Databases by default, if we don't need to create a class for each database accessed.
+ * It is used to manage Databases by default, if we don't need to create a class
+ * for each database accessed.
  * 
  * @author mario.sotil@gmail.com
  *
  */
-public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<T>> extends AbstractDatabase<T>
-		implements IndexedDatabase {
+public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<T>>
+		extends AbstractDatabase<T> implements IndexedDatabase {
 
-	final static ConcurrentHashMap<String, View> indexes = new ConcurrentHashMap<String, View>();
+	final HashMap<String, Class<? extends AbstractDocument<?>>> classes = new HashMap<String, Class<? extends AbstractDocument<?>>>();
+	final HashMap<String, View> indexes = new HashMap<String, View>();
 
 	protected AbstractIndexedDatabase(Session session, Database<?> _database) {
 		super(session, _database);
 	}
 
 	@Override
-	public <U extends AbstractDocument<?>> View createIndex(Class<U> clazz) {
-		if (IndexedDocument.class.isAssignableFrom(clazz)) {
-			View index = getIndex(clazz);
+	public <U extends AbstractDocument<?>> T registerDocumentClass(
+			Class<U> clazz) {
 
-			if (index == null || !index.isOpen()) {
-				index = ((IndexedDocument<?>) getClosedDocument(clazz)).createIndex();
+		if (isOpen()) {
+			Document closedDoc = getClosedDocument(clazz);
+			// Saving the table name and the class associated in the cache
+			classes.put(closedDoc.getTableName(), clazz);
+
+			// If it is an indexed document class...
+			if (AbstractIndexedDocument.class.isAssignableFrom(clazz)) {
+				String key = clazz.getName();
+
+				// ... and its index is not loaded yet ...
+				if (indexes.get(key) == null) {
+
+					// ...save it in the cache
+					View index = getIndex(clazz);
+
+					if (index == null || !index.isOpen()) {
+						try {
+							index = ((IndexedDocument<?>) closedDoc)
+									.createIndex();
+						} catch (Exception e) {
+							index = null;
+						}
+					}
+
+					if (index == null || !index.isOpen()) {
+						throw new RiverException(
+								"It could not be possible load the index for the class "
+										+ key);
+					}
+
+					indexes.put(key, index);
+				}
 			}
-
-			if (index == null) {
-				index = getClosedView();
-			}
-
-			return index;
-		} else {
-			return getClosedView();
 		}
+
+		return getThis();
 	}
 
 	@Override
@@ -44,13 +70,6 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 		if (IndexedDocument.class.isAssignableFrom(clazz)) {
 			String key = clazz.getName();
 			View index = indexes.get(key);
-
-			if (index == null || !index.isOpen()) {
-				index = ((IndexedDocument<?>) getClosedDocument(clazz)).getIndex();
-
-				if (index != null && index.isOpen())
-					indexes.put(key, index);
-			}
 
 			if (index == null) {
 				index = getClosedView();
@@ -69,27 +88,26 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 
 		if (!counter.isOpen()) {
 			counter = createDocument(DefaultCounter.class, key).setId(key)
-																.save();
+					.save();
 		}
 		return counter;
 	}
 
 	@Override
-	public Class<? extends AbstractDocument<?>> getClassFromDocument(org.riverframework.wrapper.Document<?> _doc) {
-		return DefaultDocument.class;
-	}
-
-	@Override
 	public Document getDocument(org.riverframework.wrapper.Document<?> _doc) {
-		Class<? extends AbstractDocument<?>> clazz = getClassFromDocument(_doc);
+		String tableName = _doc.getTable();
+		Class<? extends AbstractDocument<?>> clazz = classes.get(tableName);
+
+		if (clazz == null)
+			clazz = DefaultDocument.class;
 
 		Document doc = getDocument(clazz, _doc);
 		return doc;
 	}
 
 	@Override
-	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz, boolean createIfDoesNotExist,
-			String... parameters) {
+	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz,
+			boolean createIfDoesNotExist, String... parameters) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Session object is closed.");
 
@@ -97,17 +115,19 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 
 		View index = getIndex(clazz);
 		if (index.isOpen()) {
+			index.refresh();
 			doc = clazz.cast(index.getDocumentByKey(clazz, parameters[0]));
 		}
 
 		if (doc == null || !doc.isOpen()) {
 			doc = super.getDocument(clazz, createIfDoesNotExist, parameters);
 
-			if (createIfDoesNotExist && IndexedDocument.class.isAssignableFrom(clazz) && doc != null && doc.isOpen()) {
+			if (createIfDoesNotExist
+					&& IndexedDocument.class.isAssignableFrom(clazz)
+					&& doc != null && doc.isOpen()) {
 				IndexedDocument<?> idxDoc = ((IndexedDocument<?>) doc);
 
-				if (idxDoc.getId()
-							.equals(""))
+				if (idxDoc.getId().equals(""))
 					idxDoc.setId(parameters[0]);
 			}
 		}

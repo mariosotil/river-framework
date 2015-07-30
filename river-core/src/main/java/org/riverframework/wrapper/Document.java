@@ -19,6 +19,10 @@ public interface Document<N> extends Base<N> {
 
 	public Document<N> recalc();
 
+	public Document<N> setTable(String table);
+
+	public String getTable();
+
 	public Field getField(String field);
 
 	public String getFieldAsString(String field);

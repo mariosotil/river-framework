@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Vector;
 // import java.util.logging.Logger;
 
+
 import org.openntf.domino.DateTime;
 import org.openntf.domino.Item;
-
 import org.riverframework.core.Field;
 import org.riverframework.River;
 import org.riverframework.RiverException;
@@ -54,6 +54,17 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 		}
 
 		return objectId;
+	}
+
+	@Override
+	public Document<org.openntf.domino.Document> setTable(String table) {
+		__doc.replaceItemValue("Form", table);
+		return this;
+	}
+
+	@Override
+	public String getTable() {
+		return __doc.getItemValueString("Form");
 	}
 
 	@Override
@@ -310,4 +321,5 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 	public String toString() {
 		return getClass().getName() + "(" + objectId + ")";
 	}
+
 }

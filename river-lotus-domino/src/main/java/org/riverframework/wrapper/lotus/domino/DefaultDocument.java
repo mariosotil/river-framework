@@ -19,6 +19,7 @@ import java.util.Vector;
 
 
 
+
 import lotus.domino.Base;
 import lotus.domino.DateTime;
 import lotus.domino.Item;
@@ -104,13 +105,24 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	}
 
 	@Override
+	public Document<lotus.domino.Document> setTable(String table) {
+		setField("Form", table);
+		return this;
+	}
+
+	@Override
+	public String getTable() {
+		return getFieldAsString("Form");
+	}
+	
+	@Override
 	public lotus.domino.Document getNativeObject() {
 		return __doc;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public Document setField(String field, Object value) {
+	public Document<lotus.domino.Document> setField(String field, Object value) {
 		java.util.Vector temp = null;
 
 		if (value instanceof java.util.Vector) {

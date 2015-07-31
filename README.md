@@ -36,7 +36,7 @@ A full demo as an Eclipse project of a stand-alone Java program is [here](https:
 
 ## Maven
 
-To load the artifacts from Maven, you can add these dependencies to your pom.xml file:
+To load the artifacts from Maven, you can add one of these dependencies to your pom.xml file:
 
 - To use the original lotus.domino package from IBM Notes
 

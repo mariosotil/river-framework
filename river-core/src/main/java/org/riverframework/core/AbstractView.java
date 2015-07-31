@@ -12,7 +12,7 @@ import org.riverframework.RiverException;
  *
  */
 public abstract class AbstractView<T extends AbstractView<T>> implements View {
-	protected Database database = null;
+	private Database database = null;
 	protected org.riverframework.wrapper.View<?> _view = null;
 
 	protected AbstractView(Database database, org.riverframework.wrapper.View<?> _view) {

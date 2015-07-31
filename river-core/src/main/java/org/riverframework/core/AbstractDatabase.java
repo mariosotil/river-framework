@@ -12,7 +12,7 @@ import org.riverframework.RiverException;
  *
  */
 public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements Database {
-	protected Session session = null;
+	private Session session = null;
 	protected org.riverframework.wrapper.Database<?> _database = null;
 
 	protected AbstractDatabase(Session session, org.riverframework.wrapper.Database<?> _database) {

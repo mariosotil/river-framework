@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.riverframework.Context;
 import org.riverframework.RandomString;
+import org.riverframework.utils.Sha1;
 
 public abstract class AbstractDocumentTest {
 	protected Session session = null;
@@ -28,7 +29,9 @@ public abstract class AbstractDocumentTest {
 		// Opening the test context in the current package
 		try {
 			if (context == null) {
-				String className = this.getClass().getPackage().getName() + ".Context";
+				String className = this.getClass()
+										.getPackage()
+										.getName() + ".Context";
 				Class<?> clazz = Class.forName(className);
 				if (org.riverframework.Context.class.isAssignableFrom(clazz)) {
 					Constructor<?> constructor = clazz.getDeclaredConstructor();
@@ -40,7 +43,8 @@ public abstract class AbstractDocumentTest {
 				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 				complexDatabase = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
 
-				database.getAllDocuments().deleteAll();
+				database.getAllDocuments()
+						.deleteAll();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -69,10 +73,13 @@ public abstract class AbstractDocumentTest {
 		calendar.set(Calendar.MILLISECOND, 0);
 		Date testDate = calendar.getTime();
 
-		doc.setField("FIELD_STRING", "SOME_TEXT").setField("FIELD_INTEGER", 100).setField("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0)
-		.setField("FIELD_DOUBLE_WITH_DECIMALS", 100.55).setField("FIELD_DATE", testDate)
-		.setField("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" })
-		.setField("FIELD_OBJECT", new DefaultField(Arrays.asList(new String[] { "VAL1", "VAL2" })));
+		doc.setField("FIELD_STRING", "SOME_TEXT")
+			.setField("FIELD_INTEGER", 100)
+			.setField("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0)
+			.setField("FIELD_DOUBLE_WITH_DECIMALS", 100.55)
+			.setField("FIELD_DATE", testDate)
+			.setField("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" })
+			.setField("FIELD_OBJECT", new DefaultField(Arrays.asList(new String[] { "VAL1", "VAL2" })));
 
 		assertTrue("The String saved must be equal to the test value", doc.compareFieldValue("FIELD_STRING", "SOME_TEXT"));
 		assertFalse("The String saved must be different to a random value", doc.compareFieldValue("FIELD_STRING", "SODIUHOUIFD"));
@@ -80,30 +87,26 @@ public abstract class AbstractDocumentTest {
 		assertTrue("The Integer saved must be equal to the test value", doc.compareFieldValue("FIELD_INTEGER", 100));
 		assertFalse("The Integer saved must be different to a random value", doc.compareFieldValue("FIELD_INTEGER", 3847));
 
-		assertTrue("The Double WITHOUT decimals saved must be equal to the test value",
-				doc.compareFieldValue("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0));
-		assertFalse("The Double WITHOUT decimals saved must be different to a random value",
-				doc.compareFieldValue("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.89));
+		assertTrue("The Double WITHOUT decimals saved must be equal to the test value", doc.compareFieldValue("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0));
+		assertFalse("The Double WITHOUT decimals saved must be different to a random value", doc.compareFieldValue("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.89));
 
-		assertTrue("The Double WITH decimals saved must be equal to the test value",
-				doc.compareFieldValue("FIELD_DOUBLE_WITH_DECIMALS", 100.55));
-		assertFalse("The Double WITH decimals saved must be different to a random value",
-				doc.compareFieldValue("FIELD_DOUBLE_WITH_DECIMALS", 100.89));
+		assertTrue("The Double WITH decimals saved must be equal to the test value", doc.compareFieldValue("FIELD_DOUBLE_WITH_DECIMALS", 100.55));
+		assertFalse("The Double WITH decimals saved must be different to a random value", doc.compareFieldValue("FIELD_DOUBLE_WITH_DECIMALS", 100.89));
 
 		assertTrue("The Date saved must be equal to the test value", doc.compareFieldValue("FIELD_DATE", testDate));
 		calendar.set(2012, 1, 15, 5, 25, 12);
 		Date randomDate = calendar.getTime();
 		assertFalse("The Date saved must be different to a random value", doc.compareFieldValue("FIELD_DATE", randomDate));
 
-		assertTrue("The String array saved must be equal to the test value",
-				doc.compareFieldValue("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" }));
-		assertFalse("The String array saved must be different to a random value",
-				doc.compareFieldValue("FIELD_STRING_ARRAY", new String[] { "VALWW", "VALZZ" }));
+		assertTrue("The String array saved must be equal to the test value", doc.compareFieldValue("FIELD_STRING_ARRAY", new String[] {
+				"VAL1", "VAL2" }));
+		assertFalse("The String array saved must be different to a random value", doc.compareFieldValue("FIELD_STRING_ARRAY", new String[] {
+				"VALWW", "VALZZ" }));
 
-		assertTrue("The Vector saved must be equal to the test value",
-				doc.compareFieldValue("FIELD_OBJECT", new String[] { "VAL1", "VAL2" }));
-		assertFalse("The Vector saved must be different to a random value",
-				doc.compareFieldValue("FIELD_OBJECT", new String[] { "VAL1", "VALZZ" }));
+		assertTrue("The Vector saved must be equal to the test value", doc.compareFieldValue("FIELD_OBJECT", new String[] {
+				"VAL1", "VAL2" }));
+		assertFalse("The Vector saved must be different to a random value", doc.compareFieldValue("FIELD_OBJECT", new String[] {
+				"VAL1", "VALZZ" }));
 	}
 
 	@Test
@@ -123,42 +126,49 @@ public abstract class AbstractDocumentTest {
 		Date testDate = calendar.getTime();
 
 		doc.setField("FIELD_STRING", "SOME_TEXT")
-		.setField("FIELD_INTEGER", 100)
-		.setField("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0)
-		.setField("FIELD_DOUBLE_WITH_DECIMALS", 100.55)
-		.setField("FIELD_DATE", testDate)
-		.setField("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" })
-		.setField("FIELD_OBJECT", new DefaultField(Arrays.asList(new String[] { "VAL1", "VAL2" })))
-		.save();
+			.setField("FIELD_INTEGER", 100)
+			.setField("FIELD_DOUBLE_WITHOUT_DECIMALS", 100.0)
+			.setField("FIELD_DOUBLE_WITH_DECIMALS", 100.55)
+			.setField("FIELD_DATE", testDate)
+			.setField("FIELD_STRING_ARRAY", new String[] { "VAL1", "VAL2" })
+			.setField("FIELD_OBJECT", new DefaultField(Arrays.asList(new String[] { "VAL1", "VAL2" })))
+			.save();
 
 		Map<String, Field> fields = doc.getFields();
 
 		assertTrue("The field map does not have 8 fields as expected", fields.size() == 9);
 
 		String s1 = doc.getFieldAsString("FIELD_STRING");
-		String s2 = (String) fields.get("FIELD_STRING").get(0);
+		String s2 = (String) fields.get("FIELD_STRING")
+									.get(0);
 		assertTrue("The String saved must be equal to the fields map value", s1.equals(s2));
-		
+
 		Double d1 = Double.valueOf(doc.getFieldAsInteger("FIELD_INTEGER"));
-		Double d2 = (Double) fields.get("FIELD_INTEGER").get(0);
+		Double d2 = (Double) fields.get("FIELD_INTEGER")
+									.get(0);
 		assertTrue("The Integer saved must be equal to the fields map value", d1.compareTo(d2) == 0);
 
 		d1 = doc.getFieldAsDouble("FIELD_DOUBLE_WITHOUT_DECIMALS");
-		d2 = (Double) fields.get("FIELD_DOUBLE_WITHOUT_DECIMALS").get(0);
+		d2 = (Double) fields.get("FIELD_DOUBLE_WITHOUT_DECIMALS")
+							.get(0);
 		assertTrue("The double without decimals saved must be equal to the fields map value", d1.compareTo(d2) == 0);
 
 		d1 = doc.getFieldAsDouble("FIELD_DOUBLE_WITH_DECIMALS");
-		d2 = (Double) fields.get("FIELD_DOUBLE_WITH_DECIMALS").get(0);
+		d2 = (Double) fields.get("FIELD_DOUBLE_WITH_DECIMALS")
+							.get(0);
 		assertTrue("The double with decimals saved must be equal to the fields map value", d1.compareTo(d2) == 0);
 
-		assertTrue("The date saved must be equal to the fields map value", 
-				doc.getFieldAsDate("FIELD_DATE").compareTo((Date) fields.get("FIELD_DATE").get(0)) == 0);
+		assertTrue("The date saved must be equal to the fields map value", doc.getFieldAsDate("FIELD_DATE")
+																				.compareTo((Date) fields.get("FIELD_DATE")
+																										.get(0)) == 0);
 
-		assertTrue("The String array saved must be equal to the fields map value", 
-				Arrays.equals(doc.getField("FIELD_STRING_ARRAY").toArray(), fields.get("FIELD_STRING_ARRAY").toArray()));
+		assertTrue("The String array saved must be equal to the fields map value", Arrays.equals(doc.getField("FIELD_STRING_ARRAY")
+																									.toArray(), fields.get("FIELD_STRING_ARRAY")
+																														.toArray()));
 
-		assertTrue("The Object saved must be equal to the fields map value", 
-				Arrays.equals(doc.getField("FIELD_OBJECT").toArray(), fields.get("FIELD_OBJECT").toArray()));
+		assertTrue("The Object saved must be equal to the fields map value", Arrays.equals(doc.getField("FIELD_OBJECT")
+																								.toArray(), fields.get("FIELD_OBJECT")
+																													.toArray()));
 	}
 
 	@Test
@@ -187,6 +197,36 @@ public abstract class AbstractDocumentTest {
 
 		assertFalse("The integer value can not be retrieved as string. ", "20".equals(strValue));
 		assertTrue("The integer value can be retrieved as integer. ", 20 == intValue);
+	}
+
+	@Test
+	public void testSetAndGetFieldAsBigString() {
+		assertTrue("The test database could not be opened.", database.isOpen());
+
+		Document doc = database.createDocument();
+
+		assertTrue("The document could not be created", doc.isOpen());
+
+		doc.setField("Form", TEST_FORM);
+
+		String testField = "TestBigField";
+
+		StringBuilder sb = new StringBuilder(100 * 1024);
+		for (int i = 0; i < 10 * 1024; i++) {
+			sb.append("0123456789");
+		}
+		String testValue = sb.toString();
+		String hash1 = Sha1.getHash(testValue);
+		assertFalse("It could not be possible to get the hash from the test text.", hash1.equals(""));
+
+		doc.setField(testField, testValue);
+		doc.save();
+
+		String savedValue = doc.getFieldAsString(testField);
+		String hash2 = Sha1.getHash(savedValue);
+		assertFalse("It could not be possible to get the hash from the saved text.", hash2.equals(""));
+
+		assertTrue("The value retrieved was different to the saved", hash1.equals(hash2));
 	}
 
 	@Test
@@ -286,8 +326,10 @@ public abstract class AbstractDocumentTest {
 		doc.setField(testField, new String[] { "VAL1", "VAL2" });
 		Field newValue = doc.getField(testField);
 
-		assertTrue("The Array saved is different to the Array retrieved", newValue.size() == 2 && newValue.get(0).equals("VAL1")
-				&& newValue.get(1).equals("VAL2"));
+		assertTrue("The Array saved is different to the Array retrieved", newValue.size() == 2
+				&& newValue.get(0)
+							.equals("VAL1") && newValue.get(1)
+														.equals("VAL2"));
 	}
 
 	@Test
@@ -305,8 +347,10 @@ public abstract class AbstractDocumentTest {
 		doc.setField(testField, new String[] { "VAL1", "VAL2" });
 		Field newValue = doc.getField(testField);
 
-		assertTrue("The Vector saved is different to the Vector retrieved", newValue.size() == 2 && newValue.get(0).equals("VAL1")
-				&& newValue.get(1).equals("VAL2"));
+		assertTrue("The Vector saved is different to the Vector retrieved", newValue.size() == 2
+				&& newValue.get(0)
+							.equals("VAL1") && newValue.get(1)
+														.equals("VAL2"));
 	}
 
 	@Test
@@ -358,7 +402,8 @@ public abstract class AbstractDocumentTest {
 	}
 
 	/*
-	 * @Test public void testSetAndGetIsPublic() { assertTrue("The test database could not be opened.", rDatabase.isOpen());
+	 * @Test public void testSetAndGetIsPublic() { assertTrue("The test database could not be opened.",
+	 * rDatabase.isOpen());
 	 * 
 	 * DefaultDocument rDoc = rDatabase.createDocument(DefaultDocument.class);
 	 * 
@@ -368,7 +413,8 @@ public abstract class AbstractDocumentTest {
 	 * 
 	 * rDoc.setAsPublic(false); assertFalse("The document could not be set as NOT Public", rDoc.isPublic()); }
 	 * 
-	 * @Test public void testGetDocumentClass() { assertTrue("The test database could not be opened.", rDatabase.isOpen());
+	 * @Test public void testGetDocumentClass() { assertTrue("The test database could not be opened.",
+	 * rDatabase.isOpen());
 	 * 
 	 * DefaultDocument rDoc = rDatabase.createDocument(DefaultDocument.class);
 	 * 
@@ -430,7 +476,8 @@ public abstract class AbstractDocumentTest {
 	}
 
 	/*
-	 * @Test public void testMarkAndUnmarkAndIsDeleted() { assertTrue("The test database could not be opened.", rDatabase.isOpen());
+	 * @Test public void testMarkAndUnmarkAndIsDeleted() { assertTrue("The test database could not be opened.",
+	 * rDatabase.isOpen());
 	 * 
 	 * DefaultDocument rDoc = rDatabase.createDocument(DefaultDocument.class);
 	 * 
@@ -473,8 +520,7 @@ public abstract class AbstractDocumentTest {
 		doc = null;
 		doc = database.getDocument(uniqueId);
 
-		assertFalse("A document was created, NOT MODIFIED and saved with A IMPLICIT NOT FORCE parameter was found in the database.",
-				doc.isOpen());
+		assertFalse("A document was created, NOT MODIFIED and saved with A IMPLICIT NOT FORCE parameter was found in the database.", doc.isOpen());
 
 		doc = null;
 		doc = database.createDocument();

@@ -7,7 +7,7 @@ package org.riverframework.core;
  *
  */
 public final class DefaultDocumentIterator implements org.riverframework.core.DocumentIterator {
-	protected Database database;
+	private Database database;
 	protected org.riverframework.wrapper.DocumentIterator<?, ?> _iterator;
 
 	protected DefaultDocumentIterator(Database d, org.riverframework.wrapper.DocumentIterator<?, ?> _iterator) {

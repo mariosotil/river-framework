@@ -11,10 +11,10 @@ import java.util.Vector;
 
 import org.openntf.domino.DateTime;
 import org.openntf.domino.Item;
-import org.riverframework.core.Field;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.core.DefaultField;
+import org.riverframework.core.Field;
 import org.riverframework.utils.Converter;
 import org.riverframework.wrapper.Document;
 
@@ -31,6 +31,10 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 	protected org.riverframework.wrapper.Session<org.openntf.domino.Session> _session = null;
 	protected volatile org.openntf.domino.Document __doc = null;
 	private String objectId = null;
+
+	private final String FRAGMENTED_FIELD_ID = "{{RIVER_FRAGMENTED_FIELD}}";
+	private final String FRAGMENT_FIELD_NAME_SEPARATOR = "$";
+	private final int MAX_FIELD_SIZE = 32 * 1024 - 1;
 
 	protected DefaultDocument(org.riverframework.wrapper.Session<org.openntf.domino.Session> s, org.openntf.domino.Document d) {
 		__doc = d;
@@ -77,7 +81,36 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 	public Document setField(String field, Object value) {
 		java.util.Vector temp = null;
 
-		if (value instanceof java.util.Vector) {
+		if (value instanceof String) {
+			String str = (String) value;
+			if (str.length() >= MAX_FIELD_SIZE) {
+				// Fragment the text in parts with size less than MAX_FIELD_SIZE
+				boolean finished = false;
+				int size = str.length();
+				int block = 0;
+
+				while (!finished) {
+					int start = block * (MAX_FIELD_SIZE);
+					int end = start + (MAX_FIELD_SIZE);
+					if (end > size) { 
+						end = size;
+						finished = true;
+					}
+					String substr = str.substring(start, end);
+					block++;
+
+					String fieldName = field + FRAGMENT_FIELD_NAME_SEPARATOR + block;
+					Item __item = __doc.replaceItemValue(fieldName, substr);
+					__item.setSummary(false);
+				}				
+
+				// Saving the size as number of blocks 
+				str = FRAGMENTED_FIELD_ID + "|" + block;		
+			}
+
+			temp = new Vector(1);
+			temp.add(str);
+		} else if (value instanceof java.util.Vector) {
 			temp = (Vector) ((java.util.Vector) value).clone();
 		} else if (value instanceof java.util.Collection) {
 			temp = new Vector((java.util.Collection) value);
@@ -138,6 +171,17 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 		Vector<?> value = __doc.getItemValue(field);
 		String result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
 
+		if (result.startsWith(FRAGMENTED_FIELD_ID)) {
+			String[] params = result.split("\\|");
+			int blockNum = Integer.valueOf(params[1]);
+			StringBuilder sb = new StringBuilder(MAX_FIELD_SIZE * blockNum);
+			for(int i = 1; i <= blockNum; i++) {
+				String fragment = getFieldAsString(field + FRAGMENT_FIELD_NAME_SEPARATOR + i );
+				sb.append(fragment);
+			}
+
+			result = sb.toString();
+		}
 		return result;
 	}
 
@@ -230,19 +274,14 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 	public Map<String, Field> getFields() {
 		Map<String, Field> result = null;
 
-		// logWrapper.debug("getFields: " + _doc.getUniversalID());
-		// logWrapper.debug("getFields: loading items");
-
 		Vector<org.openntf.domino.Item> items = null;
 		items = __doc.getItems();
 
-		// logWrapper.debug("getFields: found " + items.size());
 		result = new HashMap<String, Field>(items.size());
 
 		for (org.openntf.domino.Item __item : items) {
 			String name = __item.getName();
 			int type = __item.getType();
-			// logWrapper.debug("getFields: item=" + name + ", type=" + type);
 
 			Field values = null;
 
@@ -261,20 +300,17 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 			// __item.recycle(); <== Very bad idea? 
 
 			if (values.isEmpty()) {
-				// logWrapper.debug("getFields: it's empty");
 				values.add("");
 			}
 
 			if (!values.isEmpty()) {
 				if (values.get(0) instanceof org.openntf.domino.DateTime) {
-					// logWrapper.debug("getFields: it's datetime");
 					for (int i = 0; i < values.size(); i++) {
 						values.set(i, ((org.openntf.domino.DateTime) values.get(i)).toJavaDate());
 					}
 				}
 			}
 
-			// logWrapper.debug("getFields: saving into the map");
 			result.put(name, values);
 		}
 

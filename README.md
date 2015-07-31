@@ -2,22 +2,22 @@
 
 ## What is the River Framework?
 
-This is an Application Framework for NoSQL databases in an **EARLY development stage**. To date (July 02, 2015) the Framework is capable to access IBM Notes databases using the native Java libraries (`lotus.domino`) or the OpenNTF libraries (`org.openntf.domino`).
+This is an Application Framework for NoSQL databases in **development stage**. To date (July 31, 2015) the Framework is capable to access IBM Notes databases using the native Java libraries (`lotus.domino`) or the OpenNTF libraries (`org.openntf.domino`).
 
-Right now, I'm improving the IBM Notes wrapper and redesigning the Framework itself. The next steps are finishing the development of the IBM Notes wrapper, creating graph relations, developing workflow supporting and wrappers for other NoSQL databases like MongoDB. 
+The next steps are create graph relations, implement a query language, develop workflow supporting and wrappers for other NoSQL databases like MongoDB. 
 
-Until the version 0.2.8, the code written with this framework looks like this:
+Until the current version, 0.2.10, the code written with this framework looks like this:
 
 ```java
 //Opening a session
 Session session = River.getSession(River.LOTUS_DOMINO, "server", "username", "password");
-Database database = session.getDatabase(DefaultDatabase.class, "server", "example.nsf");
+Database database = session.getDatabase(AddressBook.class, "server", "example.nsf");
     
 // Creating some person
 database.createDocument(Person.class)
-  .generateId()
   .setField("Name", "John Doe")
   .setField("Age", 35)
+  .generateId()
   .save();
     
 // Searching people with surname "Doe"				
@@ -32,7 +32,7 @@ for(Document doc: it)	{
 session.close();
 ```
 
-Considering that it's quite possible that I will forget to write updates, the current status of the project, source code, Maven configuration, demos, everything, will be in its GitHub repository ==> https://github.com/mariosotil/river-framework 
+A full demo as an Eclipse project of a stand-alone Java program is [here](https://github.com/mariosotil/river-framework-demo).
 
 ## Maven
 
@@ -44,7 +44,7 @@ To load the artifacts from Maven, you can add these dependencies to your pom.xml
 		<dependency>
 			<groupId>org.riverframework</groupId>
 			<artifactId>river-lotus-domino</artifactId>
-			<version>0.2.8</version>
+			<version>0.2.10</version>
 		</dependency>
 ```
 
@@ -54,16 +54,16 @@ To load the artifacts from Maven, you can add these dependencies to your pom.xml
     <dependency>
       <groupId>org.riverframework</groupId>
       <artifactId>river-org-openntf-domino</artifactId>
-      <version>0.2.8</version>
+      <version>0.2.10</version>
     </dependency>
 ```
 
-In both cases, you have to add to your classpath the Notes.jar library, and only for the last one, the org.openntf.domino.jar library.
+In both cases, you have to add to your classpath the `Notes.jar` library. For the last one, you will need to add the `org.openntf.domino.jar` library too.
 
 
 ## Features
 
-The current version (0.2.10) has the following features: 
+### The current version (0.2.10) has the following features: 
 
 - Designed to provide a unique interface to connect to NoSQL databases 
 - Simplifies the writting of code 
@@ -82,39 +82,37 @@ The current version (0.2.10) has the following features:
 - Supports indexes and unique id for documents
 
 
-About the wrapper for IBM Notes:
+### About the wrapper for IBM Notes:
 
 - So far, supports only five basic elements to work with a Notes database (session, database, document, view, iterator)
 - Anyway, you can still use the native Java library to do things like modify the ACL or work with RichText items.
 - Supports local and remote sessions (DIIOP) 
 - Auto recycling the Notes objects
 - Has an object cache
+- Supports field size > 32K
 - To reduce impact on replication, if you set a field with a new value, it checks if it is different before do it.
 - Good to develop standalone Java programs, Servlets or XPages programs 
 
 
-About the wrapper for OpenNTF Domino:
+### About the wrapper for OpenNTF Domino:
 
 - Takes advantage of this great library developed by [OpenNTF](http://www.openntf.org/main.nsf/project.xsp?r=project/OpenNTF%20Domino%20API)
 - The auto recycling is managed by OpenNTF Domino
 
   
-## What I'm working on now?
+## What I am working on now?
 
-- Version 0.2.10
-  - Improving the design to work with document indexes
-  - Supporting fields > 32K (IBM Notes wrapper)
-  - Updating the documention 
-  - Various fixes and improvements
+The current version (0.2.10) is very stable, so I am working as a freelancer again :-)  I am going to continue on this project in one month (September, 2015).
 
   
 ## What is in the ToDo list?
 
 There are a lot of features that I will add to this framework:
 
-- Support to relations between documents using graphs, 1..\* or \*..\*
-- Support to workflow applications development
-- Connections to MongoDB, CouchDB, Node4J, Hazelcast, etc. 
+- Support a query language (SQL++?)
+- Support relations between documents using graphs, 1..\* or \*..\*
+- Support workflow application development using state machines
+- Support other NoSQL databases as MongoDB, CouchDB, Node4J, Hazelcast, etc. 
 
 
 ## Why am I creating this Framework?
@@ -158,13 +156,19 @@ Next versions
 
 ## Version change log
 
-- Version 0.2.9
-  - ~~Redesigning in three layers~~
-  - Redesigned the core layer to allows the developer to write logic, rules, etc. for a single object. e.g. a document or a database
-  - Created a LoggerHelper class to make easier to control the `java.util.logging.Logger` objects
-  - Optimized the IBM Notes wrapper library
-  - Temporarily removed the support to Hazelcast wrapper library
-  - Various fixes 
+Version 0.2.10
+- Improving the design to work with document indexes
+- Supporting fields > 32K (IBM Notes wrapper)
+- Updating the documentation 
+- Various fixes and improvements
+
+Version 0.2.9
+- ~~Redesigning in three layers~~
+- Redesigned the core layer to allows the developer to write logic, rules, etc. for a single object. e.g. a document or a database
+- Created a LoggerHelper class to make easier to control the `java.util.logging.Logger` objects
+- Optimized the IBM Notes wrapper library
+- Temporarily removed the support to Hazelcast wrapper library
+- Various fixes 
 
 Version 0.2.8
 - Fixes and improvements

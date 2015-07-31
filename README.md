@@ -84,7 +84,7 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
 
 ### About the wrapper for IBM Notes:
 
-- So far, supports only five basic elements to work with a Notes database (session, database, document, view, iterator)
+- Supports only five basic elements to work with a Notes database (session, database, document, view, iterator)
 - Anyway, you can still use the native Java library to do things like modify the ACL or work with RichText items.
 - Supports local and remote sessions (DIIOP) 
 - Auto recycling the Notes objects
@@ -107,7 +107,7 @@ The current version (0.2.10) is very stable, so I am working as a freelancer aga
   
 ## What is in the ToDo list?
 
-There are a lot of features that I will add to this framework:
+There are many features that I will add to this framework:
 
 - Support a query language (SQL++?)
 - Support relations between documents using graphs, 1..\* or \*..\*
@@ -119,7 +119,7 @@ There are a lot of features that I will add to this framework:
 
 Over the last decade, I have been working as an IBM Notes workflow application Developer. But after developing similar applications over and over, I felt ready for a change and this is how I took the initiative to develop a Workflow Framework in LotusScript, the native IBM Notes programming language. The goal of the framework was to simplify the development, grouping the similar tasks together, and letting me focus on the differences between applications. It was really useful and fun to work on!
 
-One year ago, considering that the LotusScript framework was fully designed by me, I got the idea to publish this work as an open source project to share it with other IBM Notes Developers that would find it useful too. In that purpose, and because I was not authorized to use the work I had done at my current job, I started to design and write a new one in Java in my spare time, at home. The design is new and will incorporate all the features that I would like to have. And given that this framework will be an improved version of the current one in LotusScript, this is for the best!
+One year ago, considering that the LotusScript framework was fully designed by me, I got the idea to publish this work as an open source project to share it with other IBM Notes Developers that would find it useful too. In that purpose, and because I was not authorized to use the work I had done at my current job, I started to design and write a new one in Java in my spare time, at home. The design is new and I am incorporating all the features that I would like to have. And given that this framework will be an improved version of the previous one in LotusScript, this is for the best!
 
 I expected that this work be useful for you. I'll be looking forward for your ideas, comments or questions at mario.sotil@gmail.com
 

@@ -36,7 +36,7 @@ A full demo as an Eclipse project of a stand-alone Java program is [here](https:
 
 ## Download
 
-You can download the binaries as Jar libraries from the [OpenNTF website](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/5220A627A496850386257E660028C7AF).
+You can download the binaries as Jar libraries from the [OpenNTF website](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/40C66B6EFD42A22A86257E93001D0990).
 
 
 ## Maven

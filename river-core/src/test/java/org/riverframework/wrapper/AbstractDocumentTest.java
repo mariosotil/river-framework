@@ -60,23 +60,23 @@ public abstract class AbstractDocumentTest {
 
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument();
+		Document<?> _doc = database.createDocument();
 
-		assertTrue("The document could not be created", doc.isOpen());
+		assertTrue("The document could not be created", _doc.isOpen());
 
-		doc.setField("Form", TEST_FORM);
+		_doc.setField("Form", TEST_FORM);
 
 		String testField = "TestSetField";
 		String testValue = rs.nextString();
-		doc.setField(testField, testValue);
-		String newValue = doc.getFieldAsString(testField);
+		_doc.setField(testField, testValue);
+		String newValue = _doc.getFieldAsString(testField);
 
 		assertTrue("The value retrieved was different to the saved",
 				newValue.equals(testValue));
 
-		doc.setField(testField, 20);
-		String strValue = doc.getFieldAsString(testField);
-		int intValue = doc.getFieldAsInteger(testField);
+		_doc.setField(testField, 20);
+		String strValue = _doc.getFieldAsString(testField);
+		int intValue = _doc.getFieldAsInteger(testField);
 
 		assertTrue("The integer value can not be retrieved as string. ",
 				"20".equals(strValue) || "20.0".equals(strValue));
@@ -112,11 +112,11 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsBigString() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument();
+		Document<?> _doc = database.createDocument();
 
-		assertTrue("The document could not be created", doc.isOpen());
+		assertTrue("The document could not be created", _doc.isOpen());
 
-		doc.setField("Form", TEST_FORM);
+		_doc.setField("Form", TEST_FORM);
 
 		String testField = "TestBigField";
 
@@ -130,10 +130,10 @@ public abstract class AbstractDocumentTest {
 				"It could not be possible to get the hash from the test text.",
 				hash1.equals(""));
 
-		doc.setField(testField, testValue);
-		doc.save();
+		_doc.setField(testField, testValue);
+		_doc.save();
 
-		String savedValue = doc.getFieldAsString(testField);
+		String savedValue = _doc.getFieldAsString(testField);
 		String hash2 = getHash(savedValue);
 		assertFalse(
 				"It could not be possible to get the hash from the saved text.",
@@ -147,16 +147,16 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsInteger() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument();
+		Document<?> _doc = database.createDocument();
 
-		assertTrue("The document could not be created", doc.isOpen());
+		assertTrue("The document could not be created", _doc.isOpen());
 
-		doc.setField("Form", TEST_FORM);
+		_doc.setField("Form", TEST_FORM);
 
 		String testField = "TestSetField";
 		int testValue = 1000;
-		doc.setField(testField, testValue);
-		int newValue = doc.getFieldAsInteger(testField);
+		_doc.setField(testField, testValue);
+		int newValue = _doc.getFieldAsInteger(testField);
 
 		assertTrue("The value retrieved was different to the saved",
 				newValue == testValue);
@@ -166,16 +166,16 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsLong() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument();
+		Document<?> _doc = database.createDocument();
 
-		assertTrue("The document could not be created", doc.isOpen());
+		assertTrue("The document could not be created", _doc.isOpen());
 
-		doc.setField("Form", TEST_FORM);
+		_doc.setField("Form", TEST_FORM);
 
 		String testField = "TestSetField";
 		long testValue = 1000100010L;
-		doc.setField(testField, testValue);
-		long newValue = doc.getFieldAsLong(testField);
+		_doc.setField(testField, testValue);
+		long newValue = _doc.getFieldAsLong(testField);
 
 		assertTrue("The value retrieved was different to the saved",
 				newValue == testValue);
@@ -185,16 +185,16 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsDouble() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument();
+		Document<?> _doc = database.createDocument();
 
-		assertTrue("The document could not be created", doc.isOpen());
+		assertTrue("The document could not be created", _doc.isOpen());
 
-		doc.setField("Form", TEST_FORM);
+		_doc.setField("Form", TEST_FORM);
 
 		String testField = "TestSetField";
 		Double testValue = 100.45;
-		doc.setField(testField, testValue);
-		Double newValue = doc.getFieldAsDouble(testField);
+		_doc.setField(testField, testValue);
+		Double newValue = _doc.getFieldAsDouble(testField);
 
 		assertTrue("The value retrieved was different to the saved",
 				Double.compare(newValue, testValue) == 0);
@@ -204,11 +204,11 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsDate() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument();
+		Document<?> _doc = database.createDocument();
 
-		assertTrue("The document could not be created", doc.isOpen());
+		assertTrue("The document could not be created", _doc.isOpen());
 
-		doc.setField("Form", TEST_FORM);
+		_doc.setField("Form", TEST_FORM);
 
 		Calendar calendar = Calendar.getInstance();
 
@@ -218,8 +218,8 @@ public abstract class AbstractDocumentTest {
 												// not support the milliseconds
 		Date testValue = calendar.getTime();
 
-		doc.setField(testField, testValue);
-		Date newValue = doc.getFieldAsDate(testField);
+		_doc.setField(testField, testValue);
+		Date newValue = _doc.getFieldAsDate(testField);
 
 		calendar.setTime(testValue);
 		testValue = calendar.getTime();
@@ -232,15 +232,15 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsArrayString() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument();
+		Document<?> _doc = database.createDocument();
 
-		assertTrue("The document could not be created", doc.isOpen());
+		assertTrue("The document could not be created", _doc.isOpen());
 
-		doc.setField("Form", TEST_FORM);
+		_doc.setField("Form", TEST_FORM);
 
 		String testField = "TestSetField";
-		doc.setField(testField, new String[] { "VAL1", "VAL2" });
-		Field newValue = doc.getField(testField);
+		_doc.setField(testField, new String[] { "VAL1", "VAL2" });
+		Field newValue = _doc.getField(testField);
 
 		assertTrue("The Array saved is different to the Array retrieved",
 				newValue.size() == 2 && newValue.get(0).equals("VAL1")
@@ -251,15 +251,15 @@ public abstract class AbstractDocumentTest {
 	public void testSetAndGetFieldAsVector() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument();
+		Document<?> _doc = database.createDocument();
 
-		assertTrue("The document could not be created", doc.isOpen());
+		assertTrue("The document could not be created", _doc.isOpen());
 
-		doc.setField("Form", TEST_FORM);
+		_doc.setField("Form", TEST_FORM);
 
 		String testField = "TestSetField";
-		doc.setField(testField, new String[] { "VAL1", "VAL2" });
-		Field newValue = doc.getField(testField);
+		_doc.setField(testField, new String[] { "VAL1", "VAL2" });
+		Field newValue = _doc.getField(testField);
 
 		assertTrue("The Vector saved is different to the Vector retrieved",
 				newValue.size() == 2 && newValue.get(0).equals("VAL1")
@@ -270,50 +270,50 @@ public abstract class AbstractDocumentTest {
 	public void testGetIsFieldEmpty() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument();
+		Document<?> _doc = database.createDocument();
 
-		assertTrue("The document could not be created", doc.isOpen());
+		assertTrue("The document could not be created", _doc.isOpen());
 
-		doc.setField("Form", TEST_FORM);
-		doc.setField("THIS_FIELD_EXISTS", "SOME_VALUE");
+		_doc.setField("Form", TEST_FORM);
+		_doc.setField("THIS_FIELD_EXISTS", "SOME_VALUE");
 
 		assertTrue("An inexistent field was not detected.",
-				doc.isFieldEmpty("THIS_FIELD_DOES_NOT_EXIST"));
+				_doc.isFieldEmpty("THIS_FIELD_DOES_NOT_EXIST"));
 		assertFalse("An existent field was not detected.",
-				doc.isFieldEmpty("THIS_FIELD_EXISTS"));
+				_doc.isFieldEmpty("THIS_FIELD_EXISTS"));
 	}
 
 	@Test
 	public void testIsOpen() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.getDocument();
+		Document<?> _doc = database.getDocument();
 
 		assertFalse("The document is not being detected as NOT open.",
-				doc.isOpen());
+				_doc.isOpen());
 
-		doc = null;
-		doc = database.createDocument();
+		_doc = null;
+		_doc = database.createDocument();
 
-		assertTrue("The document could not be created", doc.isOpen());
+		assertTrue("The document could not be created", _doc.isOpen());
 	}
 
 	@Test
 	public void testIsNew() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument();
+		Document<?> _doc = database.createDocument();
 
 		assertTrue("The document is new and is not detected like that.",
-				doc.isNew());
+				_doc.isNew());
 	}
 
 	@Test
 	public void testGetUniversalId() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument();
-		String uniqueId = doc.getObjectId();
+		Document<?> _doc = database.createDocument();
+		String uniqueId = _doc.getObjectId();
 
 		assertFalse("It could not be retrieved de document's unique id.",
 				uniqueId.equals(""));
@@ -324,59 +324,59 @@ public abstract class AbstractDocumentTest {
 
 		RandomString rs = new RandomString(10);
 		String uniqueId = "";
-		Document<?> doc = database.createDocument();
+		Document<?> _doc = database.createDocument();
 
-		doc.setField("Form", TEST_FORM);
-		uniqueId = doc.getObjectId();
+		_doc.setField("Form", TEST_FORM);
+		uniqueId = _doc.getObjectId();
 
-		doc = null;
-		doc = database.getDocument(uniqueId);
+		_doc = null;
+		_doc = database.getDocument(uniqueId);
 
 		assertFalse("A document that was not saved was found in the database.",
-				doc.isOpen());
+				_doc.isOpen());
 
-		doc = null;
-		doc = database.createDocument();
-		uniqueId = doc.getObjectId();
-		doc.save();
-		doc = null;
-		doc = database.getDocument(uniqueId);
+		_doc = null;
+		_doc = database.createDocument();
+		uniqueId = _doc.getObjectId();
+		_doc.save();
+		_doc = null;
+		_doc = database.getDocument(uniqueId);
 
 		assertTrue(
 				"A document was created, NOT MODIFIED and saved was not found in the database.",
-				doc.isOpen());
+				_doc.isOpen());
 
-		doc = null;
-		doc = database.createDocument();
-		uniqueId = doc.getObjectId();
-		doc.setField("SOME_TEST_FIELD", rs.nextString());
-		doc.save();
-		doc = null;
-		doc = database.getDocument(uniqueId);
+		_doc = null;
+		_doc = database.createDocument();
+		uniqueId = _doc.getObjectId();
+		_doc.setField("SOME_TEST_FIELD", rs.nextString());
+		_doc.save();
+		_doc = null;
+		_doc = database.getDocument(uniqueId);
 
 		assertTrue(
 				"A document was created, MODIFIED and saved was not found in the database.",
-				doc.isOpen());
+				_doc.isOpen());
 	}
 
 	@Test
 	public void testRecalc() {
 		assertTrue("The test database could not be opened.", database.isOpen());
 
-		Document<?> doc = database.createDocument().setField("Form", TEST_FORM);
-		doc.setField("CALCULATED_FROM_FORM", "TEMPORAL_DATA");
+		Document<?> _doc = database.createDocument().setField("Form", TEST_FORM);
+		_doc.setField("CALCULATED_FROM_FORM", "TEMPORAL_DATA");
 
-		String calculated = doc.getFieldAsString("CALCULATED_FROM_FORM");
+		String calculated = _doc.getFieldAsString("CALCULATED_FROM_FORM");
 		assertTrue(
 				"There is a problem setting the value for the field CALCULATED_FROM_FORM.",
 				calculated.equals("TEMPORAL_DATA"));
 
-		doc.recalc();
-		calculated = doc.getFieldAsString("CALCULATED_FROM_FORM");
+		_doc.recalc();
+		calculated = _doc.getFieldAsString("CALCULATED_FROM_FORM");
 		assertTrue("There is a problem with the recalc() method.",
 				calculated.equals("ROGER"));
 
-		String non_existent = doc.getFieldAsString("NON_EXISTENT");
+		String non_existent = _doc.getFieldAsString("NON_EXISTENT");
 		assertTrue("A non-existent field returned the value '" + non_existent
 				+ "'.", non_existent.equals(""));
 	}
@@ -390,13 +390,13 @@ public abstract class AbstractDocumentTest {
 
 		Date date1 = cal1.getTime();
 
-		Document<?> doc = database.createDocument().setField("Form", TEST_FORM)
+		Document<?> _doc = database.createDocument().setField("Form", TEST_FORM)
 				.setField("String", "HI!").setField("Date", date1)
 				.setField("Number", 75.3)
 				.setField("StringArray", new String[] { "A", "B", "C" })
 				.setField("Empty", "").save();
 
-		Map<String, Field> fields = doc.getFields();
+		Map<String, Field> fields = _doc.getFields();
 
 		assertTrue("The String value retrieved was different to the saved",
 				fields.get("String").get(0).equals("HI!"));
@@ -438,7 +438,7 @@ public abstract class AbstractDocumentTest {
 
 			Date date2 = cal1.getTime();
 
-			Document<?> doc = database.createDocument()
+			Document<?> _doc = database.createDocument()
 					.setField("Form", TEST_FORM).setField("Date1", date1)
 					.setField("Number1", 30).setField("Text1", "hey!");
 
@@ -448,26 +448,26 @@ public abstract class AbstractDocumentTest {
 				// Do nothing
 			}
 
-			doc.setField("Date2", date2).setField("Number2", 30)
+			_doc.setField("Date2", date2).setField("Number2", 30)
 					.setField("Text2", "hey!").save();
 
-			Date date10 = doc.getFieldAsDate("Date1");
-			Date date20 = doc.getFieldAsDate("Date2");
+			Date date10 = _doc.getFieldAsDate("Date1");
+			Date date20 = _doc.getFieldAsDate("Date2");
 
 			assertTrue("The dates saved are not equal", date10.equals(date20));
 
-			int number10 = doc.getFieldAsInteger("Number1");
-			int number20 = doc.getFieldAsInteger("Number2");
+			int number10 = _doc.getFieldAsInteger("Number1");
+			int number20 = _doc.getFieldAsInteger("Number2");
 
 			assertTrue("The numbers saved are not equal", number10 == number20);
 
-			String text10 = doc.getFieldAsString("Text1");
-			String text20 = doc.getFieldAsString("Text2");
+			String text10 = _doc.getFieldAsString("Text1");
+			String text20 = _doc.getFieldAsString("Text2");
 
 			assertTrue("The text saved are not equal", text10.equals(text20));
 
-			Field field10 = doc.getField("Date1");
-			Field field20 = doc.getField("Date2");
+			Field field10 = _doc.getField("Date1");
+			Field field20 = _doc.getField("Date2");
 
 			assertTrue("The date as fields objects are not equal",
 					field10.equals(field20));

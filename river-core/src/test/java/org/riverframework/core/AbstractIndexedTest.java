@@ -22,8 +22,9 @@ public abstract class AbstractIndexedTest {
 		// Opening the test context in the current package
 		try {
 			if (context == null) {
-				String className = this.getClass().getPackage().getName()
-						+ ".Context";
+				String className = this.getClass()
+										.getPackage()
+										.getName() + ".Context";
 				Class<?> clazz = Class.forName(className);
 				if (org.riverframework.Context.class.isAssignableFrom(clazz)) {
 					Constructor<?> constructor = clazz.getDeclaredConstructor();
@@ -32,10 +33,10 @@ public abstract class AbstractIndexedTest {
 				}
 
 				session = context.getSession();
-				database = session.getDatabase(SomeDatabase.class,
-						context.getTestDatabaseServer(),
-						context.getTestDatabasePath());
-				database.getAllDocuments().deleteAll();
+				database =
+						session.getDatabase(SomeDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
+				database.getAllDocuments()
+						.deleteAll();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -49,8 +50,7 @@ public abstract class AbstractIndexedTest {
 
 	static class SomeDatabase extends AbstractIndexedDatabase<SomeDatabase> {
 
-		protected SomeDatabase(Session session,
-				org.riverframework.wrapper.Database<?> _database) {
+		protected SomeDatabase(Session session, org.riverframework.wrapper.Database<?> _database) {
 			super(session, _database);
 
 			registerDocumentClass(UniqueDocument.class);
@@ -102,8 +102,7 @@ public abstract class AbstractIndexedTest {
 		@Override
 		protected String[] getParametersToCreateIndex() {
 			// TODO: this works only for IBM Notes. FIX IT!
-			return new String[] { getIndexName(),
-					"Form=\"" + getTableName() + "\"" };
+			return new String[] { getIndexName(), "Form=\"" + getTableName() + "\"" };
 		}
 
 		@Override
@@ -141,38 +140,30 @@ public abstract class AbstractIndexedTest {
 		RandomString rs = new RandomString(10);
 
 		String key = rs.nextString();
-		unique.setId(key).save();
+		unique.setId(key)
+				.save();
 
 		String oldKey = unique.getId();
-		assertTrue("The Id retrieved is different to the saved.",
-				key.equals(oldKey));
+		assertTrue("The Id retrieved is different to the saved.", key.equals(oldKey));
 
-		database.getIndex(UniqueDocument.class).refresh();
+		database.getIndex(UniqueDocument.class);
 
 		unique = null;
 		unique = database.getDocument(UniqueDocument.class, key);
-		assertTrue(
-				"A document that was created, could not be opened with the key '"
-						+ key + "'.", unique.isOpen());
+		assertTrue("A document that was created, could not be opened with the key '" + key + "'.", unique.isOpen());
 
 		unique = null;
-		unique = database.getDocument(UniqueDocument.class,
-				"%%%THIS DOCUMENT DOES NOT EXIST%%%");
-		assertFalse("A document that should not be found, is opened.",
-				unique.isOpen());
+		unique = database.getDocument(UniqueDocument.class, "%%%THIS DOCUMENT DOES NOT EXIST%%%");
+		assertFalse("A document that should not be found, is opened.", unique.isOpen());
 
 		unique = null;
-		unique = database.getDocument(UniqueDocument.class, true, "NEW_KEY_"
-				+ key);
-		assertTrue("A document that should be created, is not opened.",
-				unique.isOpen());
+		unique = database.getDocument(UniqueDocument.class, true, "NEW_KEY_" + key);
+		assertTrue("A document that should be created, is not opened.", unique.isOpen());
 
 		unique.save(true);
 
 		oldKey = unique.getId();
-		assertTrue(
-				"A document created by 'createIfDoesNotExist', has a wrong Id.",
-				oldKey.equals("NEW_KEY_" + key));
+		assertTrue("A document created by 'createIfDoesNotExist', has a wrong Id.", oldKey.equals("NEW_KEY_" + key));
 
 	}
 }

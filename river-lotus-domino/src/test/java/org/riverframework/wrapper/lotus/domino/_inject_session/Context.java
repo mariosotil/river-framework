@@ -16,15 +16,15 @@ public final class Context extends org.riverframework.core.AbstractContext {
 
 	@Override
 	public Session getSession() {
-		lotus.domino.Session _session = null;
+		lotus.domino.Session __session = null;
 
 		try {
-			_session = NotesFactory.createSession((String) null, (String) null, Credentials.getPassword());
+			__session = NotesFactory.createSession((String) null, (String) null, Credentials.getPassword());
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
 
-		Session session = River.getSession(River.LOTUS_DOMINO, _session);
+		Session session = River.getSession(River.LOTUS_DOMINO, __session);
 		return session;
 	}
 

@@ -37,7 +37,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 
 	private final String FRAGMENTED_FIELD_ID = "{{RIVER_FRAGMENTED_FIELD}}";
 	private final String FRAGMENT_FIELD_NAME_SEPARATOR = "$";
-	private final int MAX_FIELD_SIZE = 32 * 1024;
+	private final int MAX_FIELD_SIZE = 32 * 1024 - 1;
 	
 	@SuppressWarnings("unchecked")
 	protected DefaultDocument(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.Document __d) {
@@ -123,10 +123,17 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 				boolean finished = false;
 				int size = str.length();
 				int block = 0;
+				boolean remote = _factory.getIsRemoteSession();
 				
 				while (!finished) {
-					int start = block * (MAX_FIELD_SIZE - 1);
-					int end = start + (MAX_FIELD_SIZE - 1);
+					int start = block * (MAX_FIELD_SIZE);
+					
+					// For some reason, the replaceItemValue lost two bytes  
+					// when it is a remote session
+					if (remote && start > 0)  
+						start -= block* 2;
+					
+					int end = start + (MAX_FIELD_SIZE);
 					if (end > size) { 
 						end = size;
 						finished = true;
@@ -137,15 +144,14 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 					try {
 						String fieldName = field + FRAGMENT_FIELD_NAME_SEPARATOR + block;
 						Item __item = __doc.replaceItemValue(fieldName, substr);
-						// __item.setValueString(substr);
 						__item.setSummary(false);
-						__item.recycle();
+						if(!_factory.getIsRemoteSession())  __item.recycle(); 
 					} catch (NotesException e) {
 						throw new RiverException(e);
 					}
 				}				
 				
-				// Saving the size in blocks 
+				// Saving the size as number of blocks 
 				str = FRAGMENTED_FIELD_ID + "|" + block;		
 			}
 			

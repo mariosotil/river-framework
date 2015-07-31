@@ -4,7 +4,7 @@
 
 This is an Application Framework for NoSQL databases in **development stage**. To date (July 31, 2015) the Framework is capable to access IBM Notes databases using the native Java libraries (`lotus.domino`) or the OpenNTF libraries (`org.openntf.domino`).
 
-The next steps are create graph relations, implement a query language, develop workflow supporting and wrappers for other NoSQL databases like MongoDB. 
+The next steps are create graph relations, implement a query language (maybe SQL++), develop workflow supporting and wrappers for other NoSQL databases like MongoDB. 
 
 Until the current version, 0.2.10, the code written with this framework looks like this:
 
@@ -36,7 +36,7 @@ A full demo as an Eclipse project of a stand-alone Java program is [here](https:
 
 ## Download
 
-You can download the binaries as Jar libraries from the [OpenNTF website](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/40C66B6EFD42A22A86257E93001D0990).
+You can download the binaries as Jar libraries from the [OpenNTF website](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/).
 
 
 ## Maven
@@ -84,6 +84,7 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
   - The wrapper layer, that connects directly to the database using its native classes. 
   - The core layer, that connects to the objects from the wrapper layer and provides a unique interface for be able to use any wrapper library written for this framework 
 - Has implemented method chaining
+- To reduce impact on replication, if you set a field with a new value, it checks if it is different before do it.
 - Supports indexes and unique id for documents
 
 
@@ -95,7 +96,6 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
 - Auto recycling the Notes objects
 - Has an object cache
 - Supports field size > 32K
-- To reduce impact on replication, if you set a field with a new value, it checks if it is different before do it.
 - Good to develop standalone Java programs, Servlets or XPages programs 
 
 
@@ -103,11 +103,13 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
 
 - Takes advantage of this great library developed by [OpenNTF](http://www.openntf.org/main.nsf/project.xsp?r=project/OpenNTF%20Domino%20API)
 - The auto recycling is managed by OpenNTF Domino
+- Supports field size > 32K
+- Good to develop standalone Java programs, Servlets or XPages programs 
 
   
 ## What I am working on now?
 
-The current version (0.2.10) is very stable, so I am working as a freelancer again :-)  I am going to continue on this project in one month (September, 2015).
+The current version (0.2.10) is very stable, so I am working as a [freelancer](https://www.upwork.com/users/~01775e7dda9bcc845d) again :-)  I am going to continue on this project in one month (September, 2015).
 
   
 ## What is in the ToDo list?
@@ -145,7 +147,6 @@ Next versions
 - Logging of changes in the fields of a document
 - Control of the data change propagation between related documents (1..\*, \*..\*)
 - Administration tools (ie. change the state of a document)
-- Connections to other NoSQL servers like CouchDB, Hazelcast, etc.
 - Thread support
 - The support of workflow development with the features that are needed for the task:
   - Control of the states of the document
@@ -162,8 +163,8 @@ Next versions
 ## Version change log
 
 Version 0.2.10
-- Improving the design to work with document indexes
-- Supporting fields > 32K (IBM Notes wrapper)
+- Improved the design to work with document indexes
+- Supported fields > 32K (IBM Notes and OpenNTF Domino API wrappers)
 - Updating the documentation 
 - Various fixes and improvements
 

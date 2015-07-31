@@ -34,6 +34,11 @@ session.close();
 
 A full demo as an Eclipse project of a stand-alone Java program is [here](https://github.com/mariosotil/river-framework-demo).
 
+## Download
+
+You can download the binaries as Jar libraries from the [OpenNTF website](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/5220A627A496850386257E660028C7AF).
+
+
 ## Maven
 
 To load the artifacts from Maven, you can add one of these dependencies to your pom.xml file:
@@ -209,7 +214,4 @@ Version 0.1
 ### Tags
 
 Java, Server-side JavaScript, IBM Notes, Lotus Notes, XPages, LotusScript, Workflow
-
-
-
 

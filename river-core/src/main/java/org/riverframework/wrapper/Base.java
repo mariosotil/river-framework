@@ -30,12 +30,12 @@ public interface Base<N> {
 	 * Returns true if the native object associated to this wrapper is not equal
 	 * to null
 	 * 
-	 * @return
+	 * @return true if the document is opened
 	 */
 	public boolean isOpen();
 
 	/**
 	 * Closes the resources, handles, etc.&nbsp;opened by this object.
 	 */
-	public void close();	
+	public void close();
 }

@@ -9,17 +9,20 @@ import org.riverframework.ClosedObjectException;
 import org.riverframework.RiverException;
 
 /**
- * It is used to manage Documents. It is used if we don't need to create specific classes for each document type.
+ * It is used to manage Documents. It is used if we don't need to create
+ * specific classes for each document type.
  * 
  * @author mario.sotil@gmail.com
  *
  */
-public abstract class AbstractDocument<T extends AbstractDocument<T>> implements Document {
+public abstract class AbstractDocument<T extends AbstractDocument<T>>
+		implements Document {
 	private Database database = null;
 	protected org.riverframework.wrapper.Document<?> _doc = null;
 	boolean isModified = false;
 
-	protected AbstractDocument(Database database, org.riverframework.wrapper.Document<?> _doc) {
+	protected AbstractDocument(Database database,
+			org.riverframework.wrapper.Document<?> _doc) {
 		this.database = database;
 		this._doc = _doc;
 
@@ -32,14 +35,18 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 
 	protected abstract T getThis();
 
+	/**
+	 * @return the table where the document belongs. If this method is not
+	 *         overrided, it will returns the simple name of the current class.
+	 */
 	@Override
 	public String getTableName() {
-		return "{" + this.getClass()
-							.getSimpleName() + "}";
+		return "{" + this.getClass().getSimpleName() + "}";
 	}
 
 	/**
-	 * Changes the "modified" flag. This method has to be used only if necessary.
+	 * Changes the "modified" flag. This method has to be used only if
+	 * necessary.
 	 * 
 	 * @param m
 	 *            the new state
@@ -88,7 +95,8 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 	}
 
 	/**
-	 * Compares two vectors and determines if they are numeric equals, independent of its type.
+	 * Compares two vectors and determines if they are numeric equals,
+	 * independent of its type.
 	 * 
 	 * @param vector1
 	 *            the first vector
@@ -120,15 +128,17 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 	}
 
 	/**
-	 * Verifies if the new value is different from the field's old value. It's useful, for example, in NoSQL databases
-	 * that replicates data between servers. This verification prevents to mark a field as modified and to be replicated
-	 * needlessly.
+	 * Verifies if the new value is different from the field's old value. It's
+	 * useful, for example, in NoSQL databases that replicates data between
+	 * servers. This verification prevents to mark a field as modified and to be
+	 * replicated needlessly.
 	 * 
 	 * @param field
 	 *            the field that we are checking before to be modified
 	 * @param value
 	 *            the new value
-	 * @return true if the new and the old values are different and the value was changed.
+	 * @return true if the new and the old values are different and the value
+	 *         was changed.
 	 */
 	protected boolean setFieldIfNecessary(String field, Object value) {
 		if (!isOpen())
@@ -254,8 +264,8 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>> implements
 		U doc = null;
 
 		try {
-			Constructor<?> constructor =
-					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
+			Constructor<?> constructor = clazz.getDeclaredConstructor(
+					Database.class, org.riverframework.wrapper.Document.class);
 			constructor.setAccessible(true);
 			doc = clazz.cast(constructor.newInstance(database, _doc));
 		} catch (Exception e) {

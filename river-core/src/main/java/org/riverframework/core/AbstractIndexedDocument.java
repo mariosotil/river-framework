@@ -2,8 +2,8 @@ package org.riverframework.core;
 
 import org.riverframework.wrapper.Document;
 
-public abstract class AbstractIndexedDocument<T extends AbstractIndexedDocument<T>> extends AbstractDocument<T>
-		implements IndexedDocument<T> {
+public abstract class AbstractIndexedDocument<T extends AbstractIndexedDocument<T>>
+		extends AbstractDocument<T> implements IndexedDocument<T> {
 
 	protected AbstractIndexedDocument(Database database, Document<?> _doc) {
 		super(database, _doc);
@@ -23,25 +23,26 @@ public abstract class AbstractIndexedDocument<T extends AbstractIndexedDocument<
 	}
 
 	@Override
-	public View createIndex() {
+	public final View createIndex() {
 		return getDatabase().createView(getParametersToCreateIndex())
-							.addColumn("Id", getIdField(), true);
+				.addColumn("Id", getIdField(), true);
 	}
 
 	@Override
 	public final View getIndex() {
 		View index = getDatabase().getView(getIndexName());
 
-		return (index != null && index.isOpen()) ? index : getDatabase().getClosedView();
+		return (index != null && index.isOpen()) ? index : getDatabase()
+				.getClosedView();
 	}
+
+	@Override
+	public abstract T generateId();
 
 	@Override
 	public final String getId() {
 		return _doc.getFieldAsString(getIdField());
 	}
-
-	@Override
-	public abstract T generateId();
 
 	@Override
 	public final T setId(String arg0) {

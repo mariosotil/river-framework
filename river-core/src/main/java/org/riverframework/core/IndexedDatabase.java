@@ -7,8 +7,6 @@ package org.riverframework.core;
  *
  */
 public interface IndexedDatabase extends Database {
-	// public <U extends AbstractDocument<?>> View createIndex(Class<U> clazz);
-
 	public <U extends AbstractDocument<?>> View getIndex(Class<U> clazz);
 
 	public DefaultCounter getCounter(String key);
@@ -16,6 +14,4 @@ public interface IndexedDatabase extends Database {
 	public <U extends AbstractDocument<?>> IndexedDatabase registerDocumentClass(
 			Class<U> clazz);
 
-	// public Class<? extends AbstractDocument<?>> getClassFromDocument(
-	// org.riverframework.wrapper.Document<?> _doc);
 }

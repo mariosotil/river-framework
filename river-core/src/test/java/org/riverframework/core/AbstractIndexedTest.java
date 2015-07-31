@@ -32,7 +32,7 @@ public abstract class AbstractIndexedTest {
 				}
 
 				session = context.getSession();
-				database = session.getDatabase(UniqueDatabase.class,
+				database = session.getDatabase(SomeDatabase.class,
 						context.getTestDatabaseServer(),
 						context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
@@ -47,19 +47,18 @@ public abstract class AbstractIndexedTest {
 		context.closeSession();
 	}
 
-	static class UniqueDatabase extends AbstractIndexedDatabase<UniqueDatabase> {
+	static class SomeDatabase extends AbstractIndexedDatabase<SomeDatabase> {
 
-		protected UniqueDatabase(Session session,
+		protected SomeDatabase(Session session,
 				org.riverframework.wrapper.Database<?> _database) {
 			super(session, _database);
 
 			registerDocumentClass(UniqueDocument.class);
-			registerDocumentClass(NoUniqueDocument.class); // It should be
-															// ignored
+			registerDocumentClass(NoUniqueDocument.class);
 		}
 
 		@Override
-		protected UniqueDatabase getThis() {
+		protected SomeDatabase getThis() {
 			return this;
 		}
 	}
@@ -70,9 +69,8 @@ public abstract class AbstractIndexedTest {
 			super(database, _doc);
 		}
 
-		protected final static String FORM_NAME = Session.ELEMENT_PREFIX
-				+ "NoUnique";
-		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
+		protected final static String FORM_NAME = Session.PREFIX + "NoUnique";
+		protected final static String FIELD_ID = Session.PREFIX + "id";
 
 		@Override
 		public NoUniqueDocument afterCreate() {
@@ -87,9 +85,8 @@ public abstract class AbstractIndexedTest {
 	}
 
 	static class UniqueDocument extends AbstractIndexedDocument<UniqueDocument> {
-		protected final static String FORM_NAME = Session.ELEMENT_PREFIX
-				+ "Unique";
-		protected final static String FIELD_ID = Session.FIELD_PREFIX + "id";
+		protected final static String FORM_NAME = Session.PREFIX + "Unique";
+		protected final static String FIELD_ID = Session.PREFIX + "id";
 
 		protected static View index = null;
 
@@ -116,7 +113,7 @@ public abstract class AbstractIndexedTest {
 
 		@Override
 		public String getIndexName() {
-			return Session.ELEMENT_PREFIX + "Unique_Index";
+			return Session.PREFIX + "Unique_Index";
 		}
 
 		@Override
@@ -132,7 +129,7 @@ public abstract class AbstractIndexedTest {
 
 	}
 
-	UniqueDatabase indexedDatabase = null;
+	SomeDatabase indexedDatabase = null;
 
 	@Test
 	public void testId() {

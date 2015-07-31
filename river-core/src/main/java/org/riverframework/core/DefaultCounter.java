@@ -12,7 +12,7 @@ import org.riverframework.RiverException;
 public final class DefaultCounter extends
 		AbstractIndexedDocument<DefaultCounter> {
 
-	protected final static String FIELD_COUNT = Session.FIELD_PREFIX + "count";
+	protected final static String FIELD_COUNT = Session.PREFIX + "count";
 
 	protected DefaultCounter(Database database,
 			org.riverframework.wrapper.Document<?> _doc) {
@@ -21,17 +21,17 @@ public final class DefaultCounter extends
 
 	@Override
 	public String getIdField() {
-		return Session.FIELD_PREFIX + "id";
+		return Session.PREFIX + "id";
 	}
 
 	@Override
 	public String getIndexName() {
-		return Session.ELEMENT_PREFIX + "counter";
+		return Session.PREFIX + "counter";
 	}
 
 	@Override
 	public String getTableName() {
-		return Session.ELEMENT_PREFIX + "counter";
+		return Session.PREFIX + "counter";
 	}
 
 	@Override

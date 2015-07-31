@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
+import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -29,15 +30,18 @@ public abstract class AbstractDocumentTest {
 		// Opening the test context in the current package
 		try {
 			if (context == null) {
-				Class<?> clazz = Class.forName(this.getClass().getPackage().getName() + ".Context");
+				Class<?> clazz = Class.forName(this.getClass().getPackage()
+						.getName()
+						+ ".Context");
 				if (Context.class.isAssignableFrom(clazz)) {
 					Constructor<?> constructor = clazz.getDeclaredConstructor();
 					constructor.setAccessible(true);
 					context = (Context) constructor.newInstance();
 				}
 
-				session = (Session<?>) context.getSession().getWrapperObject();
-				database = session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
+				session = context.getSession().getWrapperObject();
+				database = session.getDatabase(context.getTestDatabaseServer(),
+						context.getTestDatabasePath());
 				database.getAllDocuments().deleteAll();
 			}
 		} catch (Exception e) {
@@ -67,14 +71,76 @@ public abstract class AbstractDocumentTest {
 		doc.setField(testField, testValue);
 		String newValue = doc.getFieldAsString(testField);
 
-		assertTrue("The value retrieved was different to the saved", newValue.equals(testValue));
+		assertTrue("The value retrieved was different to the saved",
+				newValue.equals(testValue));
 
 		doc.setField(testField, 20);
 		String strValue = doc.getFieldAsString(testField);
 		int intValue = doc.getFieldAsInteger(testField);
 
-		assertTrue("The integer value can not be retrieved as string. ", "20".equals(strValue) || "20.0".equals(strValue));
-		assertTrue("The integer value can not be retrieved as integer. ", 20 == intValue);
+		assertTrue("The integer value can not be retrieved as string. ",
+				"20".equals(strValue) || "20.0".equals(strValue));
+		assertTrue("The integer value can not be retrieved as integer. ",
+				20 == intValue);
+	}
+
+	final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
+	private static String bytesToHex(byte[] bytes) {
+		char[] hexChars = new char[bytes.length * 2];
+		for (int j = 0; j < bytes.length; j++) {
+			int v = bytes[j] & 0xFF;
+			hexChars[j * 2] = hexArray[v >>> 4];
+			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+		}
+		return new String(hexChars);
+	}
+
+	private String getHash(String text) {
+		String hash = "";
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA");
+			digest.update(text.getBytes());
+			hash = bytesToHex(digest.digest());
+		} catch (Exception e) {
+			// Do nothing. Just return an empty string.
+		}
+		return hash;
+	}
+
+	@Test
+	public void testSetAndGetFieldAsBigString() {
+		assertTrue("The test database could not be opened.", database.isOpen());
+
+		Document<?> doc = database.createDocument();
+
+		assertTrue("The document could not be created", doc.isOpen());
+
+		doc.setField("Form", TEST_FORM);
+
+		String testField = "TestBigField";
+
+		StringBuilder sb = new StringBuilder(100 * 1024);
+		for (int i = 0; i < 10 * 1024; i++) {
+			sb.append("0123456789");
+		}
+		String testValue = sb.toString();
+		String hash1 = getHash(testValue);
+		assertFalse(
+				"It could not be possible to get the hash from the test text.",
+				hash1.equals(""));
+
+		doc.setField(testField, testValue);
+		doc.save();
+
+		String savedValue = doc.getFieldAsString(testField);
+		String hash2 = getHash(savedValue);
+		assertFalse(
+				"It could not be possible to get the hash from the saved text.",
+				hash2.equals(""));
+
+		assertTrue("The value retrieved was different to the saved",
+				hash1.equals(hash2));
 	}
 
 	@Test
@@ -92,7 +158,8 @@ public abstract class AbstractDocumentTest {
 		doc.setField(testField, testValue);
 		int newValue = doc.getFieldAsInteger(testField);
 
-		assertTrue("The value retrieved was different to the saved", newValue == testValue);
+		assertTrue("The value retrieved was different to the saved",
+				newValue == testValue);
 	}
 
 	@Test
@@ -110,7 +177,8 @@ public abstract class AbstractDocumentTest {
 		doc.setField(testField, testValue);
 		long newValue = doc.getFieldAsLong(testField);
 
-		assertTrue("The value retrieved was different to the saved", newValue == testValue);
+		assertTrue("The value retrieved was different to the saved",
+				newValue == testValue);
 	}
 
 	@Test
@@ -146,7 +214,8 @@ public abstract class AbstractDocumentTest {
 
 		String testField = "TestSetField";
 		calendar.setTime(new Date());
-		calendar.set(Calendar.MILLISECOND, 0); // Databases as Lotus Notes does not support the milliseconds
+		calendar.set(Calendar.MILLISECOND, 0); // Databases as Lotus Notes does
+												// not support the milliseconds
 		Date testValue = calendar.getTime();
 
 		doc.setField(testField, testValue);
@@ -155,7 +224,8 @@ public abstract class AbstractDocumentTest {
 		calendar.setTime(testValue);
 		testValue = calendar.getTime();
 
-		assertTrue("The value retrieved was different to the saved", newValue.compareTo(testValue) == 0);
+		assertTrue("The value retrieved was different to the saved",
+				newValue.compareTo(testValue) == 0);
 	}
 
 	@Test
@@ -172,8 +242,9 @@ public abstract class AbstractDocumentTest {
 		doc.setField(testField, new String[] { "VAL1", "VAL2" });
 		Field newValue = doc.getField(testField);
 
-		assertTrue("The Array saved is different to the Array retrieved", newValue.size() == 2
-				&& newValue.get(0).equals("VAL1") && newValue.get(1).equals("VAL2"));
+		assertTrue("The Array saved is different to the Array retrieved",
+				newValue.size() == 2 && newValue.get(0).equals("VAL1")
+						&& newValue.get(1).equals("VAL2"));
 	}
 
 	@Test
@@ -190,8 +261,9 @@ public abstract class AbstractDocumentTest {
 		doc.setField(testField, new String[] { "VAL1", "VAL2" });
 		Field newValue = doc.getField(testField);
 
-		assertTrue("The Vector saved is different to the Vector retrieved", newValue.size() == 2
-				&& newValue.get(0).equals("VAL1") && newValue.get(1).equals("VAL2"));
+		assertTrue("The Vector saved is different to the Vector retrieved",
+				newValue.size() == 2 && newValue.get(0).equals("VAL1")
+						&& newValue.get(1).equals("VAL2"));
 	}
 
 	@Test
@@ -207,7 +279,8 @@ public abstract class AbstractDocumentTest {
 
 		assertTrue("An inexistent field was not detected.",
 				doc.isFieldEmpty("THIS_FIELD_DOES_NOT_EXIST"));
-		assertFalse("An existent field was not detected.", doc.isFieldEmpty("THIS_FIELD_EXISTS"));
+		assertFalse("An existent field was not detected.",
+				doc.isFieldEmpty("THIS_FIELD_EXISTS"));
 	}
 
 	@Test
@@ -216,7 +289,8 @@ public abstract class AbstractDocumentTest {
 
 		Document<?> doc = database.getDocument();
 
-		assertFalse("The document is not being detected as NOT open.", doc.isOpen());
+		assertFalse("The document is not being detected as NOT open.",
+				doc.isOpen());
 
 		doc = null;
 		doc = database.createDocument();
@@ -230,7 +304,8 @@ public abstract class AbstractDocumentTest {
 
 		Document<?> doc = database.createDocument();
 
-		assertTrue("The document is new and is not detected like that.", doc.isNew());
+		assertTrue("The document is new and is not detected like that.",
+				doc.isNew());
 	}
 
 	@Test
@@ -240,7 +315,8 @@ public abstract class AbstractDocumentTest {
 		Document<?> doc = database.createDocument();
 		String uniqueId = doc.getObjectId();
 
-		assertFalse("It could not be retrieved de document's unique id.", uniqueId.equals(""));
+		assertFalse("It could not be retrieved de document's unique id.",
+				uniqueId.equals(""));
 	}
 
 	public void testSave() {
@@ -256,7 +332,8 @@ public abstract class AbstractDocumentTest {
 		doc = null;
 		doc = database.getDocument(uniqueId);
 
-		assertFalse("A document that was not saved was found in the database.", doc.isOpen());
+		assertFalse("A document that was not saved was found in the database.",
+				doc.isOpen());
 
 		doc = null;
 		doc = database.createDocument();
@@ -290,15 +367,18 @@ public abstract class AbstractDocumentTest {
 		doc.setField("CALCULATED_FROM_FORM", "TEMPORAL_DATA");
 
 		String calculated = doc.getFieldAsString("CALCULATED_FROM_FORM");
-		assertTrue("There is a problem setting the value for the field CALCULATED_FROM_FORM.", calculated.equals("TEMPORAL_DATA"));
+		assertTrue(
+				"There is a problem setting the value for the field CALCULATED_FROM_FORM.",
+				calculated.equals("TEMPORAL_DATA"));
 
 		doc.recalc();
 		calculated = doc.getFieldAsString("CALCULATED_FROM_FORM");
-		assertTrue("There is a problem with the recalc() method.", calculated.equals("ROGER"));
+		assertTrue("There is a problem with the recalc() method.",
+				calculated.equals("ROGER"));
 
 		String non_existent = doc.getFieldAsString("NON_EXISTENT");
-		assertTrue("A non-existent field returned the value '" + non_existent + "'.",
-				non_existent.equals(""));
+		assertTrue("A non-existent field returned the value '" + non_existent
+				+ "'.", non_existent.equals(""));
 	}
 
 	@Test
@@ -310,28 +390,31 @@ public abstract class AbstractDocumentTest {
 
 		Date date1 = cal1.getTime();
 
-		Document<?> doc = database.createDocument()
-				.setField("Form", TEST_FORM)
-				.setField("String", "HI!")
-				.setField("Date", date1)
+		Document<?> doc = database.createDocument().setField("Form", TEST_FORM)
+				.setField("String", "HI!").setField("Date", date1)
 				.setField("Number", 75.3)
 				.setField("StringArray", new String[] { "A", "B", "C" })
-				.setField("Empty", "")
-				.save();
+				.setField("Empty", "").save();
 
 		Map<String, Field> fields = doc.getFields();
 
-		assertTrue("The String value retrieved was different to the saved", fields.get("String").get(0).equals("HI!"));
+		assertTrue("The String value retrieved was different to the saved",
+				fields.get("String").get(0).equals("HI!"));
 
 		Date date2 = (Date) fields.get("Date").get(0);
 		long l1 = Long.valueOf(date1.getTime() / 1000).intValue();
 		long l2 = Long.valueOf(date2.getTime() / 1000).intValue();
-		assertTrue("The Date value [" + date2.toString() + "] retrieved was different to the saved [" + date1.toString() + "]",
-				l1 == l2);
+		assertTrue("The Date value [" + date2.toString()
+				+ "] retrieved was different to the saved [" + date1.toString()
+				+ "]", l1 == l2);
 
-		assertTrue("The Number value retrieved was different to the saved", ((Double) fields.get("Number").get(0)).compareTo(75.3) == 0);
-		assertTrue("The String array retrieved was different to the saved", fields.get("StringArray").get(2).equals("C"));
-		assertTrue("The Empty String value retrieved was different to the saved", fields.get("Empty").get(0).equals(""));
+		assertTrue("The Number value retrieved was different to the saved",
+				((Double) fields.get("Number").get(0)).compareTo(75.3) == 0);
+		assertTrue("The String array retrieved was different to the saved",
+				fields.get("StringArray").get(2).equals("C"));
+		assertTrue(
+				"The Empty String value retrieved was different to the saved",
+				fields.get("Empty").get(0).equals(""));
 
 	}
 
@@ -356,10 +439,8 @@ public abstract class AbstractDocumentTest {
 			Date date2 = cal1.getTime();
 
 			Document<?> doc = database.createDocument()
-					.setField("Form", TEST_FORM)
-					.setField("Date1", date1)
-					.setField("Number1", 30)
-					.setField("Text1", "hey!");
+					.setField("Form", TEST_FORM).setField("Date1", date1)
+					.setField("Number1", 30).setField("Text1", "hey!");
 
 			try {
 				Thread.sleep(rand.nextInt(300) + 1);
@@ -367,10 +448,8 @@ public abstract class AbstractDocumentTest {
 				// Do nothing
 			}
 
-			doc.setField("Date2", date2)
-					.setField("Number2", 30)
-					.setField("Text2", "hey!")
-					.save();
+			doc.setField("Date2", date2).setField("Number2", 30)
+					.setField("Text2", "hey!").save();
 
 			Date date10 = doc.getFieldAsDate("Date1");
 			Date date20 = doc.getFieldAsDate("Date2");
@@ -390,7 +469,10 @@ public abstract class AbstractDocumentTest {
 			Field field10 = doc.getField("Date1");
 			Field field20 = doc.getField("Date2");
 
-			assertTrue("The date as fields objects are not equal", field10.equals(field20));
+			assertTrue("The date as fields objects are not equal",
+					field10.equals(field20));
 		}
 	}
+
+	final String BigString = "";
 }

@@ -82,7 +82,7 @@ public class River {
 
 			try {
 				clazzFactory = Class.forName(wrapper + ".DefaultFactory");
-			} catch (ClassNotFoundException e1) {
+			} catch (ClassNotFoundException e) {
 				throw new RiverException("The wrapper '" + wrapper + "' can not be loaded. If you are using an non-official wrapper, " +
 						"check the wrapper name and its design. Check the CLASSPATH.");
 			}

@@ -8,18 +8,6 @@ import java.util.Map;
 import java.util.Vector;
 // import java.util.logging.Logger;
 
-
-
-
-
-
-
-
-
-
-
-
-
 import lotus.domino.Base;
 import lotus.domino.DateTime;
 import lotus.domino.Item;
@@ -42,12 +30,15 @@ import org.riverframework.wrapper.Factory;
  * @version 0.0.x
  */
 class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org.riverframework.wrapper.Document<lotus.domino.Document> {
-	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 	protected org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
 	protected org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
 	protected volatile lotus.domino.Document __doc = null;
 	private String objectId = null;
 
+	private final String FRAGMENTED_FIELD_ID = "{{RIVER_FRAGMENTED_FIELD}}";
+	private final String FRAGMENT_FIELD_NAME_SEPARATOR = "$";
+	private final int MAX_FIELD_SIZE = 32 * 1024;
+	
 	@SuppressWarnings("unchecked")
 	protected DefaultDocument(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.Document __d) {
 		__doc = __d;
@@ -119,18 +110,57 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	public lotus.domino.Document getNativeObject() {
 		return __doc;
 	}
-
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Document<lotus.domino.Document> setField(String field, Object value) {
 		java.util.Vector temp = null;
 
-		if (value instanceof java.util.Vector) {
+		if (value instanceof String) {
+			String str = (String) value;
+			if (str.length() >= MAX_FIELD_SIZE) {
+				// Fragment the text in parts with size less than MAX_FIELD_SIZE
+				boolean finished = false;
+				int size = str.length();
+				int block = 0;
+				
+				while (!finished) {
+					int start = block * (MAX_FIELD_SIZE - 1);
+					int end = start + (MAX_FIELD_SIZE - 1);
+					if (end > size) { 
+						end = size;
+						finished = true;
+					}
+					String substr = str.substring(start, end);
+					block++;
+					
+					try {
+						String fieldName = field + FRAGMENT_FIELD_NAME_SEPARATOR + block;
+						Item __item = __doc.replaceItemValue(fieldName, substr);
+						// __item.setValueString(substr);
+						__item.setSummary(false);
+						__item.recycle();
+					} catch (NotesException e) {
+						throw new RiverException(e);
+					}
+				}				
+				
+				// Saving the size in blocks 
+				str = FRAGMENTED_FIELD_ID + "|" + block;		
+			}
+			
+			temp = new Vector(1);
+			temp.add(str);
+			
+		} else if (value instanceof java.util.Vector) {
 			temp = (Vector) ((java.util.Vector) value).clone();
+			
 		} else if (value instanceof java.util.Collection) {
 			temp = new Vector((java.util.Collection) value);
+			
 		} else if (value instanceof String[]) {
 			temp = new Vector(Arrays.asList((Object[]) value));
+			
 		} else {
 			temp = new Vector(1);
 			temp.add(value);
@@ -210,6 +240,18 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 			value = __doc.getItemValue(field);  // We must not use getItemValueString(field) because it does not converts from the other types to string 
 			result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
 
+			if (result.startsWith(FRAGMENTED_FIELD_ID)) {
+				String[] params = result.split("\\|");
+				int blockNum = Integer.valueOf(params[1]);
+				StringBuilder sb = new StringBuilder(MAX_FIELD_SIZE * blockNum);
+				for(int i = 1; i <= blockNum; i++) {
+					String fragment = getFieldAsString(field + FRAGMENT_FIELD_NAME_SEPARATOR + i );
+					sb.append(fragment);
+				}
+				
+				result = sb.toString();
+			}
+			
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}

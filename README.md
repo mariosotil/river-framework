@@ -63,7 +63,7 @@ In both cases, you have to add to your classpath the Notes.jar library, and only
 
 ## Features
 
-The current version has the following features: 
+The current version (0.2.10) has the following features: 
 
 - Designed to provide a unique interface to connect to NoSQL databases 
 - Simplifies the writting of code 
@@ -78,16 +78,19 @@ The current version has the following features:
 - Has two layers of control:
   - The wrapper layer, that connects directly to the database using its native classes. 
   - The core layer, that connects to the objects from the wrapper layer and provides a unique interface for be able to use any wrapper library written for this framework 
+- Has implemented method chaining
 - Supports indexes and unique id for documents
 
 
 About the wrapper for IBM Notes:
 
-- Supports the elements to work with a Notes Database
-- Auto recycling the Notes objects
-- Good to develop standalone Java programs, Servlets or XPages programs 
+- So far, supports only five basic elements to work with a Notes database (session, database, document, view, iterator)
+- Anyway, you can still use the native Java library to do things like modify the ACL or work with RichText items.
 - Supports local and remote sessions (DIIOP) 
-- So far, it does not supports RichText items
+- Auto recycling the Notes objects
+- Has an object cache
+- To reduce impact on replication, if you set a field with a new value, it checks if it is different before do it.
+- Good to develop standalone Java programs, Servlets or XPages programs 
 
 
 About the wrapper for OpenNTF Domino:
@@ -98,16 +101,11 @@ About the wrapper for OpenNTF Domino:
   
 ## What I'm working on now?
 
-- Version 0.2.9
-  - ~~Redesigning in three layers~~
-  - Redesigning the core layer to allows the developer to write logic, rules, etc. for a single object. e.g. a document or a database
-  - Writing a LoggerHelper class to make easier to control the `java.util.logging.Logger` objects
-  - Optimizing the IBM Notes wrapper library
-  - Experimenting with the IBM Notes auto recycling
-  - Experimenting with IBM Notes objects caching
-  - Temporarily removing the support to Hazelcast wrapper library
+- Version 0.2.10
+  - Improving the design to work with document indexes
+  - Supporting fields > 32K (IBM Notes wrapper)
   - Updating the documention 
-  - Various fixes 
+  - Various fixes and improvements
 
   
 ## What is in the ToDo list?
@@ -130,7 +128,7 @@ I expected that this work be useful for you. I'll be looking forward for your id
 
 ## Next features
 
-Version 0.2.10
+Version 0.2.11
 - Fixes and improvements
 
 Version 0.3
@@ -159,6 +157,14 @@ Next versions
 
 
 ## Version change log
+
+- Version 0.2.9
+  - ~~Redesigning in three layers~~
+  - Redesigned the core layer to allows the developer to write logic, rules, etc. for a single object. e.g. a document or a database
+  - Created a LoggerHelper class to make easier to control the `java.util.logging.Logger` objects
+  - Optimized the IBM Notes wrapper library
+  - Temporarily removed the support to Hazelcast wrapper library
+  - Various fixes 
 
 Version 0.2.8
 - Fixes and improvements

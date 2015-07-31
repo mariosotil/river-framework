@@ -1,23 +1,18 @@
 package org.riverframework.core;
 
 public interface Session extends Base {
-	// TODO: evaluate if this const is necessary or can be removed
 	/**
-	 * The ELEMENT_PREFIX is used to define the of elements as Views, to indicate that elements are for exclusive use of the framework's
+	 * The PREFIX is used to define names for views, documents or classes, to
+	 * indicate that those elements are for exclusive use of the framework's
 	 * core.
 	 */
-	public static final String ELEMENT_PREFIX = "RIVER_";
-
-	// TODO: evaluate if this const is necessary or can be removed
-	/**
-	 * The FIELD_PREFIX is used to define field's names, to indicate that fields are for exclusive use of the framework's core.
-	 */
-	public static final String FIELD_PREFIX = "RIVER_";
+	public static final String PREFIX = "RIVER_";
 
 	/**
-	 * Returns the object that wraps the native object. For example, if the wrapper loaded is River.LOTUS_DOMINO, and the object is an
-	 * instance of DefaultDocument, getNativeObject() will return an object that implements the org.riverframework.wrapper.Document
-	 * interface.
+	 * Returns the object that wraps the native object. For example, if the
+	 * wrapper loaded is River.LOTUS_DOMINO, and the object is an instance of
+	 * DefaultDocument, getNativeObject() will return an object that implements
+	 * the org.riverframework.wrapper.Document interface.
 	 * 
 	 * @return the object used to wrap the native object
 	 */
@@ -27,7 +22,7 @@ public interface Session extends Base {
 	/**
 	 * Creates a new database.
 	 * 
-	 * @param parameters
+	 * @param location
 	 *            Depends on what wrapper is being used.
 	 * @return a DefaultDatabase object.
 	 */
@@ -36,35 +31,48 @@ public interface Session extends Base {
 	/**
 	 * Creates a new database.
 	 * 
-	 * @param type
+	 * @param <U>
+	 *            a class that inherits from AbstractDatabase and implements
+	 *            Database.
+	 * @param clazz
 	 *            The class that implements org.riverframework.Database
-	 * @param parameters
+	 * @param location
 	 *            Depends on what wrapper is being used.
 	 * @return an object from the class selected in the parameter 'type'
 	 */
-	public <U extends AbstractDatabase<?>> U createDatabase(Class<U> type, String... location);
+	public <U extends AbstractDatabase<?>> U createDatabase(Class<U> clazz,
+			String... location);
 
 	/**
-	 * Returns a core Database object after open a wrapper Database, using the parameters indicated.
+	 * Returns a core Database object after open a wrapper Database, using the
+	 * parameters indicated.
 	 * 
-	 * @param parameters
-	 *            the parameters needed to open an existent wrapper Database. How this parameters must to be set will depend on how the
-	 *            wrapper loaded is implemented.
+	 * @param location
+	 *            the location needed to open an existent wrapper Database. How
+	 *            this parameters must to be set will depend on how the wrapper
+	 *            loaded is implemented.
 	 * @return a core Database object
 	 */
 	public Database getDatabase(String... location);
 
 	/**
-	 * Returns a core Database object after open a wrapper Database, using the parameters indicated.
+	 * Returns a core Database object after open a wrapper Database, using the
+	 * parameters indicated.
 	 * 
+	 * @param <U>
+	 *            a class that inherits from AbstractDatabase and implements
+	 *            Database.
 	 * @param clazz
-	 *            a class that inherits from DefaultDatabase and implements the core Database interface.
-	 * @param parameters
-	 *            the parameters needed to open an existent wrapper Database. How this parameters must to be set will depend on how the
-	 *            wrapper loaded is implemented.
+	 *            a class that inherits from DefaultDatabase and implements the
+	 *            core Database interface.
+	 * @param location
+	 *            the location needed to open an existent wrapper Database. How
+	 *            this parameters must to be set will depend on how the wrapper
+	 *            loaded is implemented.
 	 * @return a core Database object
 	 */
-	public <U extends AbstractDatabase<?>> U getDatabase(Class<U> type, String... location);
+	public <U extends AbstractDatabase<?>> U getDatabase(Class<U> clazz,
+			String... location);
 
 	/**
 	 * Returns the current user name logged with this session.

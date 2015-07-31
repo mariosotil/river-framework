@@ -7,25 +7,24 @@ import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 
 /**
- * It is used to manage Databases by default, if we don't need to create a class
- * for each database accessed.
+ * It is used to manage Databases by default, if we don't need to create a class for each database accessed.
  * 
  * @author mario.sotil@gmail.com
  *
  */
-public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<T>>
-		extends AbstractDatabase<T> implements IndexedDatabase {
+public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<T>> extends AbstractDatabase<T>
+		implements IndexedDatabase {
 
-	final HashMap<String, Class<? extends AbstractDocument<?>>> classes = new HashMap<String, Class<? extends AbstractDocument<?>>>();
-	final HashMap<String, View> indexes = new HashMap<String, View>();
+	private final HashMap<String, Class<? extends AbstractDocument<?>>> classes =
+			new HashMap<String, Class<? extends AbstractDocument<?>>>();
+	private final HashMap<String, View> indexes = new HashMap<String, View>();
 
 	protected AbstractIndexedDatabase(Session session, Database<?> _database) {
 		super(session, _database);
 	}
 
 	@Override
-	public <U extends AbstractDocument<?>> T registerDocumentClass(
-			Class<U> clazz) {
+	public <U extends AbstractDocument<?>> T registerDocumentClass(Class<U> clazz) {
 
 		if (isOpen()) {
 			Document closedDoc = getClosedDocument(clazz);
@@ -40,21 +39,20 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 				if (indexes.get(key) == null) {
 
 					// ...save it in the cache
-					View index = getIndex(clazz);
+					IndexedDocument<?> closedIndexedDoc = (IndexedDocument<?>) closedDoc;
+
+					View index = getView(closedIndexedDoc.getIndexName());
 
 					if (index == null || !index.isOpen()) {
 						try {
-							index = ((IndexedDocument<?>) closedDoc)
-									.createIndex();
+							index = closedIndexedDoc.createIndex();
 						} catch (Exception e) {
 							index = null;
 						}
 					}
 
 					if (index == null || !index.isOpen()) {
-						throw new RiverException(
-								"It could not be possible load the index for the class "
-										+ key);
+						throw new RiverException("It could not be possible load the index for the class " + key);
 					}
 
 					indexes.put(key, index);
@@ -73,6 +71,11 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 
 			if (index == null) {
 				index = getClosedView();
+
+			} else if (index.isOpen()) {
+				// We always need the index updated
+				index.refresh();
+
 			}
 
 			return index;
@@ -88,7 +91,7 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 
 		if (!counter.isOpen()) {
 			counter = createDocument(DefaultCounter.class, key).setId(key)
-					.save();
+																.save();
 		}
 		return counter;
 	}
@@ -106,8 +109,8 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 	}
 
 	@Override
-	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz,
-			boolean createIfDoesNotExist, String... parameters) {
+	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz, boolean createIfDoesNotExist,
+			String... parameters) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Session object is closed.");
 
@@ -115,19 +118,17 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 
 		View index = getIndex(clazz);
 		if (index.isOpen()) {
-			index.refresh();
 			doc = clazz.cast(index.getDocumentByKey(clazz, parameters[0]));
 		}
 
 		if (doc == null || !doc.isOpen()) {
 			doc = super.getDocument(clazz, createIfDoesNotExist, parameters);
 
-			if (createIfDoesNotExist
-					&& IndexedDocument.class.isAssignableFrom(clazz)
-					&& doc != null && doc.isOpen()) {
+			if (createIfDoesNotExist && IndexedDocument.class.isAssignableFrom(clazz) && doc != null && doc.isOpen()) {
 				IndexedDocument<?> idxDoc = ((IndexedDocument<?>) doc);
 
-				if (idxDoc.getId().equals(""))
+				if (idxDoc.getId()
+							.equals(""))
 					idxDoc.setId(parameters[0]);
 			}
 		}

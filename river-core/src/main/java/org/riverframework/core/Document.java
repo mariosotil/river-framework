@@ -15,6 +15,9 @@ public interface Document extends Base {
 	 */
 	public Database getDatabase();
 
+	/**
+	 * @return the table where the document belongs.
+	 */
 	public String getTableName();
 
 	/**
@@ -26,7 +29,7 @@ public interface Document extends Base {
 	 * @return the object used to wrap the native object
 	 */
 	@Override
-	org.riverframework.wrapper.Document<?> getWrapperObject();
+	public org.riverframework.wrapper.Document<?> getWrapperObject();
 
 	/**
 	 * Compares a field from the Document with some value. If they are equal, it
@@ -135,6 +138,13 @@ public interface Document extends Base {
 	 */
 	public boolean isModified();
 
+	/**
+	 * Returns the document as an instance from another class.
+	 * 
+	 * @param clazz
+	 *            it extends the AbstractDocument core class.
+	 * @return the new instance.
+	 */
 	public <U extends AbstractDocument<?>> U getAs(Class<U> clazz);
 
 	/**

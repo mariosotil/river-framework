@@ -19,13 +19,8 @@ class DefaultNativeReference extends AbstractNativeReference<lotus.domino.Base> 
 	@Override
 	public void close() {  
 		if (__native != null) {
-//			Class<?> clazz = __native.getClass();
-//			String nativeClass = clazz.getName();
-//			String hc = String.valueOf(__native.hashCode());
-
+			
 			try {
-//				Method method = clazz.getMethod("recycle");
-//				method.invoke(__native);
 				__native.recycle();
 			} catch (Exception e) {
 				log.log(Level.WARNING, "Exception while recycling object " + id, e);
@@ -34,7 +29,7 @@ class DefaultNativeReference extends AbstractNativeReference<lotus.domino.Base> 
 				__native = null;
 			}
 
-			log.finest("Recycled: id=" + id); // + " native=" + nativeClass + " (" + hc + ")" 
+			log.finest("Recycled: id=" + id);  
 		}
 	}
 }

@@ -102,14 +102,14 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
 ### About the wrapper for OpenNTF Domino:
 
 - Takes advantage of this great library developed by [OpenNTF](http://www.openntf.org/main.nsf/project.xsp?r=project/OpenNTF%20Domino%20API)
-- The auto recycling is managed by OpenNTF Domino
+- The auto recycling is managed by OpenNTF Domino API
 - Supports field size > 32K
 - Good to develop standalone Java programs, Servlets or XPages programs 
 
   
 ## What I am working on now?
 
-The current version (0.2.10) is very stable, so I am working as a [freelancer](https://www.upwork.com/users/~01775e7dda9bcc845d) again :-)  I am going to continue on this project in one month (September, 2015).
+The current version (0.2.10) is very stable, so I am working as a [freelancer](https://www.upwork.com/o/profiles/users/_~01775e7dda9bcc845d/) again :-)  I am going to continue on this project in one month (September, 2015).
 
   
 ## What is in the ToDo list?

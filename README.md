@@ -214,5 +214,5 @@ Version 0.1
 
 ### Tags
 
-Java, Server-side JavaScript, IBM Notes, Lotus Notes, XPages, LotusScript, Workflow
+Java, Server-side JavaScript, IBM Notes, Lotus Notes, XPages, LotusScript, Workflow, NoSQL, ORM, Framework
 

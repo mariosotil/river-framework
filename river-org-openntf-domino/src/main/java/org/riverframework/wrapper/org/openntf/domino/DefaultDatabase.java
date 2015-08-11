@@ -176,9 +176,15 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 
 	@Override
 	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> search(String query) {
+		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = search(query, 0);
+		return _iterator;
+	}
+
+	@Override
+	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> search(String query, int max) {
 		org.openntf.domino.DocumentCollection _col;
 
-		_col = __database.FTSearch(query);
+		_col = __database.FTSearch(query, max);
 
 		@SuppressWarnings("unchecked")
 		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = 

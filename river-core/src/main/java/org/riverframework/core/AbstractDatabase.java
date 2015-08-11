@@ -6,16 +6,19 @@ import org.riverframework.ClosedObjectException;
 import org.riverframework.RiverException;
 
 /**
- * It is used to manage Databases by default, if we don't need to create a class for each database accessed.
+ * It is used to manage Databases by default, if we don't need to create a class
+ * for each database accessed.
  * 
  * @author mario.sotil@gmail.com
  *
  */
-public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements Database {
+public abstract class AbstractDatabase<T extends AbstractDatabase<T>>
+		implements Database {
 	private Session session = null;
 	protected org.riverframework.wrapper.Database<?> _database = null;
 
-	protected AbstractDatabase(Session session, org.riverframework.wrapper.Database<?> _database) {
+	protected AbstractDatabase(Session session,
+			org.riverframework.wrapper.Database<?> _database) {
 		this.session = session;
 		this._database = _database;
 	}
@@ -72,7 +75,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 
 	@Override
 	public Document createDocument(String... parameters) {
-		org.riverframework.wrapper.Document<?> _doc = _database.createDocument();
+		org.riverframework.wrapper.Document<?> _doc = _database
+				.createDocument();
 		AbstractDocument<?> doc = new DefaultDocument(this, _doc);
 
 		doc.afterCreate();
@@ -87,7 +91,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 	}
 
 	@Override
-	public Document getDocument(boolean createIfDoesNotExist, String... parameters) {
+	public Document getDocument(boolean createIfDoesNotExist,
+			String... parameters) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Database object is closed.");
 
@@ -131,8 +136,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 		U doc = null;
 
 		try {
-			Constructor<?> constructor =
-					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
+			Constructor<?> constructor = clazz.getDeclaredConstructor(
+					Database.class, org.riverframework.wrapper.Document.class);
 			constructor.setAccessible(true);
 			doc = clazz.cast(constructor.newInstance(this, null));
 		} catch (Exception e) {
@@ -143,13 +148,15 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 	}
 
 	@Override
-	public <U extends AbstractDocument<?>> U createDocument(Class<U> clazz, String... parameters) {
-		org.riverframework.wrapper.Document<?> _doc = _database.createDocument(parameters);
+	public <U extends AbstractDocument<?>> U createDocument(Class<U> clazz,
+			String... parameters) {
+		org.riverframework.wrapper.Document<?> _doc = _database
+				.createDocument(parameters);
 		U doc = null;
 
 		try {
-			Constructor<?> constructor =
-					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
+			Constructor<?> constructor = clazz.getDeclaredConstructor(
+					Database.class, org.riverframework.wrapper.Document.class);
 			constructor.setAccessible(true);
 			doc = clazz.cast(constructor.newInstance(this, _doc));
 		} catch (Exception e) {
@@ -163,20 +170,22 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 	}
 
 	@Override
-	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz, String... parameters) {
+	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz,
+			String... parameters) {
 		return getDocument(clazz, false, parameters);
 	}
 
 	@Override
-	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz, org.riverframework.wrapper.Document<?> _doc) {
+	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz,
+			org.riverframework.wrapper.Document<?> _doc) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Session object is closed.");
 
 		U doc = null;
 
 		try {
-			Constructor<?> constructor =
-					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.Document.class);
+			Constructor<?> constructor = clazz.getDeclaredConstructor(
+					Database.class, org.riverframework.wrapper.Document.class);
 			constructor.setAccessible(true);
 			doc = clazz.cast(constructor.newInstance(this, _doc));
 		} catch (Exception e) {
@@ -187,11 +196,12 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 	}
 
 	@Override
-	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz, boolean createIfDoesNotExist,
-			String... parameters) {
+	public <U extends AbstractDocument<?>> U getDocument(Class<U> clazz,
+			boolean createIfDoesNotExist, String... parameters) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Session object is closed.");
-		org.riverframework.wrapper.Document<?> _doc = _database.getDocument(parameters);
+		org.riverframework.wrapper.Document<?> _doc = _database
+				.getDocument(parameters);
 		U doc = null;
 
 		if ((_doc == null || !_doc.isOpen()) && createIfDoesNotExist) {
@@ -211,16 +221,18 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 	}
 
 	@Override
-	public <U extends AbstractView<?>> U createView(Class<U> clazz, String... parameters) {
+	public <U extends AbstractView<?>> U createView(Class<U> clazz,
+			String... parameters) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Database object is closed.");
 
-		org.riverframework.wrapper.View<?> _view = _database.createView(parameters);
+		org.riverframework.wrapper.View<?> _view = _database
+				.createView(parameters);
 		U view = null;
 
 		try {
-			Constructor<?> constructor =
-					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.View.class);
+			Constructor<?> constructor = clazz.getDeclaredConstructor(
+					Database.class, org.riverframework.wrapper.View.class);
 			constructor.setAccessible(true);
 			view = clazz.cast(constructor.newInstance(this, _view));
 		} catch (Exception e) {
@@ -236,7 +248,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 	}
 
 	@Override
-	public <U extends AbstractView<?>> U getView(Class<U> clazz, String... parameters) {
+	public <U extends AbstractView<?>> U getView(Class<U> clazz,
+			String... parameters) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Database object is closed.");
 
@@ -245,8 +258,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 		U view = null;
 
 		try {
-			Constructor<?> constructor =
-					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.View.class);
+			Constructor<?> constructor = clazz.getDeclaredConstructor(
+					Database.class, org.riverframework.wrapper.View.class);
 			constructor.setAccessible(true);
 			view = clazz.cast(constructor.newInstance(this, _view));
 		} catch (Exception e) {
@@ -266,8 +279,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 		U view = null;
 
 		try {
-			Constructor<?> constructor =
-					clazz.getDeclaredConstructor(Database.class, org.riverframework.wrapper.View.class);
+			Constructor<?> constructor = clazz.getDeclaredConstructor(
+					Database.class, org.riverframework.wrapper.View.class);
 			constructor.setAccessible(true);
 			view = clazz.cast(constructor.newInstance(this, null));
 		} catch (Exception e) {
@@ -282,7 +295,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 		if (!isOpen())
 			throw new ClosedObjectException("The Database object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator<?, ?> _iterator = _database.getAllDocuments();
+		org.riverframework.wrapper.DocumentIterator<?, ?> _iterator = _database
+				.getAllDocuments();
 		DocumentIterator result = new DefaultDocumentIterator(this, _iterator);
 
 		return result;
@@ -298,10 +312,17 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>> implements
 
 	@Override
 	public DocumentIterator search(String query) {
+		DocumentIterator result = search(query, 0);
+		return result;
+	}
+
+	@Override
+	public DocumentIterator search(String query, int max) {
 		if (!isOpen())
 			throw new ClosedObjectException("The Database object is closed.");
 
-		org.riverframework.wrapper.DocumentIterator<?, ?> _iterator = _database.search(query);
+		org.riverframework.wrapper.DocumentIterator<?, ?> _iterator = _database
+				.search(query, max);
 		DocumentIterator result = new DefaultDocumentIterator(this, _iterator);
 
 		return result;

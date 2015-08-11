@@ -25,6 +25,8 @@ public interface Database<N> extends Base<N> {
 
 	public DocumentIterator<?, ?> search(String query);
 
+	public DocumentIterator<?, ?> search(String query, int max);
+
 	public Database<N> refreshSearchIndex(boolean createIfNotExist);
 
 	public void delete();

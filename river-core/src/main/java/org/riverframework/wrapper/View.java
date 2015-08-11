@@ -11,6 +11,8 @@ public interface View<N> extends Base<N> {
 
 	public DocumentIterator<?, ?> search(String query);
 
+	public DocumentIterator<?, ?> search(String query, int max);
+
 	public View<N> addColumn(String name, String value, boolean isSorted);
 
 	public void delete();

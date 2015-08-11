@@ -172,11 +172,18 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 
 	@Override
 	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> search(String query) {
+		DocumentIterator<lotus.domino.Base, lotus.domino.Document> _iterator = search(query, 0);
+
+		return _iterator;
+	}
+
+	@Override
+	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> search(String query, int max) {
 		lotus.domino.View __temp = null;
 
 		try {
 			__temp = __view.getParent().getView(__view.getName());			
-			__temp.FTSearch(query);
+			__temp.FTSearch(query, max);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}

@@ -107,10 +107,16 @@ class DefaultView extends DefaultBase<org.openntf.domino.View> implements org.ri
 
 	@Override
 	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> search(String query) {
+		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = search(query, 0); 
+		return _iterator;
+	}
+
+	@Override
+	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> search(String query, int max) {
 		org.openntf.domino.View __temp = null;
 
 		__temp = __view.getParent().getView(__view.getName());			
-		__temp.FTSearch(query);
+		__temp.FTSearch(query, max);
 
 		@SuppressWarnings("unchecked")
 		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = 

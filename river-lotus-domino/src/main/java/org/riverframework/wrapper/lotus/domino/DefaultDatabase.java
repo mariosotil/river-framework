@@ -227,10 +227,17 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 
 	@Override
 	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> search(String query) {
+		DocumentIterator<lotus.domino.Base, lotus.domino.Document> _iterator = 
+				search(query, 0);
+		return _iterator;
+	}
+
+	@Override
+	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> search(String query, int max) {
 		lotus.domino.DocumentCollection _col;
 
 		try {
-			_col = __database.FTSearch(query);
+			_col = __database.FTSearch(query, max);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}

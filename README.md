@@ -134,21 +134,27 @@ I expected that this work be useful for you. I'll be looking forward for your id
 ## Next features
 
 Version 0.2.11
+- Let that any IBM Notes class from the `lotus.domino` library could be wrapped, managed and recycled by the River Framework (ACL, RichText, etc.)
+- It's possible that the factory from the IBM Notes wrapper be redesigned to support the last feature
+- Support a query language (SQL++?)
 - Fixes and improvements
 
+Version 0.2.12
+- Support MongoDB
+
+Version 0.2.13
+- Support Node4J without graphs
+
 Version 0.3
-- Relation between documents (1..\*, \*..\*) using graphs
-- Examples in Java, SSJS, XPages and LotusScript
-  
-Version 0.4
-- Connection to other NoSQL servers: MongoDB and CouchDB
-  
+- Support graphs for relations between documents (1..\*, \*..\*) 
+- Support Node4J, IBM Notes and MongoDB with graphs
+
 Next versions
 - Logging of changes in the fields of a document
 - Control of the data change propagation between related documents (1..\*, \*..\*)
-- Administration tools (ie. change the state of a document)
 - Thread support
-- The support of workflow development with the features that are needed for the task:
+- Transactions
+- The support of *workflow development* with the features that are needed for the task:
   - Control of the states of the document
   - Control of the responsibles on each state
   - Control of the permissions to read on each state
@@ -158,9 +164,10 @@ Next versions
   - Logging of state changes
   - Configuration of the notification mails sent on each state change
   - Implementation of a Script to configure a workflow
+  - Administration tools (ie. change the state of a document)
 
 
-## Version change log
+## Changelog
 
 Version 0.2.10
 - Improved the design to work with document indexes
@@ -182,7 +189,7 @@ Version 0.2.8
 
 Version 0.2.7
 - Auto recycling of IBM Notes objects. So far, it works good with a standalone Java program. I still making tests in XPages.
-- Temporarily removing the support to the org.openntf.domino library, considering that the auto recycling is working on the `lotus.domino` wrapper, and it's necessary to focus efforts in one wrapper at a time. 
+- Temporarily removing the support to the `org.openntf.domino` library, considering that the auto recycling is working on the `lotus.domino` wrapper, and it's necessary to focus efforts in one wrapper at a time. 
 - Adding more functionality (create and removing databases, views, etc.)
 
 Version 0.2.6

@@ -93,7 +93,7 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
 - Supports only five basic elements to work with a Notes database (session, database, document, view, iterator)
 - Anyway, you can still use the native Java library to do things like modify the ACL or work with RichText items.
 - Supports local and remote sessions (DIIOP) 
-- Auto recycling the Notes objects
+- Auto recycling of Notes objects
 - Has an object cache
 - Supports field size > 32K
 - Good to develop standalone Java programs, Servlets or XPages programs 
@@ -109,7 +109,7 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
   
 ## What I am working on now?
 
-The current version (0.2.10) is very stable, so I am working as a [freelancer](https://www.upwork.com/o/profiles/users/_~01775e7dda9bcc845d/) again :-)  I am going to continue on this project in one month (September, 2015).
+The current version (0.2.10) is very stable, so I am resting from this project and [freelancing](https://www.upwork.com/o/profiles/users/_~01775e7dda9bcc845d/) :-)  I am going to continue on this project in one month (September, 2015).
 
   
 ## What is in the ToDo list?

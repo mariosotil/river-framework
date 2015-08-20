@@ -2,9 +2,9 @@
 
 ## What is the River Framework?
 
-This is an Application Framework for NoSQL databases in **development stage**. To date (July 31, 2015) the Framework is capable to access IBM Notes databases using the native Java libraries (`lotus.domino`) or the OpenNTF libraries (`org.openntf.domino`).
+This is an Object-Document Mapper for NoSQL databases in **development stage**. To date (July 31, 2015) the Framework is capable to access IBM Notes databases using the native Java libraries (`lotus.domino`) or the OpenNTF libraries (`org.openntf.domino`).
 
-The next steps are create graph relations, implement a query language (maybe SQL++), develop workflow supporting and wrappers for other NoSQL databases like MongoDB. 
+The next steps are create graph relations, implement a query language (maybe SQL++), and wrappers for other NoSQL databases like MongoDB. 
 
 Until the current version, 0.2.10, the code written with this framework looks like this:
 
@@ -118,7 +118,6 @@ There are many features that I will add to this framework:
 
 - Support a query language (SQL++?)
 - Support relations between documents using graphs, 1..\* or \*..\*
-- Support workflow application development using state machines
 - Support other NoSQL databases as MongoDB, CouchDB, Node4J, Hazelcast, etc. 
 
 
@@ -148,16 +147,7 @@ Next versions
 - Control of the data change propagation between related documents (1..\*, \*..\*)
 - Administration tools (ie. change the state of a document)
 - Thread support
-- The support of workflow development with the features that are needed for the task:
-  - Control of the states of the document
-  - Control of the responsibles on each state
-  - Control of the permissions to read on each state
-  - Control of the document security (reader, editor, etc.) on each state
-  - Document protection if there is an error during a change of state
-  - Notification deadlines for each state
-  - Logging of state changes
-  - Configuration of the notification mails sent on each state change
-  - Implementation of a Script to configure a workflow
+- Transactions support
 
 
 ## Version change log
@@ -214,5 +204,5 @@ Version 0.1
 
 ### Tags
 
-Java, Server-side JavaScript, IBM Notes, Lotus Notes, XPages, LotusScript, Workflow, NoSQL, ORM, Framework
+Java, ODM, NoSQL, MongoDB, IBM Notes, Lotus Notes, XPages, SSJS, ORM, Framework
 

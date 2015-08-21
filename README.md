@@ -81,6 +81,12 @@ To load the artifacts from Maven, you can add one of these dependencies to your 
 In both cases, you have to add to your classpath the `Notes.jar` library. For the last one, you will need to add the `org.openntf.domino.jar` library too.
 
 
+## Dependencies
+
+- [joda-time](http://www.joda.org/joda-time/), for parsing strings and convert them to `java.util.Date`
+- [ini4j](http://ini4j.sourceforge.net/), for support unit testing and load a credentials file (~/.river-framework/credentials)
+
+
 ## Next features
 
 Version 0.2.11

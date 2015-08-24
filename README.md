@@ -92,24 +92,32 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
 Version 0.2.11
 - Let that any IBM Notes class from the `lotus.domino` library could be wrapped, managed and recycled by the River Framework (ACL, RichText, etc.)
 - It's possible that the factory from the IBM Notes wrapper be redesigned to support the last feature
-- Support a query language (SQL++?)
+- Eliminate the dependencies to joda-time and ini4j to make easier the use of the libraries
 - Fixes and improvements
 
-Version 0.2.12
+Version 0.3
 - Support MongoDB
 
-Version 0.2.13
+Version 0.4
 - Support Node4J without graphs
 
-Version 0.3
+Version 0.5
 - Support graphs for relations between documents (1..\*, \*..\*) 
 - Support Node4J, IBM Notes and MongoDB with graphs
 
-Next versions
+Version 0.6
+- Support a query language (SQL++?)
+
+Version 0.7
+- Support transactions
+ 
+Version 0.8
+- Support threads
+
+Other features
 - Logging of changes in the fields of a document
 - Control of the data change propagation between related documents (1..\*, \*..\*)
-- Thread support
-- Transactions support
+
 
 
 ## Changelog

@@ -44,6 +44,10 @@ This is an Object-Document Mapper Framework for NoSQL databases in **development
 - Good to develop standalone Java programs, Servlets or XPages programs 
 
 
+## Getting Started
+A "Getting Started" or "Learn in five minutes" guide along more demo projects will be written in September, 2015. 
+
+
 ## Demo
 
 A full demo as an Eclipse project of a stand-alone Java program is [here](https://github.com/mariosotil/river-framework-demo).

@@ -2,7 +2,7 @@
 
 ## What is the River Framework?
 
-This is an Object-Document Mapper Framework for NoSQL databases in **development stage**. You will find a better description at its [website](http://www.riverframework.org).
+This is an Object-Document Mapper Framework for NoSQL databases in **development stage**. You can read about the project at its [website](http://www.riverframework.org). Here you will find about the development itself: current and next features, known issues, dependencies, binaries, maven, demos, and, of course, the source code :-)
 
 
 ## Features

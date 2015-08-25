@@ -1,4 +1,5 @@
 # river-framework
+[![Project Stats](https://www.openhub.net/p/river-framework/widgets/project_thin_badge.gif)](https://www.openhub.net/p/river-framework)
 
 ## What is the River Framework?
 

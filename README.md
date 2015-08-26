@@ -46,7 +46,13 @@ This is an Object-Document Mapper Framework for NoSQL databases in **development
 
 
 ## Getting Started
+
 A "Getting Started" or "Learn in five minutes" guide along more demo projects will be written in September, 2015. 
+
+
+## How to build
+
+In September too. 
 
 
 ## Demo

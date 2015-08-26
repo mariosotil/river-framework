@@ -105,11 +105,11 @@ Version 0.3
 - Support MongoDB
 
 Version 0.4
-- Support Node4J without graphs
+- Support Neo4J without graphs
 
 Version 0.5
 - Support graphs for relations between documents (1..\*, \*..\*) 
-- Support Node4J, IBM Notes and MongoDB with graphs
+- Support Neo4J, IBM Notes and MongoDB with graphs
 
 Version 0.6
 - Support a query language (SQL++?)
@@ -180,5 +180,5 @@ Version 0.1
 
 ### Tags
 
-Java, ODM, NoSQL, MongoDB, IBM Notes, Node4J, Lotus Notes, SSJS, ORM, Framework
+Java, ODM, NoSQL, MongoDB, IBM Notes, Neo4J, Lotus Notes, SSJS, ORM, Framework
 

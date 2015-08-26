@@ -98,6 +98,7 @@ Version 0.2.11
 - Let that any IBM Notes class from the `lotus.domino` library could be wrapped, managed and recycled by the River Framework (ACL, RichText, etc.)
 - It's possible that the factory from the IBM Notes wrapper be redesigned to support the last feature
 - Eliminate the dependencies to joda-time and ini4j to make easier the use of the libraries
+- Fix this [issue](https://github.com/mariosotil/river-framework/issues/1) about Java security permissions needed
 - Fixes and improvements
 
 Version 0.3

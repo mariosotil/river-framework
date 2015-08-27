@@ -101,11 +101,13 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
 ## Next features
 
 Version 0.2.11
-- Let that any IBM Notes class from the `lotus.domino` library could be wrapped, managed and recycled by the River Framework (ACL, RichText, etc.)
-- It's possible that the factory from the IBM Notes wrapper be redesigned to support the last feature
 - Eliminate the dependencies to joda-time and ini4j to make easier the use of the libraries
 - Fix this [issue](https://github.com/mariosotil/river-framework/issues/1) about Java security permissions needed
-- Fixes and improvements
+- IBM Notes wrapper: Let that any IBM Notes class from the `lotus.domino` library could be wrapped, managed and recycled by the River Framework (ACL, RichText, etc.)
+- IBM Notes wrapper: It's possible that the factory from the IBM Notes wrapper be redesigned to support the last feature
+- IBM Notes wrapper: fix a search problem. It was changed from Full Text search for Formula search.
+- IBM Notes wrapper: Fix a conversion problem from integer to string ("1200.0")
+- Other fixes and improvements
 
 Version 0.3
 - Support MongoDB

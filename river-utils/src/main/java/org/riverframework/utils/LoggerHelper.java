@@ -1,5 +1,6 @@
 package org.riverframework.utils;
 
+import java.security.AccessControlException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.ConsoleHandler;
@@ -20,6 +21,14 @@ public class LoggerHelper {
 		
 	public LoggerHelper(Logger log) {
 		this.log = log;
+		
+		Level level = null;
+		Logger parent = log;
+		while (parent != null && ((level = parent.getLevel()) == null)) {
+			parent = parent.getParent();
+		}
+		
+		this.level = level == null ? Level.OFF : level;
 	}
 
 	public LoggerHelper clearHandlers() {
@@ -82,13 +91,18 @@ public class LoggerHelper {
 	}
 	
 	public LoggerHelper setLevel(Level level) {
-		this.level = level;
-		
 		for (Handler h : log.getHandlers()) {
 			h.setLevel(level);
 		}
-		log.setLevel(level);
 		
+		try {
+			log.setLevel(level);
+		} catch (AccessControlException e) {
+			log.warning("AccessControlException: it was not possible to set the log level. Message:" + e.getMessage());
+		}
+
+		this.level = level;
+
 		return this;
 	}
 }

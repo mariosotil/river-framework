@@ -71,12 +71,12 @@ class DefaultView extends DefaultBase<org.openntf.domino.View> implements org.ri
 
 	@Override
 	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> getAllDocuments() {
-		org.openntf.domino.ViewEntryCollection _col;
-		_col = __view.getAllEntries();
+		org.openntf.domino.ViewEntryCollection __col;
+		__col = __view.getAllEntries();
 
 		@SuppressWarnings("unchecked")
 		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> result = 
-		(DocumentIterator<Base<?>, org.openntf.domino.Document>) _factory.getDocumentIterator(_col);
+		(DocumentIterator<Base<?>, org.openntf.domino.Document>) _factory.getDocumentIterator(__col);
 		return result;
 	}
 

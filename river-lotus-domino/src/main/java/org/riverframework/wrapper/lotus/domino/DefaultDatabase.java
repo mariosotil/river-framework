@@ -237,7 +237,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		lotus.domino.DocumentCollection _col;
 
 		try {
-			_col = __database.FTSearch(query, max);
+			_col = __database.search(query, null, max);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}

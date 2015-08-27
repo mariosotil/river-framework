@@ -23,7 +23,17 @@ public class Converter {
 	 * @return a String
 	 */
 	public static String getAsString(Object value) {
-		return value == null ? "" : value.toString();
+		String result = null;
+		if (value == null) {
+			result = "";
+		} else if (value instanceof Double) {
+			double n = (Double) value;
+			result = n == (long) n ? String.format("%d",(long) n) : String.format("%s", n);
+		} else {
+			result = value.toString();
+		}
+		
+		return result;
 	}
 
 	/**

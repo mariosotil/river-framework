@@ -5,8 +5,8 @@ import java.io.File;
 import org.ini4j.Wini;
 
 /**
- * Allows creates a Session using the credentials stored in the file system. The file must be named as
- * $user_home\.river-framework\credentials and it must have this content:
+ * <p>Allows creates a Session using the credentials stored in the file system. The file must be named as
+ * $user_home\.river-framework\credentials and it must have this content:</p>
  * 
  * <code>
  * [default]
@@ -14,6 +14,9 @@ import org.ini4j.Wini;
  * username=USERNAME
  * password=PASSWORD
  * </code>
+ * 
+ * <p>This class was created for test purposes, to make easier the JUnit tests connect to the IBM Domino server 
+ * under different scenarios (local, remote, etc.). </p>
  * 
  * @author mario.sotil@gmail.com
  *

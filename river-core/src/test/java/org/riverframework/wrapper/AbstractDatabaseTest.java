@@ -30,16 +30,20 @@ public abstract class AbstractDatabaseTest {
 		// Opening the test context in the current package
 		try {
 			if (context == null) {
-				Class<?> clazz = Class.forName(this.getClass().getPackage().getName() + ".Context");
+				Class<?> clazz = Class.forName(this.getClass()
+													.getPackage()
+													.getName() + ".Context");
 				if (Context.class.isAssignableFrom(clazz)) {
 					Constructor<?> constructor = clazz.getDeclaredConstructor();
 					constructor.setAccessible(true);
 					context = (Context) constructor.newInstance();
 				}
 
-				_session = context.getSession().getWrapperObject();
+				_session = context.getSession()
+									.getWrapperObject();
 				_database = _session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
-				_database.getAllDocuments().deleteAll();
+				_database.getAllDocuments()
+							.deleteAll();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -54,8 +58,10 @@ public abstract class AbstractDatabaseTest {
 	@Test
 	public void testOpenedDatabase() {
 		assertTrue("The test database could not be opened.", _database.isOpen());
-		assertFalse("The file path could not be detected.", _database.getFilePath().equals(""));
-		assertFalse("The database name could not be detected.", _database.getName().equals(""));
+		assertFalse("The file path could not be detected.", _database.getFilePath()
+																		.equals(""));
+		assertFalse("The database name could not be detected.", _database.getName()
+																			.equals(""));
 	}
 
 	@Test
@@ -74,8 +80,11 @@ public abstract class AbstractDatabaseTest {
 
 		_view = null;
 		for (i = 0; i < 10; i++) {
-			_database.createDocument().setField("Form", form).setField("Id", String.valueOf(10 - i))
-					.setField("Value", i + 1).save();
+			_database.createDocument()
+						.setField("Form", form)
+						.setField("Id", String.valueOf(10 - i))
+						.setField("Value", i + 1)
+						.save();
 		}
 
 		_view = _database.getView(name);
@@ -85,8 +94,7 @@ public abstract class AbstractDatabaseTest {
 
 		for (i = 0; i < 10; i++) {
 			Document<?> _doc = _view.getDocumentByKey(String.valueOf(i + 1));
-			assertTrue("There is a problem retrieving the Value field from the document with id '" + (i + 1) + "'",
-					_doc.getFieldAsInteger("Value") == 10 - i);
+			assertTrue("There is a problem retrieving the Value field from the document with id '" + (i + 1) + "'", _doc.getFieldAsInteger("Value") == 10 - i);
 		}
 
 		i = 0;
@@ -120,23 +128,29 @@ public abstract class AbstractDatabaseTest {
 
 		DocumentIterator<?, ?> _iterator = null;
 
-		_database.getAllDocuments().deleteAll();
+		_database.getAllDocuments()
+					.deleteAll();
 		RandomString rs = new RandomString(10);
 
 		for (int i = 0; i < 10; i++) {
-			_database.createDocument().setField("Value", rs.nextString()).save();
+			_database.createDocument()
+						.setField("Value", rs.nextString())
+						.save();
 		}
 
-		_database.createDocument().setField("Form", TEST_FORM).setField("Value", "THIS_IS_THE_DOC").save();
+		_database.createDocument()
+					.setField("Form", TEST_FORM)
+					.setField("Value", "THIS_IS_THE_DOC")
+					.save();
 
 		_database.refreshSearchIndex(true);
 
 		_iterator = null;
-		_iterator = _database.search("THIS IS IMPOSSIBLE TO FIND");
+		_iterator = _database.search("Value=\"THIS IS IMPOSSIBLE TO FIND\"");
 		assertFalse("The search returns values for a query that would returns nothing.", _iterator.hasNext());
 
 		_iterator = null;
-		_iterator = _database.search("THIS_IS_THE_DOC");
+		_iterator = _database.search("Value=\"THIS_IS_THE_DOC\"");
 		assertTrue("The search does not returns values for a query that would returns something.", _iterator.hasNext());
 	}
 
@@ -145,15 +159,26 @@ public abstract class AbstractDatabaseTest {
 		assertTrue("The test database could not be instantiated.", _database != null);
 		assertTrue("The test database could not be opened.", _database.isOpen());
 
-		_database.getAllDocuments().deleteAll();
+		_database.getAllDocuments()
+					.deleteAll();
 
-		_database.createDocument().setField("Id", "John").setField("Form", "fo_ap_people").setField("Age", 30).save();
+		_database.createDocument()
+					.setField("Id", "John")
+					.setField("Form", "fo_ap_people")
+					.setField("Age", 30)
+					.save();
 
-		_database.createDocument().setField("Id", "Kathy").setField("Form", "fo_ap_people").setField("Age", 25).save();
+		_database.createDocument()
+					.setField("Id", "Kathy")
+					.setField("Form", "fo_ap_people")
+					.setField("Age", 25)
+					.save();
 
-		Document<?> doc =
-				_database.createDocument().setField("Id", "Jake").setField("Form", "fo_ap_people").setField("Age", 27)
-						.save();
+		Document<?> doc = _database.createDocument()
+									.setField("Id", "Jake")
+									.setField("Form", "fo_ap_people")
+									.setField("Age", 27)
+									.save();
 
 		String objectId = doc.getObjectId();
 		doc = null;
@@ -166,13 +191,23 @@ public abstract class AbstractDatabaseTest {
 		assertTrue("The database could not be instantiated.", _database != null);
 		assertTrue("The database could not be opened.", _database.isOpen());
 
-		_database.getAllDocuments().deleteAll();
+		_database.getAllDocuments()
+					.deleteAll();
 
-		_database.createDocument().setField("Requester", "John").setField("Time", 30).save();
+		_database.createDocument()
+					.setField("Requester", "John")
+					.setField("Time", 30)
+					.save();
 
-		_database.createDocument().setField("Requester", "Kathy").setField("Time", 25).save();
+		_database.createDocument()
+					.setField("Requester", "Kathy")
+					.setField("Time", 25)
+					.save();
 
-		_database.createDocument().setField("Requester", "Michael").setField("Time", 27).save();
+		_database.createDocument()
+					.setField("Requester", "Michael")
+					.setField("Time", 27)
+					.save();
 
 		DocumentIterator<?, ?> _iterator = _database.getAllDocuments();
 

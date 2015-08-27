@@ -251,11 +251,11 @@ public abstract class AbstractDatabaseTest {
 		database.refreshSearchIndex(true);
 
 		col = null;
-		col = database.search("THIS IS IMPOSSIBLE TO FIND");
+		col = database.search("Value=\"THIS IS IMPOSSIBLE TO FIND\"");
 		assertTrue("The search returns values for a query that would returns nothing.", !col.hasNext());
 
 		col = null;
-		col = database.search("THIS_IS_THE_DOC");
+		col = database.search("Value=\"THIS_IS_THE_DOC\"");
 		assertTrue("The search does not returns values for a query that would returns something.", col.hasNext());
 	}
 
@@ -457,11 +457,11 @@ public abstract class AbstractDatabaseTest {
 		vacationDatabase.refreshSearchIndex(true);
 
 		col = null;
-		col = vacationDatabase.search("THIS IS IMPOSSIBLE TO FIND");
+		col = vacationDatabase.search("Value=\"THIS IS IMPOSSIBLE TO FIND\"");
 		assertTrue("The search returns values for a query that would returns nothing.", !col.hasNext());
 
 		col = null;
-		col = vacationDatabase.search("THIS_IS_THE_DOC");
+		col = vacationDatabase.search("Value=\"THIS_IS_THE_DOC\"");
 		assertTrue("The search does not returns values for a query that would returns something.", col.hasNext());
 	}
 

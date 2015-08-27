@@ -28,7 +28,9 @@ public abstract class AbstractStressTest {
 		// Opening the test context in the current package
 		try {
 			if (context == null) {
-				Class<?> clazz = Class.forName(this.getClass().getPackage().getName() + ".Context");
+				Class<?> clazz = Class.forName(this.getClass()
+													.getPackage()
+													.getName() + ".Context");
 				if (Context.class.isAssignableFrom(clazz)) {
 					Constructor<?> constructor = clazz.getDeclaredConstructor();
 					constructor.setAccessible(true);
@@ -47,7 +49,7 @@ public abstract class AbstractStressTest {
 		context.closeSession();
 	}
 
-	static class Book extends org.riverframework.core.AbstractDocument<Book> { 
+	static class Book extends org.riverframework.core.AbstractDocument<Book> {
 
 		protected Book(Database database, org.riverframework.wrapper.Document<?> _doc) {
 			super(database, _doc);
@@ -75,14 +77,13 @@ public abstract class AbstractStressTest {
 	@Test
 	public void testStress1() {
 		for (int depth = 0; depth <= testDepth; depth++) {
-			long maxDocuments = 10^depth;
+			long maxDocuments = 10 ^ depth;
 			log.info("Depth=" + depth + "   maxDocuments=" + maxDocuments);
 
 			long timeTest01Round01 = 0;
 			long timeTest01Round02 = 0;
 			long timeTest02Round01 = 0;
 			long timeTest02Round02 = 0;
-
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
@@ -102,7 +103,10 @@ public abstract class AbstractStressTest {
 			start = System.nanoTime();
 			for (i = 0; i < (maxDocuments); i++) {
 				@SuppressWarnings("unused")
-				Document doc = database.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+				Document doc = database.createDocument()
+										.setField("Form", form)
+										.setField("Value", i % MODULE)
+										.save();
 
 				if (i % STEP == 0) {
 					log.fine("Processed=" + i);
@@ -119,7 +123,8 @@ public abstract class AbstractStressTest {
 			i = 0;
 			start = System.nanoTime();
 			for (Document doc : iterator) {
-				doc.setField("Value", i * 4).save();
+				doc.setField("Value", i * 4)
+					.save();
 
 				if (i % STEP == 0) {
 					log.fine("Processed=" + i);
@@ -129,15 +134,18 @@ public abstract class AbstractStressTest {
 			end = System.nanoTime();
 			timeTest02Round01 = (end - start) / 1000000;
 
-			Database library = session.createDatabase(Library.class, context.getTestDatabaseServer(), "TEST_LIBRARY_"
-					+ suffixDb);
+			Database library =
+					session.createDatabase(Library.class, context.getTestDatabaseServer(), "TEST_LIBRARY_" + suffixDb);
 			@SuppressWarnings("unused")
 			View books = library.createView("vi_books", "SELECT Form=\"fo_book\"");
 
 			start = System.nanoTime();
 			for (i = 0; i < (maxDocuments); i++) {
 				@SuppressWarnings("unused")
-				Document doc = library.createDocument().setField("Form", "fo_book").setField("Value", i % MODULE).save();
+				Document doc = library.createDocument()
+										.setField("Form", "fo_book")
+										.setField("Value", i % MODULE)
+										.save();
 
 				if (i % STEP == 0) {
 					log.fine("Processed=" + i);
@@ -154,7 +162,8 @@ public abstract class AbstractStressTest {
 			i = 0;
 			start = System.nanoTime();
 			for (Document doc : booksIterator) {
-				doc.setField("Value", i * 8).save();
+				doc.setField("Value", i * 8)
+					.save();
 
 				if (i % STEP == 0) {
 					log.fine("Processed=" + i);
@@ -187,7 +196,7 @@ public abstract class AbstractStressTest {
 	@Test
 	public void testStress2() {
 		for (int depth = 0; depth <= testDepth; depth++) {
-			long maxDocuments = 10^depth;
+			long maxDocuments = 10 ^ depth;
 			log.info("Depth=" + depth + "   maxDocuments=" + maxDocuments);
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -217,7 +226,10 @@ public abstract class AbstractStressTest {
 			final int MODULE = 100;
 
 			for (i = 0; i < (maxDocuments); i++) {
-				db1.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+				db1.createDocument()
+					.setField("Form", form)
+					.setField("Value", i % MODULE)
+					.save();
 
 				if (i % 500 == 0) {
 					log.fine("Processed=" + i);
@@ -225,7 +237,10 @@ public abstract class AbstractStressTest {
 			}
 
 			for (i = 0; i < maxDocuments; i++) {
-				db2.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+				db2.createDocument()
+					.setField("Form", form)
+					.setField("Value", i % MODULE)
+					.save();
 
 				if (i % 500 == 0) {
 					log.fine("Processed=" + i);
@@ -252,7 +267,7 @@ public abstract class AbstractStressTest {
 				int value = doc1.getFieldAsInteger("Value");
 
 				for (int j = 0; j < 100; j++) {
-					DocumentIterator it = db2.search("FIELD Value=" + value + "");
+					DocumentIterator it = db2.search("Value=" + value);
 					for (Document doc2 : it) {
 						log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value
 								+ " on " + doc2.getObjectId());
@@ -289,7 +304,7 @@ public abstract class AbstractStressTest {
 	@Test
 	public void testStress3() {
 		for (int depth = 0; depth <= testDepth; depth++) {
-			long maxDocuments = 10^depth;
+			long maxDocuments = 10 ^ depth;
 			log.info("Depth=" + depth + "   maxDocuments=" + maxDocuments);
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -319,7 +334,10 @@ public abstract class AbstractStressTest {
 			final int MODULE = 100;
 
 			for (i = 0; i < (maxDocuments); i++) {
-				db1.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+				db1.createDocument()
+					.setField("Form", form)
+					.setField("Value", i % MODULE)
+					.save();
 
 				if (i % 500 == 0) {
 					log.fine("Processed=" + i);
@@ -327,7 +345,10 @@ public abstract class AbstractStressTest {
 			}
 
 			for (i = 0; i < maxDocuments; i++) {
-				db2.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+				db2.createDocument()
+					.setField("Form", form)
+					.setField("Value", i % MODULE)
+					.save();
 
 				if (i % 500 == 0) {
 					log.fine("Processed=" + i);
@@ -349,10 +370,10 @@ public abstract class AbstractStressTest {
 			i = 0;
 			for (Document doc1 : db1.getAllDocuments()) {
 				int value = doc1.getFieldAsInteger("Value");
-				DocumentIterator it = db2.search("FIELD Value=" + value + "");
+				DocumentIterator it = db2.search("Value=" + value);
 				for (Document doc2 : it) {
-					log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value + " on "
-							+ doc2.getObjectId());
+					log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value
+							+ " on " + doc2.getObjectId());
 				}
 
 				if (i % 100 == 0) {
@@ -385,13 +406,14 @@ public abstract class AbstractStressTest {
 	@Test
 	public void testStress4() {
 		for (int depth = 0; depth <= testDepth; depth++) {
-			long maxDocuments = 10^depth;
+			long maxDocuments = 10 ^ depth;
 			log.info("Depth=" + depth + "   maxDocuments=" + maxDocuments);
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-			Database database = session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date())
-					+ ".nsf");
+			Database database =
+					session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date())
+							+ ".nsf");
 
 			assertTrue("The test database could not be instantiated.", database != null);
 			assertTrue("The test database could not be opened.", database.isOpen());
@@ -408,7 +430,10 @@ public abstract class AbstractStressTest {
 			int i;
 
 			for (i = 0; i < maxDocuments; i++) {
-				database.createDocument().setField("Form", form).setField("Value", i).save();
+				database.createDocument()
+						.setField("Form", form)
+						.setField("Value", i)
+						.save();
 
 				if (i % 500 == 0) {
 					log.fine("Processed=" + i);

@@ -176,14 +176,14 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 			for (int i = 0; i < temp.size(); i++) {
 				// Always save as lotus.domino.DateTime
 				lotus.domino.Session __session;
-				lotus.domino.DateTime _date;
+				lotus.domino.DateTime __date;
 				try {
 					__session = _session.getNativeObject(); //	__doc.getParentDatabase().getParent();
-					_date = __session.createDateTime((java.util.Date) temp.get(i));
+					__date = __session.createDateTime((java.util.Date) temp.get(i));
 				} catch (NotesException e) {
 					throw new RiverException(e);
 				}
-				temp.set(i, _date);
+				temp.set(i, __date);
 			}
 		}
 

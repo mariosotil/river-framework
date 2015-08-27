@@ -4,6 +4,8 @@ package org.riverframework.wrapper.org.openntf.domino;
 // import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import lotus.domino.DateTime;
+
 import org.openntf.domino.Base;
 import org.riverframework.River;
 import org.riverframework.RiverException;
@@ -184,7 +186,8 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> search(String query, int max) {
 		org.openntf.domino.DocumentCollection _col;
 
-		_col = __database.FTSearch(query, max);
+		org.openntf.domino.DateTime __date = _session.getNativeObject().createDateTime("1/1/0001");
+		_col = __database.search(query, __date, max);
 
 		@SuppressWarnings("unchecked")
 		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = 

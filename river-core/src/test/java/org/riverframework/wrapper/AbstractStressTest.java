@@ -28,14 +28,17 @@ public abstract class AbstractStressTest {
 		// Opening the test context in the current package
 		try {
 			if (context == null) {
-				Class<?> clazz = Class.forName(this.getClass().getPackage().getName() + ".Context");
+				Class<?> clazz = Class.forName(this.getClass()
+													.getPackage()
+													.getName() + ".Context");
 				if (Context.class.isAssignableFrom(clazz)) {
 					Constructor<?> constructor = clazz.getDeclaredConstructor();
 					constructor.setAccessible(true);
 					context = (Context) constructor.newInstance();
 				}
 
-				_session = context.getSession().getWrapperObject();
+				_session = context.getSession()
+									.getWrapperObject();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -68,7 +71,10 @@ public abstract class AbstractStressTest {
 
 		start = System.nanoTime();
 		for (i = 0; i < (maxDocumentsForStressTest); i++) {
-			_database.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+			_database.createDocument()
+						.setField("Form", form)
+						.setField("Value", i % MODULE)
+						.save();
 
 			if (i % 500 == 0) {
 				log.fine("Processed=" + i);
@@ -130,20 +136,28 @@ public abstract class AbstractStressTest {
 		final int MODULE = 100;
 
 		for (i = 0; i < (maxDocumentsForStressTest); i++) {
-			db1.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+			db1.createDocument()
+				.setField("Form", form)
+				.setField("Value", i % MODULE)
+				.save();
 
 			if (i % 500 == 0) {
 				log.fine("Processed=" + i);
-				_session.getFactory().logStatus();
+				_session.getFactory()
+						.logStatus();
 			}
 		}
 
 		for (i = 0; i < maxDocumentsForStressTest; i++) {
-			db2.createDocument().setField("Form", form).setField("Value", i % MODULE).save();
+			db2.createDocument()
+				.setField("Form", form)
+				.setField("Value", i % MODULE)
+				.save();
 
 			if (i % 500 == 0) {
 				log.fine("Processed=" + i);
-				_session.getFactory().logStatus();
+				_session.getFactory()
+						.logStatus();
 			}
 		}
 
@@ -166,10 +180,10 @@ public abstract class AbstractStressTest {
 
 			for (int j = 0; j < 20; j++) {
 				log.fine("Round " + i + "," + j);
-				DocumentIterator<?, ?> it = db2.search("FIELD Value=" + value + "");
+				DocumentIterator<?, ?> it = db2.search("Value=" + value);
 				for (Document<?> doc2 : it) {
-					log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value + " on "
-							+ doc2.getObjectId());
+					log.finest(doc1.getObjectId() + ": " + (doc2.isOpen() ? "F" : "Not f") + "ound value " + value
+							+ " on " + doc2.getObjectId());
 
 					if (doc1 == null || !doc1.isOpen())
 						log.warning("doc1 is closed!");
@@ -178,7 +192,8 @@ public abstract class AbstractStressTest {
 
 			if (i % 10 == 0) {
 				log.fine("Processed=" + i);
-				_session.getFactory().logStatus();
+				_session.getFactory()
+						.logStatus();
 			}
 			i++;
 		}
@@ -206,7 +221,8 @@ public abstract class AbstractStressTest {
 	public void testStress3() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
-		Database<?> database = _session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
+		Database<?> database =
+				_session.createDatabase(context.getTestDatabaseServer(), "TEST_DB_" + sdf.format(new Date()) + ".nsf");
 
 		assertTrue("The test database could not be instantiated.", database != null);
 		assertTrue("The test database could not be opened.", database.isOpen());
@@ -223,15 +239,20 @@ public abstract class AbstractStressTest {
 		int i;
 
 		for (i = 0; i < maxDocumentsForStressTest; i++) {
-			database.createDocument().setField("Form", form).setField("Value", i).save();
+			database.createDocument()
+					.setField("Form", form)
+					.setField("Value", i)
+					.save();
 
 			if (i % 500 == 0) {
 				log.fine("Processed=" + i);
-				_session.getFactory().logStatus();
+				_session.getFactory()
+						.logStatus();
 			}
 		}
 
-		_session.getFactory().logStatus();
+		_session.getFactory()
+				.logStatus();
 		log.info("Step 1!");
 
 		view = database.getView(name);
@@ -245,12 +266,14 @@ public abstract class AbstractStressTest {
 			i++;
 			if (i % 500 == 0) {
 				log.fine("Processed=" + i);
-				_session.getFactory().logStatus();
+				_session.getFactory()
+						.logStatus();
 			}
 		}
 		assertTrue("There is a problem with the documents indexed in the last view.", i == maxDocumentsForStressTest);
 
-		_session.getFactory().logStatus();
+		_session.getFactory()
+				.logStatus();
 		log.info("Step 2!");
 
 		long start = System.nanoTime();
@@ -265,7 +288,8 @@ public abstract class AbstractStressTest {
 			doc2.delete();
 			if (i % 500 == 0) {
 				log.fine("Processed=" + i);
-				_session.getFactory().logStatus();
+				_session.getFactory()
+						.logStatus();
 			}
 		}
 
@@ -281,7 +305,8 @@ public abstract class AbstractStressTest {
 			if (i % 500 == 0)
 				log.fine("Processed=" + i);
 		}
-		_session.getFactory().logStatus();
+		_session.getFactory()
+				.logStatus();
 		log.info("Step 4!");
 
 		assertTrue("There is a problem with the last documents created when we try to delete them.", i == 0);

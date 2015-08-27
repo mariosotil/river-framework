@@ -195,7 +195,7 @@ public abstract class AbstractDocumentTest {
 		String strValue = doc.getFieldAsString(testField);
 		int intValue = doc.getFieldAsInteger(testField);
 
-		assertFalse("The integer value can not be retrieved as string. ", "20".equals(strValue));
+		assertTrue("The integer value can not be retrieved as string. ", "20".equals(strValue));
 		assertTrue("The integer value can be retrieved as integer. ", 20 == intValue);
 	}
 

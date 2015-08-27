@@ -165,5 +165,11 @@
 			<artifactId>river-core</artifactId>
 			<version>0.2.11</version>
 		</dependency>
+		<dependency>
+			<groupId>org.riverframework</groupId>
+			<artifactId>river-credentials</artifactId>
+			<version>0.1.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

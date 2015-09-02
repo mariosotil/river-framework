@@ -1,9 +1,9 @@
-# river-framework
+<img src="http://www.riverframework.org/images/river-header.png" /><br/>
 [![Project Stats](https://www.openhub.net/p/river-framework/widgets/project_thin_badge.gif)](https://www.openhub.net/p/river-framework)
 
 ## What is the River Framework?
 
-This is an Object-Document Mapper Framework for NoSQL databases in **development stage**. You can read about the project at its [website](http://www.riverframework.org). Here you will find about the development itself: current and next features, known issues, dependencies, binaries, maven, demos, and, of course, the source code :-)
+It is an Object-Document Mapper Framework for NoSQL databases in **development stage**. Here you will find about the development itself: current and next features, known issues, dependencies, binaries, maven, demos, and, of course, the source code :-)  You can read about the project at its [website](http://www.riverframework.org)
 
 
 ## Features

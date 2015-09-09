@@ -19,7 +19,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 
 	private static DefaultFactory instance = null;
 	private boolean isRemoteSession = false;
-	
+
 	protected DefaultFactory(Class<? extends AbstractNativeReference<lotus.domino.Base>> nativeReferenceClass) {
 		super(nativeReferenceClass);
 	}
@@ -64,7 +64,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 
 			try {
 				isRemoteSession = (parameters[0] != null);					
-					
+
 				__obj = NotesFactory.createSession((String) parameters[0], (String) parameters[1], (String) parameters[2]); 
 			} catch (NotesException e) {
 				throw new RiverException(e);
@@ -109,7 +109,13 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			_iterator = getWrapper(DefaultDocumentIterator.class, lotus.domino.ViewEntryCollection.class, __obj);
 
 		} else if(__obj instanceof lotus.domino.View) {
-			_iterator = getWrapper(DefaultDocumentIterator.class, lotus.domino.View.class, __obj);
+			lotus.domino.ViewEntryCollection __all;
+			try {
+				__all = ((lotus.domino.View) __obj).getAllEntries();
+			} catch (NotesException e) {
+				throw new RiverException(e);
+			}
+			_iterator = getWrapper(DefaultDocumentIterator.class, lotus.domino.ViewEntryCollection.class, __all);
 
 		} else {
 			throw new RiverException("Expected an object lotus.domino.View, DocumentCollection, or ViewEntryCollection.");
@@ -125,21 +131,21 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 		boolean cleaning = false;
 		long start = 0;
 		String exceptId = null;
-		
+
 		// If there is no a session created, return
 		if (_session == null) return;
 
-		
+
 		if (except.length > 0) {
 			// If the object to be keeped is not a document, return
 			if (!(except[0] instanceof org.riverframework.wrapper.Document)) return;
-			
+
 			// Otherwise, we save its Object Id
 			exceptId = except[0].getObjectId();
 		} else {
 			exceptId = "";
 		}
-				
+
 		while ((ref = wrapperQueue.poll()) != null) { 
 			if (!cleaning) {
 				start = System.nanoTime();
@@ -147,45 +153,45 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<l
 			}
 
 			// synchronized (_session){  <== necessary?							
-				AbstractNativeReference<lotus.domino.Base> nat = nativeReferenceClass.cast(ref);
-				lotus.domino.Base __native = nat.getNativeObject();
+			AbstractNativeReference<lotus.domino.Base> nat = nativeReferenceClass.cast(ref);
+			lotus.domino.Base __native = nat.getNativeObject();
 
-				if(__native instanceof lotus.domino.local.Document || 
-						__native instanceof lotus.domino.cso.Document) {				
-					String id = nat.getObjectId();
+			if(__native instanceof lotus.domino.local.Document || 
+					__native instanceof lotus.domino.cso.Document) {				
+				String id = nat.getObjectId();
 
-					if(exceptId.equals(id)) {
-						if (log.isLoggable(Level.FINEST)) {
-							StringBuilder sb = new StringBuilder();
-							sb.append("NO Recycling: id=");
-							sb.append(id);
-							sb.append(" native=");
-							sb.append(__native == null ? "<null>" : __native.getClass().getName());
-							sb.append(" (");
-							sb.append(__native == null ? "<null>" : __native.hashCode());
-							sb.append(")");
+				if(exceptId.equals(id)) {
+					if (log.isLoggable(Level.FINEST)) {
+						StringBuilder sb = new StringBuilder();
+						sb.append("NO Recycling: id=");
+						sb.append(id);
+						sb.append(" native=");
+						sb.append(__native == null ? "<null>" : __native.getClass().getName());
+						sb.append(" (");
+						sb.append(__native == null ? "<null>" : __native.hashCode());
+						sb.append(")");
 
-							log.finest(sb.toString());
-						}
-						
-					} else {
-						if (log.isLoggable(Level.FINEST)) {
-							StringBuilder sb = new StringBuilder();
-							sb.append("Recycling: id=");
-							sb.append(id);
-							sb.append(" native=");
-							sb.append(__native == null ? "<null>" : __native.getClass().getName());
-							sb.append(" (");
-							sb.append(__native == null ? "<null>" : __native.hashCode());
-							sb.append(")");
-
-							log.finest(sb.toString());
-						}
-
-						wrapperMap.remove(id);
-						nat.close();
+						log.finest(sb.toString());
 					}
+
+				} else {
+					if (log.isLoggable(Level.FINEST)) {
+						StringBuilder sb = new StringBuilder();
+						sb.append("Recycling: id=");
+						sb.append(id);
+						sb.append(" native=");
+						sb.append(__native == null ? "<null>" : __native.getClass().getName());
+						sb.append(" (");
+						sb.append(__native == null ? "<null>" : __native.hashCode());
+						sb.append(")");
+
+						log.finest(sb.toString());
+					}
+
+					wrapperMap.remove(id);
+					nat.close();
 				}
+			}
 			// }
 		}
 

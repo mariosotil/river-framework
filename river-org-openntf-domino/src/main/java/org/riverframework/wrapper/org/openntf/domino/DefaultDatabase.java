@@ -4,43 +4,23 @@ package org.riverframework.wrapper.org.openntf.domino;
 // import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import lotus.domino.DateTime;
-
 import org.openntf.domino.Base;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
-import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.View;
 
-class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implements org.riverframework.wrapper.Database<org.openntf.domino.Database> {
+class DefaultDatabase extends AbstractBase<org.openntf.domino.Database> implements org.riverframework.wrapper.Database<org.openntf.domino.Database> {
 	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
-	protected org.riverframework.wrapper.Session<org.openntf.domino.Session> _session = null;
-	protected org.riverframework.wrapper.Factory<org.openntf.domino.Base<?>> _factory = null;
-	protected volatile org.openntf.domino.Database __database = null;
-	private String objectId = null;
 
-	@SuppressWarnings("unchecked")
-	protected DefaultDatabase(org.riverframework.wrapper.Session<org.openntf.domino.Session> _s, org.openntf.domino.Database __obj) {
-		__database = __obj;
-		_session = _s;
-		_factory = (Factory<Base<?>>) _session.getFactory();
-		objectId = calcObjectId(__database);
+	protected DefaultDatabase(org.riverframework.wrapper.Session<org.openntf.domino.Session> _session, org.openntf.domino.Database __native) {
+		super(_session, __native);
 	}
 
 	@Override
-	public org.openntf.domino.Database getNativeObject() {
-		return __database;
-	}
-
-	@Override
-	public String getObjectId() {
-		return objectId;
-	}
-
-	public static String calcObjectId(org.openntf.domino.Database __database) {
+	public String calcObjectId(org.openntf.domino.Database __database) {
 		String objectId = "";
 
 		if (__database != null) {
@@ -57,29 +37,29 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 
 	@Override
 	public String getServer() {
-		return __database.getServer();
+		return __native.getServer();
 	}
 
 	@Override
 	public String getFilePath() {
-		return __database.getFilePath();
+		return __native.getFilePath();
 	}
 
 	@Override
 	public String getName() {
-		return __database.getTitle();
+		return __native.getTitle();
 	}
 
 	@Override
 	public boolean isOpen() {
-		return (__database != null && __database.isOpen());
+		return (__native != null && __native.isOpen());
 	}
 
 	@Override
 	public Document<org.openntf.domino.Document> createDocument(String... parameters) {
 		org.openntf.domino.Document __doc = null;
 
-		__doc = __database.createDocument();
+		__doc = __native.createDocument();
 
 		@SuppressWarnings("unchecked")
 		Document<org.openntf.domino.Document> doc = (Document<org.openntf.domino.Document>) _factory.getDocument(__doc);
@@ -102,7 +82,7 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 
 			try {
 				if (id.length() == 32) {
-					__doc = __database.getDocumentByUNID(id);
+					__doc = __native.getDocumentByUNID(id);
 				}
 			} catch (Exception e) {
 				// Maybe it was an invalid UNID. We just ignore the exception.
@@ -110,7 +90,7 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 
 			try {
 				if (__doc == null && id.length() == 8) {
-					__doc = __database.getDocumentByID(id);
+					__doc = __native.getDocumentByID(id);
 				}
 			} catch (Exception e) {
 				// Maybe it was an invalid UNID. We just ignore the exception.
@@ -130,11 +110,11 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 
 		if (parameters.length == 1) {
 			name = parameters[0];
-			__view = __database.createView(name);
+			__view = __native.createView(name);
 		} else if (parameters.length == 2) {
 			name = parameters[0];
 			String selectionFormula = parameters[1];
-			__view = __database.createView(name, selectionFormula);
+			__view = __native.createView(name, selectionFormula);
 		} else {
 			throw new RiverException("It was expected these parameters: name (required) and selection formula (optional).");
 		}			
@@ -153,7 +133,7 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 
 		if (parameters.length > 0) {
 			String id = parameters[0];
-			__view = __database.getView(id);
+			__view = __native.getView(id);
 		}
 
 		if (__view != null)
@@ -168,7 +148,7 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> getAllDocuments() {
 		org.openntf.domino.DocumentCollection _col;
 
-		_col = __database.getAllDocuments();
+		_col = __native.getAllDocuments();
 
 		@SuppressWarnings("unchecked")
 		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = 
@@ -187,7 +167,7 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 		org.openntf.domino.DocumentCollection _col;
 
 		org.openntf.domino.DateTime __date = _session.getNativeObject().createDateTime("1/1/0001");
-		_col = __database.search(query, __date, max);
+		_col = __native.search(query, __date, max);
 
 		@SuppressWarnings("unchecked")
 		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> _iterator = 
@@ -197,14 +177,14 @@ class DefaultDatabase extends DefaultBase<org.openntf.domino.Database> implement
 
 	@Override
 	public Database<org.openntf.domino.Database> refreshSearchIndex(boolean createIfNotExist) {
-		__database.updateFTIndex(createIfNotExist);
+		__native.updateFTIndex(createIfNotExist);
 		return this;
 	}
 
 	@Override
 	public void delete() {
-		if (__database != null) 
-			__database.remove();			
+		if (__native != null) 
+			__native.remove();			
 
 		close();
 	}

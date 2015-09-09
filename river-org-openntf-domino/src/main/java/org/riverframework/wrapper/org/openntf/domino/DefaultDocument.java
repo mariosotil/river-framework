@@ -26,23 +26,19 @@ import org.riverframework.wrapper.Document;
  * @author mario.sotil@gmail.com
  * @version 0.0.x
  */
-class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implements org.riverframework.wrapper.Document<org.openntf.domino.Document> {
+class DefaultDocument extends AbstractBase<org.openntf.domino.Document> implements org.riverframework.wrapper.Document<org.openntf.domino.Document> {
 	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
-	protected org.riverframework.wrapper.Session<org.openntf.domino.Session> _session = null;
-	protected volatile org.openntf.domino.Document __doc = null;
-	private String objectId = null;
 
 	private final String FRAGMENTED_FIELD_ID = "{{RIVER_FRAGMENTED_FIELD}}";
 	private final String FRAGMENT_FIELD_NAME_SEPARATOR = "$";
 	private final int MAX_FIELD_SIZE = 32 * 1024 - 1;
 
-	protected DefaultDocument(org.riverframework.wrapper.Session<org.openntf.domino.Session> s, org.openntf.domino.Document d) {
-		__doc = d;
-		_session = s;
-		objectId = calcObjectId(__doc);
+	protected DefaultDocument(org.riverframework.wrapper.Session<org.openntf.domino.Session> _session, org.openntf.domino.Document __native) {
+		super(_session, __native);
 	}
 
-	public static String calcObjectId(org.openntf.domino.Document __doc) {
+	@Override
+	public String calcObjectId(org.openntf.domino.Document __doc) {
 		String objectId = "";
 		if (__doc != null) {
 			org.openntf.domino.Database __database = __doc.getParentDatabase();
@@ -62,18 +58,13 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 
 	@Override
 	public Document<org.openntf.domino.Document> setTable(String table) {
-		__doc.replaceItemValue("Form", table);
+		__native.replaceItemValue("Form", table);
 		return this;
 	}
 
 	@Override
 	public String getTable() {
-		return __doc.getItemValueString("Form");
-	}
-
-	@Override
-	public org.openntf.domino.Document getNativeObject() {
-		return __doc;
+		return __native.getItemValueString("Form");
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -100,7 +91,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 					block++;
 
 					String fieldName = field + FRAGMENT_FIELD_NAME_SEPARATOR + block;
-					Item __item = __doc.replaceItemValue(fieldName, substr);
+					Item __item = __native.replaceItemValue(fieldName, substr);
 					__item.setSummary(false);
 				}				
 
@@ -134,25 +125,20 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 			}
 		}
 
-		__doc.replaceItemValue(field, temp);
+		__native.replaceItemValue(field, temp);
 
 		return this;
 	}
 
 	@Override
-	public String getObjectId() {
-		return objectId;
-	}
-
-	@Override
 	public Document<org.openntf.domino.Document> recalc() {
-		__doc.computeWithForm(true, false);
+		__native.computeWithForm(true, false);
 		return this;
 	}
 
 	@Override
 	public Field getField(String field) {
-		Vector<?> temp = __doc.getItemValue(field);
+		Vector<?> temp = __native.getItemValue(field);
 		Field value = temp == null ? new DefaultField() : new DefaultField(temp);
 
 		if (!value.isEmpty()) {
@@ -168,7 +154,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 
 	@Override
 	public String getFieldAsString(String field) {
-		Vector<?> value = __doc.getItemValue(field);
+		Vector<?> value = __native.getItemValue(field);
 		String result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
 
 		if (result.startsWith(FRAGMENTED_FIELD_ID)) {
@@ -187,7 +173,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 
 	@Override
 	public int getFieldAsInteger(String field) {
-		Vector<?> value = __doc.getItemValue(field);
+		Vector<?> value = __native.getItemValue(field);
 		int result = value.size() > 0 ? Converter.getAsInteger(value.get(0)) : 0;
 
 		return result;
@@ -195,7 +181,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 
 	@Override
 	public long getFieldAsLong(String field) {
-		Vector<?> value = __doc.getItemValue(field);
+		Vector<?> value = __native.getItemValue(field);
 		long result = value.size() > 0 ? Converter.getAsLong(value.get(0)) : 0;
 
 		return result;
@@ -203,7 +189,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 
 	@Override
 	public double getFieldAsDouble(String field) {
-		Vector<?> value = __doc.getItemValue(field);
+		Vector<?> value = __native.getItemValue(field);
 		double result = value.size() > 0 ? Converter.getAsDouble(value.get(0)) : 0;
 
 		return result;
@@ -214,7 +200,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 		Date result;
 
 		Vector<?> value = null;
-		value = __doc.getItemValue(field);
+		value = __native.getItemValue(field);
 		Object temp = value.size() > 0 ? value.get(0) : null;  
 		if (temp != null && temp.getClass().getName().endsWith("DateTime")) {
 			temp = ((DateTime) temp).toJavaDate();
@@ -228,13 +214,13 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 	@Override
 	public boolean isFieldEmpty(String field) {
 		boolean result = true;
-		if (__doc.hasItem(field)) {
-			org.openntf.domino.Item __item = __doc.getFirstItem(field);
+		if (__native.hasItem(field)) {
+			org.openntf.domino.Item __item = __native.getFirstItem(field);
 			if (__item != null) {
 				if (__item.getType() == org.openntf.domino.Item.RICHTEXT) {
-					if (!__doc.getEmbeddedObjects().isEmpty()) {
+					if (!__native.getEmbeddedObjects().isEmpty()) {
 						for (@SuppressWarnings("unchecked")
-						Iterator<org.openntf.domino.EmbeddedObject> i = __doc.getEmbeddedObjects()
+						Iterator<org.openntf.domino.EmbeddedObject> i = __native.getEmbeddedObjects()
 						.iterator(); i.hasNext();) {
 							org.openntf.domino.EmbeddedObject eo = i.next();
 							if (eo.getType() != 0) {
@@ -265,7 +251,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 	public boolean hasField(String field) {
 		boolean result;
 
-		result = __doc.hasItem(field);
+		result = __native.hasItem(field);
 
 		return result;
 	}
@@ -275,7 +261,7 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 		Map<String, Field> result = null;
 
 		Vector<org.openntf.domino.Item> items = null;
-		items = __doc.getItems();
+		items = __native.getItems();
 
 		result = new HashMap<String, Field>(items.size());
 
@@ -319,23 +305,23 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 
 	@Override
 	public boolean isOpen() {		
-		return (__doc != null);
+		return (__native != null);
 	}
 
 	@Override
 	public boolean isNew() {
 		boolean result;
 
-		result = __doc.isNewNote();
+		result = __native.isNewNote();
 
 		return result;
 	}
 
 	@Override
 	public Document<org.openntf.domino.Document> delete() {
-		if (__doc != null) {
-			__doc.removePermanently(true);
-			__doc = null;
+		if (__native != null) {
+			__native.removePermanently(true);
+			__native = null;
 		}
 
 		return this;
@@ -343,14 +329,14 @@ class DefaultDocument extends DefaultBase<org.openntf.domino.Document> implement
 
 	@Override
 	public Document<org.openntf.domino.Document> save() {
-		__doc.save(true, false);
+		__native.save(true, false);
 
 		return this;
 	}
 
 	@Override
 	public void close() {
-		__doc = null;
+		__native = null;
 	}	
 
 	@Override

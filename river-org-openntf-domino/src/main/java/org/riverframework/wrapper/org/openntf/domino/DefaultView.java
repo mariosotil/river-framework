@@ -5,30 +5,17 @@ import org.openntf.domino.ViewColumn;
 import org.riverframework.River;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
-import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.View;
 
-class DefaultView extends DefaultBase<org.openntf.domino.View> implements org.riverframework.wrapper.View<org.openntf.domino.View> {
+class DefaultView extends AbstractBase<org.openntf.domino.View> implements org.riverframework.wrapper.View<org.openntf.domino.View> {
 	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
-	protected org.riverframework.wrapper.Session<org.openntf.domino.Session> _session = null;
-	protected org.riverframework.wrapper.Factory<org.openntf.domino.Base<?>> _factory = null;
-	protected volatile org.openntf.domino.View __view = null;
-	private String objectId = null;
 
-	@SuppressWarnings("unchecked")
-	protected DefaultView(org.riverframework.wrapper.Session<org.openntf.domino.Session> s, org.openntf.domino.View v) {
-		__view = v;
-		_session = s;
-		_factory = (Factory<Base<?>>) _session.getFactory();
-		objectId = calcObjectId(__view);
+	protected DefaultView(org.riverframework.wrapper.Session<org.openntf.domino.Session> _session, org.openntf.domino.View __native) {
+		super(_session, __native);
 	}
 
 	@Override
-	public String getObjectId() {
-		return objectId;
-	}
-
-	public static String calcObjectId(org.openntf.domino.View __view) {
+	public String calcObjectId(org.openntf.domino.View __view) {
 		String objectId = "";
 
 		if (__view != null) {
@@ -48,15 +35,10 @@ class DefaultView extends DefaultBase<org.openntf.domino.View> implements org.ri
 	}
 
 	@Override
-	public org.openntf.domino.View getNativeObject() {
-		return __view;
-	}
-
-	@Override
 	public Document<org.openntf.domino.Base<?>> getDocumentByKey(String key) {
 		org.openntf.domino.Document __doc = null;
 
-		__doc = __view.getDocumentByKey(key, true);
+		__doc = __native.getDocumentByKey(key, true);
 
 		@SuppressWarnings("unchecked")
 		Document<org.openntf.domino.Base<?>> doc = (Document<Base<?>>) _factory.getDocument(__doc);
@@ -66,13 +48,13 @@ class DefaultView extends DefaultBase<org.openntf.domino.View> implements org.ri
 
 	@Override
 	public boolean isOpen() {
-		return __view != null;
+		return __native != null;
 	}
 
 	@Override
 	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> getAllDocuments() {
 		org.openntf.domino.ViewEntryCollection __col;
-		__col = __view.getAllEntries();
+		__col = __native.getAllEntries();
 
 		@SuppressWarnings("unchecked")
 		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> result = 
@@ -83,7 +65,7 @@ class DefaultView extends DefaultBase<org.openntf.domino.View> implements org.ri
 	@Override
 	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> getAllDocumentsByKey(Object key) {
 		org.openntf.domino.DocumentCollection _col;
-		_col = __view.getAllDocumentsByKey(key, true);
+		_col = __native.getAllDocumentsByKey(key, true);
 
 		@SuppressWarnings("unchecked")
 		DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> result = 
@@ -93,15 +75,15 @@ class DefaultView extends DefaultBase<org.openntf.domino.View> implements org.ri
 
 	@Override
 	public View<org.openntf.domino.View> refresh() {
-		__view.refresh();
+		__native.refresh();
 		return this;
 	}
 
 	@Override
 	public void delete() {
-		if (__view != null) {
-			__view.remove();
-			__view = null;
+		if (__native != null) {
+			__native.remove();
+			__native = null;
 		}
 	}
 
@@ -115,7 +97,7 @@ class DefaultView extends DefaultBase<org.openntf.domino.View> implements org.ri
 	public DocumentIterator<org.openntf.domino.Base<?>,org.openntf.domino.Document> search(String query, int max) {
 		org.openntf.domino.View __temp = null;
 
-		__temp = __view.getParent().getView(__view.getName());			
+		__temp = __native.getParent().getView(__native.getName());			
 		__temp.FTSearch(query, max);
 
 		@SuppressWarnings("unchecked")
@@ -127,7 +109,7 @@ class DefaultView extends DefaultBase<org.openntf.domino.View> implements org.ri
 
 	@Override
 	public View<org.openntf.domino.View> addColumn(String name, String value, boolean isSorted) {
-		ViewColumn __col =  __view.createColumn(__view.getColumnCount(), name, value);
+		ViewColumn __col =  __native.createColumn(__native.getColumnCount(), name, value);
 		__col.setSorted(isSorted);
 		return null;
 	}

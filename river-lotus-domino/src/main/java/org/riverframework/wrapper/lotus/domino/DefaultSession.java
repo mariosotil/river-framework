@@ -14,16 +14,10 @@ import org.riverframework.wrapper.Session;
 
 public class DefaultSession extends AbstractBase<lotus.domino.Session> implements Session<lotus.domino.Session> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	private final DefaultFactory _factory = DefaultFactory.getInstance();
 
-	private volatile lotus.domino.Session __session = null;
-	private String objectId = null;
-
-	protected DefaultSession(org.riverframework.wrapper.Session<lotus.domino.Base> dummy, lotus.domino.Session obj) {
-		__session = obj;
-		objectId = calcObjectId(__session);
-
-		log.fine("ObjectId:" + getObjectId());
+	protected DefaultSession(org.riverframework.wrapper.Session<lotus.domino.Session> dummy, lotus.domino.Session __native) {
+		super(dummy, __native);
+		_factory = DefaultFactory.getInstance();
 	}
 
 	@Override
@@ -32,11 +26,12 @@ public class DefaultSession extends AbstractBase<lotus.domino.Session> implement
 			// There's no a deleted field for the Session class
 			return false;
 		} else {
-			return isObjectRecycled(__session);
+			return isObjectRecycled(__native);
 		}
 	}
 
-	public static String calcObjectId(lotus.domino.Session  __session) {
+	@Override
+	public String calcObjectId(lotus.domino.Session  __session) {
 		String objectId = "";
 
 		if (__session != null) {
@@ -63,18 +58,8 @@ public class DefaultSession extends AbstractBase<lotus.domino.Session> implement
 	}
 
 	@Override
-	public String getObjectId() {
-		return objectId;
-	}
-
-	@Override
-	public lotus.domino.Session getNativeObject() {
-		return __session;
-	}
-
-	@Override
 	public boolean isOpen() {
-		return (__session != null && !isRecycled()); 
+		return (__native != null && !isRecycled()); 
 	}
 
 	@SuppressWarnings("unchecked")
@@ -89,7 +74,7 @@ public class DefaultSession extends AbstractBase<lotus.domino.Session> implement
 
 		if (!_database.isOpen()) {
 			try {
-				lotus.domino.DbDirectory dir = __session.getDbDirectory(location[0]);
+				lotus.domino.DbDirectory dir = __native.getDbDirectory(location[0]);
 				__database = dir.createDatabase(location[1]);
 			} catch (NotesException e) {
 				throw new RiverException(e);
@@ -120,7 +105,7 @@ public class DefaultSession extends AbstractBase<lotus.domino.Session> implement
 			if (path.length() == 16) {
 				log.finer("Trying with a replica ID");
 				boolean res = false;
-				__database = __session.getDatabase(null, null);
+				__database = __native.getDatabase(null, null);
 				res = __database.openByReplicaID(server, path);
 				if (!res) __database = null;
 			}
@@ -137,7 +122,7 @@ public class DefaultSession extends AbstractBase<lotus.domino.Session> implement
 		try {
 			if (__database == null || !__database.isOpen()) {
 				log.finer("Trying with a file path");
-				__database = __session.getDatabase(server, path, false);
+				__database = __native.getDatabase(server, path, false);
 			}
 		} catch (NotesException e1) {
 			try {
@@ -174,7 +159,7 @@ public class DefaultSession extends AbstractBase<lotus.domino.Session> implement
 		String userName = "";
 
 		try {
-			userName = __session.getUserName();
+			userName = __native.getUserName();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -190,11 +175,11 @@ public class DefaultSession extends AbstractBase<lotus.domino.Session> implement
 
 		log.fine("Recycling the session");
 		try {
-			__session.recycle();
+			__native.recycle();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		} finally {
-			__session = null;
+			__native = null;
 		}
 
 		log.info("Session closed.");

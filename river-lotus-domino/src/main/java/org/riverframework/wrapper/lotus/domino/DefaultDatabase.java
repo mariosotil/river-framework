@@ -8,41 +8,22 @@ import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
-import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.View;
 
 class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org.riverframework.wrapper.Database<lotus.domino.Database> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	protected org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
-	protected org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
-	protected volatile lotus.domino.Database __database = null;
-	private String objectId = null;
 
-	@SuppressWarnings("unchecked")
-	protected DefaultDatabase(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.Database __obj) {
-		__database = __obj;
-		_session = _s;
-		_factory = (Factory<Base>) _s.getFactory();
-		objectId = calcObjectId(__database);
+	protected DefaultDatabase(org.riverframework.wrapper.Session<lotus.domino.Session> _session, lotus.domino.Database __native) {
+		super(_session, __native);
 	}
 
 	@Override
 	public boolean isRecycled() {
 		// If it's not a remote session, returns false. Otherwise, returns if the object is recycled
-		return isObjectRecycled(__database);
+		return isObjectRecycled(__native);
 	}
 	
-	@Override
-	public lotus.domino.Database getNativeObject() {
-		return __database;
-	}
-
-	@Override
-	public String getObjectId() {
-		return objectId;
-	}
-
-	public static String calcObjectId(lotus.domino.Database __database) {
+	public String calcObjectId(lotus.domino.Database __database) {
 		String objectId = "";
 
 		if (__database != null ) { // && !isRecycled(__database)) {
@@ -64,7 +45,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 	@Override
 	public String getServer() {
 		try {
-			return __database.getServer();
+			return __native.getServer();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -73,7 +54,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 	@Override
 	public String getFilePath() {
 		try {
-			return __database.getFilePath();
+			return __native.getFilePath();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -82,8 +63,8 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 	@Override
 	public String getName() {
 		try {
-			String name = __database.getTitle();
-			return name.equals("") ? __database.getFileName() : name;
+			String name = __native.getTitle();
+			return name.equals("") ? __native.getFileName() : name;
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -92,7 +73,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 	@Override
 	public boolean isOpen() {
 		try {
-			return (__database != null && !isRecycled() && __database.isOpen()); 
+			return (__native != null && !isRecycled() && __native.isOpen()); 
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -103,7 +84,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		lotus.domino.Document __doc = null;
 
 		try {
-			__doc = __database.createDocument();
+			__doc = __native.createDocument();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -129,7 +110,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 			if (!doc.isOpen()) { 
 				try {
 					if (id.length() == 32) {
-						__doc = __database.getDocumentByUNID(id);
+						__doc = __native.getDocumentByUNID(id);
 					}
 				} catch (Exception e) {
 					// Do nothing
@@ -137,7 +118,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 
 				try {
 					if (__doc == null && id.length() == 8) {
-						__doc = __database.getDocumentByID(id);
+						__doc = __native.getDocumentByID(id);
 					}
 				} catch (Exception e) {
 					// Do nothing
@@ -160,11 +141,11 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		try {
 			if (parameters.length == 1) {
 				name = parameters[0];
-				__view = __database.createView(name);
+				__view = __native.createView(name);
 			} else if (parameters.length == 2) {
 				name = parameters[0];
 				String selectionFormula = parameters[1];
-				__view = __database.createView(name, selectionFormula);
+				__view = __native.createView(name, selectionFormula);
 			} else {
 				throw new RiverException("It was expected these parameters: name (required) and selection formula (optional).");
 			}			
@@ -194,7 +175,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		try {
 			if (parameters.length > 0) {
 				String id = parameters[0];
-				__view = __database.getView(id);
+				__view = __native.getView(id);
 			}
 
 			if (__view != null)
@@ -214,7 +195,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		lotus.domino.DocumentCollection _col;
 
 		try {
-			_col = __database.getAllDocuments();
+			_col = __native.getAllDocuments();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -237,7 +218,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 		lotus.domino.DocumentCollection _col;
 
 		try {
-			_col = __database.search(query, null, max);
+			_col = __native.search(query, null, max);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -251,7 +232,7 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 	@Override
 	public Database<lotus.domino.Database> refreshSearchIndex(boolean createIfNotExist) {
 		try {
-			__database.updateFTIndex(createIfNotExist);
+			__native.updateFTIndex(createIfNotExist);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -261,8 +242,8 @@ class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org
 	@Override
 	public void delete() {
 		try {
-			if (__database != null) 
-				__database.remove();			
+			if (__native != null) 
+				__native.remove();			
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}

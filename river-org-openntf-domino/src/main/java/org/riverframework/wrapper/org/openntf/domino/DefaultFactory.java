@@ -23,9 +23,9 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<o
 	public static DefaultFactory getInstance() {
 		if (instance == null) {
 			// Thread Safe. Might be costly operation in some case
-				if (instance == null) {
-					instance = new DefaultFactory(DefaultNativeReference.class);
-				}
+			if (instance == null) {
+				instance = new DefaultFactory(DefaultNativeReference.class);
+			}
 		}
 		return instance;
 	}
@@ -98,7 +98,8 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<o
 			_iterator = getWrapper(DefaultDocumentIterator.class, org.openntf.domino.ViewEntryCollection.class, __obj);
 
 		} else if(__obj instanceof org.openntf.domino.View) {
-			_iterator = getWrapper(DefaultDocumentIterator.class, org.openntf.domino.View.class, __obj);
+			org.openntf.domino.ViewEntryCollection __all = ((org.openntf.domino.View) __obj).getAllEntries(); 
+			_iterator = getWrapper(DefaultDocumentIterator.class, org.openntf.domino.ViewEntryCollection.class, __all);
 
 		} else {
 			throw new RiverException("Expected an object org.openntf.domino.View, DocumentCollection, or ViewEntryCollection.");

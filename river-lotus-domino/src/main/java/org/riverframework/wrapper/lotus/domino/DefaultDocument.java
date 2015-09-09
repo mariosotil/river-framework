@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Vector;
 // import java.util.logging.Logger;
 
-import lotus.domino.Base;
 import lotus.domino.DateTime;
 import lotus.domino.Item;
 import lotus.domino.NotesException;
@@ -19,50 +18,38 @@ import org.riverframework.core.DefaultField;
 import org.riverframework.core.Field;
 import org.riverframework.utils.Converter;
 import org.riverframework.wrapper.Document;
-import org.riverframework.wrapper.Factory;
 
 /**
  * Loads an IBM Notes document
- * <p>
- * This is a javadoc test
  * 
  * @author mario.sotil@gmail.com
  * @version 0.0.x
  */
 class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org.riverframework.wrapper.Document<lotus.domino.Document> {
-	protected org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
-	protected org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
-	protected volatile lotus.domino.Document __doc = null;
-	private String objectId = null;
-
 	private final String FRAGMENTED_FIELD_ID = "{{RIVER_FRAGMENTED_FIELD}}";
 	private final String FRAGMENT_FIELD_NAME_SEPARATOR = "$";
 	private final int MAX_FIELD_SIZE = 32 * 1024 - 1;
-	
-	@SuppressWarnings("unchecked")
-	protected DefaultDocument(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.Document __d) {
-		__doc = __d;
-		_session = _s;
-		_factory = (Factory<Base>) _session.getFactory();
-		objectId = calcObjectId(__doc);
+
+	protected DefaultDocument(org.riverframework.wrapper.Session<lotus.domino.Session> _session, lotus.domino.Document __native) {
+		super(_session, __native);
 	}
 
 	@Override
 	public boolean isRecycled() {
-		return isObjectRecycled(__doc);
+		return isObjectRecycled(__native);
 	}
 
 	String getDocumentId() {
 		if (_factory.getIsRemoteSession()) {
 			String id;
 			try {
-				id = __doc.getUniversalID();
+				id = __native.getUniversalID();
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			}
 			return id; 
 		} else {
-			return String.valueOf(getCpp(__doc));
+			return String.valueOf(getCpp(__native));
 		}
 	}
 
@@ -105,12 +92,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	public String getTable() {
 		return getFieldAsString("Form");
 	}
-	
-	@Override
-	public lotus.domino.Document getNativeObject() {
-		return __doc;
-	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Document<lotus.domino.Document> setField(String field, Object value) {
@@ -124,15 +106,15 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 				int size = str.length();
 				int block = 0;
 				boolean remote = _factory.getIsRemoteSession();
-				
+
 				while (!finished) {
 					int start = block * (MAX_FIELD_SIZE);
-					
+
 					// For some reason, the replaceItemValue lost two bytes  
 					// when it is a remote session
 					if (remote && start > 0)  
 						start -= block* 2;
-					
+
 					int end = start + (MAX_FIELD_SIZE);
 					if (end > size) { 
 						end = size;
@@ -140,33 +122,33 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 					}
 					String substr = str.substring(start, end);
 					block++;
-					
+
 					try {
 						String fieldName = field + FRAGMENT_FIELD_NAME_SEPARATOR + block;
-						Item __item = __doc.replaceItemValue(fieldName, substr);
+						Item __item = __native.replaceItemValue(fieldName, substr);
 						__item.setSummary(false);
 						if(!_factory.getIsRemoteSession())  __item.recycle(); 
 					} catch (NotesException e) {
 						throw new RiverException(e);
 					}
 				}				
-				
+
 				// Saving the size as number of blocks 
 				str = FRAGMENTED_FIELD_ID + "|" + block;		
 			}
-			
+
 			temp = new Vector(1);
 			temp.add(str);
-			
+
 		} else if (value instanceof java.util.Vector) {
 			temp = (Vector) ((java.util.Vector) value).clone();
-			
+
 		} else if (value instanceof java.util.Collection) {
 			temp = new Vector((java.util.Collection) value);
-			
+
 		} else if (value instanceof String[]) {
 			temp = new Vector(Arrays.asList((Object[]) value));
-			
+
 		} else {
 			temp = new Vector(1);
 			temp.add(value);
@@ -188,7 +170,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		}
 
 		try {
-			__doc.replaceItemValue(field, temp);
+			__native.replaceItemValue(field, temp);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -197,14 +179,9 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	}
 
 	@Override
-	public String getObjectId() {
-		return objectId;
-	}
-
-	@Override
 	public Document<lotus.domino.Document> recalc() {
 		try {
-			__doc.computeWithForm(true, false);
+			__native.computeWithForm(true, false);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -217,7 +194,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 
 		try {
 			Vector<?> temp = null;
-			temp = __doc.getItemValue(field);
+			temp = __native.getItemValue(field);
 			value = temp == null ? new DefaultField() : new DefaultField(temp);
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -243,7 +220,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		String result = null;
 		try {			
 			Vector<?> value = null;
-			value = __doc.getItemValue(field);  // We must not use getItemValueString(field) because it does not converts from the other types to string 
+			value = __native.getItemValue(field);  // We must not use getItemValueString(field) because it does not converts from the other types to string 
 			result = value.size() > 0 ? Converter.getAsString(value.get(0)) : "";
 
 			if (result.startsWith(FRAGMENTED_FIELD_ID)) {
@@ -254,10 +231,10 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 					String fragment = getFieldAsString(field + FRAGMENT_FIELD_NAME_SEPARATOR + i );
 					sb.append(fragment);
 				}
-				
+
 				result = sb.toString();
 			}
-			
+
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -270,7 +247,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		int result = 0;
 		try {
 			Vector<?> value = null;
-			value = __doc.getItemValue(field);
+			value = __native.getItemValue(field);
 			result = value.size() > 0 ? Converter.getAsInteger(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -283,7 +260,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		long result = 0;
 		try {
 			Vector<?> value = null;
-			value = __doc.getItemValue(field);
+			value = __native.getItemValue(field);
 			result = value.size() > 0 ? Converter.getAsLong(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -296,7 +273,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		double result;
 		try {
 			Vector<?> value = null;
-			value = __doc.getItemValue(field);
+			value = __native.getItemValue(field);
 			result = value.size() > 0 ? Converter.getAsDouble(value.get(0)) : 0;
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -309,7 +286,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 		Date result;
 		try {
 			Vector<?> value = null;
-			value = __doc.getItemValue(field);
+			value = __native.getItemValue(field);
 			Object temp = value.size() > 0 ? value.get(0) : null;  
 			if (temp != null && temp.getClass().getName().endsWith("DateTime")) {
 				temp = ((DateTime) temp).toJavaDate();
@@ -327,13 +304,13 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	public boolean isFieldEmpty(String field) {
 		boolean result = true;
 		try {
-			if (__doc.hasItem(field)) {
-				lotus.domino.Item __item = __doc.getFirstItem(field);
+			if (__native.hasItem(field)) {
+				lotus.domino.Item __item = __native.getFirstItem(field);
 				if (__item != null) {
 					if (__item.getType() == lotus.domino.Item.RICHTEXT) {
-						if (!__doc.getEmbeddedObjects().isEmpty()) {
+						if (!__native.getEmbeddedObjects().isEmpty()) {
 							for (@SuppressWarnings("unchecked")
-							Iterator<lotus.domino.EmbeddedObject> i = __doc.getEmbeddedObjects()
+							Iterator<lotus.domino.EmbeddedObject> i = __native.getEmbeddedObjects()
 							.iterator(); i.hasNext();) {
 								lotus.domino.EmbeddedObject eo = i.next();
 								if (eo.getType() != 0) {
@@ -367,7 +344,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	public boolean hasField(String field) {
 		boolean result;
 		try {
-			result = __doc.hasItem(field);
+			result = __native.hasItem(field);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -383,7 +360,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 			// logWrapper.debug("getFields: " + _doc.getUniversalID());
 			// logWrapper.debug("getFields: loading items");
 
-			Vector<lotus.domino.Item> items = __doc.getItems();
+			Vector<lotus.domino.Item> items = __native.getItems();
 
 			// logWrapper.debug("getFields: found " + items.size());
 			result = new HashMap<String, Field>();
@@ -437,14 +414,14 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 
 	@Override
 	public boolean isOpen() {		
-		return (__doc != null && !isRecycled()); 
+		return (__native != null && !isRecycled()); 
 	}
 
 	@Override
 	public boolean isNew() {
 		boolean result;
 		try {
-			result = __doc.isNewNote();
+			result = __native.isNewNote();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -454,13 +431,13 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	@Override
 	public Document<lotus.domino.Document> delete() {
 		// synchronized (_session){  <== necessary?
-		if (__doc != null) {
+		if (__native != null) {
 			try {
-				__doc.removePermanently(true);
+				__native.removePermanently(true);
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			} finally {
-				__doc = null;
+				__native = null;
 			}
 		}
 
@@ -471,7 +448,7 @@ class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org
 	@Override
 	public Document<lotus.domino.Document> save() {
 		try {
-			__doc.save(true, false);
+			__native.save(true, false);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}

@@ -1,215 +1,30 @@
 package org.riverframework.wrapper.lotus.domino;
 
-import java.util.logging.Logger;
-
-import lotus.domino.Base;
-import lotus.domino.NotesException;
-
-import org.riverframework.River;
-import org.riverframework.RiverException;
+import org.riverframework.wrapper.Base;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
-import org.riverframework.wrapper.Factory;
 
-class DefaultDocumentIterator extends AbstractBase<lotus.domino.Base> implements DocumentIterator<lotus.domino.Base, lotus.domino.Document> {
-	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
-	private enum Type { COLLECTION, VIEW_ENTRY_COLLECTION } 
+class DefaultDocumentIterator implements Base<lotus.domino.Base>, DocumentIterator<lotus.domino.Base, lotus.domino.Document> {
+	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
-	@SuppressWarnings("unused")
-	private org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
-	private org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
-
-	private lotus.domino.DocumentCollection __documentCollection = null;
-	private lotus.domino.ViewEntryCollection __viewEntryCollection = null;
-
-	private lotus.domino.Document __document = null;
-	private lotus.domino.ViewEntry __viewEntry = null;
-
-	private Document<lotus.domino.Document> _doc = null;
-
-	private Type type = null;	
-	private String objectId = null;
-
-	@SuppressWarnings("unchecked")
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.DocumentCollection __obj) {
-		type = Type.COLLECTION;
-		_session = _s;
-		_factory = (Factory<Base>) _s.getFactory();
-		__documentCollection = __obj;
-
-		try {
-			__document = __documentCollection.getFirstDocument();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
-
-		_doc = (Document<lotus.domino.Document>) _factory.getDocument(__document); //Document<lotus.domino.Base>
-
-		objectId = calcObjectId(__documentCollection);
-
+	DocumentIterator<?, lotus.domino.Document> _iterator = null;
+	
+	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Session> _session, lotus.domino.DocumentCollection __native) {
+		_iterator = new DocumentIteratorFromDocumentCollection(_session, __native);
 	}
 
-	@SuppressWarnings("unchecked")
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.View __obj) {
-		type = Type.VIEW_ENTRY_COLLECTION;
-
-		_session = _s;		
-		_factory = (Factory<Base>) _s.getFactory();
-
-		try {
-			__viewEntryCollection = __obj.getAllEntries();
-			__viewEntry = __viewEntryCollection.getFirstEntry();
-
-			updateCurrentDocumentFromViewEntry();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
-
-		_doc = (Document<lotus.domino.Document>) _factory.getDocument(__document); //Document<lotus.domino.Base>
-
-		objectId = calcObjectId(__viewEntryCollection);
-
-	}
-
-	@SuppressWarnings("unchecked")
-	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.ViewEntryCollection __obj) {
-		type = Type.VIEW_ENTRY_COLLECTION;		
-		_session = _s;		
-		_factory = (Factory<Base>) _s.getFactory();
-		__viewEntryCollection = __obj;
-
-		try {
-			__viewEntry = __viewEntryCollection.getFirstEntry();
-
-			updateCurrentDocumentFromViewEntry();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
-
-		_doc = (Document<lotus.domino.Document>) _factory.getDocument(__document); //Document<lotus.domino.Base>
-
-		objectId = calcObjectId(__viewEntryCollection);
-	}
-
-	@Override
-	public boolean isRecycled() {
-		switch(type) {
-		case COLLECTION:
-			return isObjectRecycled(__documentCollection);
-		case VIEW_ENTRY_COLLECTION:
-			return isObjectRecycled(__viewEntryCollection);
-		default:
-			throw new RiverException("Wrong iterator type");
-		}
-	}
-
-	private boolean isViewEntryValid(lotus.domino.ViewEntry __ve){
-		if(__ve == null) return true;
-
-		try {
-			lotus.domino.Document __doc = __ve.getDocument();
-
-			if (__doc == null) return false;
-
-			if (isObjectRecycled(__ve.getDocument())) return false;
-
-			if (__doc.isDeleted()) return false;
-
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
-
-		return true;
-	}
-
-	private void updateCurrentDocumentFromViewEntry() {
-		try {
-			while (!isViewEntryValid(__viewEntry)) 
-			{
-				__viewEntry = __viewEntryCollection.getNextEntry(__viewEntry);
-			} 
-
-			log.finest("Current view entry=" + (__viewEntry == null ? "<null>" :__viewEntry.getDocument().hashCode()));
-
-			__document = __viewEntry == null ? null : __viewEntry.getDocument();				
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
-	}
-
-	private static String internalCalcObjectId(lotus.domino.Base __object) {
-		String objectId = "";
-		if (__object != null) { // && !isRecycled(__object)) {
-
-			StringBuilder sb = new StringBuilder();
-			sb.append(__object.getClass().getName());
-			sb.append(River.ID_SEPARATOR);
-			sb.append(__object.hashCode());
-
-			objectId = sb.toString();
-		}
-		return objectId;
-	}
-
-	public static String calcObjectId(lotus.domino.DocumentCollection __object) {
-		return internalCalcObjectId(__object);
-	}
-
-	public static String calcObjectId(lotus.domino.ViewEntryCollection __object) {
-		return internalCalcObjectId(__object);
-	}
-
-	public static String calcObjectId(lotus.domino.View __object) {
-		lotus.domino.ViewEntryCollection __vec = null;
-		try {
-			__vec = __object == null ? null : __object.getAllEntries();
-		} catch (NotesException e) {
-			throw new RiverException(e);
-		}
-
-		return internalCalcObjectId(__vec);
-	}
-
-	@Override
-	public String getObjectId() {
-		return objectId;
+	protected DefaultDocumentIterator(org.riverframework.wrapper.Session<lotus.domino.Session> _session, lotus.domino.ViewEntryCollection __native) {
+		_iterator = new DocumentIteratorFromViewEntryCollection(_session, __native);
 	}
 
 	@Override
 	public boolean hasNext() {
-		return __document != null;
+		return _iterator.hasNext();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Document<lotus.domino.Document> next() {
-		Document<lotus.domino.Document> _current = _doc;
-
-		switch(type) {
-		case COLLECTION:
-			try {
-				__document = __documentCollection.getNextDocument(__document);
-				break;
-			} catch (NotesException e) {
-				throw new RiverException(e);
-			}
-
-		case VIEW_ENTRY_COLLECTION:
-			try {
-				__viewEntry = __viewEntryCollection.getNextEntry(__viewEntry);
-				updateCurrentDocumentFromViewEntry();
-				break;
-			} catch (NotesException e) {
-				throw new RiverException(e);
-			}
-
-		default:
-			throw new RiverException("Wrong iterator type");
-		}
-
-		_doc = (Document<lotus.domino.Document>) _factory.getDocument(__document); //Document<lotus.domino.Base>
-
-		return _current;
+		return _iterator.next();
 	}
 
 	@Override
@@ -225,35 +40,19 @@ class DefaultDocumentIterator extends AbstractBase<lotus.domino.Base> implements
 
 	@Override
 	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> deleteAll() {
-		for (Document<lotus.domino.Document> doc: this) {
-			doc.delete();
-		}
-
+		_iterator.deleteAll();
+		
 		return this;
 	}
 
 	@Override
 	public lotus.domino.Base getNativeObject() {
-		switch(type) {
-		case COLLECTION:
-			return __documentCollection;
-		case VIEW_ENTRY_COLLECTION:
-			return __viewEntryCollection;
-		default:
-			throw new RiverException("Wrong iterator type");
-		}
+		return (lotus.domino.Base) _iterator.getNativeObject();
 	}
 
 	@Override
 	public boolean isOpen() {
-		switch(type) {
-		case COLLECTION:
-			return __documentCollection != null; // && !isRecycled(__documentCollection);
-		case VIEW_ENTRY_COLLECTION:
-			return __viewEntryCollection != null; // && !isRecycled(__viewEntryCollection);
-		default:
-			throw new RiverException("Wrong iterator type");
-		}
+		return _iterator.isOpen();		
 	}
 
 	@Override
@@ -264,6 +63,12 @@ class DefaultDocumentIterator extends AbstractBase<lotus.domino.Base> implements
 
 	@Override
 	public String toString() {
-		return getClass().getName() + "(" + objectId + ")";
+		return getClass().getName() + "(" + _iterator.getObjectId() + ")";
 	}
+
+	@Override
+	public String getObjectId() {
+		return _iterator.getObjectId();
+	}
+
 }

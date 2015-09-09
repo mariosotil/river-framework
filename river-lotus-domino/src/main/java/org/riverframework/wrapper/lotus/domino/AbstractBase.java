@@ -3,9 +3,14 @@ package org.riverframework.wrapper.lotus.domino;
 import java.lang.reflect.Field;
 
 import org.riverframework.RiverException;
-import org.riverframework.wrapper.Base;
+import org.riverframework.wrapper.AbstractWrapperBase;
+import org.riverframework.wrapper.Session;
 
-abstract class AbstractBase<N> implements Base<N> {
+abstract class AbstractBase<N> extends AbstractWrapperBase<N, lotus.domino.Session, lotus.domino.Base> {
+	protected AbstractBase(Session<lotus.domino.Session> _session, N __native) {
+		super(_session, __native);
+	}
+	
 	private static Field isDeleted = null;
 	private static Field weakObject = null;
 	private static Field cpp = null;
@@ -131,6 +136,5 @@ abstract class AbstractBase<N> implements Base<N> {
 		return result;
 	}
 
-	abstract boolean isRecycled();
-
+	abstract public boolean isRecycled();
 }

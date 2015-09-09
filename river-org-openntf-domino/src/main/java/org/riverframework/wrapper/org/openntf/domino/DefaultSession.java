@@ -6,23 +6,19 @@ import java.util.logging.Logger;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
+import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.Session;
 
-public class DefaultSession extends DefaultBase<org.openntf.domino.Session> implements Session<org.openntf.domino.Session> {
+public class DefaultSession extends AbstractBase<org.openntf.domino.Session> implements Session<org.openntf.domino.Session> {
 	private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
-	private final DefaultFactory factory = DefaultFactory.getInstance();
 
-	private volatile org.openntf.domino.Session __session = null;
-	private String objectId = null;
-
-	protected DefaultSession(org.riverframework.wrapper.Session<org.openntf.domino.Base<?>> dummy, org.openntf.domino.Session obj) {
-		__session = obj;
-		objectId = calcObjectId(__session);
-
-		log.fine("ObjectId:" + getObjectId());
+	protected DefaultSession(org.riverframework.wrapper.Session<org.openntf.domino.Session> dummy, org.openntf.domino.Session __native) {
+		super(dummy, __native);
+		_factory = DefaultFactory.getInstance();
 	}
 
-	public static String calcObjectId(org.openntf.domino.Session  __session) {
+	@Override
+	public String calcObjectId(org.openntf.domino.Session  __session) {
 		String objectId = "";
 
 		if (__session != null) {
@@ -39,25 +35,16 @@ public class DefaultSession extends DefaultBase<org.openntf.domino.Session> impl
 		return objectId;
 	}
 
-	public DefaultFactory getFactory() {
-		return factory;
-	}
-
-	@Override
-	public String getObjectId() {
-		return objectId;
-	}
-
-	@Override
-	public org.openntf.domino.Session getNativeObject() {
-		return __session;
+	public Factory<org.openntf.domino.Base<?>> getFactory() {
+		return _factory;
 	}
 
 	@Override
 	public boolean isOpen() {
-		return (__session != null);
+		return (__native != null);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Database<org.openntf.domino.Database> createDatabase (String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
@@ -68,7 +55,7 @@ public class DefaultSession extends DefaultBase<org.openntf.domino.Session> impl
 		if (location.length != 2)
 			throw new RiverException("It is expected two parameters: server and path, or server and replicaID");
 
-		org.openntf.domino.DbDirectory dir = __session.getDbDirectory(location[0]);
+		org.openntf.domino.DbDirectory dir = __native.getDbDirectory(location[0]);
 		boolean found = false;
 		org.openntf.domino.Database db = dir.getFirstDatabase(org.openntf.domino.DbDirectory.DATABASE);
 		while (db != null) {
@@ -79,13 +66,11 @@ public class DefaultSession extends DefaultBase<org.openntf.domino.Session> impl
 
 		if (!found) {
 			__database = dir.createDatabase(location[1]);
-			_database = getFactory().getDatabase(__database);
+			_database = (Database<org.openntf.domino.Database>) getFactory().getDatabase(__database);
 		}
 		else {
-			_database = getFactory().getDatabase(null);
+			_database = (Database<org.openntf.domino.Database>) getFactory().getDatabase(null);
 		}
-
-		// CHECKING dir.recycle(); 	// To recycle or not to recycle... That is the question.
 
 		return _database;
 	}
@@ -105,28 +90,23 @@ public class DefaultSession extends DefaultBase<org.openntf.domino.Session> impl
 		if (path.length() == 16) {
 			log.finer("Trying with a replica ID");
 			boolean res = false;
-			__database = __session.getDatabase(null, null);
+			__database = __native.getDatabase(null, null);
 			res = __database.openByReplicaID(server, path);
 			if (!res) __database = null;
 		}
 
 		if (__database == null || !__database.isOpen()) {
 			log.finer("Trying with a file path");
-			__database = __session.getDatabase(server, path, false);
+			__database = __native.getDatabase(server, path, false);
 		}
 
 		if (__database != null && !__database.isOpen()) {
 			log.finer("The database could not be opened");
-			try {
-				// __database.recycle();
-			} catch (Exception e) {
-				throw new RiverException(e);
-			} finally {	
-				__database = null;
-			}
+			__database = null;
 		}
 
-		Database<org.openntf.domino.Database> database = getFactory().getDatabase(__database);
+		@SuppressWarnings("unchecked")
+		Database<org.openntf.domino.Database> database = (Database<org.openntf.domino.Database>) getFactory().getDatabase(__database);
 		return database;
 	}
 
@@ -134,7 +114,7 @@ public class DefaultSession extends DefaultBase<org.openntf.domino.Session> impl
 	public String getUserName() {
 		String userName = "";
 
-		userName = __session.getUserName();
+		userName = __native.getUserName();
 
 		log.finest("getUserName=" + userName);
 		return userName;
@@ -145,8 +125,7 @@ public class DefaultSession extends DefaultBase<org.openntf.domino.Session> impl
 		log.fine("Closing factory");
 		getFactory().close();
 
-		log.fine("Recycling the session");
-		__session = null;
+		__native = null;
 
 		log.info("Session closed.");
 	}

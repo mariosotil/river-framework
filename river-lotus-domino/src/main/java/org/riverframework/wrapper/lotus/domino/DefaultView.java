@@ -8,29 +8,15 @@ import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
-import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.View;
 
 class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverframework.wrapper.View<lotus.domino.View> {
-	protected org.riverframework.wrapper.Session<lotus.domino.Session> _session = null;
-	protected org.riverframework.wrapper.Factory<lotus.domino.Base> _factory = null;
-	protected volatile lotus.domino.View __view = null;
-	private String objectId = null;
-
-	@SuppressWarnings("unchecked")
-	protected DefaultView(org.riverframework.wrapper.Session<lotus.domino.Session> _s, lotus.domino.View v) {
-		__view = v;
-		_session = _s;
-		_factory = (Factory<Base>) _s.getFactory();
-		objectId = calcObjectId(__view);
+	protected DefaultView(org.riverframework.wrapper.Session<lotus.domino.Session> _session, lotus.domino.View __native) {
+		super(_session, __native);
 	}
 
 	@Override
-	public String getObjectId() {
-		return objectId;
-	}
-
-	public static String calcObjectId(lotus.domino.View __view) {
+	public String calcObjectId(lotus.domino.View __view) {
 		String objectId = "";
 
 		if (__view != null) { // && !isRecycled(__view)) {
@@ -53,23 +39,18 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 		return objectId;
 	}
 
-	@Override
-	public lotus.domino.View getNativeObject() {
-		return __view;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public Document<lotus.domino.Document> getDocumentByKey(String key) {
 		lotus.domino.Document __doc = null;
 
 		try {
-			__doc = __view.getDocumentByKey(key, true);
+			__doc = __native.getDocumentByKey(key, true);
 			while (__doc != null && __doc.isDeleted()) 
 			{
 				// TODO: register this documents into the cache to avoid the conflict after recycling
 				// lotus.domino.Document __deleted = __doc;
-				__doc = __view.getNextDocument(__doc);
+				__doc = __native.getNextDocument(__doc);
 				// __deleted.recycle();  <== Bad idea
 			}
 
@@ -84,21 +65,20 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 		return doc;
 	}
 
-	@Override
 	public boolean isRecycled() {
-		return isObjectRecycled(__view);
+		return isObjectRecycled(__native);
 	}
 
 	@Override
 	public boolean isOpen() {
-		return __view != null && !isRecycled();
+		return __native != null && !isRecycled();
 	}
 
 	@Override
 	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> getAllDocuments() {
 		lotus.domino.ViewEntryCollection __vecol;
 		try {
-			__vecol = __view.getAllEntries();
+			__vecol = __native.getAllEntries();
 
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -113,7 +93,7 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 	public DocumentIterator<lotus.domino.Base, lotus.domino.Document> getAllDocumentsByKey(Object key) {
 		lotus.domino.DocumentCollection _col;
 		try {
-			_col = __view.getAllDocumentsByKey(key, true);
+			_col = __native.getAllDocumentsByKey(key, true);
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -126,7 +106,7 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 	@Override
 	public View<lotus.domino.View> refresh() {
 		try {
-			__view.refresh();
+			__native.refresh();
 		} catch (NotesException e) {
 			throw new RiverException(e);
 		}
@@ -137,18 +117,18 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 	@Override
 	public View<lotus.domino.View> addColumn(String name, String value, boolean isSorted) {
 		try {
-			ViewColumn __col = __view.createColumn(__view.getColumnCount(), name, value);
+			ViewColumn __col = __native.createColumn(__native.getColumnCount(), name, value);
 			__col.setSorted(isSorted);
 
 			if(_factory.getIsRemoteSession()) {
 				// If this is a remote session, calling recycle permits to save
 				// the changes. Otherwise, the view looks damaged.
 
-				lotus.domino.Database __db = __view.getParent();
-				String viewName = __view.getName();
+				lotus.domino.Database __db = __native.getParent();
+				String viewName = __native.getName();
 
-				__view.recycle(); 
-				__view = __db.getView(viewName);
+				__native.recycle(); 
+				__native = __db.getView(viewName);
 			}
 		} catch (NotesException e) {
 			throw new RiverException(e);
@@ -158,14 +138,14 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 
 	@Override
 	public void delete() {
-		if (__view != null) {
+		if (__native != null) {
 			try {
-				__view.remove();
+				__native.remove();
 				// __view.recycle();  <== Let the server recycle
 			} catch (NotesException e) {
 				throw new RiverException(e);
 			} finally {
-				__view = null;
+				__native = null;
 			}
 		}
 	}
@@ -182,7 +162,7 @@ class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverfr
 		lotus.domino.View __temp = null;
 
 		try {
-			__temp = __view.getParent().getView(__view.getName());			
+			__temp = __native.getParent().getView(__native.getName());			
 			__temp.FTSearch(query, max);
 		} catch (NotesException e) {
 			throw new RiverException(e);

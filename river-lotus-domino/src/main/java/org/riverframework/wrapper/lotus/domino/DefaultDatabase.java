@@ -10,7 +10,7 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultDatabase extends AbstractBase<lotus.domino.Database> implements org.riverframework.wrapper.Database<lotus.domino.Database> {
+class DefaultDatabase extends AbstractBaseDomino<lotus.domino.Database> implements org.riverframework.wrapper.Database<lotus.domino.Database> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	protected DefaultDatabase(org.riverframework.wrapper.Session<lotus.domino.Session> _session, lotus.domino.Database __native) {

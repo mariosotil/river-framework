@@ -7,7 +7,7 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultView extends AbstractBase<org.openntf.domino.View> implements org.riverframework.wrapper.View<org.openntf.domino.View> {
+class DefaultView extends AbstractBaseOpenNTF<org.openntf.domino.View> implements org.riverframework.wrapper.View<org.openntf.domino.View> {
 	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 
 	protected DefaultView(org.riverframework.wrapper.Session<org.openntf.domino.Session> _session, org.openntf.domino.View __native) {

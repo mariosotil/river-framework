@@ -10,7 +10,7 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultView extends AbstractBase<lotus.domino.View> implements org.riverframework.wrapper.View<lotus.domino.View> {
+class DefaultView extends AbstractBaseDomino<lotus.domino.View> implements org.riverframework.wrapper.View<lotus.domino.View> {
 	protected DefaultView(org.riverframework.wrapper.Session<lotus.domino.Session> _session, lotus.domino.View __native) {
 		super(_session, __native);
 	}

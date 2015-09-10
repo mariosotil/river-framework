@@ -25,7 +25,7 @@ import org.riverframework.wrapper.Document;
  * @author mario.sotil@gmail.com
  * @version 0.0.x
  */
-class DefaultDocument extends AbstractBase<lotus.domino.Document> implements org.riverframework.wrapper.Document<lotus.domino.Document> {
+class DefaultDocument extends AbstractBaseDomino<lotus.domino.Document> implements org.riverframework.wrapper.Document<lotus.domino.Document> {
 	private final String FRAGMENTED_FIELD_ID = "{{RIVER_FRAGMENTED_FIELD}}";
 	private final String FRAGMENT_FIELD_NAME_SEPARATOR = "$";
 	private final int MAX_FIELD_SIZE = 32 * 1024 - 1;

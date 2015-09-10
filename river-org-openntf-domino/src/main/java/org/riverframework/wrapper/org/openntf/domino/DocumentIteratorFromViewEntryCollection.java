@@ -9,7 +9,7 @@ import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 
-class DocumentIteratorFromViewEntryCollection extends AbstractBase<org.openntf.domino.ViewEntryCollection> implements DocumentIterator<org.openntf.domino.ViewEntryCollection,org.openntf.domino.Document> {
+class DocumentIteratorFromViewEntryCollection extends AbstractBaseOpenNTF<org.openntf.domino.ViewEntryCollection> implements DocumentIterator<org.openntf.domino.ViewEntryCollection,org.openntf.domino.Document> {
 	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 	private org.openntf.domino.ViewEntryCollection __native = null;
 

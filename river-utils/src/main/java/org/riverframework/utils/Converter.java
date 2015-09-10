@@ -114,6 +114,14 @@ public class Converter {
 		return result == null ? 0 : result;
 	}
 
+	@SuppressWarnings("serial")
+	private static final Map<Matcher, SimpleDateFormat> mapMatcherDateFormat = new HashMap<Matcher, SimpleDateFormat>() {{
+		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd"));
+		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{2}\\+\\d{2}:\\d{2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ"));
+		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{2}:\\d{2}\\+\\d{2}:\\d{2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
+		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{2}:\\d{2}\\.\\d{2}[+-]\\d{2}:\\d{2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+	}};
+
 	/**
 	 * Converts the value parameter to a Date. If the value is null or invalid, it returns null. If the value is a String, 
 	 * it has to have one of the following syntax:
@@ -129,24 +137,15 @@ public class Converter {
 	 * 
 	 * @param value Accepts String, Long and Date
 	 * @return an Integer
-	 */
-	@SuppressWarnings("serial")
-	private static final Map<Matcher, SimpleDateFormat> mapDateFormat = new HashMap<Matcher, SimpleDateFormat>() {{
-		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd"));
-		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{2}\\+\\d{2}:\\d{2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ"));
-		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{2}:\\d{2}\\+\\d{2}:\\d{2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
-		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{2}:\\d{2}\\.\\d{2}[+-]\\d{2}:\\d{2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
-	}};
-
-	public static Date getAsDate(Object value) {
+	 */	public static Date getAsDate(Object value) {
 		Date result = null;
 
 		try {
 			if (value instanceof String) {
 				String date = ((String) value).toUpperCase();
-				for (Matcher matcher : mapDateFormat.keySet()) {
+				for (Matcher matcher : mapMatcherDateFormat.keySet()) {
 					if (matcher.reset(date).matches()) {
-						SimpleDateFormat sdf = mapDateFormat.get(matcher);
+						SimpleDateFormat sdf = mapMatcherDateFormat.get(matcher);
 						if (sdf != null) {
 							if ( date.endsWith( "Z" ) ) {
 								date = date.substring( 0, date.length() - 1) + "GMT-00:00";

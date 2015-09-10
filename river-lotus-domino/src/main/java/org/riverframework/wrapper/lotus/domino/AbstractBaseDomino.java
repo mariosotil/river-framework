@@ -3,14 +3,16 @@ package org.riverframework.wrapper.lotus.domino;
 import java.lang.reflect.Field;
 
 import org.riverframework.RiverException;
-import org.riverframework.wrapper.AbstractWrapperBase;
+import org.riverframework.wrapper.AbstractBase;
 import org.riverframework.wrapper.Session;
 
-abstract class AbstractBase<N> extends AbstractWrapperBase<N, lotus.domino.Session, lotus.domino.Base> {
-	protected AbstractBase(Session<lotus.domino.Session> _session, N __native) {
+abstract class AbstractBaseDomino<N> extends AbstractBase<N, lotus.domino.Session, lotus.domino.Base> {
+	protected AbstractBaseDomino(Session<lotus.domino.Session> _session, N __native) {
 		super(_session, __native);
 	}
 	
+	abstract public boolean isRecycled();
+
 	private static Field isDeleted = null;
 	private static Field weakObject = null;
 	private static Field cpp = null;
@@ -136,5 +138,4 @@ abstract class AbstractBase<N> extends AbstractWrapperBase<N, lotus.domino.Sessi
 		return result;
 	}
 
-	abstract public boolean isRecycled();
 }

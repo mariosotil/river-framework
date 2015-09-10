@@ -9,7 +9,7 @@ import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 
-class DocumentIteratorFromViewEntryCollection extends AbstractBase<lotus.domino.ViewEntryCollection> implements DocumentIterator<lotus.domino.ViewEntryCollection, lotus.domino.Document> {
+class DocumentIteratorFromViewEntryCollection extends AbstractBaseDomino<lotus.domino.ViewEntryCollection> implements DocumentIterator<lotus.domino.ViewEntryCollection, lotus.domino.Document> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	private lotus.domino.Document __document = null;

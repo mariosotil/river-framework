@@ -1,9 +1,12 @@
 package org.riverframework.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
-import org.joda.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Provides converters from any type to String, Integer, Double and Date. If the converter can not make the conversion
@@ -16,9 +19,10 @@ import org.joda.time.LocalDateTime;
 
 public class Converter {
 	private static final Calendar calendar = Calendar.getInstance();
-	
+
 	/**
-	 * Converts the value parameter to a String. If the value is null, it returns an empty string.
+	 * Converts the value parameter to a String. If the value is null, it returns an empty string. If the
+	 * parameter is a Date object, it will be converted to the ISO 8601 format: yyyy-MM-ddTHH:mm:ss.SSSZ 
 	 * @param value It could be any object.
 	 * @return a String
 	 */
@@ -29,10 +33,15 @@ public class Converter {
 		} else if (value instanceof Double) {
 			double n = (Double) value;
 			result = n == (long) n ? String.format("%d",(long) n) : String.format("%s", n);
+		} else if (value instanceof Date) {
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+			String date = df.format((Date) value);
+
+			result = date.substring(0, date.length() - 2) + ":" + date.substring(date.length() - 2, date.length());
 		} else {
 			result = value.toString();
 		}
-		
+
 		return result;
 	}
 
@@ -106,19 +115,14 @@ public class Converter {
 	}
 
 	/**
-	 * Converts the value parameter to a Date. If the value is null or invalid, it returns zero. If the value is a String, 
-	 * it has to have one of the following syntax (from http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#localDateOptionalTimeParser%28%29):
+	 * Converts the value parameter to a Date. If the value is null or invalid, it returns null. If the value is a String, 
+	 * it has to have one of the following syntax:
 	 * <p>
 	 * <ul>
-	 * <li>datetime          = date-element ['T' time-element]</li>
-	 * <li>date-element      = std-date-element | ord-date-element | week-date-element</li>
-	 * <li>std-date-element  = yyyy ['-' MM ['-' dd]]</li>
-	 * <li>ord-date-element  = yyyy ['-' DDD]</li>
-	 * <li>week-date-element = xxxx '-W' ww ['-' e]</li>
-	 * <li>time-element      = HH [minute-element] | [fraction]</li>
-	 * <li>minute-element    = ':' mm [second-element] | [fraction]</li>
-	 * <li>second-element    = ':' ss [fraction]</li>
-	 * <li>fraction          = ('.' | ',') digit+</li>
+	 * <li>yyyy-MM-dd</li>
+	 * <li>yyyy-MM-dd'T'HH:mmZ</li>
+	 * <li>yyyy-MM-dd'T'HH:mm:ssZ</li>
+	 * <li>yyyy-MM-dd'T'HH:mm:ss.SSSZ</li>
 	 * </ul> 
 	 * <p>
 	 * If the value is a Long number, it has to have the time in milliseconds.
@@ -126,12 +130,47 @@ public class Converter {
 	 * @param value Accepts String, Long and Date
 	 * @return an Integer
 	 */
+	@SuppressWarnings("serial")
+	private static final Map<Matcher, SimpleDateFormat> mapDateFormat = new HashMap<Matcher, SimpleDateFormat>() {{
+		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd"));
+		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{2}\\+\\d{2}:\\d{2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ"));
+		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{2}:\\d{2}\\+\\d{2}:\\d{2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
+		put(Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{2}:\\d{2}\\.\\d{2}[+-]\\d{2}:\\d{2}$").matcher(""), new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+	}};
+
 	public static Date getAsDate(Object value) {
 		Date result = null;
 
 		try {
 			if (value instanceof String) {
-				result = LocalDateTime.parse((String) value).toDate();
+				String date = ((String) value).toUpperCase();
+				for (Matcher matcher : mapDateFormat.keySet()) {
+					if (matcher.reset(date).matches()) {
+						SimpleDateFormat sdf = mapDateFormat.get(matcher);
+						if (sdf != null) {
+							if ( date.endsWith( "Z" ) ) {
+								date = date.substring( 0, date.length() - 1) + "GMT-00:00";
+
+							} else {
+								if(date.indexOf('T') > -1) {
+									int index = date.indexOf('+');
+									index = index > -1 ? index : date.lastIndexOf('-');
+
+									if (index > -1) {
+										String left = date.substring( 0, index );
+										String right = date.substring( index, date.length() );
+
+										date = left + "GMT" + right;
+									}
+								}
+							}
+
+							sdf.setLenient(false); 
+							result = sdf.parse(date);
+							break;
+						}
+					}
+				}
 			} else if (value instanceof Long) {
 				calendar.setTimeInMillis((Long) value);
 				result = calendar.getTime();

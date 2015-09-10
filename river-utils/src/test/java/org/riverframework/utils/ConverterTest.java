@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,13 +37,14 @@ public class ConverterTest {
 		cal.set(Calendar.YEAR, 2015);
 		cal.set(Calendar.MONTH, Calendar.APRIL);
 		cal.set(Calendar.DAY_OF_MONTH, 10);
-		cal.set(Calendar.HOUR, 1);
+		cal.set(Calendar.HOUR_OF_DAY, 1);
 		cal.set(Calendar.MINUTE, 2);
 		cal.set(Calendar.SECOND, 3);
-		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(Calendar.MILLISECOND, 456);
 		obj = cal.getTime();
 		result = Converter.getAsString(obj);
-		assertTrue("Failed from Date to String", result.equals("Fri Apr 10 13:02:03 BOT 2015"));
+		result = result.substring(0, result.length()-6);
+		assertTrue("Failed from Date to String", result.equals("2015-04-10T01:02:03.456"));
 
 		obj = new ArrayList<Object>();
 		result = Converter.getAsString(obj);
@@ -153,25 +155,25 @@ public class ConverterTest {
 		Object obj = null;
 		Date result = null;
 
-		obj = 1425960000000L;
+		obj = 1425962712015L;
 		result = Converter.getAsDate(obj);
-		assertTrue("Failed from a right Long to Date", result.getTime() == 1425960000000L);
+		assertTrue("Failed from a right Long to Date", result != null && result.getTime() == 1425962712015L);
 		
 		obj = "2015-03-10";
 		result = Converter.getAsDate(obj);
-		assertTrue("Failed from a right String to Date", result.getTime() == 1425960000000L);
+		assertTrue("Failed from a right String to Date", result != null && result.getTime() == 1425960000000L);
 
 		obj = "2015-03-10T10:45+06:00";
 		result = Converter.getAsDate(obj);
-		assertTrue("Failed from a right String to Date", result.getTime() == 1425960000000L);
+		assertTrue("Failed from a right String to Date", result != null && result.getTime() == 1425962700000L);
 
 		obj = "2015-03-10T10:45:12+06:00";
 		result = Converter.getAsDate(obj);
-		assertTrue("Failed from a right String to Date", result.getTime() == 1425960000000L);
+		assertTrue("Failed from a right String to Date", result != null && result.getTime() == 1425962712000L);
 
 		obj = "2015-03-10T10:45:12.15+06:00";
 		result = Converter.getAsDate(obj);
-		assertTrue("Failed from a right String to Date", result.getTime() == 1425960000000L);
+		assertTrue("Failed from a right String to Date", result != null && result.getTime() == 1425962712015L);
 
 		obj = "Hi!";
 		result = Converter.getAsDate(obj);

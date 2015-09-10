@@ -128,6 +128,7 @@ Other features
 Version 0.2.11
 - Eliminate the dependencies to joda-time and ini4j to make easier the use of the libraries
 - Fix this [issue](https://github.com/mariosotil/river-framework/issues/1) about Java security permissions needed
+- Fix a problem about convert from string to date and vice versa. The format used is ISO 8601 (yyyy-MM-ddTHH:mm:ss.SSSZ)
 - IBM Notes wrapper: fix a search problem. It was changed from Full Text search for Formula search.
 - IBM Notes wrapper: Fix a conversion problem from integer to string ("1200.0")
 - Other fixes and improvements

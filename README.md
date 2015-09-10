@@ -1,14 +1,14 @@
 <img src="http://www.riverframework.org/images/river-header.png" /><br/>
 [![Project Stats](https://www.openhub.net/p/river-framework/widgets/project_thin_badge.gif)](https://www.openhub.net/p/river-framework)
 
-## What is the River Framework?
+## A single interface for different NoSQL databases
 
-It is an Object-Document Mapper Framework for NoSQL databases in **development stage**. Here you will find about the development itself: current and next features, known issues, dependencies, binaries, maven, demos, and, of course, the source code :-)  You can read about the project at its [website](http://www.riverframework.org)
+It is an Object-Document Mapper Framework for NoSQL databases in **development stage**. Here you will find about the development itself: current and next features, known issues, dependencies, binaries, maven, demos, and, of course, the source code :-)  You will find a presentation about the project at its [website](http://www.riverframework.org)
 
 
 ## Features
 
-### The current version (0.2.10) has the following features: 
+### The current version (0.2.11) has the following features: 
 
 - Compiled for Java 1.6+ 
 - Uses the Java Logging API
@@ -23,7 +23,8 @@ It is an Object-Document Mapper Framework for NoSQL databases in **development s
   - The wrapper layer, that connects directly to the database using its native classes. 
   - The core layer, that provides a unique interface to be able to use any wrapper library written for this framework 
 - Has implemented method chaining
-- To reduce impact on replication, if you set a field with a new value, it checks if it is different before do it.
+- Has an object cache
+- To reduce impact on replication, if you set a field with a new value, it checks if it is different before change it.
 
 
 ### About the wrapper for IBM Notes:
@@ -32,7 +33,6 @@ It is an Object-Document Mapper Framework for NoSQL databases in **development s
 - Anyway, you can still use the native Java library to do things like modify the ACL or work with RichText items.
 - Supports local and remote sessions (DIIOP) 
 - Auto recycling of Notes objects
-- Has an object cache
 - Supports field size > 32K
 - Good to develop standalone Java programs, Servlets or XPages programs 
 
@@ -47,22 +47,19 @@ It is an Object-Document Mapper Framework for NoSQL databases in **development s
 
 ## Getting Started
 
-A "Getting Started" or "Learn in five minutes" guide along more demo projects will be written in September, 2015. 
+Please, follow the instructions from this file:
 
-
-## How to build
-
-In September too. 
+{% gist 997ffc46a330537d0165 %}
 
 
 ## Demo
 
-A full demo as an Eclipse project of a stand-alone Java program is [here](https://github.com/mariosotil/river-framework-demo).
+Demos as Eclipse projects of stand-alone Java programs are in this GitHub [repo](https://github.com/mariosotil/river-framework-demo).
 
 
 ## Download
 
-You can download the binaries as Jar libraries from the [OpenNTF website](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/).
+You can download the binaries as Jar libraries from the [OpenNTF website](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/) or the [Maven repository](http://mvnrepository.com/artifact/org.riverframework).
 
 
 ## Maven
@@ -92,22 +89,16 @@ To load the artifacts from Maven, you can add one of these dependencies to your 
 In both cases, you have to add to your classpath the `Notes.jar` library. For the last one, you will need to add the `org.openntf.domino.jar` library too.
 
 
-## Dependencies
+## How to build
 
-- [joda-time](http://www.joda.org/joda-time/), for parsing strings and convert them to `java.util.Date`
-- [ini4j](http://ini4j.sourceforge.net/), for support unit testing and load a credentials file (~/.river-framework/credentials)
+This guide will be written along September, 2015. 
 
 
 ## Next features
 
-Version 0.2.11
-- Eliminate the dependencies to joda-time and ini4j to make easier the use of the libraries
-- Fix this [issue](https://github.com/mariosotil/river-framework/issues/1) about Java security permissions needed
-- IBM Notes wrapper: Let that any IBM Notes class from the `lotus.domino` library could be wrapped, managed and recycled by the River Framework (ACL, RichText, etc.)
-- IBM Notes wrapper: It's possible that the factory from the IBM Notes wrapper be redesigned to support the last feature
-- IBM Notes wrapper: fix a search problem. It was changed from Full Text search for Formula search.
-- IBM Notes wrapper: Fix a conversion problem from integer to string ("1200.0")
-- Other fixes and improvements
+Version 0.2.12
+- Support basic queries using the SQL++ syntax
+- Fixes and improvements
 
 Version 0.3
 - Support MongoDB
@@ -120,13 +111,13 @@ Version 0.5
 - Support Neo4J, IBM Notes and MongoDB with graphs
 
 Version 0.6
-- Support a query language (SQL++?)
+- Support a query language (SQL++)
+- Support Couchbase
 
 Version 0.7
 - Support transactions
+- Support CouchDB
  
-Version 0.8
-- Support threads
 
 Other features
 - Logging of changes in the fields of a document
@@ -135,6 +126,13 @@ Other features
 
 
 ## Changelog
+
+Version 0.2.11
+- Eliminate the dependencies to joda-time and ini4j to make easier the use of the libraries
+- Fix this [issue](https://github.com/mariosotil/river-framework/issues/1) about Java security permissions needed
+- IBM Notes wrapper: fix a search problem. It was changed from Full Text search for Formula search.
+- IBM Notes wrapper: Fix a conversion problem from integer to string ("1200.0")
+- Other fixes and improvements
 
 Version 0.2.10
 - Improved the design to work with document indexes

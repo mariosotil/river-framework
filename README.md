@@ -3,7 +3,7 @@
 
 ## A single interface for different NoSQL databases
 
-It is an Object-Document Mapper Framework for NoSQL databases in **development stage**. Here you will find about the development itself: current and next features, known issues, dependencies, binaries, maven, demos, and, of course, the source code :-)  You will find a presentation about the project at its [website](http://www.riverframework.org)
+It is an Object-Document Mapper Framework for NoSQL databases in **development stage**. Here you will find about the development itself: current and next features, known issues, dependencies, binaries, Maven artifacts, demos, and, of course, the source code :-)  You will find a presentation about the project at its [website](http://www.riverframework.org)
 
 
 ## Features
@@ -70,7 +70,7 @@ To load the artifacts from Maven, you can add one of these dependencies to your 
 		<dependency>
 			<groupId>org.riverframework</groupId>
 			<artifactId>river-lotus-domino</artifactId>
-			<version>0.2.10</version>
+			<version>0.2.11</version>
 		</dependency>
 ```
 
@@ -80,7 +80,7 @@ To load the artifacts from Maven, you can add one of these dependencies to your 
     <dependency>
       <groupId>org.riverframework</groupId>
       <artifactId>river-org-openntf-domino</artifactId>
-      <version>0.2.10</version>
+      <version>0.2.11</version>
     </dependency>
 ```
 

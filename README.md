@@ -95,6 +95,7 @@ This guide will be written along September, 2015.
 ## Next features
 
 Version 0.2.12
+- Make easier to define the index, ID generation, etc. for entity classes like Person, Book, etc. (probably with annotations)
 - Support basic queries using the SQL++ syntax
 - Fixes and improvements
 

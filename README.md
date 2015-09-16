@@ -57,7 +57,7 @@ Demos as Maven projects for Eclipse, of stand-alone Java programs are in this Gi
 
 ## Download
 
-You can download the binaries as Jar libraries from the [OpenNTF website](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/) or the [Maven repository](http://mvnrepository.com/artifact/org.riverframework).
+You can download the binaries as Jar libraries from the [OpenNTF website](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/). 
 
 
 ## Maven

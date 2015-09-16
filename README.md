@@ -47,7 +47,7 @@ It is an Object-Document Mapper Framework for NoSQL databases at **development s
 
 ## Getting Started
 
-Please, follow the instructions from this [wiki](https://github.com/mariosotil/river-framework/wiki/Getting-Started).
+Please, follow the instructions from this [link](https://github.com/mariosotil/river-framework-documentation/blob/master/getting-started.md).
 
 
 ## Demo

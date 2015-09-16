@@ -91,6 +91,9 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
 
 This guide will be written along September, 2015. 
 
+## Issues
+
+If you want to report and issue, please use the GitHub [issues](https://github.com/mariosotil/river-framework/issues) page.
 
 ## Next features
 

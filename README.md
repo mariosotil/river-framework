@@ -52,7 +52,7 @@ Please, follow the instructions from this [wiki](https://github.com/mariosotil/r
 
 ## Demo
 
-Demos as Eclipse projects of stand-alone Java programs are in this GitHub [repo](https://github.com/mariosotil/river-framework-demo).
+Demos as Maven projects for Eclipse, of stand-alone Java programs are in this GitHub [repo](https://github.com/mariosotil/river-framework-demo).
 
 
 ## Download

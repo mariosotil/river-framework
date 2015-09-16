@@ -1,4 +1,4 @@
-<img src="http://www.riverframework.org/images/river-header.png" /><br/>
+<img src="http://www.river-framework.org/images/river-header.png" /><br/>
 [![Project Stats](https://www.openhub.net/p/river-framework/widgets/project_thin_badge.gif)](https://www.openhub.net/p/river-framework)
 
 ## A single interface for different NoSQL databases

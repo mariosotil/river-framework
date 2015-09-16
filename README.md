@@ -93,7 +93,7 @@ This guide will be written along September, 2015.
 
 ## Issues
 
-If you want to report and issue, please use the GitHub [issues](https://github.com/mariosotil/river-framework/issues) page.
+If you need to report an issue, please use the GitHub [issues](https://github.com/mariosotil/river-framework/issues) page.
 
 ## Next features
 

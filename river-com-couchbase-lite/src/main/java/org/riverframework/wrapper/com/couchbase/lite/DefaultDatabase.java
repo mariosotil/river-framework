@@ -2,8 +2,6 @@ package org.riverframework.wrapper.com.couchbase.lite;
 
 // import java.util.logging.Level;
 // import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
@@ -109,7 +107,6 @@ class DefaultDatabase extends AbstractBaseCouchbaseLite<com.couchbase.lite.Datab
 
 	@Override
 	public DocumentIterator<Object,com.couchbase.lite.Document> search(String query, int max) {
-		@SuppressWarnings("unchecked")
 		DocumentIterator<Object,com.couchbase.lite.Document> _iterator = null; 
 		return _iterator;
 	}

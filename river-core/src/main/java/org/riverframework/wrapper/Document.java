@@ -19,9 +19,9 @@ public interface Document<N> extends Base<N> {
 
 	public Document<N> recalc();
 
-	public Document<N> setTable(String table);
+	public Document<N> setBinder(String binder);
 
-	public String getTable();
+	public String getBinder();
 
 	public Field getField(String field);
 

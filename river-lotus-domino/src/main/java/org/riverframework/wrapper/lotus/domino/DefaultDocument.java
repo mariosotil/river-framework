@@ -25,7 +25,7 @@ import org.riverframework.wrapper.Document;
  * @author mario.sotil@gmail.com
  * @version 0.0.x
  */
-class DefaultDocument extends AbstractBaseDomino<lotus.domino.Document> implements org.riverframework.wrapper.Document<lotus.domino.Document> {
+class DefaultDocument extends AbstractBaseLotusDomino<lotus.domino.Document> implements org.riverframework.wrapper.Document<lotus.domino.Document> {
 	private final String FRAGMENTED_FIELD_ID = "{{RIVER_FRAGMENTED_FIELD}}";
 	private final String FRAGMENT_FIELD_NAME_SEPARATOR = "$";
 	private final int MAX_FIELD_SIZE = 32 * 1024 - 1;
@@ -83,13 +83,13 @@ class DefaultDocument extends AbstractBaseDomino<lotus.domino.Document> implemen
 	}
 
 	@Override
-	public Document<lotus.domino.Document> setTable(String table) {
+	public Document<lotus.domino.Document> setBinder(String table) {
 		setField("Form", table);
 		return this;
 	}
 
 	@Override
-	public String getTable() {
+	public String getBinder() {
 		return getFieldAsString("Form");
 	}
 

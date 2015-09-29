@@ -12,7 +12,7 @@ import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.Session;
 
-public class DefaultSession extends AbstractBaseDomino<lotus.domino.Session> implements Session<lotus.domino.Session> {
+public class DefaultSession extends AbstractBaseLotusDomino<lotus.domino.Session> implements Session<lotus.domino.Session> {
 	private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	protected DefaultSession(org.riverframework.wrapper.Session<lotus.domino.Session> dummy, lotus.domino.Session __native) {

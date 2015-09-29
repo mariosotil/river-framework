@@ -93,7 +93,7 @@ public abstract class AbstractBaseTest {
 
 		_session.getFactory().cleanUp();
 
-		boolean isRecycled = AbstractBaseDomino.isObjectRecycled(__doc);
+		boolean isRecycled = AbstractBaseLotusDomino.isObjectRecycled(__doc);
 
 		assertTrue("The document was no recycled.", isRecycled);
 

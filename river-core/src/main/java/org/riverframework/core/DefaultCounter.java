@@ -30,7 +30,7 @@ public final class DefaultCounter extends
 	}
 
 	@Override
-	public String getTableName() {
+	public String getBinder() {
 		return Session.PREFIX + "counter";
 	}
 
@@ -38,7 +38,7 @@ public final class DefaultCounter extends
 	protected String[] getParametersToCreateIndex() {
 		// TODO: this works only for IBM Notes. It MUST be fixed in the next
 		// version
-		return new String[] { getIndexName(), "Form=\"" + getTableName() + "\"" };
+		return new String[] { getIndexName(), "Form=\"" + getBinder() + "\"" };
 	}
 
 	@Override

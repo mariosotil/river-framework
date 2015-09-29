@@ -6,7 +6,7 @@ import org.riverframework.River;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 
-class DocumentIteratorFromDocumentCollection extends AbstractBaseOpenNTF<org.openntf.domino.DocumentCollection> implements DocumentIterator<org.openntf.domino.DocumentCollection,org.openntf.domino.Document> {
+class DocumentIteratorFromDocumentCollection extends AbstractBaseOrgOpenntfDomino<org.openntf.domino.DocumentCollection> implements DocumentIterator<org.openntf.domino.DocumentCollection,org.openntf.domino.Document> {
 	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 	private Iterator<org.openntf.domino.Document> __documentIterator = null;
 

@@ -27,7 +27,7 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>>
 		this._doc = _doc;
 
 		if (_doc != null && _doc.isOpen() && _doc.isNew()) {
-			_doc.setTable(getTableName());
+			_doc.setBinder(getBinder());
 		}
 
 		isModified = false;
@@ -40,7 +40,7 @@ public abstract class AbstractDocument<T extends AbstractDocument<T>>
 	 *         overrided, it will returns the simple name of the current class.
 	 */
 	@Override
-	public String getTableName() {
+	public String getBinder() {
 		return "{" + this.getClass().getSimpleName() + "}";
 	}
 

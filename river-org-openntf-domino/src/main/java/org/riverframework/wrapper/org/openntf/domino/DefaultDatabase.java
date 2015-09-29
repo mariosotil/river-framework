@@ -12,7 +12,7 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultDatabase extends AbstractBaseOpenNTF<org.openntf.domino.Database> implements org.riverframework.wrapper.Database<org.openntf.domino.Database> {
+class DefaultDatabase extends AbstractBaseOrgOpenntfDomino<org.openntf.domino.Database> implements org.riverframework.wrapper.Database<org.openntf.domino.Database> {
 	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 
 	protected DefaultDatabase(org.riverframework.wrapper.Session<org.openntf.domino.Session> _session, org.openntf.domino.Database __native) {

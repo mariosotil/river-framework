@@ -9,7 +9,7 @@ import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.Session;
 
-public class DefaultSession extends AbstractBaseOpenNTF<org.openntf.domino.Session> implements Session<org.openntf.domino.Session> {
+public class DefaultSession extends AbstractBaseOrgOpenntfDomino<org.openntf.domino.Session> implements Session<org.openntf.domino.Session> {
 	private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 
 	protected DefaultSession(org.riverframework.wrapper.Session<org.openntf.domino.Session> dummy, org.openntf.domino.Session __native) {

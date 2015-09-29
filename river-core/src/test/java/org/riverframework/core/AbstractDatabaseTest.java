@@ -41,7 +41,7 @@ public abstract class AbstractDatabaseTest {
 		}
 
 		@Override
-		public String getTableName() {
+		public String getBinder() {
 			return TEST_FORM;
 		}
 
@@ -76,13 +76,13 @@ public abstract class AbstractDatabaseTest {
 		}
 
 		@Override
-		public String getTableName() {
+		public String getBinder() {
 			return "fo_ap_people";
 		}
 
 		@Override
 		protected String[] getParametersToCreateIndex() {
-			return new String[] { getIndexName(), "Form=\"" + getTableName() + "\"" };
+			return new String[] { getIndexName(), "Form=\"" + getBinder() + "\"" };
 		}
 
 		@Override

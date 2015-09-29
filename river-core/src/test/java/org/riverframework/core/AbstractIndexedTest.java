@@ -95,14 +95,14 @@ public abstract class AbstractIndexedTest {
 		}
 
 		@Override
-		public String getTableName() {
+		public String getBinder() {
 			return FORM_NAME;
 		}
 
 		@Override
 		protected String[] getParametersToCreateIndex() {
 			// TODO: this works only for IBM Notes. FIX IT!
-			return new String[] { getIndexName(), "Form=\"" + getTableName() + "\"" };
+			return new String[] { getIndexName(), "Form=\"" + getBinder() + "\"" };
 		}
 
 		@Override

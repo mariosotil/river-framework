@@ -7,7 +7,7 @@ import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 
-class DocumentIteratorFromDocumentCollection extends AbstractBaseDomino<lotus.domino.DocumentCollection> implements DocumentIterator<lotus.domino.DocumentCollection, lotus.domino.Document> {
+class DocumentIteratorFromDocumentCollection extends AbstractBaseLotusDomino<lotus.domino.DocumentCollection> implements DocumentIterator<lotus.domino.DocumentCollection, lotus.domino.Document> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	private lotus.domino.Document __document = null;

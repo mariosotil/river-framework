@@ -26,7 +26,7 @@ import org.riverframework.wrapper.Document;
  * @author mario.sotil@gmail.com
  * @version 0.0.x
  */
-class DefaultDocument extends AbstractBaseOpenNTF<org.openntf.domino.Document> implements org.riverframework.wrapper.Document<org.openntf.domino.Document> {
+class DefaultDocument extends AbstractBaseOrgOpenntfDomino<org.openntf.domino.Document> implements org.riverframework.wrapper.Document<org.openntf.domino.Document> {
 	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 
 	private final String FRAGMENTED_FIELD_ID = "{{RIVER_FRAGMENTED_FIELD}}";
@@ -57,13 +57,13 @@ class DefaultDocument extends AbstractBaseOpenNTF<org.openntf.domino.Document> i
 	}
 
 	@Override
-	public Document<org.openntf.domino.Document> setTable(String table) {
+	public Document<org.openntf.domino.Document> setBinder(String table) {
 		__native.replaceItemValue("Form", table);
 		return this;
 	}
 
 	@Override
-	public String getTable() {
+	public String getBinder() {
 		return __native.getItemValueString("Form");
 	}
 

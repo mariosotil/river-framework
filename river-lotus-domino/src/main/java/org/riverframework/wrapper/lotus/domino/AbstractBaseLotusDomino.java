@@ -6,8 +6,8 @@ import org.riverframework.RiverException;
 import org.riverframework.wrapper.AbstractBase;
 import org.riverframework.wrapper.Session;
 
-abstract class AbstractBaseDomino<N> extends AbstractBase<N, lotus.domino.Session, lotus.domino.Base> {
-	protected AbstractBaseDomino(Session<lotus.domino.Session> _session, N __native) {
+abstract class AbstractBaseLotusDomino<N> extends AbstractBase<N, lotus.domino.Session, lotus.domino.Base> {
+	protected AbstractBaseLotusDomino(Session<lotus.domino.Session> _session, N __native) {
 		super(_session, __native);
 	}
 	

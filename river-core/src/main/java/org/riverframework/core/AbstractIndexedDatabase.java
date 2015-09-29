@@ -29,7 +29,7 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 		if (isOpen()) {
 			Document closedDoc = getClosedDocument(clazz);
 			// Saving the table name and the class associated in the cache
-			classes.put(closedDoc.getTableName(), clazz);
+			classes.put(closedDoc.getBinder(), clazz);
 
 			// If it is an indexed document class...
 			if (AbstractIndexedDocument.class.isAssignableFrom(clazz)) {
@@ -98,7 +98,7 @@ public abstract class AbstractIndexedDatabase<T extends AbstractIndexedDatabase<
 
 	@Override
 	public Document getDocument(org.riverframework.wrapper.Document<?> _doc) {
-		String tableName = _doc.getTable();
+		String tableName = _doc.getBinder();
 		Class<? extends AbstractDocument<?>> clazz = classes.get(tableName);
 
 		if (clazz == null)

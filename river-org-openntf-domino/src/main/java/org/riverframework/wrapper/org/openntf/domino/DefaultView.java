@@ -7,7 +7,7 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultView extends AbstractBaseOpenNTF<org.openntf.domino.View> implements org.riverframework.wrapper.View<org.openntf.domino.View> {
+class DefaultView extends AbstractBaseOrgOpenntfDomino<org.openntf.domino.View> implements org.riverframework.wrapper.View<org.openntf.domino.View> {
 	// private static final Logger log = River.LOG_WRAPPER_ORG_OPENNTF_DOMINO;
 
 	protected DefaultView(org.riverframework.wrapper.Session<org.openntf.domino.Session> _session, org.openntf.domino.View __native) {
@@ -111,7 +111,7 @@ class DefaultView extends AbstractBaseOpenNTF<org.openntf.domino.View> implement
 	public View<org.openntf.domino.View> addColumn(String name, String value, boolean isSorted) {
 		ViewColumn __col =  __native.createColumn(__native.getColumnCount(), name, value);
 		__col.setSorted(isSorted);
-		return null;
+		return this;
 	}
 
 	@Override

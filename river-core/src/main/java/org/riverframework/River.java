@@ -24,22 +24,25 @@ import org.riverframework.utils.LoggerHelper;
 public class River {
 	public static final String LOTUS_DOMINO = "org.riverframework.wrapper.lotus.domino";
 	public static final String ORG_OPENNTF_DOMINO = "org.riverframework.wrapper.org.openntf.domino";
-	public static final String HAZELCAST = "org.riverframework.wrapper.hazelcast";
+	public static final String COM_COUCHBASE_LITE = "org.riverframework.wrapper.com.couchbase.lite";
 
 	public static final Logger LOG_ROOT = Logger.getLogger("org.riverframework");
 	public static final Logger LOG_CORE = Logger.getLogger("org.riverframework.core");
 	public static final Logger LOG_WRAPPER = Logger.getLogger("org.riverframework.wrapper");
 	public static final Logger LOG_WRAPPER_LOTUS_DOMINO = Logger.getLogger("org.riverframework.wrapper.lotus.domino");
-	public static final Logger LOG_WRAPPER_ORG_OPENNTF_DOMINO = Logger.getLogger("org.riverframework.wrapper.org.openntf.domino");
-	public static final Logger LOG_WRAPPER_HAZELCAST = Logger.getLogger("org.riverframework.wrapper.hazelcast");
+	public static final Logger LOG_WRAPPER_ORG_OPENNTF_DOMINO =
+			Logger.getLogger("org.riverframework.wrapper.org.openntf.domino");
+	public static final Logger LOG_WRAPPER_COM_COUCHBASE_LITE =
+			Logger.getLogger("org.riverframework.wrapper.com.couchbase.lite");
 
-	public static final String ID_SEPARATOR = "**"; 
-	
+	public static final String ID_SEPARATOR = "**";
+
 	public static Object lock = new Object();
 	private final static Map<String, Session> map = new HashMap<String, Session>();
 
 	static {
-		new LoggerHelper(LOG_ROOT).clearHandlers().setLevel(Level.SEVERE);
+		new LoggerHelper(LOG_ROOT).clearHandlers()
+									.setLevel(Level.SEVERE);
 	}
 
 	private River() {
@@ -47,10 +50,10 @@ public class River {
 	}
 
 	/**
-	 * Loads a wrapper that wraps libraries as lotus.domino or org.openntf.domino and creates a core Session
-	 * object. Its behavior will depend on how the wrapper is implemented. Anyway, this method creates the session just
-	 * one time and returns the same every time is called. To free the memory, resources, etc., it's necessary to call
-	 * the close method at the end of the program or process.
+	 * Loads a wrapper that wraps libraries as lotus.domino or org.openntf.domino and creates a core Session object. Its
+	 * behavior will depend on how the wrapper is implemented. Anyway, this method creates the session just one time and
+	 * returns the same every time is called. To free the memory, resources, etc., it's necessary to call the close
+	 * method at the end of the program or process.
 	 * 
 	 * @param wrapper
 	 *            the package's full name. You can use the constants defined as River.wrapper_LOTUS_DOMINO or
@@ -71,8 +74,8 @@ public class River {
 			// There is an open session
 			if (parameters.length > 0) {
 				// and the user is trying to open a new one
-				throw new RiverException("There is already an open session for the wrapper " + wrapper +
-						". You must close the current before opening a new one.");
+				throw new RiverException("There is already an open session for the wrapper " + wrapper
+						+ ". You must close the current before opening a new one.");
 			}
 			// If there are no parameters, we just return the current opened session
 		} else {
@@ -83,30 +86,33 @@ public class River {
 			try {
 				clazzFactory = Class.forName(wrapper + ".DefaultFactory");
 			} catch (ClassNotFoundException e) {
-				throw new RiverException("The wrapper '" + wrapper + "' can not be loaded. If you are using an non-official wrapper, " +
-						"check the wrapper name and its design. Check the CLASSPATH.");
+				throw new RiverException("The wrapper '" + wrapper
+						+ "' can not be loaded. If you are using an non-official wrapper, "
+						+ "check the wrapper name and its design. Check the CLASSPATH.");
 			}
-			
+
 			try {
 				Method method = clazzFactory.getDeclaredMethod("getInstance");
 				method.setAccessible(true);
-				org.riverframework.wrapper.Factory<?> _factory = (org.riverframework.wrapper.Factory<?>) method.invoke(null);
+				org.riverframework.wrapper.Factory<?> _factory =
+						(org.riverframework.wrapper.Factory<?>) method.invoke(null);
 
 				if (_factory == null)
 					throw new RiverException("The factory could not be loaded.");
 
 				if (parameters.length > 0) {
 					// There are parameters. So, we try to create a new one.
-					_session = (org.riverframework.wrapper.Session<?>) _factory.getSession(parameters);
+					_session = _factory.getSession(parameters);
 				} else {
 					// There are no parameters. We create a closed session.
 					_session = null;
 				}
-				
-				Constructor<?> constructor = DefaultSession.class.getDeclaredConstructor(org.riverframework.wrapper.Session.class);
+
+				Constructor<?> constructor =
+						DefaultSession.class.getDeclaredConstructor(org.riverframework.wrapper.Session.class);
 				constructor.setAccessible(true);
 				session = (DefaultSession) constructor.newInstance(_session);
-				
+
 			} catch (Exception e) {
 				throw new RiverException("There's a problem opening the session. Maybe, you will need to check the parameters.", e);
 			}
@@ -118,8 +124,7 @@ public class River {
 	}
 
 	/**
-	 * Calls the Session close method to free resources, memory, etc. Also, it will remove it from its
-	 * internal table.
+	 * Calls the Session close method to free resources, memory, etc. Also, it will remove it from its internal table.
 	 * 
 	 * @param wrapper
 	 *            the package's full name
@@ -129,11 +134,13 @@ public class River {
 		if (session != null) {
 			Method method;
 			try {
-				method = session.getClass().getDeclaredMethod("protectedClose");
+				method = session.getClass()
+								.getDeclaredMethod("protectedClose");
 				method.setAccessible(true);
 				method.invoke(session);
 			} catch (InvocationTargetException e) {
-				throw new RiverException(e.getCause().getMessage(), e);
+				throw new RiverException(e.getCause()
+											.getMessage(), e);
 			} catch (Exception e) {
 				throw new RiverException(e);
 			}

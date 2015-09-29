@@ -29,6 +29,7 @@ It is an Object-Document Mapper Framework for NoSQL databases at **development s
 
 ### About the wrapper for IBM Notes:
 
+- It's **stable**
 - Supports only five basic elements to work with a Notes database (session, database, document, view, iterator)
 - Anyway, you can still use the native Java library to do things like modify the ACL or work with RichText items.
 - Supports local and remote sessions (DIIOP) 
@@ -39,6 +40,7 @@ It is an Object-Document Mapper Framework for NoSQL databases at **development s
 
 ### About the wrapper for OpenNTF Domino:
 
+- It's **stable**
 - Takes advantage of this great library developed by [OpenNTF](http://www.openntf.org/main.nsf/project.xsp?r=project/OpenNTF%20Domino%20API)
 - The auto recycling is managed by OpenNTF Domino API
 - Supports field size > 32K
@@ -86,37 +88,47 @@ To load the artifacts from Maven, you can add one of these dependencies to your 
 
 In both cases, you have to add to your classpath the `Notes.jar` library. For the last one, you will need to add the `org.openntf.domino.jar` library too.
 
-
 ## How to build
 
-This guide will be written along September, 2015. 
+This guide will be written along October, 2015. 
+
+## How to create a wrapper for a NoSQL database
+
+This guide will be written along January, 2016. 
 
 ## Issues
 
 If you need to report an issue, please use the GitHub [issues](https://github.com/mariosotil/river-framework/issues) page.
 
+## Working on version 0.3
+
+- Support Couchbase Lite
+- Update the Getting Started demo to Couchbase Lite
+- Use the term "Binder" for a set of documents (it would be a "Collection" in MongoDB or a set of documents with the same "Form" value in IBM Notes)
+- Redesign how the queries are made. Eliminate unnecesaries "search" methods.
+
 ## Next features
 
-Version 0.2.12
+Version 0.3.1
 - Make easier to define the index, ID generation, etc. for entity classes like Person, Book, etc. (probably with annotations)
 - Support basic queries using the SQL++ syntax
 - Fixes and improvements
 
-Version 0.3
+Version 0.4
 - Support MongoDB
 
-Version 0.4
+Version 0.5
 - Support Neo4J without graphs
 
-Version 0.5
+Version 0.6
 - Support graphs for relations between documents (1..\*, \*..\*) 
 - Support Neo4J, IBM Notes and MongoDB with graphs
 
-Version 0.6
+Version 0.7
 - Support a query language (SQL++)
 - Support Couchbase
 
-Version 0.7
+Version 0.8
 - Support transactions
 - Support CouchDB
  

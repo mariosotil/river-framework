@@ -8,6 +8,8 @@ import org.riverframework.wrapper.Database;
 import org.riverframework.wrapper.Factory;
 import org.riverframework.wrapper.Session;
 
+import com.couchbase.lite.CouchbaseLiteException;
+
 public class DefaultSession extends AbstractBaseCouchbaseLite<com.couchbase.lite.Manager> implements Session<com.couchbase.lite.Manager> {
 	private static final Logger log = River.LOG_WRAPPER_COM_COUCHBASE_LITE;
 
@@ -47,7 +49,15 @@ public class DefaultSession extends AbstractBaseCouchbaseLite<com.couchbase.lite
 	public Database<com.couchbase.lite.Database> createDatabase (String... location) {
 		log.fine("location=" + Arrays.deepToString(location));
 
-		Database<com.couchbase.lite.Database> _database = null;
+		com.couchbase.lite.Database __database = null;
+		try {
+			__database = __native.getDatabase(location[0].toLowerCase());
+		} catch (CouchbaseLiteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		@SuppressWarnings("unchecked")
+		Database<com.couchbase.lite.Database> _database = (Database<com.couchbase.lite.Database>) getFactory().getDatabase(__database);
 
 		return _database;
 	}
@@ -65,8 +75,7 @@ public class DefaultSession extends AbstractBaseCouchbaseLite<com.couchbase.lite
 
 	@Override
 	public String getUserName() {
-		String userName = "";
-
+		String userName = "ANONYMOUS";
 		log.finest("getUserName=" + userName);
 		return userName;
 	}

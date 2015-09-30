@@ -88,7 +88,7 @@ public class DefaultFactory extends org.riverframework.wrapper.AbstractFactory<O
 	}
 
 	@Override
-	public void cleanUp(Base<? extends Object>... except) {
+	public void cleanUp(@SuppressWarnings("unchecked") Base<? extends Object>... except) {
 
 	}
 

@@ -100,13 +100,13 @@ public class River {
 				if (_factory == null)
 					throw new RiverException("The factory could not be loaded.");
 
-				if (parameters.length > 0) {
-					// There are parameters. So, we try to create a new one.
-					_session = _factory.getSession(parameters);
-				} else {
-					// There are no parameters. We create a closed session.
-					_session = null;
-				}
+				// if (parameters.length > 0) {
+				// There are parameters. So, we try to create a new one.
+				_session = _factory.getSession(parameters);
+				// } else {
+				// There are no parameters. We create a closed session.
+				// _session = null;
+				// }
 
 				Constructor<?> constructor =
 						DefaultSession.class.getDeclaredConstructor(org.riverframework.wrapper.Session.class);

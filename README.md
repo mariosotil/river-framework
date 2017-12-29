@@ -26,39 +26,17 @@ It is an Object-Document Mapper Framework for NoSQL databases in **development s
 - Has an object cache
 - To reduce impact on replication, if you set a field with a new value, it checks if it is different before change it.
 
-
-### About the wrapper for IBM Notes:
-
-- Supports only five basic elements to work with a Notes database (session, database, document, view, iterator)
-- Anyway, you can still use the native Java library to do things like modify the ACL or work with RichText items.
-- Supports local and remote sessions (DIIOP) 
-- Auto recycling of Notes objects
-- Supports field size > 32K
-- Good to develop standalone Java programs, Servlets or XPages programs 
-
-
-### About the wrapper for OpenNTF Domino:
-
-- Takes advantage of this great library developed by [OpenNTF](http://www.openntf.org/main.nsf/project.xsp?r=project/OpenNTF%20Domino%20API)
-- The auto recycling is managed by OpenNTF Domino API
-- Supports field size > 32K
-- Good to develop standalone Java programs, Servlets or XPages programs 
-
-
 ## Getting Started
 
 Please, follow the instructions from this [gist](https://gist.github.com/mariosotil/997ffc46a330537d0165)
-
 
 ## Demo
 
 Demos as Eclipse projects of stand-alone Java programs are in this GitHub [repo](https://github.com/mariosotil/river-framework-demo).
 
-
 ## Download
 
 You can download the binaries as Jar libraries from the [OpenNTF website](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/) or the [Maven repository](http://mvnrepository.com/artifact/org.riverframework).
-
 
 ## Maven
 
@@ -67,20 +45,20 @@ To load the artifacts from Maven, you can add one of these dependencies to your 
 - To use the original lotus.domino package from IBM Notes
 
 ```xml
-		<dependency>
-			<groupId>org.riverframework</groupId>
-			<artifactId>river-lotus-domino</artifactId>
-			<version>0.2.10</version>
-		</dependency>
+    <dependency>
+        <groupId>org.riverframework</groupId>
+        <artifactId>river-lotus-domino</artifactId>
+        <version>0.2.10</version>
+    </dependency>
 ```
 
 - To use the org.openntf.domino package from OpenNTF
 
 ```xml
     <dependency>
-      <groupId>org.riverframework</groupId>
-      <artifactId>river-org-openntf-domino</artifactId>
-      <version>0.2.10</version>
+        <groupId>org.riverframework</groupId>
+        <artifactId>river-org-openntf-domino</artifactId>
+        <version>0.2.10</version>
     </dependency>
 ```
 

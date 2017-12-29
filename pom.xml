@@ -19,8 +19,5 @@
         <module>river-credentials</module>
         <module>river-core</module>
         <module>river-core-test</module>
-        <module>river-lotus-domino</module>
-        <module>river-org-openntf-domino</module>
-        <module>river-com-couchbase-lite</module>
     </modules>
 </project>

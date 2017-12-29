@@ -90,11 +90,11 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
 
 ## How to build
 
-This guide will be written along October, 2015. 
+This guide will be written soon. 
 
 ## How to create a wrapper for a NoSQL database
 
-This guide will be written along January, 2016. 
+This guide will be written soon. 
 
 ## Issues
 
@@ -137,6 +137,9 @@ Other features
 - Logging of changes in the fields of a document
 - Control of the data change propagation between related documents (1..\*, \*..\*)
 
+## Questions?
+
+mario.sotil [at] gmail.com
 
 ### Tags
 

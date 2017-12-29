@@ -89,30 +89,33 @@ In both cases, you have to add to your classpath the `Notes.jar` library. For th
 
 ## How to build
 
-This guide will be written along September, 2015. 
+This guide will be written soon.
 
 
 ## Next features
 
-Version 0.2.12
-- Support basic queries using the SQL++ syntax
-- Fixes and improvements
-
 Version 0.3
-- Support MongoDB
+- Migrate wrappers to their own repos
 
 Version 0.4
-- Support Neo4J without graphs
+- Support Couchbase Lite 
+- Fixes and improvements
 
 Version 0.5
+- Support MongoDB
+
+Version 0.6
+- Support Neo4J without graphs
+
+Version 0.7
 - Support graphs for relations between documents (1..\*, \*..\*) 
 - Support Neo4J, IBM Notes and MongoDB with graphs
 
-Version 0.6
+Version 0.8
 - Support a query language (SQL++)
 - Support Couchbase
 
-Version 0.7
+Version 0.9
 - Support transactions
 - Support CouchDB
  

@@ -18,6 +18,5 @@
         <module>river-utils</module>
         <module>river-credentials</module>
         <module>river-core</module>
-        <module>river-core-test</module>
     </modules>
 </project>

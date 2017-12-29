@@ -5,7 +5,7 @@
 	<artifactId>river-utils</artifactId>
 	<version>0.2.5</version>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>Workflow Application Framework written in Java, using Lotus Notes as NoSQL database server</description>
+	<description>River-Framework - Utilities</description>
 	<url>http://www.riverframework.org</url>
 	<packaging>jar</packaging>
 	<licenses>

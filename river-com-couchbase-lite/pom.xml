@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.riverframework</groupId>
-	<artifactId>river-couchbase-lite</artifactId>
+	<artifactId>river-com-couchbase-lite</artifactId>
 	<version>0.3.0</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Workflow Application Framework written in Java, using Lotus Notes as NoSQL database server</description>
@@ -43,7 +43,6 @@
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
-					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
 			<plugin>

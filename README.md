@@ -124,9 +124,10 @@ Other features
 - Logging of changes in the fields of a document
 - Control of the data change propagation between related documents (1..\*, \*..\*)
 
-
-
 ## Changelog
+
+Version 0.3.0
+- Moved wrappers (lotus-domino, org-openntf-domino, and com-couchbase-lite) to their own repos
 
 Version 0.2.11
 - Eliminate the dependencies to joda-time and ini4j to make easier the use of the libraries
@@ -185,6 +186,9 @@ Version 0.1
 - Document collections as arrays
 - It has a set of `JUnit` tests
 
+## Questions?
+
+mario.sotil [at] gmail.com
 
 ### Tags
 

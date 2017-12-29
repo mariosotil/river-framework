@@ -195,7 +195,7 @@ public class ConverterTest {
 		cal.set(Calendar.MILLISECOND, 456);
 		obj = cal.getTime();
 		result = Converter.getAsDate(obj);
-		assertTrue("Failed from Date to Date", result.getTime() == 1426006923456L);
+		assertTrue("Failed from Date to Date", result.getTime() == 1425963723456L);
 
 		obj = new ArrayList<Object>();
 		result = Converter.getAsDate(obj);

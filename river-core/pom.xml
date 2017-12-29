@@ -161,11 +161,5 @@
 			<artifactId>river-utils</artifactId>
 			<version>0.2.5</version>
 		</dependency>
-		<dependency>
-			<groupId>org.riverframework</groupId>
-			<artifactId>river-credentials</artifactId>
-			<version>0.1.0</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 </project>

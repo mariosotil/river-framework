@@ -4,20 +4,21 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.riverframework</groupId>
-    <artifactId>river-parent</artifactId>
-    <version>${global.version}</version>
-    <packaging>pom</packaging>
-
     <properties>
-        <global.version>0.3.0-SNAPSHOT</global.version>
+        <global.version>0.3.0</global.version>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
+
+    <groupId>org.riverframework</groupId>
+    <artifactId>river-framework</artifactId>
+    <version>${global.version}</version>
+    <packaging>pom</packaging>
 
     <modules>
         <module>river-utils</module>
         <module>river-credentials</module>
         <module>river-core</module>
+        <module>river-core-test</module>
         <module>river-lotus-domino</module>
         <module>river-org-openntf-domino</module>
         <module>river-com-couchbase-lite</module>

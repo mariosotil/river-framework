@@ -30,20 +30,16 @@ public abstract class AbstractDatabaseTest {
 		// Opening the test context in the current package
 		try {
 			if (context == null) {
-				Class<?> clazz = Class.forName(this.getClass()
-													.getPackage()
-													.getName() + ".Context");
+				Class<?> clazz = Class.forName(this.getClass().getPackage().getName() + ".Context");
 				if (Context.class.isAssignableFrom(clazz)) {
 					Constructor<?> constructor = clazz.getDeclaredConstructor();
 					constructor.setAccessible(true);
 					context = (Context) constructor.newInstance();
 				}
 
-				_session = context.getSession()
-									.getWrapperObject();
-				_database = _session.getDatabase(context.getTestDatabaseServer(), context.getTestDatabasePath());
-				_database.getAllDocuments()
-							.deleteAll();
+				_session = context.getSession().getWrapperObject();
+				_database = _session.getDatabase(context.getTestDatabasePath());
+				_database.getAllDocuments().deleteAll();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

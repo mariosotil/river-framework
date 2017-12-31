@@ -11,7 +11,6 @@ public interface IndexedDatabase extends Database {
 
 	public DefaultCounter getCounter(String key);
 
-	public <U extends AbstractDocument<?>> IndexedDatabase registerDocumentClass(
-			Class<U> clazz);
+	public <U extends AbstractDocument<?>> IndexedDatabase registerDocumentClass(Class<U> clazz);
 
 }

@@ -7,7 +7,7 @@ import org.riverframework.RiverException;
 
 /**
  * It is used to access Views of documents. Works as an index that makes easier
- * access to the documents.
+ * to access to documents.
  * 
  * @author mario.sotil@gmail.com
  *

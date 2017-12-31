@@ -148,8 +148,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase<T>>
 	}
 
 	@Override
-	public <U extends AbstractDocument<?>> U createDocument(Class<U> clazz,
-			String... parameters) {
+	public <U extends AbstractDocument<?>> U createDocument(Class<U> clazz, String... parameters) {
 		org.riverframework.wrapper.Document<?> _doc = _database
 				.createDocument(parameters);
 		U doc = null;

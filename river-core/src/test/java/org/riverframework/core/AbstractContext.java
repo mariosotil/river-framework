@@ -14,22 +14,10 @@ public abstract class AbstractContext implements org.riverframework.Context {
 	public AbstractContext() {
 		// Exists only to defeat instantiation
 		try {
-			StringBuilder sb = new StringBuilder();
-
-			sb.append(System.getProperty("user.home"));
-			sb.append(File.separator);
-			sb.append(".river-framework");
-			sb.append(File.separator);
-			sb.append(getConfigurationFileName());
-
-			String location = sb.toString();
-
-			Wini context = new Wini(new File(location));
-
-			testDatabaseServer = context.get("default", "test-database-server");
-			testDatabasePath = context.get("default", "test-database-path");
-			remoteDatabaseServer = context.get("default", "remote-database-server");
-			remoteDatabasePath = context.get("default", "remote-database-path");
+			testDatabaseServer = "test-database-server";
+			testDatabasePath = "test-database-path";
+			remoteDatabaseServer = "remote-database-server";
+			remoteDatabasePath = "remote-database-path";
 
 		} catch (Exception e) {
 			throw new RiverException(e);

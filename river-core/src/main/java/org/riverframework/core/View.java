@@ -93,17 +93,4 @@ public interface View extends Base {
 	 */
 	public DocumentIterator search(String query, int max);
 
-	/**
-	 * Allows to add a column to a view.
-	 * 
-	 * @param name
-	 *            the name of the column
-	 * @param value
-	 *            the value for the column
-	 * @param isSorted
-	 *            if it is true, the column will be created as a ascending sorted column
-	 * @return the current View object, for method chaining.
-	 */
-	public View addColumn(String name, String value, boolean isSorted);
-
 }

@@ -39,7 +39,5 @@ public class View extends Base {
 
     public DocumentCollection getAllDocumentsByKey(Object... paramters) { return null; }
 
-    public ViewColumn createColumn(Object... parameters) { return null; }
-
     public int getColumnCount() { return 0; }
 }

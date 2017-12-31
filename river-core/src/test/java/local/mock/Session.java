@@ -7,10 +7,6 @@ public class Session extends Base {
         return null;
     }
 
-    public DateTime createDateTime(Date date)  {
-        return null;
-    }
-
     public String getServerName() { return null; }
 
     public String getUserName() { return null; }

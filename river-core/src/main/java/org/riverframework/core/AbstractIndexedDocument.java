@@ -24,8 +24,8 @@ public abstract class AbstractIndexedDocument<T extends AbstractIndexedDocument<
 
 	@Override
 	public final View createIndex() {
-		return getDatabase().createView(getParametersToCreateIndex())
-				.addColumn("Id", getIdField(), true);
+		//TODO: create a better way to define a View's design
+		return getDatabase().createView(getParametersToCreateIndex()); //.addColumn("Id", getIdField(), true)
 	}
 
 	@Override

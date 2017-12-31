@@ -113,28 +113,6 @@ class DefaultView extends AbstractBaseNoSQL<local.mock.View> implements View<loc
 	}
 
 	@Override
-	public View<local.mock.View> addColumn(String name, String value, boolean isSorted) {
-		try {
-			local.mock.ViewColumn __col = __native.createColumn(__native.getColumnCount(), name, value);
-			__col.setSorted(isSorted);
-
-			if(_factory.getIsRemoteSession()) {
-				// If this is a remote session, calling recycle permits to save
-				// the changes. Otherwise, the view looks damaged.
-
-				local.mock.Database __db = __native.getParent();
-				String viewName = __native.getName();
-
-				__native.recycle(); 
-				__native = __db.getView(viewName);
-			}
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
-		return this;
-	}
-
-	@Override
 	public void delete() {
 		if (__native != null) {
 			try {

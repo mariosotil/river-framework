@@ -1,6 +1,5 @@
 package local.nosql;
 
-import local.mock.DateTime;
 import local.mock.Item;
 import local.mock.DatabaseException;
 import org.riverframework.River;
@@ -91,6 +90,7 @@ class DefaultDocument extends AbstractBaseNoSQL<local.mock.Document> implements 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Document<local.mock.Document> setField(String field, Object value) {
+	    /*
 		Vector temp = null;
 
 		if (value instanceof String) {
@@ -163,9 +163,9 @@ class DefaultDocument extends AbstractBaseNoSQL<local.mock.Document> implements 
 				temp.set(i, __date);
 			}
 		}
-
+*/
 		try {
-			__native.replaceItemValue(field, temp);
+			__native.replaceItemValue(field, value);
 		} catch (DatabaseException e) {
 			throw new RiverException(e);
 		}
@@ -193,18 +193,6 @@ class DefaultDocument extends AbstractBaseNoSQL<local.mock.Document> implements 
 			value = temp == null ? new DefaultField() : new DefaultField(temp);
 		} catch (DatabaseException e) {
 			throw new RiverException(e);
-		}
-
-		if (!value.isEmpty()) {
-			if (value.get(0) instanceof local.mock.DateTime) {
-				for (int i = 0; i < value.size(); i++) {
-					try {
-						value.set(i, ((local.mock.DateTime) value.get(i)).toJavaDate());
-					} catch (DatabaseException e) {
-						throw new RiverException(e);
-					}
-				}
-			}
 		}
 
 		return value;
@@ -282,12 +270,7 @@ class DefaultDocument extends AbstractBaseNoSQL<local.mock.Document> implements 
 		try {
 			Vector<?> value = null;
 			value = __native.getItemValue(field);
-			Object temp = value.size() > 0 ? value.get(0) : null;  
-			if (temp != null && temp.getClass().getName().endsWith("DateTime")) {
-				temp = ((DateTime) temp).toJavaDate();
-			}
-
-			result = Converter.getAsDate(temp);
+			result = value.size() > 0 ? ((Date) value.get(0)) : null;
 		} catch (DatabaseException e) {
 			throw new RiverException(e);
 		}
@@ -386,15 +369,6 @@ class DefaultDocument extends AbstractBaseNoSQL<local.mock.Document> implements 
 				if (values.isEmpty()) {
 					// logWrapper.debug("getFields: it's empty");
 					values.add("");
-				}
-
-				if (!values.isEmpty()) {
-					if (values.get(0) instanceof local.mock.DateTime) {
-						// logWrapper.debug("getFields: it's datetime");
-						for (int i = 0; i < values.size(); i++) {
-							values.set(i, ((local.mock.DateTime) values.get(i)).toJavaDate());
-						}
-					}
 				}
 
 				// logWrapper.debug("getFields: saving into the map");

@@ -70,7 +70,7 @@ public abstract class AbstractDatabaseTest {
 		String name = "VIEW_" + sdf.format(new Date());
 		String form = "FORM_" + sdf.format(new Date());
 		View<?> _view = _database.createView(name, "SELECT Form = \"" + form + "\"");
-		_view.addColumn("id", "Id", true);
+		// _view.addColumn("id", "Id", true);
 
 		assertTrue("There is a problem creating the view in the test database.", _view.isOpen());
 

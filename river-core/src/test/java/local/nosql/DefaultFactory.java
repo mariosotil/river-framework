@@ -1,7 +1,7 @@
 package local.nosql;
 
 import local.mock.DatabaseException;
-import local.mock.NotesFactory;
+import local.mock.Factory;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.AbstractNativeReference;
 import org.riverframework.wrapper.AbstractFactory;
@@ -64,7 +64,7 @@ public class DefaultFactory extends AbstractFactory<local.mock.Base> {
 			try {
 				isRemoteSession = (parameters[0] != null);					
 
-				__obj = NotesFactory.createSession((String) parameters[0], (String) parameters[1], (String) parameters[2]); 
+				__obj = Factory.createSession((String) parameters[0], (String) parameters[1], (String) parameters[2]);
 			} catch (DatabaseException e) {
 				throw new RiverException(e);
 			}

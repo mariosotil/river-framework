@@ -145,12 +145,6 @@ public abstract class AbstractView<T extends AbstractView<T>> implements View {
 	}
 
 	@Override
-	public T addColumn(String name, String value, boolean isSorted) {
-		_view.addColumn(name, value, isSorted);
-		return getThis();
-	}
-
-	@Override
 	public void close() {
 		_view.close();
 	}

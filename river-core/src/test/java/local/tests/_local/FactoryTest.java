@@ -1,4 +1,4 @@
-package local.test._local;
+package local.tests._local;
 
 import local.mock.Base;
 //import org.riverframework.no2.NotesThread;

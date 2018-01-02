@@ -1,4 +1,4 @@
-package local.nosql;
+package local.wrapper;
 
 import local.mock.Item;
 import local.mock.DatabaseException;

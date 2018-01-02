@@ -1,4 +1,4 @@
-package local.nosql;
+package local.wrapper;
 
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.AbstractBase;

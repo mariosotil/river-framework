@@ -1,18 +1,11 @@
-package local.test;
+package local.tests;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.riverframework.Context;
-import org.riverframework.RiverException;
-import org.riverframework.wrapper.Database;
-import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.Session;
-import org.riverframework.wrapper.View;
 
 import java.lang.reflect.Constructor;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

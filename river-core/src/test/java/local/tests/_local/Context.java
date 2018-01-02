@@ -1,4 +1,4 @@
-package local.test._local;
+package local.tests._local;
 
 import org.riverframework.River;
 import org.riverframework.core.Session;

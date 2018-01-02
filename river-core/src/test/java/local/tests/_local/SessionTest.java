@@ -1,10 +1,10 @@
-package local.test._local;
+package local.tests._local;
 
 //import org.riverframework.no2.NotesThread;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-public class DocumentTest extends org.riverframework.wrapper.AbstractDocumentTest {
+public class SessionTest extends org.riverframework.wrapper.AbstractSessionTest {
 	@BeforeClass
 	public static void before() {
 		//NotesThread.sinitThread();

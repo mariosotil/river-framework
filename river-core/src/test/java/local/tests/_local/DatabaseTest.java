@@ -1,6 +1,5 @@
 package local.tests._local;
 
-//import org.riverframework.no2.NotesThread;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 

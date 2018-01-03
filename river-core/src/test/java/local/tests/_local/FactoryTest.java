@@ -1,7 +1,8 @@
 package local.tests._local;
 
-import local.mock.Base;
+import local.mock.BaseMock;
 //import org.riverframework.no2.NotesThread;
+import local.mock.DocumentMock;
 import org.riverframework.River;
 import org.riverframework.utils.Credentials;
 import org.riverframework.wrapper.Database;
@@ -14,15 +15,15 @@ public class FactoryTest {
 	public static void main(String[] args) {
 		//NotesThread.sinitThread();
 
-		Session<local.mock.Base> session = (Session<local.mock.Base>) River.getSession(River.LOTUS_DOMINO,
+		Session<BaseMock> session = (Session<BaseMock>) River.getSession(River.LOTUS_DOMINO,
 				(String) null, (String) null, Credentials.getPassword()).getWrapperObject();
-		Database<local.mock.Base> database = (Database<Base>) session.getDatabase("", "massive.nsf");
+		Database<BaseMock> database = (Database<BaseMock>) session.getDatabase("", "massive.nsf");
 
-		DocumentIterator<local.mock.Base, local.mock.Document> it = (DocumentIterator<Base, local.mock.Document>) database.getAllDocuments();
+		DocumentIterator<BaseMock, DocumentMock> it = (DocumentIterator<BaseMock, DocumentMock>) database.getAllDocuments();
 		int i = 0;
 		
 		while(it.hasNext()) {
-			Document<local.mock.Document> doc = it.next();
+			Document<DocumentMock> doc = it.next();
 			String counter = doc.getFieldAsString("counter");
 			if (++i % 250 == 0) {
 				System.out.println("=" + counter);

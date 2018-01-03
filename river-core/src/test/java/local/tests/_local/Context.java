@@ -12,13 +12,12 @@ public final class Context extends org.riverframework.core.AbstractContext {
 
 	@Override
 	public Session getSession() {
-		Session session = River.getSession(River.LOTUS_DOMINO,
-				(String) null, (String) null, Credentials.getPassword());
+		Session session = River.getSession(River.MOCK);
 		return session;
 	}
 
 	@Override
 	public void closeSession() {
-		River.closeSession(River.LOTUS_DOMINO);
+		River.closeSession(River.MOCK);
 	}
 }

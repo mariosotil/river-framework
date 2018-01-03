@@ -1,7 +1,6 @@
 package local.wrapper;
 
-import local.mock.Base;
-import local.mock.DatabaseException;
+import local.mock.*;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Database;
@@ -9,255 +8,237 @@ import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 
-class DefaultDatabase extends AbstractBaseNoSQL<local.mock.Database> implements org.riverframework.wrapper.Database<local.mock.Database> {
-	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
+class DefaultDatabase extends AbstractBaseWrapper<DatabaseMock> implements org.riverframework.wrapper.Database<DatabaseMock> {
+    // private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
-	protected DefaultDatabase(org.riverframework.wrapper.Session<local.mock.Session> _session, local.mock.Database __native) {
-		super(_session, __native);
-	}
+    protected DefaultDatabase(org.riverframework.wrapper.Session<SessionMock> _session, DatabaseMock __native) {
+        super(_session, __native);
+    }
 
-	@Override
-	public boolean isRecycled() {
-		// If it's not a remote session, returns false. Otherwise, returns if the object is recycled
-		return AbstractBaseNoSQL.isObjectRecycled(__native);
-	}
-	
-	public String calcObjectId(local.mock.Database __database) {
-		String objectId = "";
+    public String calcObjectId(DatabaseMock __database) {
+        String objectId = "";
 
-		if (__database != null ) { // && !isRecycled(__database)) {
-			try {
-				StringBuilder sb = new StringBuilder(1024);
-				sb.append(__database.getServer());
-				sb.append(River.ID_SEPARATOR);
-				sb.append(__database.getFilePath());
+        if (__database != null) { // && !isRecycled(__database)) {
+            try {
+                StringBuilder sb = new StringBuilder(1024);
+                sb.append(__database.getServer());
+                sb.append(River.ID_SEPARATOR);
+                sb.append(__database.getFilePath());
 
-				objectId = sb.toString();
-			} catch (DatabaseException e) {
-				throw new RiverException(e);
-			}
-		} 
+                objectId = sb.toString();
+            } catch (MockException e) {
+                throw new RiverException(e);
+            }
+        }
 
-		return objectId;
-	}
+        return objectId;
+    }
 
-	@Override
-	public String getServer() {
-		try {
-			return __native.getServer();
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
-	}
+    @Override
+    public String getServer() {
+        try {
+            return __native.getServer();
+        } catch (MockException e) {
+            throw new RiverException(e);
+        }
+    }
 
-	@Override
-	public String getFilePath() {
-		try {
-			return __native.getFilePath();
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
-	}
+    @Override
+    public String getFilePath() {
+        try {
+            return __native.getFilePath();
+        } catch (MockException e) {
+            throw new RiverException(e);
+        }
+    }
 
-	@Override
-	public String getName() {
-		try {
-			String name = __native.getTitle();
-			return name.equals("") ? __native.getFileName() : name;
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
-	}
+    @Override
+    public String getName() {
+        try {
+            String name = __native.getTitle();
+            return name.equals("") ? __native.getFileName() : name;
+        } catch (MockException e) {
+            throw new RiverException(e);
+        }
+    }
 
-	@Override
-	public boolean isOpen() {
-		try {
-			return (__native != null && !isRecycled() && __native.isOpen()); 
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
-	}
+    @Override
+    public boolean isOpen() {
+        try {
+            return (__native != null && __native.isOpen());
+        } catch (MockException e) {
+            throw new RiverException(e);
+        }
+    }
 
-	@Override
-	public Document<local.mock.Document> createDocument(String... parameters) {
-		local.mock.Document __doc = null;
+    @Override
+    public Document<DocumentMock> createDocument(String... parameters) {
+        DocumentMock __doc = null;
 
-		try {
-			__doc = __native.createDocument();
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
+        try {
+            __doc = __native.createDocument();
+        } catch (MockException e) {
+            throw new RiverException(e);
+        }
 
-		@SuppressWarnings("unchecked")
-		Document<local.mock.Document> doc = (Document<local.mock.Document>) _factory.getDocument(__doc);
+        @SuppressWarnings("unchecked")
+        Document<DocumentMock> doc = (Document<DocumentMock>) _factory.getDocument(__doc);
 
-		return doc;
-	}
+        return doc;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Document<local.mock.Document> getDocument(String... parameters)
-	{
-		local.mock.Document __doc = null;
-		Document<local.mock.Document> doc = null;
+    @SuppressWarnings("unchecked")
+    @Override
+    public Document<DocumentMock> getDocument(String... parameters) {
+        DocumentMock __doc = null;
+        Document<DocumentMock> doc = null;
 
-		if (parameters.length > 0) {
-			String id = parameters[0];
+        if (parameters.length > 0) {
+            String id = parameters[0];
 
-			doc = (Document<local.mock.Document>) _factory.getDocument(id);
+            doc = (Document<DocumentMock>) _factory.getDocument(id);
 
-			if (!doc.isOpen()) { 
-				try {
-					if (id.length() == 32) {
-						__doc = __native.getDocumentByUNID(id);
-					}
-				} catch (Exception e) {
-					// Do nothing
-				}
+            if (!doc.isOpen()) {
+                try {
+                    if (id.length() == 32) {
+                        __doc = __native.getDocumentByUNID(id);
+                    }
+                } catch (Exception e) {
+                    // Do nothing
+                }
 
-				try {
-					if (__doc == null && id.length() == 8) {
-						__doc = __native.getDocumentByID(id);
-					}
-				} catch (Exception e) {
-					// Do nothing
-				}
-				
-				doc = (Document<local.mock.Document>) _factory.getDocument(__doc);
-			}
-		} else {
-			doc = (Document<local.mock.Document>) _factory.getDocument((local.mock.Document) null);
-		}
+                try {
+                    if (__doc == null && id.length() == 8) {
+                        __doc = __native.getDocumentByID(id);
+                    }
+                } catch (Exception e) {
+                    // Do nothing
+                }
 
-		return doc;
-	}
+                doc = (Document<DocumentMock>) _factory.getDocument(__doc);
+            }
+        } else {
+            doc = (Document<DocumentMock>) _factory.getDocument((DocumentMock) null);
+        }
 
-	@Override
-	public View<local.mock.View> createView(String... parameters) {
-		local.mock.View __view = null;
-		String name = null;
+        return doc;
+    }
 
-		try {
-			if (parameters.length == 1) {
-				name = parameters[0];
-				__view = __native.createView(name);
-			} else if (parameters.length == 2) {
-				name = parameters[0];
-				String selectionFormula = parameters[1];
-				__view = __native.createView(name, selectionFormula);
-			} else {
-				throw new RiverException("It was expected these parameters: name (required) and selection formula (optional).");
-			}			
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
+    @Override
+    public View<ViewMock> createView(String... parameters) {
+        ViewMock __view = null;
+        String name = null;
 
-		if (name != null && !name.equals("") && __view != null) {
-			try {
-				if (_factory.getIsRemoteSession()) 
-					__view.recycle();
-				
-				__view = null;
-			} catch (Exception e) {
-				throw new RiverException(e);
-			}
-		}
+        try {
+            if (parameters.length == 1) {
+                name = parameters[0];
+                __view = __native.createView(name);
+            } else if (parameters.length == 2) {
+                name = parameters[0];
+                String selectionFormula = parameters[1];
+                __view = __native.createView(name, selectionFormula);
+            } else {
+                throw new RiverException("It was expected these parameters: name (required) and selection formula (optional).");
+            }
+        } catch (MockException e) {
+            throw new RiverException(e);
+        }
 
-		View<local.mock.View> _view = getView(name);
-		return _view;
-	}
+        View<ViewMock> _view = getView(name);
+        return _view;
+    }
 
-	@Override
-	public View<local.mock.View> getView(String... parameters) {
-		local.mock.View __view = null;
+    @Override
+    public View<ViewMock> getView(String... parameters) {
+        ViewMock __view = null;
 
-		try {
-			if (parameters.length > 0) {
-				String id = parameters[0];
-				__view = __native.getView(id);
-			}
+        try {
+            if (parameters.length > 0) {
+                String id = parameters[0];
+                __view = __native.getView(id);
+            }
 
-			if (__view != null)
-				__view.setAutoUpdate(false);
+            if (__view != null)
+                __view.setAutoUpdate(false);
 
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
+        } catch (MockException e) {
+            throw new RiverException(e);
+        }
 
-		@SuppressWarnings("unchecked")
-		View<local.mock.View> _view = (View<local.mock.View>) _factory.getView(__view);
-		return _view;
-	}
+        @SuppressWarnings("unchecked")
+        View<ViewMock> _view = (View<ViewMock>) _factory.getView(__view);
+        return _view;
+    }
 
-	@Override
-	public DocumentIterator<local.mock.Base, local.mock.Document> getAllDocuments() {
-		local.mock.DocumentCollection _col;
+    @Override
+    public DocumentIterator<BaseMock, DocumentMock> getAllDocuments() {
+        DocumentCollectionMock _col;
 
-		try {
-			_col = __native.getAllDocuments();
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
+        try {
+            _col = __native.getAllDocuments();
+        } catch (MockException e) {
+            throw new RiverException(e);
+        }
 
-		@SuppressWarnings("unchecked")
-		DocumentIterator<local.mock.Base, local.mock.Document> _iterator =
-				(DocumentIterator<Base, local.mock.Document>) _factory.getDocumentIterator(_col);
-		return _iterator;
-	}
+        @SuppressWarnings("unchecked")
+        DocumentIterator<BaseMock, DocumentMock> _iterator =
+                (DocumentIterator<BaseMock, DocumentMock>) _factory.getDocumentIterator(_col);
+        return _iterator;
+    }
 
-	@Override
-	public DocumentIterator<local.mock.Base, local.mock.Document> search(String query) {
-		DocumentIterator<local.mock.Base, local.mock.Document> _iterator =
-				search(query, 0);
-		return _iterator;
-	}
+    @Override
+    public DocumentIterator<BaseMock, DocumentMock> search(String query) {
+        DocumentIterator<BaseMock, DocumentMock> _iterator =
+                search(query, 0);
+        return _iterator;
+    }
 
-	@Override
-	public DocumentIterator<local.mock.Base, local.mock.Document> search(String query, int max) {
-		local.mock.DocumentCollection _col;
+    @Override
+    public DocumentIterator<BaseMock, DocumentMock> search(String query, int max) {
+        DocumentCollectionMock _col;
 
-		try {
-			_col = __native.search(query, null, max);
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
+        try {
+            _col = __native.search(query, null, max);
+        } catch (MockException e) {
+            throw new RiverException(e);
+        }
 
-		@SuppressWarnings("unchecked")
-		DocumentIterator<local.mock.Base, local.mock.Document> _iterator =
-				(DocumentIterator<Base, local.mock.Document>) _factory.getDocumentIterator(_col);
-		return _iterator;
-	}
+        @SuppressWarnings("unchecked")
+        DocumentIterator<BaseMock, DocumentMock> _iterator =
+                (DocumentIterator<BaseMock, DocumentMock>) _factory.getDocumentIterator(_col);
+        return _iterator;
+    }
 
-	@Override
-	public Database<local.mock.Database> refreshSearchIndex(boolean createIfNotExist) {
-		try {
-			__native.updateFTIndex(createIfNotExist);
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
-		return this;
-	}
+    @Override
+    public Database<DatabaseMock> refreshSearchIndex(boolean createIfNotExist) {
+        try {
+            __native.updateFTIndex(createIfNotExist);
+        } catch (MockException e) {
+            throw new RiverException(e);
+        }
+        return this;
+    }
 
-	@Override
-	public void delete() {
-		try {
-			if (__native != null) 
-				__native.remove();			
-		} catch (DatabaseException e) {
-			throw new RiverException(e);
-		}
+    @Override
+    public void delete() {
+        try {
+            if (__native != null)
+                __native.delete();
+        } catch (MockException e) {
+            throw new RiverException(e);
+        }
 
-		close();
-	}
+        close();
+    }
 
-	@Override
-	public String toString() {
-		return getClass().getName() + "(" + objectId + ")";
-	}
+    @Override
+    public String toString() {
+        return getClass().getName() + "(" + objectId + ")";
+    }
 
-	@Override
-	@Deprecated
-	public void close() {
-		// Don't recycle or close it. Let the server do that.
-	}
+    @Override
+    @Deprecated
+    public void close() {
+        // Don't recycle or close it. Let the server do that.
+    }
 }

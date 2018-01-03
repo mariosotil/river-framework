@@ -1,14 +1,14 @@
 package org.riverframework.wrapper;
 
 public interface Session<N> extends Base<N> {
-	public Database<?> createDatabase(String... location);
+	Database<?> createDatabase(String... location);
 
-	public Database<?> getDatabase(String... parameters);
+	Database<?> getDatabase(String... parameters);
 
-	public String getUserName();
+	String getUserName();
 
-	public Factory<?> getFactory();
+	Factory<?> getFactory();
 
 	@Override
-	public void close();
+	void close();
 }

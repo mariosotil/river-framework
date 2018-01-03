@@ -1,36 +1,35 @@
 package local.wrapper;
 
-import local.mock.DatabaseException;
+import local.mock.MockException;
+import local.mock.DocumentCollectionMock;
+import local.mock.DocumentMock;
+import local.mock.SessionMock;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.Session;
 
-class DocumentIteratorFromDocumentCollection extends AbstractBaseNoSQL<local.mock.DocumentCollection> implements DocumentIterator<local.mock.DocumentCollection, local.mock.Document> {
+class DocumentIteratorFromDocumentCollection extends AbstractBaseWrapper<DocumentCollectionMock> implements DocumentIterator<DocumentCollectionMock, DocumentMock> {
     // private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
-    private local.mock.Document __document = null;
-    private Document<local.mock.Document> _doc = null;
+    private DocumentMock __document = null;
+    private Document<DocumentMock> _doc = null;
 
     @SuppressWarnings("unchecked")
-    protected DocumentIteratorFromDocumentCollection(Session<local.mock.Session> _session, local.mock.DocumentCollection __native) {
+    protected DocumentIteratorFromDocumentCollection(Session<SessionMock> _session, DocumentCollectionMock __native) {
         super(_session, __native);
 
         try {
             __document = __native.getFirstDocument();
-        } catch (DatabaseException e) {
+        } catch (MockException e) {
             throw new RiverException(e);
         }
 
-        _doc = (Document<local.mock.Document>) _factory.getDocument(__document); //Document<org.riverframework.mock.Base>
+        _doc = (Document<DocumentMock>) _factory.getDocument(__document); //Document<org.riverframework.mock.Base>
     }
 
-    public boolean isRecycled() {
-        return AbstractBaseNoSQL.isObjectRecycled(__native);
-    }
-
-    public String calcObjectId(local.mock.DocumentCollection __object) {
+    public String calcObjectId(DocumentCollectionMock __object) {
         String objectId = "";
         if (__object != null) { // && !isRecycled(__object)) {
 
@@ -51,22 +50,22 @@ class DocumentIteratorFromDocumentCollection extends AbstractBaseNoSQL<local.moc
 
     @SuppressWarnings("unchecked")
     @Override
-    public Document<local.mock.Document> next() {
-        Document<local.mock.Document> _current = _doc;
+    public Document<DocumentMock> next() {
+        Document<DocumentMock> _current = _doc;
 
         try {
             __document = __native.getNextDocument(__document);
-        } catch (DatabaseException e) {
+        } catch (MockException e) {
             throw new RiverException(e);
         }
 
-        _doc = (Document<local.mock.Document>) _factory.getDocument(__document); //Document<org.riverframework.mock.Base>
+        _doc = (Document<DocumentMock>) _factory.getDocument(__document); //Document<org.riverframework.mock.Base>
 
         return _current;
     }
 
     @Override
-    public DocumentIterator<local.mock.DocumentCollection, local.mock.Document> iterator() {
+    public DocumentIterator<DocumentCollectionMock, DocumentMock> iterator() {
         return this;
     }
 
@@ -77,8 +76,8 @@ class DocumentIteratorFromDocumentCollection extends AbstractBaseNoSQL<local.moc
     }
 
     @Override
-    public DocumentIterator<local.mock.DocumentCollection, local.mock.Document> deleteAll() {
-        for (Document<local.mock.Document> doc : this) {
+    public DocumentIterator<DocumentCollectionMock, DocumentMock> deleteAll() {
+        for (Document<DocumentMock> doc : this) {
             doc.delete();
         }
 

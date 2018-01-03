@@ -1,11 +1,10 @@
 package local.mock;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-public class Document extends Base {
-    public Database getDatabase() {
+public class DocumentMock extends BaseMock {
+    public DatabaseMock getDatabase() {
         return null;
     }
 
@@ -33,7 +32,7 @@ public class Document extends Base {
         return null;
     }
 
-    public Database getParentDatabase()  {
+    public DatabaseMock getParentDatabase()  {
         return null;
     }
 

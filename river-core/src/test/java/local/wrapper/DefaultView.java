@@ -1,6 +1,6 @@
 package local.wrapper;
 
-import local.mock.DatabaseException;
+import local.mock.*;
 import org.riverframework.River;
 import org.riverframework.RiverException;
 import org.riverframework.wrapper.Document;
@@ -8,18 +8,18 @@ import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.View;
 import org.riverframework.wrapper.Session;
 
-class DefaultView extends AbstractBaseNoSQL<local.mock.View> implements View<local.mock.View> {
-	protected DefaultView(Session<local.mock.Session> _session, local.mock.View __native) {
+class DefaultView extends AbstractBaseWrapper<ViewMock> implements View<ViewMock> {
+	protected DefaultView(Session<SessionMock> _session, ViewMock __native) {
 		super(_session, __native);
 	}
 
 	@Override
-	public String calcObjectId(local.mock.View __view) {
+	public String calcObjectId(ViewMock __view) {
 		String objectId = "";
 
 		if (__view != null) { // && !isRecycled(__view)) {
 			try {
-				local.mock.Database __database = __view.getParent();
+				DatabaseMock __database = __view.getParent();
 
 				StringBuilder sb = new StringBuilder(1024);
 				sb.append(__database.getServer());
@@ -29,7 +29,7 @@ class DefaultView extends AbstractBaseNoSQL<local.mock.View> implements View<loc
 				sb.append(__view.getName());
 
 				objectId = sb.toString();
-			} catch (DatabaseException e) {
+			} catch (MockException e) {
 				throw new RiverException(e);
 			}	
 		}
@@ -39,8 +39,8 @@ class DefaultView extends AbstractBaseNoSQL<local.mock.View> implements View<loc
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Document<local.mock.Document> getDocumentByKey(String key) {
-		local.mock.Document __doc = null;
+	public Document<DocumentMock> getDocumentByKey(String key) {
+		DocumentMock __doc = null;
 
 		try {
 			__doc = __native.getDocumentByKey(key, true);
@@ -54,58 +54,54 @@ class DefaultView extends AbstractBaseNoSQL<local.mock.View> implements View<loc
 
 			// if (__doc != null && !__doc.getColumnValues().get(0).equals(key)) __doc = null;
 
-		} catch (DatabaseException e) {
+		} catch (MockException e) {
 			throw new RiverException(e);
 		}
 
-		Document<local.mock.Document> doc = (Document<local.mock.Document>) _factory.getDocument(__doc);
+		Document<DocumentMock> doc = (Document<DocumentMock>) _factory.getDocument(__doc);
 
 		return doc;
 	}
 
-	public boolean isRecycled() {
-		return AbstractBaseNoSQL.isObjectRecycled(__native);
-	}
-
 	@Override
 	public boolean isOpen() {
-		return __native != null && !isRecycled();
+		return __native != null;
 	}
 
 	@Override
-	public DocumentIterator<local.mock.Base, local.mock.Document> getAllDocuments() {
-		local.mock.DocumentCollection __vecol;
+	public DocumentIterator<BaseMock, DocumentMock> getAllDocuments() {
+		DocumentCollectionMock __vecol;
 		try {
 			__vecol = __native.getAllEntries();
 
-		} catch (DatabaseException e) {
+		} catch (MockException e) {
 			throw new RiverException(e);
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator<local.mock.Base, local.mock.Document> result = (DocumentIterator<local.mock.Base, local.mock.Document>) _factory.getDocumentIterator(__vecol);
+		DocumentIterator<BaseMock, DocumentMock> result = (DocumentIterator<BaseMock, DocumentMock>) _factory.getDocumentIterator(__vecol);
 		return result;
 	}
 
 	@Override
-	public DocumentIterator<local.mock.Base, local.mock.Document> getAllDocumentsByKey(Object key) {
-		local.mock.DocumentCollection _col;
+	public DocumentIterator<BaseMock, DocumentMock> getAllDocumentsByKey(Object key) {
+		DocumentCollectionMock _col;
 		try {
 			_col = __native.getAllDocumentsByKey(key, true);
-		} catch (DatabaseException e) {
+		} catch (MockException e) {
 			throw new RiverException(e);
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator<local.mock.Base, local.mock.Document> result = (DocumentIterator<local.mock.Base, local.mock.Document>) _factory.getDocumentIterator(_col);
+		DocumentIterator<BaseMock, DocumentMock> result = (DocumentIterator<BaseMock, DocumentMock>) _factory.getDocumentIterator(_col);
 		return result;
 	}
 
 	@Override
-	public View<local.mock.View> refresh() {
+	public View<ViewMock> refresh() {
 		try {
 			__native.refresh();
-		} catch (DatabaseException e) {
+		} catch (MockException e) {
 			throw new RiverException(e);
 		}
 
@@ -118,7 +114,7 @@ class DefaultView extends AbstractBaseNoSQL<local.mock.View> implements View<loc
 			try {
 				__native.remove();
 				// __view.recycle();  <== Let the server recycle
-			} catch (DatabaseException e) {
+			} catch (MockException e) {
 				throw new RiverException(e);
 			} finally {
 				__native = null;
@@ -127,25 +123,25 @@ class DefaultView extends AbstractBaseNoSQL<local.mock.View> implements View<loc
 	}
 
 	@Override
-	public DocumentIterator<local.mock.Base, local.mock.Document> search(String query) {
-		DocumentIterator<local.mock.Base, local.mock.Document> _iterator = search(query, 0);
+	public DocumentIterator<BaseMock, DocumentMock> search(String query) {
+		DocumentIterator<BaseMock, DocumentMock> _iterator = search(query, 0);
 
 		return _iterator;
 	}
 
 	@Override
-	public DocumentIterator<local.mock.Base, local.mock.Document> search(String query, int max) {
-		local.mock.View __temp = null;
+	public DocumentIterator<BaseMock, DocumentMock> search(String query, int max) {
+		ViewMock __temp = null;
 
 		try {
 			__temp = __native.getParent().getView(__native.getName());			
 			__temp.FTSearch(query, max);
-		} catch (DatabaseException e) {
+		} catch (MockException e) {
 			throw new RiverException(e);
 		}
 
 		@SuppressWarnings("unchecked")
-		DocumentIterator<local.mock.Base, local.mock.Document> _iterator = (DocumentIterator<local.mock.Base, local.mock.Document>) _factory.getDocumentIterator(__temp);
+		DocumentIterator<BaseMock, DocumentMock> _iterator = (DocumentIterator<BaseMock, DocumentMock>) _factory.getDocumentIterator(__temp);
 
 		return _iterator;
 	}

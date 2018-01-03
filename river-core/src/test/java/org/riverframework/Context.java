@@ -7,10 +7,6 @@ public interface Context {
 
 	public String getTestDatabasePath();
 
-	public String getRemoteDatabaseServer();
-
-	public String getRemoteDatabasePath();
-
 	public String getConfigurationFileName();
 
 	public Session getSession();

@@ -1,5 +1,6 @@
 package local.tests;
 
+import local.mock.BaseMock;
 import org.junit.After;
 import org.junit.Before;
 import org.riverframework.Context;
@@ -16,7 +17,7 @@ public abstract class AbstractBaseTest {
 	// private final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
 	protected Context context = null;
-	protected Session<local.mock.Base> _session = null;
+	protected Session<BaseMock> _session = null;
 
 	@SuppressWarnings("unchecked")
 	@Before
@@ -31,7 +32,7 @@ public abstract class AbstractBaseTest {
 					context = (Context) constructor.newInstance();
 				}
 
-				_session = (Session<local.mock.Base>) context.getSession().getWrapperObject();
+				_session = (Session<BaseMock>) context.getSession().getWrapperObject();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

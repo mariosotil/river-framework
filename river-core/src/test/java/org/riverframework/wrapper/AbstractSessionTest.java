@@ -35,7 +35,6 @@ public abstract class AbstractSessionTest {
 	@Test
 	public void testSession() {
 		String password = Credentials.getPassword();
-		assertFalse("Password can't be an empty string", password.equals(""));
 
 		for (int i = 0; i < 5; i++) {
 			Session<?> _session = (Session<?>) context.getSession().getWrapperObject();
@@ -54,7 +53,7 @@ public abstract class AbstractSessionTest {
 		assertTrue("The Session could not be opened.", _session.isOpen());
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		Database<?> _db = _session.createDatabase(context.getTestDatabaseServer(), "test_river_" + sdf.format(new Date()) + ".nsf");
+		Database<?> _db = _session.createDatabase("test_river_" + sdf.format(new Date()));
 		assertTrue("The Database could not be created.", _db.isOpen());
 
 		_db.delete();

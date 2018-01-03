@@ -1,17 +1,21 @@
 package local.wrapper;
 
 
+import local.mock.BaseMock;
+import local.mock.DocumentCollectionMock;
+import local.mock.DocumentMock;
+import local.mock.SessionMock;
 import org.riverframework.wrapper.Session;
 import org.riverframework.wrapper.Document;
 import org.riverframework.wrapper.DocumentIterator;
 import org.riverframework.wrapper.Base;
 
-class DefaultDocumentIterator implements Base<local.mock.Base>, DocumentIterator<local.mock.Base, local.mock.Document> {
+class DefaultDocumentIterator implements Base<BaseMock>, DocumentIterator<BaseMock, DocumentMock> {
 	// private static final Logger log = River.LOG_WRAPPER_LOTUS_DOMINO;
 
-	DocumentIterator<?, local.mock.Document> _iterator = null;
+	DocumentIterator<?, DocumentMock> _iterator = null;
 	
-	protected DefaultDocumentIterator(Session<local.mock.Session> _session, local.mock.DocumentCollection __native) {
+	protected DefaultDocumentIterator(Session<SessionMock> _session, DocumentCollectionMock __native) {
 		_iterator = new DocumentIteratorFromDocumentCollection(_session, __native);
 	}
 
@@ -21,12 +25,12 @@ class DefaultDocumentIterator implements Base<local.mock.Base>, DocumentIterator
 	}
 
 	@Override
-	public Document<local.mock.Document> next() {
+	public Document<DocumentMock> next() {
 		return _iterator.next();
 	}
 
 	@Override
-	public DocumentIterator<local.mock.Base, local.mock.Document> iterator() {
+	public DocumentIterator<BaseMock, DocumentMock> iterator() {
 		return this;
 	}
 
@@ -37,15 +41,15 @@ class DefaultDocumentIterator implements Base<local.mock.Base>, DocumentIterator
 	}
 
 	@Override
-	public DocumentIterator<local.mock.Base, local.mock.Document> deleteAll() {
+	public DocumentIterator<BaseMock, DocumentMock> deleteAll() {
 		_iterator.deleteAll();
 		
 		return this;
 	}
 
 	@Override
-	public local.mock.Base getNativeObject() {
-		return (local.mock.Base) _iterator.getNativeObject();
+	public BaseMock getNativeObject() {
+		return (BaseMock) _iterator.getNativeObject();
 	}
 
 	@Override

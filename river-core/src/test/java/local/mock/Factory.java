@@ -1,5 +1,5 @@
 package local.mock;
 
 public class Factory {
-    public static Session createSession(Object... parameters) { return null; }
+    public static SessionMock createSession(Object... parameters) { return null; }
 }

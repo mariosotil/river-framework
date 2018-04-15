@@ -13,7 +13,7 @@ that the design was completely focused on it, so I lose sight of the other datab
 will not support IBM Notes, at least at the beginning.
 
 To date (2018-04-15), the version 0.3 is still a Work In Progress. You can follow it in the branch 
-[version-0.3.0](https://github.com/mariosotil/river-framework/tree/version-0.3.0)
+[version-0.3.x](https://github.com/mariosotil/river-framework/tree/version-0.3.x)
 
 ## Features in version 0.2.11
 

@@ -5,10 +5,17 @@
 
 It is an Object-Document Mapper Framework for NoSQL databases at **development stage**. Here you will find about the development itself: current and next features, known issues, dependencies, binaries, Maven artifacts, demos, and, of course, the source code :-)  You will find a presentation about the project at its [website](http://www.riverframework.org)
 
+## Working on version 0.3
 
-## Features
+This library is being redesigned in the version 0.3. The original plan of support Couchbase, MongoDB, 
+Neo4J, etc. is still standing; but the library will be compiled for Java 8.  I was so in love with IBM Notes, 
+that the design was completely focused on it, so I lose sight of the other databases. That's why this new version 
+will not support IBM Notes, at least at the beginning.
 
-### The current version (0.2.11) has the following features: 
+To date (2018-04-15), the version 0.3 is still a Work In Progress. You can follow it in the branch 
+[version-0.3.0](https://github.com/mariosotil/river-framework/tree/version-0.3.0)
+
+## Features in version 0.2.11
 
 - Compiled for Java 1.6+ 
 - Uses the Java Logging API
@@ -88,54 +95,9 @@ To load the artifacts from Maven, you can add one of these dependencies to your 
 
 In both cases, you have to add to your classpath the `Notes.jar` library. For the last one, you will need to add the `org.openntf.domino.jar` library too.
 
-## How to build
-
-This guide will be written soon. 
-
-## How to create a wrapper for a NoSQL database
-
-This guide will be written soon. 
-
 ## Issues
 
 If you need to report an issue, please use the GitHub [issues](https://github.com/mariosotil/river-framework/issues) page.
-
-## Working on version 0.3
-
-- Support Couchbase Lite
-- Update the Getting Started demo to Couchbase Lite
-- Use the term "Binder" for a set of documents (it would be a "Collection" in MongoDB or a set of documents with the same "Form" value in IBM Notes)
-- Redesign how the queries are made. Eliminate unnecesaries "search" methods.
-
-## Next features
-
-Version 0.3.1
-- Make easier to define the index, ID generation, etc. for entity classes like Person, Book, etc. (probably with annotations)
-- Support basic queries using the SQL++ syntax
-- Fixes and improvements
-
-Version 0.4
-- Support MongoDB
-
-Version 0.5
-- Support Neo4J without graphs
-
-Version 0.6
-- Support graphs for relations between documents (1..\*, \*..\*) 
-- Support Neo4J, IBM Notes and MongoDB with graphs
-
-Version 0.7
-- Support a query language (SQL++)
-- Support Couchbase
-
-Version 0.8
-- Support transactions
-- Support CouchDB
- 
-
-Other features
-- Logging of changes in the fields of a document
-- Control of the data change propagation between related documents (1..\*, \*..\*)
 
 ## Questions?
 
@@ -143,5 +105,5 @@ mario.sotil [at] gmail.com
 
 ### Tags
 
-Java, ODM, NoSQL, MongoDB, IBM Notes, Neo4J, Lotus Notes, SSJS, ORM, Framework
+Java, ODM, NoSQL, Couchbase, MongoDB, IBM Notes, Neo4J, Lotus Notes, SSJS, ORM, Framework
 

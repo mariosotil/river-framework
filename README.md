@@ -3,99 +3,67 @@
 
 ## A single interface for different NoSQL databases
 
-It is an Object-Document Mapper Framework for NoSQL databases in **development stage**. Here you will find about the development itself: current and next features, known issues, dependencies, binaries, maven, demos, and, of course, the source code :-)  You will find a presentation about the project at its [website](http://www.riverframework.org)
+It is an Object-Document Mapper for NoSQL databases in **development stage**. Here you will find about the development itself: current and next features, known issues, dependencies, binaries, maven, demos, and, of course, the source code :-)  You will find a presentation about the project at its [website](http://www.riverframework.org)
 
+## Features (WORK IN PROGRESS)
 
-## Features
-
-### The current version (0.2.11) has the following features: 
-
-- Compiled for Java 1.6+ 
-- Uses the Java Logging API
-- Controls six basic elements:
+- Compiled for Java 8+
+- Support to Couchbase Lite
+- Java Logging API
+- Support to five basic elements:
   - Session
   - Database
   - Document
   - Views or collections
   - Document iterator
-  - Document indexes and unique IDs
-- Has two layers of control:
+- Two layers of control:
   - The wrapper layer, that connects directly to the database using its native classes. 
   - The core layer, that provides a unique interface to be able to use any wrapper library written for this framework 
-- Has implemented method chaining
-- Has an object cache
-- To reduce impact on replication, if you set a field with a new value, it checks if it is different before change it.
 
 ## Getting Started
 
-Please, follow the instructions from this [gist](https://gist.github.com/mariosotil/997ffc46a330537d0165)
+WIP
 
 ## Demo
 
-Demos as Eclipse projects of stand-alone Java programs are in this GitHub [repo](https://github.com/mariosotil/river-framework-demo).
+WIP
 
 ## Download
 
-You can download the binaries as Jar libraries from the [OpenNTF website](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/) or the [Maven repository](http://mvnrepository.com/artifact/org.riverframework).
+WIP
 
 ## Maven
 
-To load the artifacts from Maven, you can add one of these dependencies to your pom.xml file:
-
-- To use the original lotus.domino package from IBM Notes
-
-```xml
-    <dependency>
-        <groupId>org.riverframework</groupId>
-        <artifactId>river-lotus-domino</artifactId>
-        <version>0.2.10</version>
-    </dependency>
-```
-
-- To use the org.openntf.domino package from OpenNTF
-
-```xml
-    <dependency>
-        <groupId>org.riverframework</groupId>
-        <artifactId>river-org-openntf-domino</artifactId>
-        <version>0.2.10</version>
-    </dependency>
-```
-
-In both cases, you have to add to your classpath the `Notes.jar` library. For the last one, you will need to add the `org.openntf.domino.jar` library too.
-
+WIP
 
 ## How to build
 
-This guide will be written soon.
+WIP
 
 
 ## Next features
 
-Version 0.3
-- Migrate wrappers to their own repos
-
 Version 0.4
-- Support Couchbase Lite 
-- Fixes and improvements
+- Support Couchbase 
 
 Version 0.5
 - Support MongoDB
 
-Version 0.6
-- Support Neo4J without graphs
+Version 0.6 
+- Support CouchDB
 
 Version 0.7
-- Support graphs for relations between documents (1..\*, \*..\*) 
-- Support Neo4J, IBM Notes and MongoDB with graphs
+- Support Neo4J without graphs
 
 Version 0.8
-- Support a query language (SQL++)
-- Support Couchbase
+- Support graphs for relations between documents (1..\*, \*..\*) 
+- Support Neo4J, Couchbase and MongoDB with graphs
 
 Version 0.9
+- Support a query language
+
+Version 0.10
 - Support transactions
-- Support CouchDB
  
 
 Other features
@@ -106,6 +74,7 @@ Other features
 
 Version 0.3.0
 - Moved wrappers (lotus-domino, org-openntf-domino, and com-couchbase-lite) to their own repos
+- Stopped to support IBM Notes until finish the redesign of the library 
 
 Version 0.2.11
 - Eliminate the dependencies to joda-time and ini4j to make easier the use of the libraries
@@ -170,5 +139,5 @@ mario.sotil [at] gmail.com
 
 ### Tags
 
-Java, ODM, NoSQL, MongoDB, IBM Notes, Neo4J, Lotus Notes, SSJS, ORM, Framework
+Java, JVM, ODM, NoSQL, Couchbase, Couchbase Lite, MongoDB, CouchDB, Neo4J, IBM Notes, Framework
 

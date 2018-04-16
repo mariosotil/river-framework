@@ -7,10 +7,10 @@ It is an Object-Document Mapper Framework for NoSQL databases at **development s
 
 ## Working on version 0.3
 
-This library is being redesigned in the version 0.3. The original plan of support Couchbase, MongoDB, 
-Neo4J, etc. is still standing; but the library will be compiled for Java 8.  I was so in love with IBM Notes, 
-that the design was completely focused on it, so I lose sight of the other databases. That's why this new version 
-will not support IBM Notes, at least at the beginning.
+This library is being redesigned in the version 0.3. The original plan of support 
+Couchbase, MongoDB, CouchDB, and Neo4J is still standing; but support to IBM Notes will be
+stopped, at least at the beginning. I was so in love with IBM Notes, 
+that the design was completely focused on it. I lose sight of the other NoSQL databases. 
 
 To date (2018-04-15), the version 0.3 is still a Work In Progress. You can follow it in the branch 
 [version-0.3.x](https://github.com/mariosotil/river-framework/tree/version-0.3.x)

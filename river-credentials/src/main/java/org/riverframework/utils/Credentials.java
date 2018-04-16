@@ -1,68 +1,73 @@
 package org.riverframework.utils;
 
 import java.io.File;
-
 import org.ini4j.Wini;
 
 /**
- * <p>Allows creates a Session using the credentials stored in the file system. The file must be named as
+ * <p>Allows creates a Session using the credentials stored in the file system. The file must be
+ * named as
  * $user_home\.river-framework\credentials and it must have this content:</p>
- * 
- * <code>
- * [default]
- * server=SERVERNAME
- * username=USERNAME
- * password=PASSWORD
- * </code>
- * 
- * <p>This class was created for test purposes, to make easier the JUnit tests connect to the IBM Domino server 
- * under different scenarios (local, remote, etc.). </p>
- * 
- * @author mario.sotil@gmail.com
  *
+ * <code>
+ * [default] server=SERVERNAME username=USERNAME password=PASSWORD
+ * </code>
+ *
+ * <p>This class was created for test purposes, to make easier the JUnit tests connect to the IBM
+ * Domino server
+ * under different scenarios (local, remote, etc.). </p>
+ *
+ * @author mario.sotil@gmail.com
  */
 public final class Credentials {
-	private static String server;
-	private static String username;
-	private static String password;
 
-	static {
-		try {
-			String location = System.getProperty("user.home") + File.separator + ".river-framework" + File.separator
-					+ "credentials";
+  private static String server;
+  private static String username;
+  private static String password;
 
-			Wini credentials = new Wini(new File(location));
+  static {
+    try {
+      String location =
+          System.getProperty("user.home") + File.separator + ".river-framework" + File.separator
+              + "credentials";
 
-			server = credentials.get("default", "server");
-			username = credentials.get("default", "username");
-			password = credentials.get("default", "password");
+      Wini credentials = new Wini(new File(location));
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+      server = credentials.get("default", "server");
+      username = credentials.get("default", "username");
+      password = credentials.get("default", "password");
 
-	/**
-	 * Returns the server defined in the credentials file. It must be set at the section [default], key server 
-	 * @return the server name
-	 */
-	public static String getServer() {
-		return server;
-	}
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
-	/**
-	 * Returns the user name defined in the credentials file. It must be set at the section [default], key username 
-	 * @return the user name
-	 */
-	public static String getUsername() {
-		return username;
-	}
+  /**
+   * Returns the server defined in the credentials file. It must be set at the section [default],
+   * key server
+   *
+   * @return the server name
+   */
+  public static String getServer() {
+    return server;
+  }
 
-	/**
-	 * Returns the password defined in the credentials file. It must be set at the section [default], key password 
-	 * @return the password
-	 */
-	public static String getPassword() {
-		return password;
-	}
+  /**
+   * Returns the user name defined in the credentials file. It must be set at the section [default],
+   * key username
+   *
+   * @return the user name
+   */
+  public static String getUsername() {
+    return username;
+  }
+
+  /**
+   * Returns the password defined in the credentials file. It must be set at the section [default],
+   * key password
+   *
+   * @return the password
+   */
+  public static String getPassword() {
+    return password;
+  }
 }

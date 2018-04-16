@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,157 +12,160 @@ import org.riverframework.RandomString;
 import org.riverframework.wrapper.Document;
 
 public abstract class AbstractIndexedTest {
-	protected Session session = null;
-	protected Context context = null;
-	protected IndexedDatabase database = null;
 
-	@Before
-	public void open() {
-		// Opening the test context in the current package
-		try {
-			if (context == null) {
-				String className = this.getClass()
-										.getPackage()
-										.getName() + ".Context";
-				Class<?> clazz = Class.forName(className);
-				if (org.riverframework.Context.class.isAssignableFrom(clazz)) {
-					Constructor<?> constructor = clazz.getDeclaredConstructor();
-					constructor.setAccessible(true);
-					context = (Context) constructor.newInstance();
-				}
+  protected Session session = null;
+  protected Context context = null;
+  protected IndexedDatabase database = null;
+  SomeDatabase indexedDatabase = null;
 
-				session = context.getSession();
-				database =
-						session.getDatabase(SomeDatabase.class, context.getTestDatabaseServer(), context.getTestDatabasePath());
-				database.getAllDocuments()
-						.deleteAll();
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+  @Before
+  public void open() {
+    // Opening the test context in the current package
+    try {
+      if (context == null) {
+        String className = this.getClass()
+            .getPackage()
+            .getName() + ".Context";
+        Class<?> clazz = Class.forName(className);
+        if (org.riverframework.Context.class.isAssignableFrom(clazz)) {
+          Constructor<?> constructor = clazz.getDeclaredConstructor();
+          constructor.setAccessible(true);
+          context = (Context) constructor.newInstance();
+        }
 
-	@After
-	public void close() {
-		context.closeSession();
-	}
+        session = context.getSession();
+        database =
+            session.getDatabase(SomeDatabase.class, context.getTestDatabaseServer(),
+                context.getTestDatabasePath());
+        database.getAllDocuments()
+            .deleteAll();
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	static class SomeDatabase extends AbstractIndexedDatabase<SomeDatabase> {
+  @After
+  public void close() {
+    context.closeSession();
+  }
 
-		protected SomeDatabase(Session session, org.riverframework.wrapper.Database<?> _database) {
-			super(session, _database);
+  @Test
+  public void testId() {
+    assertTrue("The test database could not be opened.", database.isOpen());
 
-			registerDocumentClass(UniqueDocument.class);
-			registerDocumentClass(NoUniqueDocument.class);
-		}
+    UniqueDocument unique = database.createDocument(UniqueDocument.class);
+    assertTrue("The document must be open.", unique.isOpen());
 
-		@Override
-		protected SomeDatabase getThis() {
-			return this;
-		}
-	}
+    RandomString rs = new RandomString(10);
 
-	static class NoUniqueDocument extends AbstractDocument<NoUniqueDocument> {
+    String key = rs.nextString();
+    unique.setId(key)
+        .save();
 
-		protected NoUniqueDocument(Database database, Document<?> _doc) {
-			super(database, _doc);
-		}
+    String oldKey = unique.getId();
+    assertTrue("The Id retrieved is different to the saved.", key.equals(oldKey));
 
-		protected final static String FORM_NAME = Session.PREFIX + "NoUnique";
-		protected final static String FIELD_ID = Session.PREFIX + "id";
+    database.getIndex(UniqueDocument.class);
 
-		@Override
-		public NoUniqueDocument afterCreate() {
-			setField("Form", FORM_NAME);
-			return this;
-		}
+    unique = null;
+    unique = database.getDocument(UniqueDocument.class, key);
+    assertTrue("A document that was created, could not be opened with the key '" + key + "'.",
+        unique.isOpen());
 
-		@Override
-		protected NoUniqueDocument getThis() {
-			return this;
-		}
-	}
+    unique = null;
+    unique = database.getDocument(UniqueDocument.class, "%%%THIS DOCUMENT DOES NOT EXIST%%%");
+    assertFalse("A document that should not be found, is opened.", unique.isOpen());
 
-	static class UniqueDocument extends AbstractIndexedDocument<UniqueDocument> {
-		protected final static String FORM_NAME = Session.PREFIX + "Unique";
-		protected final static String FIELD_ID = Session.PREFIX + "id";
+    unique = null;
+    unique = database.getDocument(UniqueDocument.class, true, "NEW_KEY_" + key);
+    assertTrue("A document that should be created, is not opened.", unique.isOpen());
 
-		protected static View index = null;
+    unique.save(true);
 
-		protected UniqueDocument(Database database, Document<?> _doc) {
-			super(database, _doc);
-		}
+    oldKey = unique.getId();
+    assertTrue("A document created by 'createIfDoesNotExist', has a wrong Id.",
+        oldKey.equals("NEW_KEY_" + key));
 
-		@Override
-		public String getBinder() {
-			return FORM_NAME;
-		}
+  }
 
-		@Override
-		protected String[] getParametersToCreateIndex() {
-			// TODO: this works only for IBM Notes. FIX IT!
-			return new String[] { getIndexName(), "Form=\"" + getBinder() + "\"" };
-		}
+  static class SomeDatabase extends AbstractIndexedDatabase<SomeDatabase> {
 
-		@Override
-		public String getIdField() {
-			return FIELD_ID;
-		}
+    protected SomeDatabase(Session session, org.riverframework.wrapper.Database<?> _database) {
+      super(session, _database);
 
-		@Override
-		public String getIndexName() {
-			return Session.PREFIX + "Unique_Index";
-		}
+      registerDocumentClass(UniqueDocument.class);
+      registerDocumentClass(NoUniqueDocument.class);
+    }
 
-		@Override
-		public UniqueDocument generateId() {
-			// Do nothing
-			return this;
-		}
+    @Override
+    protected SomeDatabase getThis() {
+      return this;
+    }
+  }
 
-		@Override
-		protected UniqueDocument getThis() {
-			return this;
-		}
+  static class NoUniqueDocument extends AbstractDocument<NoUniqueDocument> {
 
-	}
+    protected final static String FORM_NAME = Session.PREFIX + "NoUnique";
+    protected final static String FIELD_ID = Session.PREFIX + "id";
+    protected NoUniqueDocument(Database database, Document<?> _doc) {
+      super(database, _doc);
+    }
 
-	SomeDatabase indexedDatabase = null;
+    @Override
+    public NoUniqueDocument afterCreate() {
+      setField("Form", FORM_NAME);
+      return this;
+    }
 
-	@Test
-	public void testId() {
-		assertTrue("The test database could not be opened.", database.isOpen());
+    @Override
+    protected NoUniqueDocument getThis() {
+      return this;
+    }
+  }
 
-		UniqueDocument unique = database.createDocument(UniqueDocument.class);
-		assertTrue("The document must be open.", unique.isOpen());
+  static class UniqueDocument extends AbstractIndexedDocument<UniqueDocument> {
 
-		RandomString rs = new RandomString(10);
+    protected final static String FORM_NAME = Session.PREFIX + "Unique";
+    protected final static String FIELD_ID = Session.PREFIX + "id";
 
-		String key = rs.nextString();
-		unique.setId(key)
-				.save();
+    protected static View index = null;
 
-		String oldKey = unique.getId();
-		assertTrue("The Id retrieved is different to the saved.", key.equals(oldKey));
+    protected UniqueDocument(Database database, Document<?> _doc) {
+      super(database, _doc);
+    }
 
-		database.getIndex(UniqueDocument.class);
+    @Override
+    public String getBinder() {
+      return FORM_NAME;
+    }
 
-		unique = null;
-		unique = database.getDocument(UniqueDocument.class, key);
-		assertTrue("A document that was created, could not be opened with the key '" + key + "'.", unique.isOpen());
+    @Override
+    protected String[] getParametersToCreateIndex() {
+      // TODO: this works only for IBM Notes. FIX IT!
+      return new String[]{getIndexName(), "Form=\"" + getBinder() + "\""};
+    }
 
-		unique = null;
-		unique = database.getDocument(UniqueDocument.class, "%%%THIS DOCUMENT DOES NOT EXIST%%%");
-		assertFalse("A document that should not be found, is opened.", unique.isOpen());
+    @Override
+    public String getIdField() {
+      return FIELD_ID;
+    }
 
-		unique = null;
-		unique = database.getDocument(UniqueDocument.class, true, "NEW_KEY_" + key);
-		assertTrue("A document that should be created, is not opened.", unique.isOpen());
+    @Override
+    public String getIndexName() {
+      return Session.PREFIX + "Unique_Index";
+    }
 
-		unique.save(true);
+    @Override
+    public UniqueDocument generateId() {
+      // Do nothing
+      return this;
+    }
 
-		oldKey = unique.getId();
-		assertTrue("A document created by 'createIfDoesNotExist', has a wrong Id.", oldKey.equals("NEW_KEY_" + key));
+    @Override
+    protected UniqueDocument getThis() {
+      return this;
+    }
 
-	}
+  }
 }

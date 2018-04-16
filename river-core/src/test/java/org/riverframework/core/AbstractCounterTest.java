@@ -3,7 +3,6 @@ package org.riverframework.core;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,88 +10,89 @@ import org.riverframework.Context;
 import org.riverframework.RandomString;
 
 public abstract class AbstractCounterTest {
-	protected Session session = null;
-	protected IndexedDatabase database = null;
-	protected Context context = null;
 
-	@Before
-	public void open() {
-		// Opening the test context in the current package
-		try {
-			if (context == null) {
-				String className = this.getClass().getPackage().getName()
-						+ ".Context";
-				Class<?> clazz = Class.forName(className);
-				if (org.riverframework.Context.class.isAssignableFrom(clazz)) {
-					Constructor<?> constructor = clazz.getDeclaredConstructor();
-					constructor.setAccessible(true);
-					context = (Context) constructor.newInstance();
-				}
+  protected Session session = null;
+  protected IndexedDatabase database = null;
+  protected Context context = null;
 
-				session = context.getSession();
-				database = session.getDatabase(UniqueDatabase.class,
-						context.getTestDatabaseServer(),
-						context.getTestDatabasePath());
-				database.getAllDocuments().deleteAll();
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+  @Before
+  public void open() {
+    // Opening the test context in the current package
+    try {
+      if (context == null) {
+        String className = this.getClass().getPackage().getName()
+            + ".Context";
+        Class<?> clazz = Class.forName(className);
+        if (org.riverframework.Context.class.isAssignableFrom(clazz)) {
+          Constructor<?> constructor = clazz.getDeclaredConstructor();
+          constructor.setAccessible(true);
+          context = (Context) constructor.newInstance();
+        }
 
-	@After
-	public void close() {
-		context.closeSession();
-	}
+        session = context.getSession();
+        database = session.getDatabase(UniqueDatabase.class,
+            context.getTestDatabaseServer(),
+            context.getTestDatabasePath());
+        database.getAllDocuments().deleteAll();
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	static class UniqueDatabase extends AbstractIndexedDatabase<UniqueDatabase> {
+  @After
+  public void close() {
+    context.closeSession();
+  }
 
-		protected UniqueDatabase(Session session,
-				org.riverframework.wrapper.Database<?> _database) {
-			super(session, _database);
+  @Test
+  public void testCounter() {
+    assertTrue("The test database could not be opened.", database.isOpen());
 
-			registerDocumentClass(DefaultCounter.class);
-		}
+    RandomString rs = new RandomString(10);
 
-		@Override
-		protected UniqueDatabase getThis() {
-			return this;
-		}
-	}
+    String key = rs.nextString();
+    DefaultCounter counter = database.getCounter(key);
 
-	@Test
-	public void testCounter() {
-		assertTrue("The test database could not be opened.", database.isOpen());
+    long n = counter.getCount();
+    long n1 = counter.getCount();
 
-		RandomString rs = new RandomString(10);
+    assertTrue(
+        "The counter does not return two consecutives counters for the key '"
+            + key + "'. It returned n=" + n + " and n1=" + n1,
+        n1 == n + 1);
 
-		String key = rs.nextString();
-		DefaultCounter counter = database.getCounter(key);
+    for (int i = 0; i < 10; i++) {
+      n = counter.getCount();
+    }
 
-		long n = counter.getCount();
-		long n1 = counter.getCount();
+    DocumentIterator it = database.getIndex(DefaultCounter.class)
+        .getAllDocumentsByKey(key);
 
-		assertTrue(
-				"The counter does not return two consecutives counters for the key '"
-						+ key + "'. It returned n=" + n + " and n1=" + n1,
-				n1 == n + 1);
+    int num = 0;
+    while (it.hasNext()) {
+      num++;
+      it.next();
+    }
 
-		for (int i = 0; i < 10; i++) {
-			n = counter.getCount();
-		}
+    assertTrue(
+        "There is a problem with the counter. It was found zero or more than one document in the Counter index with the key "
+            + key, num == 1);
 
-		DocumentIterator it = database.getIndex(DefaultCounter.class)
-				.getAllDocumentsByKey(key);
+  }
 
-		int num = 0;
-		while (it.hasNext()) {
-			num++;
-			it.next();
-		}
+  static class UniqueDatabase extends AbstractIndexedDatabase<UniqueDatabase> {
 
-		assertTrue(
-				"There is a problem with the counter. It was found zero or more than one document in the Counter index with the key "
-						+ key, num == 1);
+    protected UniqueDatabase(Session session,
+        org.riverframework.wrapper.Database<?> _database) {
+      super(session, _database);
 
-	}
+      registerDocumentClass(DefaultCounter.class);
+    }
+
+    @Override
+    protected UniqueDatabase getThis() {
+      return this;
+    }
+  }
 }

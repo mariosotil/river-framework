@@ -17,6 +17,7 @@
     <modules>
         <module>river-utils</module>
         <module>river-credentials</module>
+        <module>river-wrapper</module>
         <module>river-core</module>
     </modules>
 </project>

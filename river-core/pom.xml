@@ -41,8 +41,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -164,15 +164,9 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.riverframework</groupId>
-			<artifactId>river-utils</artifactId>
-			<version>0.2.5</version>
+			<artifactId>river-wrapper</artifactId>
+			<version>0.3.0</version>
 		</dependency>
-        <dependency>
-            <groupId>org.dizitart</groupId>
-            <artifactId>nitrite</artifactId>
-            <version>2.1.0</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
 			<groupId>org.riverframework</groupId>
 			<artifactId>river-credentials</artifactId>

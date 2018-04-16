@@ -1,25 +1,26 @@
 package org.riverframework;
 
 public class RiverException extends RuntimeException {
-	private static final long serialVersionUID = 6867771909552313131L;
 
-	public RiverException() {
-		super();
-	}
+  private static final long serialVersionUID = 6867771909552313131L;
 
-	public RiverException(String message) {
-		super(message);
-	}
+  public RiverException() {
+    super();
+  }
 
-	public RiverException(Exception e) {
-		super(e);
-	}
+  public RiverException(String message) {
+    super(message);
+  }
 
-	public RiverException(Throwable t) {
-		super(t);
-	}
+  public RiverException(Exception e) {
+    super(e);
+  }
 
-	public RiverException(String message, Exception e) {
-		super(message, e);
-	}
+  public RiverException(Throwable t) {
+    super(t);
+  }
+
+  public RiverException(String message, Exception e) {
+    super(message, e);
+  }
 }

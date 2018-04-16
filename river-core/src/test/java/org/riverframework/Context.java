@@ -3,13 +3,14 @@ package org.riverframework;
 import org.riverframework.core.Session;
 
 public interface Context {
-	public String getTestDatabaseServer();
 
-	public String getTestDatabasePath();
+  public String getTestDatabaseServer();
 
-	public String getConfigurationFileName();
+  public String getTestDatabasePath();
 
-	public Session getSession();
+  public String getConfigurationFileName();
 
-	public void closeSession();
+  public Session getSession();
+
+  public void closeSession();
 }

@@ -16,7 +16,8 @@ I lose sight of the other NoSQL databases.
 To date (2018-04-15), the version 0.3 is still a Work In Progress. You can follow it in the branch 
 [version-0.3.x](https://github.com/mariosotil/river-framework/tree/version-0.3.x). 
 
-The current version 0.2.11's source code is still here, and its binaries are in [Maven Central Repository](https://search.maven.org/#artifactdetails%7Corg.riverframework%7Criver-lotus-domino%7C0.2.11%7Cjar)
+The current version 0.2.11's source code is still in this [Github repo](https://github.com/mariosotil/river-framework),
+ and its binaries are in [Maven Central Repository](https://search.maven.org/#artifactdetails%7Corg.riverframework%7Criver-lotus-domino%7C0.2.11%7Cjar)
  and [OpenNTF](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/). 
 They could still be used to access IBM Notes.
 

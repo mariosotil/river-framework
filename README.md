@@ -10,15 +10,50 @@ It is an Object-Document Mapper Framework for NoSQL databases at **development s
 This library is being redesigned in the version 0.3. The original plan of support 
 Couchbase, MongoDB, CouchDB, and Neo4J is still standing; but support to IBM Notes will be
 stopped, at least at the beginning. I was so in love with IBM Notes, 
-that the design was completely focused on it. I lose sight of the other NoSQL databases. 
+that the design was completely focused on it, resolving Notes' particular situations. 
+I lose sight of the other NoSQL databases. 
 
 To date (2018-04-15), the version 0.3 is still a Work In Progress. You can follow it in the branch 
-[version-0.3.x](https://github.com/mariosotil/river-framework/tree/version-0.3.x)
+[version-0.3.x](https://github.com/mariosotil/river-framework/tree/version-0.3.x). 
+
+The current version 0.2.11's source code is still here, and its binaries are in [Maven Central Repository](https://search.maven.org/#artifactdetails%7Corg.riverframework%7Criver-lotus-domino%7C0.2.11%7Cjar)
+ and [OpenNTF](http://www.openntf.org/main.nsf/project.xsp?r=project/River%20Framework/releases/). 
+They could still be used to access IBM Notes.
+
+## How does the code look?
+
+Query a IBM Notes database with River Framework looks like this.
+
+```java
+//Opening a session
+Session session = River.getSession(River.LOTUS_DOMINO, "server", "username", "password");
+Database database = session.getDatabase(AddressBook.class, "server", "example.nsf");
+
+// Creating a new person document
+database.createDocument(Person.class)
+  .setField("Name", "John Doe")
+  .setField("Age", 35)
+  .generateId()
+  .save();
+
+// Searching people with name "John Doe"              
+DocumentIterator it = database.search("Name=\"John Doe\"");
+
+// Iterating
+for(Document doc: it)   {
+  System.out.println("Found " + doc.getId());
+  System.out.println("Name: " + doc.getFieldAsString("Name"));
+  System.out.println("Age: " + doc.getFieldAsInteger("Age"));
+}
+
+session.close();
+```
 
 ## Features in version 0.2.11
 
 - Compiled for Java 1.6+ 
-- Uses the Java Logging API
+- Support IBM Notes
+- Java Logging API
 - Controls six basic elements:
   - Session
   - Database
@@ -28,10 +63,7 @@ To date (2018-04-15), the version 0.3 is still a Work In Progress. You can follo
   - Document indexes and unique IDs
 - Has two layers of control:
   - The wrapper layer, that connects directly to the database using its native classes. 
-  - The core layer, that provides a unique interface to be able to use any wrapper library written for this framework 
-- Has implemented method chaining
-- Has an object cache
-- To reduce impact on replication, if you set a field with a new value, it checks if it is different before change it.
+  - The core layer, that provides a unique interface to be able to use any wrapper library written for this framework. 
 
 
 ### About the wrapper for IBM Notes:
@@ -42,6 +74,8 @@ To date (2018-04-15), the version 0.3 is still a Work In Progress. You can follo
 - Supports local and remote sessions (DIIOP) 
 - Auto recycling of Notes objects
 - Supports field size > 32K
+- Has an object cache
+- To reduce impact on replication, if you set a field with a new value, it checks if it is different before change it.
 - Good to develop standalone Java programs, Servlets or XPages programs 
 
 
@@ -76,20 +110,20 @@ To load the artifacts from Maven, you can add one of these dependencies to your 
 - To use the original lotus.domino package from IBM Notes
 
 ```xml
-		<dependency>
-			<groupId>org.riverframework</groupId>
-			<artifactId>river-lotus-domino</artifactId>
-			<version>0.2.11</version>
-		</dependency>
+    <dependency>
+        <groupId>org.riverframework</groupId>
+        <artifactId>river-lotus-domino</artifactId>
+        <version>0.2.11</version>
+    </dependency>
 ```
 
 - To use the org.openntf.domino package from OpenNTF
 
 ```xml
     <dependency>
-      <groupId>org.riverframework</groupId>
-      <artifactId>river-org-openntf-domino</artifactId>
-      <version>0.2.11</version>
+        <groupId>org.riverframework</groupId>
+        <artifactId>river-org-openntf-domino</artifactId>
+        <version>0.2.11</version>
     </dependency>
 ```
 

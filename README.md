@@ -40,6 +40,9 @@ WIP
 
 WIP
 
+## Support to IBM Notes
+
+If you need support to IBM Notes, please take a look at the version [0.2.11](https://github.com/mariosotil/river-framework/tree/0.2.11).
 
 ## Next features
 

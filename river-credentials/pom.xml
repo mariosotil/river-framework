@@ -8,23 +8,33 @@
 	<description>Workflow Application Framework written in Java, using Lotus Notes as NoSQL database server</description>
 	<url>http://www.riverframework.org</url>
 	<packaging>jar</packaging>
+
+	<parent>
+		<groupId>org.riverframework</groupId>
+		<artifactId>river-framework</artifactId>
+		<version>0.3.0</version>
+	</parent>
+
 	<licenses>
 		<license>
 			<name>Apache license, version 2.0</name>
 			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
 		</license>
 	</licenses>
+
 	<developers>
 		<developer>
 			<name>Mario Sotil</name>
 			<email>mario.sotil@gmail.com</email>
 		</developer>
 	</developers>
+
 	<scm>
 		<connection>scm:git:git@github.com:mariosotil/river-framework.git</connection>
 		<developerConnection>scm:git:git@github.com:mariosotil/river-framework.git</developerConnection>
 		<url>git@github.com:mariosotil/river-framework.git</url>
 	</scm>
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -35,6 +45,7 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -84,6 +95,7 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<profiles>
 		<profile>
 			<id>release-sign-artifacts</id>
@@ -117,43 +129,41 @@
 			</build>
 		</profile>
 	</profiles>
+
 	<dependencies>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-yaml</artifactId>
-			<version>2.3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.2.3</version>
-		</dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>2.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.2.3</version>
+    </dependency>
+
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>25.1-jre</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
-			<version>4.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>2.18.3</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
